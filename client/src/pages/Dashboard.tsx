@@ -126,14 +126,14 @@ export default function Dashboard() {
           </Card>
 
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/amazon">
+            <Link href="/amazon-publishing">
               <CardHeader>
                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Rocket className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Amazon Optimization</CardTitle>
+                <CardTitle>Amazon Publishing</CardTitle>
                 <CardDescription>
-                  Optimize your listings and track bestseller rankings
+                  Category research, listing optimization, and KDP upload
                 </CardDescription>
               </CardHeader>
             </Link>

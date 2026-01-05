@@ -15,7 +15,7 @@ import {
   Briefcase,
   GraduationCap,
   Lightbulb,
-  DollarSign
+  Cpu
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
@@ -29,7 +29,7 @@ const TOPIC_CATEGORIES = [
   { id: "parenting", name: "Parenting & Family", icon: Heart, description: "Child development, family dynamics, education" },
   { id: "self-help", name: "Personal Development", icon: Lightbulb, description: "Productivity, mindset, habits, goals" },
   { id: "career", name: "Career & Professional Growth", icon: GraduationCap, description: "Job search, promotions, skills development" },
-  { id: "money", name: "Money Management", icon: DollarSign, description: "Budgeting, debt freedom, financial planning" },
+  { id: "ai-tech", name: "AI & Technology", icon: Cpu, description: "Artificial intelligence, automation, future tech" },
 ];
 
 export default function IndependentAuthor() {

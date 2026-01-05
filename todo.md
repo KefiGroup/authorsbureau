@@ -216,3 +216,28 @@
 - [ ] Database: Add track type to books table
 - [ ] Database: Add anthology submissions table
 - [ ] Messaging: Differentiate benefits of each track clearly
+
+
+## Amazon KDP Complete Automation (Current Development)
+- [ ] AI Book Cover Generator with image generation API (postponed)
+- [ ] Cover customization interface (title, author, genre templates) (postponed)
+- [ ] Cover preview and download (PNG, JPG formats) (postponed)
+- [x] Amazon category research tool (analyze competition and traffic)
+- [x] Category competitiveness scoring algorithm
+- [x] Smart category recommendations (find easiest to rank)
+- [x] KDP listing metadata optimizer
+- [x] AI-generated book titles optimized for Amazon search
+- [x] AI-generated book descriptions with conversion focus
+- [x] Keyword research and placement optimization (7 keywords)
+- [x] Complete listing generator (title, subtitle, description, keywords, bio)
+- [x] Amazon Publishing page with tabbed interface
+- [x] Category Research tab with AI-powered analysis
+- [x] Listing Optimizer tab with complete metadata generation
+- [x] KDP Upload tab (manual instructions for now)
+- [x] Dashboard integration with Amazon Publishing link
+- [x] Unit tests for all Amazon features (9 test cases)
+- [ ] Amazon KDP API integration setup (future - requires Amazon approval)
+- [ ] KDP account connection workflow (future)
+- [ ] Automated book upload via API (future)
+- [ ] One-click publish to Amazon KDP (future)
+- [ ] Post-publish tracking dashboard (future)

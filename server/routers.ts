@@ -1,6 +1,8 @@
 import { COOKIE_NAME } from "@shared/const";
 import { generateBookOutline, generateSuckcessProfile, generateChapterDraft } from "./ai-generation";
 import { generateDOCX, generatePDF } from "./manuscript-export";
+import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategoryCombination } from "./amazon-category-research";
+import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
@@ -405,6 +407,112 @@ export const appRouter = router({
           data: buffer.toString("base64"),
           filename: `${input.bookTitle.replace(/[^a-z0-9]/gi, "_")}.pdf`,
         };
+      }),
+  }),
+
+  // Amazon KDP Integration
+  amazon: router({
+    // Research optimal categories for bestseller positioning
+    researchCategories: protectedProcedure
+      .input(z.object({
+        title: z.string(),
+        genre: z.string(),
+        keywords: z.array(z.string()),
+        targetAudience: z.string()
+      }))
+      .mutation(async ({ input }) => {
+        const categories = await researchAmazonCategories(input);
+        return { categories };
+      }),
+
+    // Analyze competition in a specific category
+    analyzeCategory: protectedProcedure
+      .input(z.object({
+        category: z.string(),
+        subcategory: z.string().optional(),
+        bookTitle: z.string(),
+        genre: z.string()
+      }))
+      .mutation(async ({ input }) => {
+        const analysis = await analyzeCategoryCompetition(input);
+        return analysis;
+      }),
+
+    // Get recommended category combination (2 categories)
+    recommendCategories: protectedProcedure
+      .input(z.object({
+        categories: z.array(z.object({
+          category: z.string(),
+          subcategory: z.string().optional(),
+          competitivenessScore: z.number(),
+          estimatedMonthlySearches: z.string(),
+          topSellerRequirement: z.string(),
+          reasoning: z.string(),
+          recommended: z.boolean()
+        }))
+      }))
+      .mutation(async ({ input }) => {
+        const recommendation = await recommendCategoryCombination(input.categories);
+        return recommendation;
+      }),
+
+    // Optimize book title and subtitle for Amazon search
+    optimizeTitle: protectedProcedure
+      .input(z.object({
+        originalTitle: z.string(),
+        genre: z.string(),
+        targetAudience: z.string(),
+        mainBenefit: z.string(),
+        keywords: z.array(z.string())
+      }))
+      .mutation(async ({ input }) => {
+        const result = await generateOptimizedTitle(input);
+        return result;
+      }),
+
+    // Generate conversion-optimized book description
+    optimizeDescription: protectedProcedure
+      .input(z.object({
+        title: z.string(),
+        genre: z.string(),
+        targetAudience: z.string(),
+        keyBenefits: z.array(z.string()),
+        outline: z.string(),
+        authorCredentials: z.string().optional()
+      }))
+      .mutation(async ({ input }) => {
+        const result = await generateOptimizedDescription(input);
+        return result;
+      }),
+
+    // Research and generate optimal keywords
+    optimizeKeywords: protectedProcedure
+      .input(z.object({
+        title: z.string(),
+        genre: z.string(),
+        targetAudience: z.string(),
+        mainTopics: z.array(z.string())
+      }))
+      .mutation(async ({ input }) => {
+        const result = await generateOptimizedKeywords(input);
+        return result;
+      }),
+
+    // Generate complete optimized listing (title, description, keywords, bio)
+    generateCompleteListing: protectedProcedure
+      .input(z.object({
+        originalTitle: z.string(),
+        genre: z.string(),
+        targetAudience: z.string(),
+        mainBenefit: z.string(),
+        keyBenefits: z.array(z.string()),
+        outline: z.string(),
+        authorName: z.string(),
+        authorBio: z.string().optional()
+      }))
+      .mutation(async ({ input }) => {
+        const listing = await generateCompleteListing(input);
+        return listing;
       }),
   }),
 });
