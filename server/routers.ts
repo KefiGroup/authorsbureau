@@ -4,6 +4,7 @@ import { generateDOCX, generatePDF } from "./manuscript-export";
 import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategoryCombination } from "./amazon-category-research";
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
 import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt } from "./cover-generator";
+import { analyzeManuscript, generateMoreTitles, refineDescription } from "./manuscript-analyzer";
 import * as dbCovers from "./db-covers";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -409,6 +410,38 @@ export const appRouter = router({
           data: buffer.toString("base64"),
           filename: `${input.bookTitle.replace(/[^a-z0-9]/gi, "_")}.pdf`,
         };
+      }),
+  }),
+
+  // Manuscript Analysis (AI-Agentic Publishing)
+  manuscriptAnalysis: router({
+    analyze: protectedProcedure
+      .input(z.object({
+        manuscript: z.string().min(100),
+        wordCount: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        return await analyzeManuscript(input);
+      }),
+
+    generateMoreTitles: protectedProcedure
+      .input(z.object({
+        manuscript: z.string(),
+        currentTitles: z.array(z.string()),
+        preferredStyle: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await generateMoreTitles(input);
+      }),
+
+    refineDescription: protectedProcedure
+      .input(z.object({
+        originalDescription: z.string(),
+        feedback: z.string(),
+        manuscript: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        return await refineDescription(input);
       }),
   }),
 

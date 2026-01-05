@@ -2,7 +2,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight, Sparkles } from "lucide-react";
+import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight, Sparkles, Upload } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Dashboard() {
@@ -96,7 +96,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
             <Link href="/writing">
               <CardHeader>
@@ -148,6 +148,23 @@ export default function Dashboard() {
                 <CardTitle>AI Cover Generator</CardTitle>
                 <CardDescription>
                   Create stunning professional book covers with AI in seconds
+                </CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-primary">
+            <Link href="/ready-to-publish">
+              <CardHeader>
+                <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
+                  <Upload className="h-6 w-6 text-green-600" />
+                </div>
+                <CardTitle className="flex items-center gap-2">
+                  Ready to Publish
+                  <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">NEW</span>
+                </CardTitle>
+                <CardDescription>
+                  Upload manuscript → ISBN → Cover → Amazon KDP (Complete workflow)
                 </CardDescription>
               </CardHeader>
             </Link>

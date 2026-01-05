@@ -17,6 +17,7 @@ import DiscoverYourStory from "./pages/DiscoverYourStory";
 import FeaturedAuthors from "./pages/FeaturedAuthors";
 import AmazonPublishing from "@/pages/AmazonPublishing";
 import CoverGenerator from "@/pages/CoverGenerator";
+import ReadyToPublish from "@/pages/ReadyToPublish";
 import ComingSoon from "@/pages/ComingSoon";
 
 
@@ -36,7 +37,8 @@ function Router() {
       <Route path={"/discover-your-story"} component={DiscoverYourStory} />
       <Route path={"/featured-authors"} component={FeaturedAuthors} />
       <Route path="/amazon-publishing" component={AmazonPublishing} />
-      <Route path="/cover-generator" component={CoverGenerator} />
+        <Route path="/cover-generator" component={CoverGenerator} />
+        <Route path="/ready-to-publish" component={ReadyToPublish} />
       
       {/* Coming Soon Routes */}
       <Route path="/marketing" component={() => <ComingSoon featureName="Marketing Automation" description="Build landing pages, create funnels, and automate email sequences to maximize your book's revenue. This feature is coming soon!" />} />

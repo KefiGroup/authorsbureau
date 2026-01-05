@@ -310,3 +310,51 @@
 - [x] User selects up to 3 categories (Amazon limit)
 - [x] Selected categories feed into listing optimizer
 - [x] Tests updated to use new bookId-based API
+
+
+## Ready to Publish Workflow - AI-AGENTIC REDESIGN (CURRENT PRIORITY)
+### AI suggests, Author decides - collaborative intelligence
+
+**Phase 1: Upload & AI Analysis**
+- [x] Create "Ready to Publish" entry point on Dashboard
+- [x] Build manuscript upload (paste/DOCX/PDF/TXT)
+- [x] Word count detection
+- [x] **AI Auto-Analysis**: Extract title, genre, themes, audience from manuscript
+- [x] **AI Auto-Generation**: Generate 5 bestseller-worthy title options
+- [x] **AI Auto-Generation**: Generate 3 subtitle options with promise+proof formula
+- [x] **AI Auto-Generation**: Write compelling conversion-optimized book description
+- [x] **AI thinks like NYT publisher**: 20+ years elite publishing experience
+- [x] **AI analyzes bestseller patterns**: Uses proven title formulas and power words
+- [x] User reviews and edits AI suggestions (not fills forms)
+- [x] Generate more titles on demand
+- [x] Edit/customize any AI suggestion
+- [x] Live preview of how book appears on Amazon
+
+**Phase 2: ISBN & Cover (AI-Powered)**
+- [x] ISBN education and options display
+- [ ] **AI Recommends**: Which ISBN option based on author's goals
+- [ ] **AI Auto-Generates**: Book cover based on manuscript content
+- [ ] **AI Creates**: Multiple cover variations to choose from
+- [ ] User selects favorite cover (AI did the design work)
+
+**Phase 3: Amazon Optimization (AI-Powered)**
+- [ ] **AI Analyzes**: Manuscript against Amazon category database
+- [ ] **AI Recommends**: Top 5 categories with competitiveness scores
+- [ ] **AI Generates**: 7 optimized keywords for Amazon search
+- [ ] **AI Writes**: Conversion-optimized product description
+- [ ] **AI Suggests**: Pricing strategy based on genre and length
+- [ ] User reviews complete listing (AI did all the optimization)
+
+**Phase 4: KDP Setup & Export (AI-Guided)**
+- [ ] **AI Generates**: Step-by-step personalized KDP setup guide
+- [ ] **AI Creates**: Pre-filled KDP listing data file
+- [ ] **AI Bundles**: Complete export package (manuscript + cover + metadata + ISBN)
+- [ ] **AI Provides**: Marketing launch checklist
+- [ ] One-click download everything ready for KDP upload
+
+**Phase 5: Marketing Intelligence (AI-Powered)**
+- [ ] **AI Analyzes**: Competitor books in chosen categories
+- [ ] **AI Recommends**: Amazon Ads keyword bidding strategy
+- [ ] **AI Generates**: Launch week promotional copy
+- [ ] **AI Suggests**: Pricing and promotion schedule
+- [ ] **AI Creates**: Email templates for reader outreach
