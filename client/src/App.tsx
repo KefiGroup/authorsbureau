@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import Books from "./pages/Books";
 import WritingStudio from "./pages/WritingStudio";
 import WritingStudioDay1 from "./pages/WritingStudioDay1";
+import WritingStudioDay2 from "./pages/WritingStudioDay2";
 import DiscoverYourStory from "./pages/DiscoverYourStory";
 import FeaturedAuthors from "./pages/FeaturedAuthors";
 
@@ -24,6 +25,7 @@ function Router() {
       <Route path={"/books"} component={Books} />
       <Route path={"/writing-studio"} component={WritingStudio} />
       <Route path={"/writing-studio/day-1"} component={WritingStudioDay1} />
+      <Route path={"/writing-studio/day-2"} component={WritingStudioDay2} />
       <Route path={"/discover-your-story"} component={DiscoverYourStory} />
       <Route path={"/featured-authors"} component={FeaturedAuthors} />
       <Route path={"/404"} component={NotFound} />

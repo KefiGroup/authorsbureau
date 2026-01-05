@@ -17,12 +17,12 @@ import {
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Streamdown } from "streamdown";
+import { trpc } from "@/lib/trpc";
 
 export default function WritingStudioDay1() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
-  const [isGenerating, setIsGenerating] = useState(false);
   
   // Form state
   const [storyData, setStoryData] = useState({
@@ -35,6 +35,9 @@ export default function WritingStudioDay1() {
   });
 
   const [aiResponse, setAiResponse] = useState("");
+
+  // tRPC mutation for AI generation
+  const generateOutlineMutation = trpc.ai.generateOutline.useMutation();
 
   if (!isAuthenticated) {
     return (
@@ -58,56 +61,24 @@ export default function WritingStudioDay1() {
   const progress = (currentStep / totalSteps) * 100;
 
   const handleGenerateOutline = async () => {
-    setIsGenerating(true);
     try {
-      // Simulate AI generation - replace with actual tRPC call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setAiResponse(`# Your SUCKcess Story Outline
-
-## Book Title Suggestions:
-1. From [Disaster] to [Triumph]: My Journey
-2. The [Your Unique Angle] Story
-3. Rising After [Your Challenge]
-
-## Chapter Structure (8 Chapters based on SUCKcess Theory):
-
-### Chapter 1: Start by Sucking - The Disaster
-Your story begins with: ${storyData.disasterMoment}
-
-### Chapter 2: Understanding Myself
-Deep dive into who you were before the transformation...
-
-### Chapter 3: Choosing My Path
-The moment you decided to change...
-
-### Chapter 4: Finding My Niche
-Discovering your unique approach: ${storyData.uniqueAngle}
-
-### Chapter 5: Building My Circle
-The people who supported your journey...
-
-### Chapter 6: Evolving Through Crisis
-How challenges shaped you: ${storyData.transformation}
-
-### Chapter 7: Seeing the Future
-Visualizing your success...
-
-### Chapter 8: Serving Others
-Your current mission: ${storyData.currentState}
-
-## Target Reader Profile:
-${storyData.targetAudience}
-
-## Core Message:
-${storyData.lessonLearned}
-`);
-      toast.success("Outline generated! Review and refine as needed.");
+      const result = await generateOutlineMutation.mutateAsync({
+        disasterMoment: storyData.disasterMoment,
+        transformation: storyData.transformation,
+        currentState: storyData.currentState,
+        lessonLearned: storyData.lessonLearned,
+        targetAudience: storyData.targetAudience,
+        uniqueAngle: storyData.uniqueAngle,
+      });
+      setAiResponse(result.outline);
+      toast.success("Your SUCKcess Story Outline is ready!");
     } catch (error) {
+      console.error("Outline generation error:", error);
       toast.error("Failed to generate outline. Please try again.");
-    } finally {
-      setIsGenerating(false);
     }
   };
+
+  const isGenerating = generateOutlineMutation.isPending;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-8">
@@ -325,12 +296,12 @@ ${storyData.lessonLearned}
                       {isGenerating ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Generating...
+                          Generating with AI...
                         </>
                       ) : (
                         <>
                           <Sparkles className="mr-2 h-4 w-4" />
-                          Generate Outline
+                          Generate Outline with AI
                         </>
                       )}
                     </Button>

@@ -105,7 +105,10 @@ export default function WritingStudio() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/books">View My Books</Link>
+                <Link href="/writing-studio/day-2">
+                  <BookOpen className="mr-2 h-5 w-5" />
+                  Day 2: Write Chapters
+                </Link>
               </Button>
             </div>
           ) : (
@@ -241,9 +244,17 @@ export default function WritingStudio() {
                 </div>
               </div>
               
-              <Button className="w-full mt-4" variant="outline" disabled={!isAuthenticated}>
-                Complete Day 1 First
-              </Button>
+              {isAuthenticated && authorProfile ? (
+                <Button className="w-full mt-4" asChild>
+                  <Link href="/writing-studio/day-2">
+                    Start Day 2 <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <Button className="w-full mt-4" variant="outline" asChild>
+                  <a href={getLoginUrl()}>Sign In to Start</a>
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>

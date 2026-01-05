@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +22,7 @@ import { Streamdown } from "streamdown";
 
 export default function DiscoverYourStory() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const generateProfileMutation = trpc.ai.generateProfile.useMutation();
   const [showResults, setShowResults] = useState(false);
   
   // Form state
@@ -70,89 +71,25 @@ export default function DiscoverYourStory() {
   ];
 
   const handleGenerateProfile = async () => {
-    setIsGenerating(true);
     try {
-      // Simulate AI generation
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      const result = await generateProfileMutation.mutateAsync({
+        name: quizData.name,
+        biggestChallenge: quizData.biggestChallenge,
+        currentStatus: quizData.currentStatus,
+        desiredImpact: quizData.desiredImpact,
+        writingExperience: quizData.writingExperience,
+      });
       
-      const challengeLabel = challenges.find(c => c.value === quizData.biggestChallenge)?.label || "";
-      const statusLabel = currentStatuses.find(s => s.value === quizData.currentStatus)?.label || "";
-      const impactLabel = impacts.find(i => i.value === quizData.desiredImpact)?.label || "";
-      
-      setSuckcessProfile(`# Your SUCKcess Story Profile
-
-Hi ${quizData.name}! 👋
-
-Based on your responses, here's your personalized SUCKcess Story roadmap:
-
-## Your Transformation Journey
-
-**Your Challenge:** ${challengeLabel}
-
-**Current Status:** ${statusLabel}
-
-**Desired Impact:** ${impactLabel}
-
-## Your SUCKcess Story Type: **The Phoenix Rising**
-
-You've faced significant adversity and are on a journey of transformation. Your story has the power to inspire countless others who are facing similar challenges.
-
-## Your 8-Step SUCKcess Roadmap:
-
-### 1. Start by Sucking - Embrace Your Disaster
-Your challenge was real and painful. That's your starting point - and it's perfect. Every master was once a disaster.
-
-### 2. Understand Yourself - Deep Self-Discovery
-Take time to understand who you were before, during, and after your challenge. What patterns emerged? What did you learn about yourself?
-
-### 3. Choose Your Path - Define Your Direction
-You're choosing to transform your pain into purpose. That decision is the turning point of your story.
-
-### 4. Know Your Niche - Find Your Unique Angle
-Your specific experience with ${challengeLabel.toLowerCase()} gives you unique insights that others need.
-
-### 5. Cultivate Your Circle - Build Your Community
-Connect with others who have faced similar challenges. Your tribe is waiting for your story.
-
-### 6. Evolve Through Crisis - Transform the Pain
-Use your challenge as fuel for growth. The crisis that broke you is also what will make you.
-
-### 7. See It Before It Happens - Visualize Your Impact
-Imagine your book in the hands of someone who needs it. See them finding hope through your words.
-
-### 8. Serve With Your Story - Share Your Transformation
-Your story isn't just about you - it's about everyone you'll help. That's your SUCKcess.
-
-## Your Next Steps:
-
-1. **Start Writing:** Use our AI Writing Studio to begin crafting your SUCKcess story
-2. **Join the Community:** Connect with other SUCKcess authors on similar journeys
-3. **Get Guidance:** Access our 2-Day Program to complete your manuscript
-
-## Recommended Book Structure:
-
-- **Part 1:** The Disaster (Chapters 1-2) - Your challenge and its impact
-- **Part 2:** The Journey (Chapters 3-5) - Your transformation process
-- **Part 3:** The Breakthrough (Chapters 6-7) - Your insights and lessons
-- **Part 4:** The Mission (Chapter 8) - How you're helping others now
-
----
-
-**"We do not succeed in spite of our disasters. We succeed because of them."**  
-— Pauline Teo
-
-Your disaster is not the end. It's the beginning of your SUCKcess story.
-
-Ready to write your book?
-`);
+      setSuckcessProfile(result.profile);
       setShowResults(true);
       toast.success("Your SUCKcess Story Profile is ready!");
     } catch (error) {
+      console.error("Profile generation error:", error);
       toast.error("Failed to generate profile. Please try again.");
-    } finally {
-      setIsGenerating(false);
     }
   };
+
+  const isGenerating = generateProfileMutation.isPending;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-8">

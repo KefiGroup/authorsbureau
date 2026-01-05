@@ -144,3 +144,32 @@
 - [x] Link to their websites and Amazon pages
 - [x] Testimonials and success stories
 - [x] "Become a SUCKcess Author" CTA
+
+
+## Real AI Integration
+- [x] Replace simulated AI responses with real LLM API calls
+- [x] Integrate invokeLLM helper for book outline generation
+- [x] Integrate invokeLLM helper for SUCKcess profile generation
+- [ ] Add streaming support for real-time AI responses
+- [x] Implement error handling and retry logic for AI calls
+
+## Day 2 Workflow Completion
+- [x] Build chapter-by-chapter writing interface
+- [x] Implement AI-assisted chapter drafting with context
+- [x] Add real-time editing and refinement tools
+- [x] Create manuscript preview and review interface
+- [x] Add progress tracking across all chapters
+
+## Manuscript Export
+- [ ] Implement DOCX export functionality
+- [ ] Implement PDF export functionality
+- [ ] Add formatting options (fonts, spacing, margins)
+- [ ] Include cover page and table of contents
+- [ ] Support chapter-by-chapter or full manuscript export
+
+## Email Integration
+- [ ] Set up email service integration
+- [ ] Create email template for SUCKcess Story Profile
+- [ ] Implement automated email sending after quiz completion
+- [ ] Add email capture to database for lead tracking
+- [ ] Create follow-up email sequence for nurturing leads

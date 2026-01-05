@@ -1,4 +1,5 @@
 import { COOKIE_NAME } from "@shared/const";
+import { generateBookOutline, generateSuckcessProfile, generateChapterDraft } from "./ai-generation";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
@@ -304,6 +305,50 @@ export const appRouter = router({
         const { chapterId, ...updateData } = input;
         await db.updateChapter(chapterId, updateData);
         return { success: true };
+      }),
+  }),
+
+  // AI Generation
+  ai: router({
+    generateOutline: protectedProcedure
+      .input(z.object({
+        disasterMoment: z.string(),
+        transformation: z.string(),
+        currentState: z.string(),
+        lessonLearned: z.string(),
+        targetAudience: z.string(),
+        uniqueAngle: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const outline = await generateBookOutline(input);
+        return { outline };
+      }),
+    
+    generateProfile: publicProcedure
+      .input(z.object({
+        name: z.string(),
+        biggestChallenge: z.string(),
+        currentStatus: z.string(),
+        desiredImpact: z.string(),
+        writingExperience: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const profile = await generateSuckcessProfile(input);
+        return { profile };
+      }),
+    
+    generateChapter: protectedProcedure
+      .input(z.object({
+        bookTitle: z.string(),
+        chapterNumber: z.number(),
+        chapterTitle: z.string(),
+        chapterOutline: z.string(),
+        previousChapterSummary: z.string().optional(),
+        authorVoiceNotes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const draft = await generateChapterDraft(input);
+        return { draft };
       }),
   }),
 });
