@@ -17,6 +17,7 @@ import DiscoverYourStory from "./pages/DiscoverYourStory";
 import FeaturedAuthors from "./pages/FeaturedAuthors";
 import AmazonPublishing from "@/pages/AmazonPublishing";
 import CoverGenerator from "@/pages/CoverGenerator";
+import ComingSoon from "@/pages/ComingSoon";
 
 
 function Router() {
@@ -36,6 +37,13 @@ function Router() {
       <Route path={"/featured-authors"} component={FeaturedAuthors} />
       <Route path="/amazon-publishing" component={AmazonPublishing} />
       <Route path="/cover-generator" component={CoverGenerator} />
+      
+      {/* Coming Soon Routes */}
+      <Route path="/marketing" component={() => <ComingSoon featureName="Marketing Automation" description="Build landing pages, create funnels, and automate email sequences to maximize your book's revenue. This feature is coming soon!" />} />
+      <Route path="/analytics" component={() => <ComingSoon featureName="Analytics Dashboard" description="Track your book sales, rankings, and reviews across Amazon marketplaces with detailed analytics and insights. This feature is coming soon!" />} />
+      <Route path="/email-marketing" component={() => <ComingSoon featureName="Email Marketing" description="Capture reader emails, send launch announcements, and automate book promotion campaigns. This feature is coming soon!" />} />
+      <Route path="/writing" component={() => <ComingSoon featureName="Writing Studio" description="Access your writing projects and continue where you left off. For now, please use the 'New Book' button to start a new project." />} />
+      
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -288,3 +288,11 @@
 - [x] Verify backend functionality - All tRPC procedures working
 - [x] Fix cover generator imports - useState import fixed
 - [ ] Manual smoke test of all UI flows (optional - can be done after publish)
+
+
+## UX Improvements (Current)
+- [x] Create "Coming Soon" page component for under-development features
+- [x] Replace 404 errors with Coming Soon page for placeholder routes
+- [x] Update App.tsx to route unfinished features to Coming Soon
+- [x] Test all routes to ensure proper page displays
+- [x] Added Coming Soon routes: /marketing, /analytics, /email-marketing, /writing
