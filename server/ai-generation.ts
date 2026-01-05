@@ -1,31 +1,65 @@
 import { invokeLLM } from "./_core/llm";
 
 /**
- * Generate a complete book outline based on the SUCKcess Story framework
+ * Generate a complete book outline based on either SUCKcess Story or Independent Author inputs
  */
-export async function generateBookOutline(storyData: {
-  disasterMoment: string;
-  transformation: string;
-  currentState: string;
-  lessonLearned: string;
+export async function generateBookOutline(input: {
+  // For SUCKcess Story (Track 2)
+  disasterMoment?: string;
+  transformation?: string;
+  currentState?: string;
+  lessonLearned?: string;
+  // For Independent Author (Track 1)
+  topic?: string;
+  bookIdea?: string;
+  // Common fields
   targetAudience: string;
-  uniqueAngle: string;
+  uniqueAngle?: string;
 }) {
-  const prompt = `You are an expert book coach specializing in the SUCKcess Theory framework - helping people transform their disasters into published books.
+  // Determine if this is Track 1 (Independent) or Track 2 (SUCKcess Story)
+  const isIndependentAuthor = !!input.topic && !!input.bookIdea;
+  
+  let prompt: string;
+  
+  if (isIndependentAuthor) {
+    const uniqueAngleSection = input.uniqueAngle ? `\n**Unique Approach:** ${input.uniqueAngle}` : '';
+    
+    prompt = `You are an expert book outline creator. Create a detailed 8-chapter book outline based on the following:
+
+**Topic:** ${input.topic}
+**Book Concept:** ${input.bookIdea}
+**Target Audience:** ${input.targetAudience}${uniqueAngleSection}
+
+Generate a comprehensive book outline that includes:
+
+1. **3 compelling book title suggestions** that capture the core value proposition
+2. **8 chapter outlines** that follow a logical progression:
+   - Introduction/Foundation chapters (1-2)
+   - Core content chapters (3-6)
+   - Advanced/Application chapters (7-8)
+
+For each chapter, provide:
+- A compelling chapter title
+- 3-4 key points to cover
+- Practical examples or case studies to include
+- Key takeaways for readers
+
+3. **Target Reader Profile** - who will benefit most from this book
+4. **Core Message** - the one thing readers should remember
+
+Format the response in clear markdown with headers and bullet points.`;
+  } else {
+    const uniqueAngleSection = input.uniqueAngle ? `\n**Unique Angle:** ${input.uniqueAngle}` : '';
+    
+    prompt = `You are an expert book coach specializing in the SUCKcess Theory framework - helping people transform their disasters into published books.
 
 Based on the following information about the author's story, generate a complete book outline following the 8-chapter SUCKcess Theory structure:
 
-**Author's Disaster Moment:** ${storyData.disasterMoment}
-
-**Transformation Journey:** ${storyData.transformation}
-
-**Current State:** ${storyData.currentState}
-
-**Core Lesson:** ${storyData.lessonLearned}
-
-**Target Audience:** ${storyData.targetAudience}
-
-**Unique Angle:** ${storyData.uniqueAngle}
+**Author's Disaster Moment:** ${input.disasterMoment}
+**Transformation Journey:** ${input.transformation}
+**Current State:** ${input.currentState}
+**Core Lesson:** ${input.lessonLearned}
+**Target Audience:** ${input.targetAudience}${uniqueAngleSection}
 
 Generate a comprehensive book outline that includes:
 
@@ -50,6 +84,7 @@ For each chapter, provide:
 4. **Core Message** - the one thing readers should remember
 
 Format the response in clear markdown with headers and bullet points.`;
+  }
 
   const response = await invokeLLM({
     messages: [
@@ -171,17 +206,21 @@ export async function generateChapterDraft(params: {
   previousChapterSummary?: string;
   authorVoiceNotes?: string;
 }) {
+  const prevChapterSection = params.previousChapterSummary 
+    ? `\n**Previous Chapter Summary:**\n${params.previousChapterSummary}\n` 
+    : "";
+    
+  const voiceNotesSection = params.authorVoiceNotes 
+    ? `\n**Author's Voice/Style Notes:**\n${params.authorVoiceNotes}\n` 
+    : "";
+
   const prompt = `You are a professional ghostwriter helping an author write their transformation story.
 
 **Book Title:** ${params.bookTitle}
 **Chapter ${params.chapterNumber}:** ${params.chapterTitle}
 
 **Chapter Outline:**
-${params.chapterOutline}
-
-${params.previousChapterSummary ? `**Previous Chapter Summary:**\n${params.previousChapterSummary}\n` : ""}
-
-${params.authorVoiceNotes ? `**Author's Voice/Style Notes:**\n${params.authorVoiceNotes}\n` : ""}
+${params.chapterOutline}${prevChapterSection}${voiceNotesSection}
 
 Write a complete first draft of this chapter (approximately 2000-2500 words) that:
 

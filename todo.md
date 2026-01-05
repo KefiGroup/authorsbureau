@@ -196,3 +196,23 @@
 - [ ] Automated bestseller positioning strategies
 - [ ] Marketing recommendations based on category performance
 - [ ] Multi-marketplace support (Amazon.com, .uk, .sg)
+
+
+## Dual-Track System
+- [x] Homepage: Add track selection interface with clear differentiation
+- [x] Track 1: Independent Author Path (write your own book on any topic)
+- [x] Track 1: Topic selection (investing, finance, parenting, business, self-help, etc.)
+- [x] Track 1: Custom book title and outline generation
+- [x] Track 1: Full ownership and independent publishing
+- [ ] Track 2: Anthology Contributor Path (contribute to Be SUCKcessful anthology)
+- [ ] Track 2: SUCKcess Story submission form
+- [ ] Track 2: Story guidelines and requirements page
+- [ ] Track 2: Collaborative editing with Pauline Teo
+- [ ] Track 2: Anthology chapter assignment and coordination
+- [ ] Track 2: Co-author credit in published anthology
+- [ ] Admin: Anthology submission review dashboard
+- [ ] Admin: Approve/reject anthology submissions
+- [ ] Admin: Assign anthology contributors to specific editions
+- [ ] Database: Add track type to books table
+- [ ] Database: Add anthology submissions table
+- [ ] Messaging: Differentiate benefits of each track clearly

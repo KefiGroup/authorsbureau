@@ -313,12 +313,17 @@ export const appRouter = router({
   ai: router({
     generateOutline: protectedProcedure
       .input(z.object({
-        disasterMoment: z.string(),
-        transformation: z.string(),
-        currentState: z.string(),
-        lessonLearned: z.string(),
+        // For SUCKcess Story (Track 2)
+        disasterMoment: z.string().optional(),
+        transformation: z.string().optional(),
+        currentState: z.string().optional(),
+        lessonLearned: z.string().optional(),
+        // For Independent Author (Track 1)
+        topic: z.string().optional(),
+        bookIdea: z.string().optional(),
+        // Common fields
         targetAudience: z.string(),
-        uniqueAngle: z.string(),
+        uniqueAngle: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const outline = await generateBookOutline(input);
