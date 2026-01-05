@@ -410,3 +410,41 @@
 - [x] Test clicking on books from Dashboard navigates correctly
 - [x] Show book progress, details, and quick actions
 - [x] Fixed 404 error when clicking on books from Dashboard
+
+
+## UX Redesign - Unified Publishing Wizard (CRITICAL PRIORITY)
+### Problem: Current system has disconnected pages, confusing navigation, poor UX
+### Solution: Single step-by-step wizard from manuscript → KDP download
+
+**Wizard Steps:**
+- [ ] Step 1: Upload Manuscript (paste or file upload)
+- [ ] Step 2: AI Analysis (progress indicator, then results)
+- [ ] Step 3: Review Metadata (AI-generated titles, subtitles, description)
+- [ ] Step 4: Amazon Categories (AI recommendations, select 3)
+- [ ] Step 5: Cover Design (AI generates 3, user picks or uploads)
+- [ ] Step 6: ISBN Assignment (explain options, user decides)
+- [ ] Step 7: Final Review (preview everything together)
+- [ ] Step 8: Download Package (one-click KDP bundle)
+
+**UX Requirements:**
+- [ ] Progress indicator showing current step (1 of 8)
+- [ ] Back/Next navigation between steps
+- [ ] Save progress automatically (can resume later)
+- [ ] Clear visual hierarchy and spacing
+- [ ] Mobile-responsive design
+- [ ] Loading states for AI operations
+- [ ] Error handling with helpful messages
+- [ ] Success confirmations at each step
+- [ ] Preview/review before finalizing
+- [ ] Single linear flow - no jumping between pages
+
+**Technical Implementation:**
+- [ ] Rebuild ReadyToPublish.tsx as wizard component
+- [ ] Add step state management (useState for currentStep)
+- [ ] Wire manuscript analysis API
+- [ ] Wire category research API
+- [ ] Wire cover generation API
+- [ ] Wire export bundle API
+- [ ] Add form validation at each step
+- [ ] Persist wizard state to database (resume capability)
+- [ ] Test complete flow end-to-end
