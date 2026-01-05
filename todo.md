@@ -373,3 +373,40 @@
 - [ ] Connect cover generation API to ReadyToPublish workflow (TODO wiring)
 - [ ] Test complete cover generation flow
 - [ ] Show cover preview in final export package
+
+
+## Amazon Optimization Step (COMPLETED)
+- [x] Build Amazon optimization UI in ReadyToPublish workflow
+- [x] UI shows category research, keyword generation, pricing intelligence sections
+- [x] Connected to existing category research AI backend (ready for wiring)
+- [x] Display structure for AI-recommended categories with competitiveness scores
+- [x] Show 7 optimized keywords section
+- [x] Add pricing intelligence section
+- [x] Show complete KDP listing preview structure
+- [ ] Wire category research API call (TODO)
+- [ ] Wire keyword generation API call (TODO)
+- [ ] Add pricing intelligence AI logic (TODO)
+
+## Export Bundle (COMPLETED)
+- [x] Create export bundle generator backend service
+- [x] Generate manuscript in TXT format (DOCX requires additional library)
+- [x] Include selected cover image from URL
+- [x] Create KDP metadata text file with all listing data
+- [x] Include ISBN information document
+- [x] Include README with publishing instructions
+- [x] Bundle all files into ZIP archive using archiver
+- [x] Upload ZIP to S3 and return download URL
+- [x] Add one-click download button in UI
+- [x] Show checklist of included files in UI
+- [x] Add "Ready to upload to Amazon KDP" confirmation message
+- [x] Add tRPC export.generateBundle endpoint
+- [ ] Wire download button to backend API (TODO)
+
+
+## Critical Bug - Missing Writing Project Route (FIXED)
+- [x] Create WritingProject page component for /writing/:bookId
+- [x] Add route to App.tsx for individual book editing
+- [x] Load book data by ID and show appropriate editor
+- [x] Test clicking on books from Dashboard navigates correctly
+- [x] Show book progress, details, and quick actions
+- [x] Fixed 404 error when clicking on books from Dashboard

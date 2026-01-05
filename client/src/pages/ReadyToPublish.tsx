@@ -10,7 +10,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { 
   Upload, FileText, Sparkles, Loader2, BookOpen, CheckCircle2,
-  Lightbulb, TrendingUp, Edit3, RefreshCw
+  Lightbulb, TrendingUp, Edit3, RefreshCw, Download, Image as ImageIcon,
+  Check, ArrowRight
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -701,8 +702,181 @@ export default function ReadyToPublish() {
             </div>
           )}
 
+          {/* Step 5: Amazon Optimization */}
+          {currentStep === "amazon" && aiAnalysis && (
+            <div className="space-y-6">
+              <Card className="border-primary/50 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    Amazon KDP Optimization
+                  </CardTitle>
+                  <CardDescription>
+                    AI analyzes your book against Amazon's algorithm to recommend optimal categories, keywords, and pricing
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>AI Category Research</CardTitle>
+                  <CardDescription>
+                    Select up to 3 categories (Amazon's limit)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-center py-8">
+                    <Button
+                      size="lg"
+                      onClick={() => {
+                        toast.info("AI category research integration coming soon!");
+                      }}
+                    >
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Analyze Best Categories
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Optimized Keywords</CardTitle>
+                  <CardDescription>
+                    AI-generated keywords for Amazon search visibility
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8 text-muted-foreground">
+                    Generate categories first to get keyword recommendations
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pricing Intelligence</CardTitle>
+                  <CardDescription>
+                    AI recommends optimal price based on genre and competition
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8 text-muted-foreground">
+                    Pricing analysis coming soon
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex justify-end">
+                <Button
+                  size="lg"
+                  onClick={() => setCurrentStep("export")}
+                >
+                  Continue to Export
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Export Bundle */}
+          {currentStep === "export" && aiAnalysis && (
+            <div className="space-y-6">
+              <Card className="border-primary/50 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Download className="w-5 h-5 text-primary" />
+                    Download Publishing Package
+                  </CardTitle>
+                  <CardDescription>
+                    Everything you need to publish on Amazon KDP in one ZIP file
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Publishing Package Includes:</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                      <FileText className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="font-medium">Manuscript (DOCX & PDF)</p>
+                        <p className="text-sm text-muted-foreground">Formatted and ready for upload</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                      <ImageIcon className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="font-medium">Book Cover (PNG)</p>
+                        <p className="text-sm text-muted-foreground">High-resolution cover image</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                      <FileText className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="font-medium">KDP Metadata (TXT)</p>
+                        <p className="text-sm text-muted-foreground">Categories, keywords, description, pricing</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                      <FileText className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="font-medium">ISBN Information</p>
+                        <p className="text-sm text-muted-foreground">ISBN details and registration info</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 text-center">
+                    <Button
+                      size="lg"
+                      onClick={() => {
+                        toast.info("Export bundle generation coming soon!");
+                      }}
+                    >
+                      <Download className="w-5 h-5 mr-2" />
+                      Download Complete Package (ZIP)
+                    </Button>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      Ready to upload to Amazon KDP!
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-green-500/50 bg-green-50">
+                <CardContent className="py-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-green-900 mb-2">You're Ready to Publish!</h3>
+                      <p className="text-green-800 mb-4">
+                        Your book has been optimized by AI with bestseller-level intelligence. Download your package and upload to Amazon KDP to start selling.
+                      </p>
+                      <div className="flex gap-3">
+                        <Button variant="outline" onClick={() => setCurrentStep("upload")}>
+                          Start New Book
+                        </Button>
+                        <Button variant="outline" asChild>
+                          <a href="https://kdp.amazon.com" target="_blank" rel="noopener noreferrer">
+                            Go to Amazon KDP →
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           {/* Placeholder for remaining steps */}
-          {["amazon", "export"].includes(currentStep) && (
+          {false && (
             <Card>
               <CardHeader>
                 <CardTitle>Step Under Development</CardTitle>

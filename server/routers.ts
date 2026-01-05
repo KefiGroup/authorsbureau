@@ -4,6 +4,7 @@ import { generateDOCX, generatePDF } from "./manuscript-export";
 import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategoryCombination } from "./amazon-category-research";
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
 import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt } from "./cover-generator";
+import { generateExportBundle } from "./export-bundle";
 import { analyzeManuscript, generateMoreTitles, refineDescription } from "./manuscript-analyzer";
 import * as dbCovers from "./db-covers";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -442,6 +443,30 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         return await refineDescription(input);
+      }),
+  }),
+
+  // Export Bundle
+  export: router({
+    generateBundle: protectedProcedure
+      .input(z.object({
+        bookTitle: z.string(),
+        authorName: z.string(),
+        manuscriptContent: z.string(),
+        coverImageUrl: z.string().optional(),
+        metadata: z.object({
+          title: z.string(),
+          subtitle: z.string().optional(),
+          description: z.string(),
+          categories: z.array(z.string()),
+          keywords: z.array(z.string()),
+          price: z.string().optional(),
+          genre: z.string(),
+        }),
+        isbn: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await generateExportBundle(input);
       }),
   }),
 
