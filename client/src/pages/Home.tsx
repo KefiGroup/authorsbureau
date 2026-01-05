@@ -195,38 +195,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Success Metrics Section */}
-      <section className="container py-16 bg-card/30 rounded-3xl">
-        <div className="text-center space-y-4 mb-12">
-          <h2 className="text-4xl font-bold text-foreground">Trusted by Thousands of Authors</h2>
+      {/* Elite Authors Section */}
+      <section className="container py-16">
+        <div className="text-center space-y-6">
+          <h2 className="text-4xl font-bold text-foreground">Exclusive Partnership with 5 Elite Bestselling Authors</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Join a thriving community of successful authors who have transformed their ideas into bestsellers
+            We work with a carefully selected group of bestselling authors who have achieved extraordinary success
           </p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-          <div className="text-center space-y-2">
-            <div className="text-5xl font-bold text-primary">10,000+</div>
-            <div className="text-muted-foreground">Published Authors</div>
-          </div>
-          <div className="text-center space-y-2">
-            <div className="text-5xl font-bold text-accent">50,000+</div>
-            <div className="text-muted-foreground">Books Published</div>
-          </div>
-          <div className="text-center space-y-2">
-            <div className="text-5xl font-bold text-primary">2,500+</div>
-            <div className="text-muted-foreground">Amazon Bestsellers</div>
-          </div>
-          <div className="text-center space-y-2">
-            <div className="text-5xl font-bold text-accent">25M+</div>
-            <div className="text-muted-foreground">Copies Sold</div>
-          </div>
-        </div>
-
-        <div className="text-center">
           <Button size="lg" variant="outline" asChild>
             <Link href="/authors">
-              Meet Our Featured Authors <ArrowRight className="ml-2 h-5 w-5" />
+              Meet Our Elite Authors <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </div>

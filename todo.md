@@ -95,3 +95,14 @@
 - [x] Author spotlight cards with book covers and achievements
 - [x] Search-optimized author directory
 - [x] Success metrics dashboard (books published, bestsellers, total authors)
+
+
+## Messaging Updates
+- [x] Update homepage to feature 5 exclusive bestselling authors instead of "thousands"
+- [x] Revise success metrics to reflect accurate numbers
+- [x] Update authors page to show only 5 featured bestselling authors
+- [x] Change messaging to emphasize quality and exclusivity over quantity
+
+- [x] Remove stats section from homepage and authors page
+- [x] Keep messaging simple: "5 Elite Bestselling Authors" only
+- [x] Prepare for real author data to be added later

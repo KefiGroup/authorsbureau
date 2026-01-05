@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
-import { Award, BookOpen, Star, TrendingUp, Users } from "lucide-react";
+import { Award, BookOpen, Star } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect } from "react";
 
-// Featured authors data - in production, this would come from the database
+// Featured authors data - Our 5 exclusive elite bestselling authors
 const featuredAuthors = [
   {
     id: 1,
@@ -62,59 +62,42 @@ const featuredAuthors = [
     bio: "Science fiction author exploring future worlds",
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
     genre: "Sci-Fi",
-    booksPublished: 6,
+    booksPublished: 8,
     bestsellerRank: "Hugo Award Nominee",
     achievement: "Featured in Wired and The Verge",
     quote: "The AI writing assistant understood my creative vision perfectly. It's like having a co-author who never sleeps!",
   },
-  {
-    id: 6,
-    name: "Robert Thompson",
-    penName: "R.J. Thompson",
-    bio: "Historical fiction writer bringing the past to life",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
-    genre: "Historical Fiction",
-    booksPublished: 8,
-    bestsellerRank: "Goodreads Choice Award Winner",
-    achievement: "Over 500,000 copies sold",
-    quote: "The research and writing tools saved me months of work. I can focus on storytelling while the platform handles the rest.",
-  },
 ];
 
-const stats = [
-  { label: "Published Authors", value: "10,000+", icon: Users },
-  { label: "Books Published", value: "50,000+", icon: BookOpen },
-  { label: "Amazon Bestsellers", value: "2,500+", icon: Award },
-  { label: "Total Copies Sold", value: "25M+", icon: TrendingUp },
-];
+
 
 export default function Authors() {
   // SEO optimization
   useEffect(() => {
-    document.title = "Featured Authors | Authors Bureau - Meet Our Bestselling Authors";
+    document.title = "Elite 5 Authors | Authors Bureau - Meet Our Bestselling Authors";
     
     // Meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute(
         "content",
-        "Discover successful authors who transformed their ideas into bestsellers with Authors Bureau. Join 10,000+ published authors using AI-powered writing, design, and marketing tools."
+        "Meet our exclusive partnership of 5 elite bestselling authors who have achieved remarkable success using Authors Bureau's AI-powered writing, design, and marketing platform."
       );
     } else {
       const meta = document.createElement("meta");
       meta.name = "description";
-      meta.content = "Discover successful authors who transformed their ideas into bestsellers with Authors Bureau. Join 10,000+ published authors using AI-powered writing, design, and marketing tools.";
+      meta.content = "Meet our exclusive partnership of 5 elite bestselling authors who have achieved remarkable success using Authors Bureau's AI-powered writing, design, and marketing platform.";
       document.head.appendChild(meta);
     }
 
     // Open Graph tags
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
-      ogTitle.setAttribute("content", "Featured Authors | Authors Bureau");
+      ogTitle.setAttribute("content", "Elite 5 Authors | Authors Bureau");
     } else {
       const meta = document.createElement("meta");
       meta.setAttribute("property", "og:title");
-      meta.content = "Featured Authors | Authors Bureau";
+      meta.content = "Elite 5 Authors | Authors Bureau";
       document.head.appendChild(meta);
     }
   }, []);
@@ -145,42 +128,25 @@ export default function Authors() {
       <section className="bg-gradient-to-b from-primary/5 to-background py-20">
         <div className="container text-center space-y-6">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground">
-            Meet Our <span className="text-gradient">Bestselling Authors</span>
+            Our <span className="text-gradient">Elite 5</span> Bestselling Authors
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Join thousands of successful authors who transformed their book ideas into published
-            bestsellers using our AI-powered platform. Their success stories speak for themselves.
+            We partner exclusively with 5 extraordinary bestselling authors who have achieved remarkable success
+            in their respective genres.
           </p>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="container py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="text-center">
-              <CardContent className="pt-6 space-y-2">
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                  <stat.icon className="h-6 w-6 text-primary" />
-                </div>
-                <div className="text-4xl font-bold text-foreground">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </CardContent>
-            </Card>
-          ))}
         </div>
       </section>
 
       {/* Featured Authors Grid */}
       <section className="container py-16">
         <div className="text-center space-y-4 mb-12">
-          <h2 className="text-4xl font-bold text-foreground">Featured Success Stories</h2>
+          <h2 className="text-4xl font-bold text-foreground">Meet Our Elite Authors</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Real authors, real results. See how our platform helped them achieve their publishing dreams.
+            Five exceptional authors, five unique genres, one powerful platform.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {featuredAuthors.map((author) => (
             <Card key={author.id} className="overflow-hidden hover:shadow-xl transition-shadow">
               <div className="aspect-square relative overflow-hidden bg-muted">
@@ -228,10 +194,10 @@ export default function Authors() {
       {/* CTA Section */}
       <section className="container py-20">
         <div className="max-w-4xl mx-auto text-center space-y-8 p-12 rounded-3xl bg-gradient-to-r from-primary/10 to-accent/10 border border-border">
-          <h2 className="text-4xl font-bold text-foreground">Ready to Join Our Success Stories?</h2>
+          <h2 className="text-4xl font-bold text-foreground">Ready to Write Your Success Story?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Start your journey to becoming a bestselling author today. Join 10,000+ authors who trust
-            Authors Bureau with their publishing success.
+            Start your journey to becoming a bestselling author today. Experience the same AI-powered platform
+            that helped our elite 5 authors achieve extraordinary results.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="text-lg px-8">
