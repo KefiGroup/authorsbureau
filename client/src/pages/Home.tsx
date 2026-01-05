@@ -17,9 +17,6 @@ export default function Home() {
             <span className="text-2xl font-bold text-foreground">Authors Bureau</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" asChild>
-              <Link href="/authors">Featured Authors</Link>
-            </Button>
             {isAuthenticated ? (
               <Button asChild>
                 <Link href="/dashboard">Go to Dashboard</Link>
@@ -195,16 +192,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Elite Authors Section */}
-      <section className="container py-16">
+      {/* Empowerment Section */}
+      <section className="container py-16 bg-card/30 rounded-3xl">
         <div className="text-center space-y-6">
-          <h2 className="text-4xl font-bold text-foreground">Exclusive Partnership with 5 Elite Bestselling Authors</h2>
+          <h2 className="text-4xl font-bold text-foreground">Anyone Can Become a Published Author</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            We work with a carefully selected group of bestselling authors who have achieved extraordinary success
+            You don't need to be a professional writer. With our AI-powered platform, ordinary people are transforming their ideas into published books and becoming successful authors in just 2 days.
           </p>
-          <Button size="lg" variant="outline" asChild>
-            <Link href="/authors">
-              Meet Our Elite Authors <ArrowRight className="ml-2 h-5 w-5" />
+          <Button size="lg" asChild>
+            <Link href="/dashboard">
+              Start Your Author Journey <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </div>
@@ -213,9 +210,9 @@ export default function Home() {
       {/* Testimonials Section */}
       <section className="container py-24">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl font-bold text-foreground">What Authors Are Saying</h2>
+          <h2 className="text-4xl font-bold text-foreground">Real People, Real Success Stories</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Real success stories from authors who achieved their publishing dreams
+            Ordinary people who became published authors with Authors Bureau
           </p>
         </div>
 
