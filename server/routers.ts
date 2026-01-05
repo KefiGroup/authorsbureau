@@ -610,33 +610,17 @@ export const appRouter = router({
       }),
 
     // Generate multiple cover variations
-    generateVariations: protectedProcedure
+      generateVariations: protectedProcedure
       .input(z.object({
-        bookId: z.number(),
         bookTitle: z.string(),
         authorName: z.string(),
         genre: z.string(),
+        themes: z.array(z.string()).optional(),
+        targetAudience: z.string().optional(),
         count: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { bookId, ...coverParams } = input;
-        
-        // Generate variations
-        const variations = await generateCoverVariations(coverParams);
-        
-        // Save all to database
-        const savedCovers = await Promise.all(
-          variations.map(cover =>
-            dbCovers.createBookCover({
-              bookId,
-              coverUrl: cover.imageUrl,
-              coverPrompt: cover.prompt,
-              designStyle: cover.style,
-            })
-          )
-        );
-        
-        return { covers: savedCovers };
+        return await generateCoverVariations(input);
       }),
 
     // Regenerate with modifications

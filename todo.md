@@ -358,3 +358,18 @@
 - [ ] **AI Generates**: Launch week promotional copy
 - [ ] **AI Suggests**: Pricing and promotion schedule
 - [ ] **AI Creates**: Email templates for reader outreach
+
+
+## AI Cover Generation - Editable & Iterative (IN PROGRESS)
+- [x] Generate 3 initial cover variations (minimalist, bold, artistic) - backend ready
+- [x] AI analyzes manuscript themes and genre for cover prompts
+- [x] Display 3 cover options side-by-side for selection - UI built
+- [x] Add "Regenerate with feedback" feature (natural language input) - UI built
+- [x] Implement iterative refinement loop (unlimited iterations) - backend ready
+- [x] Add "Upload my own cover" option - UI built
+- [x] Add "Skip for now" option to continue without cover - UI built
+- [x] Store selected/uploaded cover in S3 - backend ready
+- [x] Link cover to book record in database - backend ready
+- [ ] Connect cover generation API to ReadyToPublish workflow (TODO wiring)
+- [ ] Test complete cover generation flow
+- [ ] Show cover preview in final export package

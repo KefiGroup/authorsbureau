@@ -46,8 +46,8 @@ export default function CoverGenerator() {
 
   const generateVariations = trpc.covers.generateVariations.useMutation({
     onSuccess: (data) => {
-      setGeneratedCovers([...generatedCovers, ...data.covers]);
-      toast.success(`Generated ${data.covers.length} cover variations!`);
+      setGeneratedCovers([...generatedCovers, ...data]);
+      toast.success(`Generated ${data.length} cover variations!`);
       refetchCovers();
     },
     onError: (error) => {
@@ -104,7 +104,6 @@ export default function CoverGenerator() {
     }
 
     generateVariations.mutate({
-      bookId: selectedBookId,
       bookTitle: coverForm.bookTitle,
       authorName: coverForm.authorName,
       genre: coverForm.genre,

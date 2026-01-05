@@ -121,16 +121,20 @@ Create a stunning, bestseller-worthy book cover that captures the essence of the
 }
 
 /**
- * Generate multiple cover variations for A/B testing
+ * Generate 3 cover variations with distinct styles based on manuscript analysis
  */
 export async function generateCoverVariations(params: {
   bookTitle: string;
   authorName: string;
   genre: string;
+  themes?: string[]; // Key themes from manuscript
+  targetAudience?: string; // Target reader description
   count?: number;
 }): Promise<BookCover[]> {
-  const { count = 3 } = params;
-  const styles = ["professional", "artistic", "minimalist", "bold", "elegant"];
+  const { count = 3, themes = [], targetAudience } = params;
+  
+  // Always generate these 3 distinct styles for best variety
+  const styles = ["minimalist", "bold", "artistic"];
 
   const variations: BookCover[] = [];
 

@@ -44,6 +44,12 @@ export default function ReadyToPublish() {
   const [customSubtitle, setCustomSubtitle] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
 
+  // Cover generation state
+  const [generatedCovers, setGeneratedCovers] = useState<any[]>([]);
+  const [selectedCover, setSelectedCover] = useState<any | null>(null);
+  const [coverFeedback, setCoverFeedback] = useState("");
+  const [uploadedCoverUrl, setUploadedCoverUrl] = useState("");
+
   // tRPC mutations
   const analyzeManuscript = trpc.manuscriptAnalysis.analyze.useMutation({
     onSuccess: (data) => {
@@ -556,8 +562,147 @@ export default function ReadyToPublish() {
             </div>
           )}
 
+          {/* Step 4: AI Cover Generation */}
+          {currentStep === "cover" && aiAnalysis && (
+            <div className="space-y-6">
+              <Card className="border-primary/50 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    AI Cover Design Studio
+                  </CardTitle>
+                  <CardDescription>
+                    Our AI will generate 3 professional cover designs based on your book's themes and genre
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {generatedCovers.length === 0 ? (
+                <Card>
+                  <CardContent className="py-16">
+                    <div className="text-center space-y-6">
+                      <div className="flex justify-center">
+                        <div className="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center">
+                          <Sparkles className="w-10 h-10 text-purple-600" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-foreground mb-2">Ready to Create Your Cover?</h3>
+                        <p className="text-muted-foreground max-w-md mx-auto">
+                          AI will analyze your manuscript themes and generate 3 distinct cover styles:
+                          Minimalist, Bold, and Artistic
+                        </p>
+                      </div>
+                      <div className="flex gap-4 justify-center">
+                        <Button
+                          size="lg"
+                          onClick={() => {
+                            // TODO: Call cover generation API
+                            toast.info("Cover generation coming soon!");
+                          }}
+                        >
+                          <Sparkles className="w-5 h-5 mr-2" />
+                          Generate 3 Cover Designs
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          onClick={() => setCurrentStep("amazon")}
+                        >
+                          Skip for Now
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Select Your Cover</CardTitle>
+                    <CardDescription>
+                      Choose your favorite or request modifications
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-3 gap-6">
+                      {generatedCovers.map((cover, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => setSelectedCover(cover)}
+                          className={`cursor-pointer rounded-lg border-2 transition-all ${
+                            selectedCover === cover
+                              ? "border-primary ring-2 ring-primary/20"
+                              : "border-border hover:border-primary/50"
+                          }`}
+                        >
+                          <img
+                            src={cover.imageUrl}
+                            alt={`Cover ${idx + 1}`}
+                            className="w-full aspect-[2/3] object-cover rounded-t-lg"
+                          />
+                          <div className="p-3">
+                            <Badge>{cover.style}</Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Want to modify the selected cover?</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="e.g., make it darker, add more color, more professional..."
+                            value={coverFeedback}
+                            onChange={(e) => setCoverFeedback(e.target.value)}
+                          />
+                          <Button
+                            onClick={() => {
+                              // TODO: Regenerate with feedback
+                              toast.info("Cover refinement coming soon!");
+                            }}
+                          >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Regenerate
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground mb-2">Or upload your own cover</p>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              // TODO: Upload cover
+                              toast.info("Cover upload coming soon!");
+                            }
+                          }}
+                          className="max-w-xs mx-auto"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button
+                        size="lg"
+                        onClick={() => setCurrentStep("amazon")}
+                        disabled={!selectedCover && !uploadedCoverUrl}
+                      >
+                        Continue to Amazon Optimization
+                        <Sparkles className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
+
           {/* Placeholder for remaining steps */}
-          {["cover", "amazon", "export"].includes(currentStep) && (
+          {["amazon", "export"].includes(currentStep) && (
             <Card>
               <CardHeader>
                 <CardTitle>Step Under Development</CardTitle>
