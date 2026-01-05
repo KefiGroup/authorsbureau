@@ -3,6 +3,8 @@ import { generateBookOutline, generateSuckcessProfile, generateChapterDraft } fr
 import { generateDOCX, generatePDF } from "./manuscript-export";
 import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategoryCombination } from "./amazon-category-research";
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
+import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt } from "./cover-generator";
+import * as dbCovers from "./db-covers";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
@@ -513,6 +515,128 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const listing = await generateCompleteListing(input);
         return listing;
+      }),
+  }),
+
+  // Book Cover Generator
+  covers: router({
+    // Generate a single book cover
+    generate: protectedProcedure
+      .input(z.object({
+        bookId: z.number(),
+        bookTitle: z.string(),
+        authorName: z.string(),
+        genre: z.string(),
+        style: z.string().optional(),
+        customPrompt: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { bookId, ...coverParams } = input;
+        
+        // Generate cover
+        const cover = await generateBookCover(coverParams);
+        
+        // Save to database
+        const savedCover = await dbCovers.createBookCover({
+          bookId,
+          coverUrl: cover.imageUrl,
+          coverPrompt: cover.prompt,
+          designStyle: cover.style,
+        });
+        
+        return { cover: savedCover };
+      }),
+
+    // Generate multiple cover variations
+    generateVariations: protectedProcedure
+      .input(z.object({
+        bookId: z.number(),
+        bookTitle: z.string(),
+        authorName: z.string(),
+        genre: z.string(),
+        count: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { bookId, ...coverParams } = input;
+        
+        // Generate variations
+        const variations = await generateCoverVariations(coverParams);
+        
+        // Save all to database
+        const savedCovers = await Promise.all(
+          variations.map(cover =>
+            dbCovers.createBookCover({
+              bookId,
+              coverUrl: cover.imageUrl,
+              coverPrompt: cover.prompt,
+              designStyle: cover.style,
+            })
+          )
+        );
+        
+        return { covers: savedCovers };
+      }),
+
+    // Regenerate with modifications
+    regenerate: protectedProcedure
+      .input(z.object({
+        bookId: z.number(),
+        bookTitle: z.string(),
+        authorName: z.string(),
+        genre: z.string(),
+        basePrompt: z.string(),
+        modifications: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const { bookId, ...regenerateParams } = input;
+        
+        // Regenerate cover
+        const cover = await regenerateCoverWithPrompt(regenerateParams);
+        
+        // Save to database
+        const savedCover = await dbCovers.createBookCover({
+          bookId,
+          coverUrl: cover.imageUrl,
+          coverPrompt: cover.prompt,
+          designStyle: cover.style,
+        });
+        
+        return { cover: savedCover };
+      }),
+
+    // Get all covers for a book
+    getBookCovers: protectedProcedure
+      .input(z.object({ bookId: z.number() }))
+      .query(async ({ input }) => {
+        const covers = await dbCovers.getBookCovers(input.bookId);
+        return { covers };
+      }),
+
+    // Set active cover for book
+    setActiveCover: protectedProcedure
+      .input(z.object({
+        bookId: z.number(),
+        coverId: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        const cover = await dbCovers.getBookCoverById(input.coverId);
+        if (!cover || !cover.coverUrl) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Cover not found or invalid",
+          });
+        }
+        
+        await dbCovers.updateBookCoverUrl(input.bookId, cover.coverUrl);
+        return { success: true };
+      }),
+
+    // Delete a cover
+    deleteCover: protectedProcedure
+      .input(z.object({ coverId: z.number() }))
+      .mutation(async ({ input }) => {
+        await dbCovers.deleteBookCover(input.coverId);
+        return { success: true };
       }),
   }),
 });

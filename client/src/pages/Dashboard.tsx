@@ -2,7 +2,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight } from "lucide-react";
+import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Dashboard() {
@@ -96,7 +96,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
             <Link href="/writing">
               <CardHeader>
@@ -134,6 +134,20 @@ export default function Dashboard() {
                 <CardTitle>Amazon Publishing</CardTitle>
                 <CardDescription>
                   Category research, listing optimization, and KDP upload
+                </CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Link href="/cover-generator">
+              <CardHeader>
+                <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-purple-600" />
+                </div>
+                <CardTitle>AI Cover Generator</CardTitle>
+                <CardDescription>
+                  Create stunning professional book covers with AI in seconds
                 </CardDescription>
               </CardHeader>
             </Link>

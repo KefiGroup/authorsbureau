@@ -81,7 +81,7 @@ export default function IndependentAuthor() {
       localStorage.setItem("independent_author_outline", result.outline);
       localStorage.setItem("independent_author_topic", selectedCategory || customTopic);
       toast.success("Book outline generated! Starting Day 1...");
-      setLocation("/writing-studio/day1");
+      setLocation("/writing-studio/day-1");
     } catch (error) {
       toast.error("Failed to generate outline. Please try again.");
     }

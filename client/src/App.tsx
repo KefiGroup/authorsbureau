@@ -15,7 +15,8 @@ import WritingStudioDay1 from "./pages/WritingStudioDay1";
 import WritingStudioDay2 from "./pages/WritingStudioDay2";
 import DiscoverYourStory from "./pages/DiscoverYourStory";
 import FeaturedAuthors from "./pages/FeaturedAuthors";
-import AmazonPublishing from "./pages/AmazonPublishing";
+import AmazonPublishing from "@/pages/AmazonPublishing";
+import CoverGenerator from "@/pages/CoverGenerator";
 
 
 function Router() {
@@ -33,7 +34,8 @@ function Router() {
       <Route path={"/writing-studio/day-2"} component={WritingStudioDay2} />
       <Route path={"/discover-your-story"} component={DiscoverYourStory} />
       <Route path={"/featured-authors"} component={FeaturedAuthors} />
-      <Route path={"/amazon-publishing"} component={AmazonPublishing} />
+      <Route path="/amazon-publishing" component={AmazonPublishing} />
+      <Route path="/cover-generator" component={CoverGenerator} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

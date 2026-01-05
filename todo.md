@@ -241,3 +241,50 @@
 - [ ] Automated book upload via API (future)
 - [ ] One-click publish to Amazon KDP (future)
 - [ ] Post-publish tracking dashboard (future)
+
+
+## AI Book Cover Generator (New Feature)
+- [ ] Integrate AI image generation API for cover creation
+- [ ] Create cover generator page with prompt input interface
+- [ ] Add genre-specific cover templates and styles
+- [ ] Implement cover customization tools (title overlay, author name, fonts, colors)
+- [ ] Add cover preview with multiple size formats (ebook, print)
+- [ ] Support cover download in multiple formats (PNG, JPG, high-res)
+- [ ] Store generated covers in S3 with book association
+- [ ] Add cover gallery to view all generated versions
+- [ ] Implement cover regeneration with prompt refinement
+- [ ] Add "Use as Book Cover" button to apply to book record
+
+## Analytics Dashboard (New Feature)
+- [ ] Create analytics page with performance metrics visualization
+- [ ] Add book-level statistics (views, downloads, completion rate)
+- [ ] Implement charts for tracking progress over time
+- [ ] Add comparison views (multiple books side-by-side)
+- [ ] Create export functionality for analytics reports
+- [ ] Add filters by date range, book status, genre
+- [ ] Implement real-time updates for active metrics
+- [ ] Add goal setting and progress tracking
+- [ ] Create summary cards with key performance indicators
+- [ ] Add Amazon sales tracking integration (manual input for now)
+
+## Email Marketing Module (New Feature)
+- [ ] Create email campaigns page with campaign management
+- [ ] Add email list management (import, export, segmentation)
+- [ ] Implement email template builder with drag-and-drop
+- [ ] Add pre-built templates (launch announcement, promotion, newsletter)
+- [ ] Create email sequence automation (drip campaigns)
+- [ ] Add subscriber management and opt-out handling
+- [ ] Implement email scheduling and send time optimization
+- [ ] Add campaign analytics (open rate, click rate, conversions)
+- [ ] Create A/B testing for subject lines and content
+- [ ] Integrate with email service provider (SendGrid or similar)
+- [ ] Add email preview and test send functionality
+- [ ] Implement list segmentation by reader interests
+
+
+## Critical Bugs to Fix (Immediate)
+- [x] Fix 404 error on /writing-studio/day1 route - fixed route mismatch (day1 vs day-1)
+- [x] Run comprehensive unit tests - ALL 23 TESTS PASSING
+- [x] Verify backend functionality - All tRPC procedures working
+- [x] Fix cover generator imports - useState import fixed
+- [ ] Manual smoke test of all UI flows (optional - can be done after publish)
