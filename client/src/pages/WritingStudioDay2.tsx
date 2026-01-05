@@ -45,8 +45,10 @@ export default function WritingStudioDay2() {
 
   const [authorVoiceNotes, setAuthorVoiceNotes] = useState("");
 
-  // tRPC mutation for AI chapter generation
+  // tRPC mutations
   const generateChapterMutation = trpc.ai.generateChapter.useMutation();
+  const exportDOCXMutation = trpc.manuscript.exportDOCX.useMutation();
+  const exportPDFMutation = trpc.manuscript.exportPDF.useMutation();
 
   if (!isAuthenticated) {
     return (
@@ -367,15 +369,75 @@ export default function WritingStudioDay2() {
                 </Button>
                 
                 {completedChapters === totalChapters && (
-                  <Button
-                    onClick={() => {
-                      toast.success("Manuscript complete! Ready for export.");
-                      setLocation("/writing-studio");
-                    }}
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Export Manuscript
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={async () => {
+                        try {
+                          const result = await exportDOCXMutation.mutateAsync({
+                            bookTitle,
+                            authorName: user?.name || "Author",
+                            chapters: chapters.map(c => ({
+                              number: c.number,
+                              title: c.title,
+                              content: c.content
+                            }))
+                          });
+                          
+                          // Download the file
+                          const link = document.createElement('a');
+                          link.href = `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${result.data}`;
+                          link.download = result.filename;
+                          link.click();
+                          
+                          toast.success("DOCX exported successfully!");
+                        } catch (error) {
+                          toast.error("Failed to export DOCX");
+                        }
+                      }}
+                      disabled={exportDOCXMutation.isPending}
+                    >
+                      {exportDOCXMutation.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Download className="mr-2 h-4 w-4" />
+                      )}
+                      Export DOCX
+                    </Button>
+                    <Button
+                      onClick={async () => {
+                        try {
+                          const result = await exportPDFMutation.mutateAsync({
+                            bookTitle,
+                            authorName: user?.name || "Author",
+                            chapters: chapters.map(c => ({
+                              number: c.number,
+                              title: c.title,
+                              content: c.content
+                            }))
+                          });
+                          
+                          // Download the file
+                          const link = document.createElement('a');
+                          link.href = `data:application/pdf;base64,${result.data}`;
+                          link.download = result.filename;
+                          link.click();
+                          
+                          toast.success("PDF exported successfully!");
+                        } catch (error) {
+                          toast.error("Failed to export PDF");
+                        }
+                      }}
+                      disabled={exportPDFMutation.isPending}
+                    >
+                      {exportPDFMutation.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Download className="mr-2 h-4 w-4" />
+                      )}
+                      Export PDF
+                    </Button>
+                  </>
                 )}
               </div>
 

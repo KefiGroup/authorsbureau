@@ -1,5 +1,6 @@
 import { COOKIE_NAME } from "@shared/const";
 import { generateBookOutline, generateSuckcessProfile, generateChapterDraft } from "./ai-generation";
+import { generateDOCX, generatePDF } from "./manuscript-export";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
@@ -349,6 +350,56 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const draft = await generateChapterDraft(input);
         return { draft };
+      }),
+  }),
+
+  // Manuscript export
+  manuscript: router({
+    exportDOCX: protectedProcedure
+      .input(
+        z.object({
+          bookTitle: z.string(),
+          subtitle: z.string().optional(),
+          authorName: z.string(),
+          chapters: z.array(
+            z.object({
+              number: z.number(),
+              title: z.string(),
+              content: z.string(),
+            })
+          ),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const buffer = await generateDOCX(input);
+        return {
+          success: true,
+          data: buffer.toString("base64"),
+          filename: `${input.bookTitle.replace(/[^a-z0-9]/gi, "_")}.docx`,
+        };
+      }),
+    exportPDF: protectedProcedure
+      .input(
+        z.object({
+          bookTitle: z.string(),
+          subtitle: z.string().optional(),
+          authorName: z.string(),
+          chapters: z.array(
+            z.object({
+              number: z.number(),
+              title: z.string(),
+              content: z.string(),
+            })
+          ),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const buffer = await generatePDF(input);
+        return {
+          success: true,
+          data: buffer.toString("base64"),
+          filename: `${input.bookTitle.replace(/[^a-z0-9]/gi, "_")}.pdf`,
+        };
       }),
   }),
 });

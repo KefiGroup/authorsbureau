@@ -161,15 +161,38 @@
 - [x] Add progress tracking across all chapters
 
 ## Manuscript Export
-- [ ] Implement DOCX export functionality
-- [ ] Implement PDF export functionality
-- [ ] Add formatting options (fonts, spacing, margins)
-- [ ] Include cover page and table of contents
-- [ ] Support chapter-by-chapter or full manuscript export
 
+- [x] Implement DOCX export functionality
+- [x] Implement PDF export functionality
+- [x] Add formatting options (fonts, spacing, margins)
+- [x] Include cover page and table of contents
+- [x] Support chapter-by-chapter or full manuscript export
 ## Email Integration
 - [ ] Set up email service integration
 - [ ] Create email template for SUCKcess Story Profile
 - [ ] Implement automated email sending after quiz completion
 - [ ] Add email capture to database for lead tracking
 - [ ] Create follow-up email sequence for nurturing leads
+
+
+## Amazon KDP Agentic AI Workflow
+- [x] Manuscript export to DOCX format (KDP-ready formatting)
+- [x] Manuscript export to PDF format (preview and print-ready)
+- [ ] AI-powered book cover generator with genre-specific templates
+- [ ] Cover customization interface (title, author name, colors, images)
+- [ ] Amazon category research tool (find smartest/easiest categories to rank)
+- [ ] Keyword research and optimization for Amazon SEO
+- [ ] Competitive analysis for selected categories
+- [ ] KDP account connection and authentication workflow
+- [ ] Automated book listing creation (title, subtitle, description)
+- [ ] AI-powered book description generator optimized for conversions
+- [ ] Keyword placement optimization in title and description
+- [ ] Category selection automation (choose best 2 categories)
+- [ ] Pricing optimization based on category and competition analysis
+- [ ] ISBN assignment workflow (optional for authors)
+- [ ] Preview and review interface before KDP submission
+- [ ] One-click publish to Amazon KDP via API
+- [ ] Post-publish tracking dashboard (rankings, reviews, sales)
+- [ ] Automated bestseller positioning strategies
+- [ ] Marketing recommendations based on category performance
+- [ ] Multi-marketplace support (Amazon.com, .uk, .sg)
