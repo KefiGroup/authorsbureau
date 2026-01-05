@@ -30,7 +30,7 @@ import { Button } from "./ui/button";
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: BookOpen, label: "My Books", path: "/books" },
-  { icon: PenTool, label: "Writing Studio", path: "/writing" },
+  { icon: PenTool, label: "Writing Studio", path: "/writing-studio" },
   { icon: TrendingUp, label: "Marketing", path: "/marketing" },
   { icon: Rocket, label: "Amazon", path: "/amazon" },
   { icon: User, label: "Profile", path: "/profile" },

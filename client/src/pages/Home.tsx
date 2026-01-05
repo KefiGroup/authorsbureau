@@ -1,7 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
-import { BookOpen, PenTool, Rocket, TrendingUp, ArrowRight, CheckCircle2 } from "lucide-react";
+import { BookOpen, PenTool, Rocket, TrendingUp, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Home() {
@@ -17,15 +18,12 @@ export default function Home() {
             <span className="text-2xl font-bold text-foreground">Authors Bureau</span>
           </div>
           <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
-              <Button asChild>
-                <Link href="/dashboard">Go to Dashboard</Link>
-              </Button>
-            ) : (
-              <Button asChild>
-                <a href={getLoginUrl()}>Sign In</a>
-              </Button>
-            )}
+            <Button variant="ghost" asChild>
+              <Link href="/featured-authors">Featured Authors</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="#how-it-works">Watch Demo</Link>
+            </Button>
           </div>
         </div>
       </header>
@@ -45,20 +43,12 @@ export default function Home() {
             dominate Amazon with our comprehensive AI-powered platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {isAuthenticated ? (
-              <Button size="lg" asChild className="text-lg px-8">
-                <Link href="/dashboard">
-                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            ) : (
-              <Button size="lg" asChild className="text-lg px-8">
-                <a href={getLoginUrl()}>
-                  Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
-              </Button>
-            )}
-            <Button size="lg" variant="outline" className="text-lg px-8">
+            <Button size="lg" asChild>
+              <Link href="/writing-studio">
+                Start Writing Your Book <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline">
               Watch Demo
             </Button>
           </div>
@@ -195,15 +185,27 @@ export default function Home() {
       {/* Empowerment Section */}
       <section className="container py-16 bg-card/30 rounded-3xl">
         <div className="text-center space-y-6">
-          <h2 className="text-4xl font-bold text-foreground">Anyone Can Become a Published Author</h2>
+          <Badge className="mb-2">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Free SUCKcess Story Discovery
+          </Badge>
+          <h2 className="text-4xl font-bold text-foreground">What's Your SUCKcess Story?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            You don't need to be a professional writer. With our AI-powered platform, ordinary people are transforming their ideas into published books and becoming successful authors in just 2 days.
+            Take our free 5-minute quiz to discover your unique transformation journey and get a personalized roadmap to turn your story into a published book.
           </p>
-          <Button size="lg" asChild>
-            <Link href="/dashboard">
-              Start Your Author Journey <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <Button size="lg" asChild>
+              <Link href="/discover-your-story">
+                <Sparkles className="mr-2 h-5 w-5" />
+                Discover Your Story
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/writing-studio">
+                Go to Writing Studio
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 
