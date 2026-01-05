@@ -17,6 +17,9 @@ export default function Home() {
             <span className="text-2xl font-bold text-foreground">Authors Bureau</span>
           </div>
           <div className="flex items-center space-x-4">
+            <Button variant="ghost" asChild>
+              <Link href="/authors">Featured Authors</Link>
+            </Button>
             {isAuthenticated ? (
               <Button asChild>
                 <Link href="/dashboard">Go to Dashboard</Link>
@@ -187,6 +190,121 @@ export default function Home() {
                   <span className="text-muted-foreground">Final review and export</span>
                 </li>
               </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Success Metrics Section */}
+      <section className="container py-16 bg-card/30 rounded-3xl">
+        <div className="text-center space-y-4 mb-12">
+          <h2 className="text-4xl font-bold text-foreground">Trusted by Thousands of Authors</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Join a thriving community of successful authors who have transformed their ideas into bestsellers
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+          <div className="text-center space-y-2">
+            <div className="text-5xl font-bold text-primary">10,000+</div>
+            <div className="text-muted-foreground">Published Authors</div>
+          </div>
+          <div className="text-center space-y-2">
+            <div className="text-5xl font-bold text-accent">50,000+</div>
+            <div className="text-muted-foreground">Books Published</div>
+          </div>
+          <div className="text-center space-y-2">
+            <div className="text-5xl font-bold text-primary">2,500+</div>
+            <div className="text-muted-foreground">Amazon Bestsellers</div>
+          </div>
+          <div className="text-center space-y-2">
+            <div className="text-5xl font-bold text-accent">25M+</div>
+            <div className="text-muted-foreground">Copies Sold</div>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/authors">
+              Meet Our Featured Authors <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="container py-24">
+        <div className="text-center space-y-4 mb-16">
+          <h2 className="text-4xl font-bold text-foreground">What Authors Are Saying</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Real success stories from authors who achieved their publishing dreams
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="space-y-4 p-8 rounded-xl border border-border bg-card hover:shadow-lg transition-shadow">
+            <div className="flex items-center space-x-1 text-accent">
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+            </div>
+            <blockquote className="text-lg text-foreground italic">
+              "I went from idea to #1 Amazon bestseller in just one week. The AI writing tools are absolutely revolutionary!"
+            </blockquote>
+            <div className="flex items-center space-x-3">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                SM
+              </div>
+              <div>
+                <div className="font-semibold text-foreground">Sarah Mitchell</div>
+                <div className="text-sm text-muted-foreground">Thriller Author • 7 Books</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 p-8 rounded-xl border border-border bg-card hover:shadow-lg transition-shadow">
+            <div className="flex items-center space-x-1 text-accent">
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+            </div>
+            <blockquote className="text-lg text-foreground italic">
+              "The marketing automation helped me grow from 500 to 50,000 email subscribers. My revenue increased 100x!"
+            </blockquote>
+            <div className="flex items-center space-x-3">
+              <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">
+                ER
+              </div>
+              <div>
+                <div className="font-semibold text-foreground">Elena Rodriguez</div>
+                <div className="text-sm text-muted-foreground">Romance Author • 15 Books</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 p-8 rounded-xl border border-border bg-card hover:shadow-lg transition-shadow">
+            <div className="flex items-center space-x-1 text-accent">
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+              <CheckCircle2 className="h-5 w-5 fill-current" />
+            </div>
+            <blockquote className="text-lg text-foreground italic">
+              "Published 12 books in one year, each hitting bestseller status. This platform is a game-changer for authors!"
+            </blockquote>
+            <div className="flex items-center space-x-3">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                MC
+              </div>
+              <div>
+                <div className="font-semibold text-foreground">Marcus Chen</div>
+                <div className="text-sm text-muted-foreground">Business Author • 12 Books</div>
+              </div>
             </div>
           </div>
         </div>

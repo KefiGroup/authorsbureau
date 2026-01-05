@@ -176,4 +176,12 @@
       max-width: 1280px; /* Standard content width */
     }
   }
+
+  /* Gradient Text Effect */
+  .text-gradient {
+    background: linear-gradient(135deg, oklch(var(--primary)) 0%, oklch(var(--accent)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
