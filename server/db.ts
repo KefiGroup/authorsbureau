@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, authors, InsertAuthor, books, chapters, characters, bookDesigns, marketingCampaigns, emailSequences, salesFunnels, amazonPerformance, amazonListings } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,180 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Author profile functions
+export async function getAuthorByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(authors).where(eq(authors.userId, userId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createAuthorProfile(authorData: InsertAuthor) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(authors).values(authorData);
+  return result;
+}
+
+export async function updateAuthorProfile(authorId: number, authorData: Partial<InsertAuthor>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(authors).set(authorData).where(eq(authors.id, authorId));
+}
+
+export async function getAllAuthors() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(authors);
+}
+
+// Book functions
+export async function getBooksByAuthorId(authorId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(books).where(eq(books.authorId, authorId));
+}
+
+export async function getBookById(bookId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(books).where(eq(books.id, bookId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createBook(bookData: typeof books.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(books).values(bookData);
+  return result;
+}
+
+export async function updateBook(bookId: number, bookData: Partial<typeof books.$inferInsert>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(books).set(bookData).where(eq(books.id, bookId));
+}
+
+export async function deleteBook(bookId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(books).where(eq(books.id, bookId));
+}
+
+// Chapter functions
+export async function getChaptersByBookId(bookId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(chapters).where(eq(chapters.bookId, bookId));
+}
+
+export async function createChapter(chapterData: typeof chapters.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(chapters).values(chapterData);
+  return result;
+}
+
+export async function updateChapter(chapterId: number, chapterData: Partial<typeof chapters.$inferInsert>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(chapters).set(chapterData).where(eq(chapters.id, chapterId));
+}
+
+// Character functions
+export async function getCharactersByBookId(bookId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(characters).where(eq(characters.bookId, bookId));
+}
+
+export async function createCharacter(characterData: typeof characters.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(characters).values(characterData);
+  return result;
+}
+
+export async function updateCharacter(characterId: number, characterData: Partial<typeof characters.$inferInsert>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(characters).set(characterData).where(eq(characters.id, characterId));
+}
+
+// Marketing campaign functions
+export async function getCampaignsByBookId(bookId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(marketingCampaigns).where(eq(marketingCampaigns.bookId, bookId));
+}
+
+export async function createCampaign(campaignData: typeof marketingCampaigns.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(marketingCampaigns).values(campaignData);
+  return result;
+}
+
+export async function updateCampaign(campaignId: number, campaignData: Partial<typeof marketingCampaigns.$inferInsert>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(marketingCampaigns).set(campaignData).where(eq(marketingCampaigns.id, campaignId));
+}
+
+// Amazon performance functions
+export async function getAmazonPerformanceByBookId(bookId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(amazonPerformance).where(eq(amazonPerformance.bookId, bookId));
+}
+
+export async function createAmazonPerformance(performanceData: typeof amazonPerformance.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(amazonPerformance).values(performanceData);
+  return result;
+}
+
+// Amazon listing functions
+export async function getAmazonListingByBookId(bookId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(amazonListings).where(eq(amazonListings.bookId, bookId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createAmazonListing(listingData: typeof amazonListings.$inferInsert) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(amazonListings).values(listingData);
+  return result;
+}
+
+export async function updateAmazonListing(listingId: number, listingData: Partial<typeof amazonListings.$inferInsert>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(amazonListings).set(listingData).where(eq(amazonListings.id, listingId));
+}
