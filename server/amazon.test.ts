@@ -31,11 +31,14 @@ describe("Amazon KDP Integration", () => {
     it("should research Amazon categories successfully", async () => {
       const caller = appRouter.createCaller(createMockContext(testUser));
 
-      const result = await caller.amazon.researchCategories({
+      // Create test book first
+      const book = await caller.book.createBook({
         title: "The Ultimate Guide to Success",
         genre: "Business & Entrepreneurship",
-        keywords: ["business", "entrepreneurship", "success", "startup"],
-        targetAudience: "Aspiring entrepreneurs and business owners",
+      });
+
+      const result = await caller.amazon.researchCategories({
+        bookId: book.id,
       });
 
       expect(result).toBeDefined();
@@ -62,10 +65,7 @@ describe("Amazon KDP Integration", () => {
 
       await expect(
         caller.amazon.researchCategories({
-          title: "Test Book",
-          genre: "Business",
-          keywords: ["test"],
-          targetAudience: "Test audience",
+          bookId: 1, // Any book ID will fail without auth
         })
       ).rejects.toThrow();
     });
@@ -73,12 +73,15 @@ describe("Amazon KDP Integration", () => {
     it("should recommend category combination", async () => {
       const caller = appRouter.createCaller(createMockContext(testUser));
 
-      // First get categories
-      const categoriesResult = await caller.amazon.researchCategories({
+      // Create test book first
+      const book = await caller.book.createBook({
         title: "The Ultimate Guide to Success",
         genre: "Business & Entrepreneurship",
-        keywords: ["business", "success"],
-        targetAudience: "Entrepreneurs",
+      });
+
+      // First get categories
+      const categoriesResult = await caller.amazon.researchCategories({
+        bookId: book.id,
       });
 
       // Then get recommendation

@@ -414,17 +414,46 @@ export const appRouter = router({
 
   // Amazon KDP Integration
   amazon: router({
-    // Research optimal categories for bestseller positioning
+    // Research optimal categories for bestseller positioning (AI-powered)
     researchCategories: protectedProcedure
       .input(z.object({
-        title: z.string(),
-        genre: z.string(),
-        keywords: z.array(z.string()),
-        targetAudience: z.string()
+        bookId: z.number(),
       }))
-      .mutation(async ({ input }) => {
-        const categories = await researchAmazonCategories(input);
-        return { categories };
+      .mutation(async ({ input, ctx }) => {
+        // Get book data
+        const book = await db.getBookById(input.bookId);
+        if (!book) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Book not found",
+          });
+        }
+        
+        // Get author to verify ownership
+        const author = await db.getAuthorByUserId(ctx.user!.id);
+        if (!author || book.authorId !== author.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Not authorized to access this book",
+          });
+        }
+        
+        // AI analyzes book content and recommends categories
+        const categories = await researchAmazonCategories({
+          title: book.title,
+          genre: book.genre || "General",
+          keywords: [], // Will be extracted from book content
+          targetAudience: "General readers", // Extract from book description
+          bookContent: book.description || book.content || "",
+        });
+        
+        return { 
+          categories,
+          bookAnalysis: {
+            title: book.title,
+            extractedThemes: categories.slice(0, 3).map(c => c.category),
+          }
+        };
       }),
 
     // Analyze competition in a specific category

@@ -22,14 +22,16 @@ export async function researchAmazonCategories(params: {
   genre: string;
   keywords: string[];
   targetAudience: string;
+  bookContent?: string;
 }): Promise<CategoryAnalysis[]> {
   const prompt = `You are an Amazon KDP category research expert. Analyze and recommend the best categories for this book to become a bestseller.
 
 **Book Information:**
 - Title: "${params.title}"
 - Genre: ${params.genre}
-- Keywords: ${params.keywords.join(", ")}
+- Keywords: ${params.keywords.join(", ") || "(will be extracted from content)"}
 - Target Audience: ${params.targetAudience}
+${params.bookContent ? `- Book Content/Description: ${params.bookContent.substring(0, 500)}...` : ""}
 
 **Task:**
 Recommend 5-8 Amazon KDP categories that are the "smartest" choices for this book. Smart categories are:

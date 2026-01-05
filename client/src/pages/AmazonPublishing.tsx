@@ -1,172 +1,165 @@
 import { useState } from "react";
-import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Target, FileText, Upload, CheckCircle2, AlertCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, Target, FileText, Upload, Sparkles, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { toast } from "sonner";
-
-interface CategoryAnalysis {
-  category: string;
-  subcategory?: string;
-  competitivenessScore: number;
-  estimatedMonthlySearches: string;
-  topSellerRequirement: string;
-  reasoning: string;
-  recommended: boolean;
-}
-
-interface OptimizedListing {
-  title: string;
-  subtitle?: string;
-  description: string;
-  keywords: string[];
-  authorBio: string;
-}
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default function AmazonPublishing() {
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("categories");
+  const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  
+  // Fetch user's books
+  const { data: booksData, isLoading: booksLoading } = trpc.book.getMyBooks.useQuery();
+  const books = booksData || [];
 
-  // Category Research State
-  const [categoryForm, setCategoryForm] = useState({
-    title: "",
-    genre: "",
-    keywords: "",
-    targetAudience: "",
-  });
-  const [categories, setCategories] = useState<CategoryAnalysis[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<{
-    primary?: CategoryAnalysis;
-    secondary?: CategoryAnalysis;
-  }>({});
-
-  // Listing Optimizer State
-  const [listingForm, setListingForm] = useState({
-    originalTitle: "",
-    genre: "",
-    targetAudience: "",
-    mainBenefit: "",
-    keyBenefits: "",
-    outline: "",
-    authorName: user?.name || "",
-    authorBio: "",
-  });
-  const [optimizedListing, setOptimizedListing] = useState<OptimizedListing | null>(null);
-
-  // Mutations
+  // Category Research
   const researchCategories = trpc.amazon.researchCategories.useMutation({
     onSuccess: (data) => {
-      setCategories(data.categories);
-      toast.success(`Found ${data.categories.length} optimal categories for your book.`);
+      toast.success("AI analysis complete! Review the recommended categories below.");
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message || "Failed to analyze book");
     },
   });
 
-  const recommendCategories = trpc.amazon.recommendCategories.useMutation({
-    onSuccess: (data) => {
-      setSelectedCategories({
-        primary: data.primary,
-        secondary: data.secondary,
-      });
-      toast.success("Optimal category combination selected for bestseller positioning.");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
+  // Listing Optimizer
   const generateListing = trpc.amazon.generateCompleteListing.useMutation({
-    onSuccess: (data) => {
-      setOptimizedListing(data);
-      toast.success("Your Amazon KDP listing has been optimized for maximum visibility and sales.");
+    onSuccess: () => {
+      toast.success("Complete KDP listing generated!");
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message || "Failed to generate listing");
     },
   });
 
-  const handleCategoryResearch = () => {
-    if (!categoryForm.title || !categoryForm.genre || !categoryForm.targetAudience) {
-      toast.error("Please fill in all required fields.");
+  const handleAnalyzeBook = () => {
+    if (!selectedBookId) {
+      toast.error("Please select a book to analyze");
       return;
     }
-
-    const keywords = categoryForm.keywords
-      .split(",")
-      .map((k) => k.trim())
-      .filter((k) => k.length > 0);
-
-    researchCategories.mutate({
-      title: categoryForm.title,
-      genre: categoryForm.genre,
-      keywords,
-      targetAudience: categoryForm.targetAudience,
-    });
-  };
-
-  const handleRecommendCategories = () => {
-    if (categories.length < 2) {
-      toast.error("Research categories first to get recommendations.");
-      return;
-    }
-
-    recommendCategories.mutate({ categories });
+    researchCategories.mutate({ bookId: selectedBookId });
   };
 
   const handleGenerateListing = () => {
-    if (!listingForm.originalTitle || !listingForm.genre || !listingForm.targetAudience) {
-      toast.error("Please fill in all required fields.");
+    if (!selectedBookId) {
+      toast.error("Please select a book first");
+      return;
+    }
+    
+    if (selectedCategories.length === 0) {
+      toast.error("Please select at least one category from the research results");
       return;
     }
 
-    const keyBenefits = listingForm.keyBenefits
-      .split("\n")
-      .map((b) => b.trim())
-      .filter((b) => b.length > 0);
+    const selectedBook = books.find(b => b.id === selectedBookId);
+    if (!selectedBook) return;
 
     generateListing.mutate({
-      originalTitle: listingForm.originalTitle,
-      genre: listingForm.genre,
-      targetAudience: listingForm.targetAudience,
-      mainBenefit: listingForm.mainBenefit,
-      keyBenefits,
-      outline: listingForm.outline,
-      authorName: listingForm.authorName,
-      authorBio: listingForm.authorBio,
+      originalTitle: selectedBook.title,
+      genre: selectedBook.genre || "General",
+      targetAudience: "General readers",
+      mainBenefit: "Transform your knowledge into a published book",
+      keyBenefits: selectedCategories.slice(0, 3),
+      outline: selectedBook.description || "A comprehensive guide",
+      authorName: "Author", // Will be replaced with actual author name
+      authorBio: "Experienced author and expert in the field",
     });
   };
 
+  const toggleCategorySelection = (category: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(c => c !== category);
+      }
+      if (prev.length >= 3) {
+        toast.error("Amazon only allows 3 categories maximum");
+        return prev;
+      }
+      return [...prev, category];
+    });
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied to clipboard!`);
+  };
+
   const getCompetitivenessColor = (score: number) => {
-    if (score <= 3) return "bg-green-500";
-    if (score <= 6) return "bg-yellow-500";
-    return "bg-red-500";
+    if (score <= 3) return "text-green-600 bg-green-50";
+    if (score <= 6) return "text-yellow-600 bg-yellow-50";
+    return "text-red-600 bg-red-50";
   };
 
   const getCompetitivenessLabel = (score: number) => {
-    if (score <= 3) return "Easy";
-    if (score <= 6) return "Moderate";
-    return "Difficult";
+    if (score <= 3) return "Low Competition";
+    if (score <= 6) return "Medium Competition";
+    return "High Competition";
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Amazon KDP Publishing</h1>
-          <p className="text-lg text-muted-foreground">
-            Optimize your book for Amazon bestseller success with AI-powered category research and listing optimization.
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Amazon KDP Publishing</h1>
+          <p className="text-muted-foreground mt-2">
+            AI-powered category research, listing optimization, and KDP upload guidance
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        {/* Book Selector */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Select Your Book
+            </CardTitle>
+            <CardDescription>
+              Choose which book you want to optimize for Amazon KDP
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {booksLoading ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading your books...
+              </div>
+            ) : books.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No books found. Create a book first to use Amazon publishing tools.</p>
+              </div>
+            ) : (
+              <Select
+                value={selectedBookId?.toString() || ""}
+                onValueChange={(value) => {
+                  setSelectedBookId(parseInt(value));
+                  setSelectedCategories([]);
+                  researchCategories.reset();
+                  generateListing.reset();
+                }}
+              >
+                <SelectTrigger className="w-full max-w-md">
+                  <SelectValue placeholder="Select a book..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {books.map((book) => (
+                    <SelectItem key={book.id} value={book.id.toString()}>
+                      {book.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Tabs */}
+        <Tabs defaultValue="categories" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="categories" className="flex items-center gap-2">
               <Target className="w-4 h-4" />
@@ -186,198 +179,127 @@ export default function AmazonPublishing() {
           <TabsContent value="categories" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Smart Category Research</CardTitle>
+                <CardTitle>AI-Powered Category Research</CardTitle>
                 <CardDescription>
-                  Find the least competitive but high-traffic categories to maximize your bestseller chances.
+                  Our AI analyzes your book content and recommends the smartest Amazon categories - 
+                  those with low competition but high traffic to maximize your bestseller chances.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cat-title">Book Title *</Label>
-                    <Input
-                      id="cat-title"
-                      placeholder="Your book title"
-                      value={categoryForm.title}
-                      onChange={(e) =>
-                        setCategoryForm({ ...categoryForm, title: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cat-genre">Genre *</Label>
-                    <Input
-                      id="cat-genre"
-                      placeholder="e.g., Business, Self-Help, Finance"
-                      value={categoryForm.genre}
-                      onChange={(e) =>
-                        setCategoryForm({ ...categoryForm, genre: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="cat-audience">Target Audience *</Label>
-                  <Input
-                    id="cat-audience"
-                    placeholder="Who is this book for?"
-                    value={categoryForm.targetAudience}
-                    onChange={(e) =>
-                      setCategoryForm({ ...categoryForm, targetAudience: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="cat-keywords">Keywords (comma-separated)</Label>
-                  <Input
-                    id="cat-keywords"
-                    placeholder="investing, stocks, wealth building"
-                    value={categoryForm.keywords}
-                    onChange={(e) =>
-                      setCategoryForm({ ...categoryForm, keywords: e.target.value })
-                    }
-                  />
-                </div>
-
+              <CardContent className="space-y-6">
                 <Button
-                  onClick={handleCategoryResearch}
-                  disabled={researchCategories.isPending}
-                  className="w-full"
+                  onClick={handleAnalyzeBook}
+                  disabled={!selectedBookId || researchCategories.isPending}
+                  size="lg"
+                  className="w-full sm:w-auto"
                 >
                   {researchCategories.isPending ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Analyzing Categories...
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      AI Analyzing Your Book...
                     </>
                   ) : (
                     <>
-                      <Target className="mr-2 h-4 w-4" />
-                      Research Categories
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Analyze Book & Find Best Categories
                     </>
                   )}
                 </Button>
+
+                {researchCategories.data && (
+                  <div className="space-y-4">
+                    {/* Book Analysis Summary */}
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                      <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5 text-primary" />
+                        AI Analysis Complete
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Based on your book "{researchCategories.data.bookAnalysis.title}", 
+                        our AI identified {researchCategories.data.categories.length} optimal categories.
+                        Select up to 3 categories (Amazon's limit).
+                      </p>
+                    </div>
+
+                    {/* Category Recommendations */}
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-foreground">Recommended Categories</h3>
+                      {researchCategories.data.categories.map((cat, idx) => (
+                        <Card
+                          key={idx}
+                          className={`cursor-pointer transition-all ${
+                            selectedCategories.includes(cat.category)
+                              ? "border-primary bg-primary/5"
+                              : "hover:border-primary/50"
+                          }`}
+                          onClick={() => toggleCategorySelection(cat.category)}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h4 className="font-medium text-foreground">{cat.category}</h4>
+                                  {cat.recommended && (
+                                    <Badge variant="default" className="text-xs">
+                                      <Sparkles className="w-3 h-3 mr-1" />
+                                      AI Recommended
+                                    </Badge>
+                                  )}
+                                  {selectedCategories.includes(cat.category) && (
+                                    <Badge variant="outline" className="text-xs border-primary text-primary">
+                                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                                      Selected
+                                    </Badge>
+                                  )}
+                                </div>
+
+                                <p className="text-sm text-muted-foreground">{cat.reasoning}</p>
+
+                                <div className="flex items-center gap-4 flex-wrap text-sm">
+                                  <div className="flex items-center gap-1">
+                                    <Badge className={getCompetitivenessColor(cat.competitivenessScore)}>
+                                      {getCompetitivenessLabel(cat.competitivenessScore)}
+                                    </Badge>
+                                    <span className="text-muted-foreground">Score: {cat.competitivenessScore}/10</span>
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-1 text-muted-foreground">
+                                    {cat.estimatedMonthlySearches.toLowerCase().includes("high") ? (
+                                      <TrendingUp className="w-4 h-4 text-green-600" />
+                                    ) : (
+                                      <TrendingDown className="w-4 h-4 text-yellow-600" />
+                                    )}
+                                    <span>{cat.estimatedMonthlySearches} searches</span>
+                                  </div>
+
+                                  <div className="text-muted-foreground">
+                                    To rank #1: {cat.topSellerRequirement}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {selectedCategories.length > 0 && (
+                      <div className="bg-muted/50 rounded-lg p-4">
+                        <h4 className="font-medium text-foreground mb-2">
+                          Selected Categories ({selectedCategories.length}/3)
+                        </h4>
+                        <div className="space-y-1">
+                          {selectedCategories.map((cat, idx) => (
+                            <div key={idx} className="text-sm text-muted-foreground">
+                              {idx + 1}. {cat}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
-
-            {/* Category Results */}
-            {categories.length > 0 && (
-              <>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recommended Categories</CardTitle>
-                    <CardDescription>
-                      Categories sorted by competitiveness (lower is better for ranking)
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {categories.map((cat, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-4 rounded-lg border-2 ${
-                          cat.recommended ? "border-green-500 bg-green-50" : "border-gray-200"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg">
-                              {cat.category}
-                              {cat.subcategory && ` > ${cat.subcategory}`}
-                            </h3>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge className={getCompetitivenessColor(cat.competitivenessScore)}>
-                              {getCompetitivenessLabel(cat.competitivenessScore)} ({cat.competitivenessScore}/10)
-                            </Badge>
-                            {cat.recommended && (
-                              <Badge variant="outline" className="bg-green-100 text-green-800">
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
-                                Recommended
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 mb-2 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">Monthly Searches:</span>{" "}
-                            <span className="font-medium">{cat.estimatedMonthlySearches}</span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Top Seller Needs:</span>{" "}
-                            <span className="font-medium">{cat.topSellerRequirement}</span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{cat.reasoning}</p>
-                      </div>
-                    ))}
-
-                    <Button
-                      onClick={handleRecommendCategories}
-                      disabled={recommendCategories.isPending}
-                      variant="outline"
-                      className="w-full"
-                    >
-                      {recommendCategories.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Selecting Best Combination...
-                        </>
-                      ) : (
-                        "Get Optimal Category Combination"
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Selected Categories */}
-                {(selectedCategories.primary || selectedCategories.secondary) && (
-                  <Card className="border-2 border-green-500">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        Your Optimal Category Combination
-                      </CardTitle>
-                      <CardDescription>
-                        Amazon allows 2 categories. These give you the best chance of ranking as a bestseller.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {selectedCategories.primary && (
-                        <div className="p-4 bg-green-50 rounded-lg">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge>Primary Category</Badge>
-                            <Badge className={getCompetitivenessColor(selectedCategories.primary.competitivenessScore)}>
-                              {getCompetitivenessLabel(selectedCategories.primary.competitivenessScore)} (
-                              {selectedCategories.primary.competitivenessScore}/10)
-                            </Badge>
-                          </div>
-                          <h3 className="font-semibold text-lg">
-                            {selectedCategories.primary.category}
-                            {selectedCategories.primary.subcategory && ` > ${selectedCategories.primary.subcategory}`}
-                          </h3>
-                        </div>
-                      )}
-                      {selectedCategories.secondary && (
-                        <div className="p-4 bg-blue-50 rounded-lg">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline">Secondary Category</Badge>
-                            <Badge className={getCompetitivenessColor(selectedCategories.secondary.competitivenessScore)}>
-                              {getCompetitivenessLabel(selectedCategories.secondary.competitivenessScore)} (
-                              {selectedCategories.secondary.competitivenessScore}/10)
-                            </Badge>
-                          </div>
-                          <h3 className="font-semibold text-lg">
-                            {selectedCategories.secondary.category}
-                            {selectedCategories.secondary.subcategory && ` > ${selectedCategories.secondary.subcategory}`}
-                          </h3>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            )}
           </TabsContent>
 
           {/* Listing Optimizer Tab */}
@@ -386,231 +308,240 @@ export default function AmazonPublishing() {
               <CardHeader>
                 <CardTitle>KDP Listing Optimizer</CardTitle>
                 <CardDescription>
-                  Generate conversion-optimized title, description, and keywords for maximum visibility and sales.
+                  Generate optimized title, description, and 7 keywords based on your selected categories
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="list-title">Original Book Title *</Label>
-                    <Input
-                      id="list-title"
-                      placeholder="Your book title"
-                      value={listingForm.originalTitle}
-                      onChange={(e) =>
-                        setListingForm({ ...listingForm, originalTitle: e.target.value })
-                      }
-                    />
+              <CardContent className="space-y-6">
+                {selectedCategories.length === 0 ? (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-yellow-900">Categories Required</p>
+                      <p className="text-sm text-yellow-700 mt-1">
+                        Please complete the Category Research step first and select your categories.
+                      </p>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="list-genre">Genre *</Label>
-                    <Input
-                      id="list-genre"
-                      placeholder="e.g., Business, Self-Help"
-                      value={listingForm.genre}
-                      onChange={(e) =>
-                        setListingForm({ ...listingForm, genre: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handleGenerateListing}
+                      disabled={generateListing.isPending}
+                      size="lg"
+                      className="w-full sm:w-auto"
+                    >
+                      {generateListing.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Generating Optimized Listing...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          Generate Complete KDP Listing
+                        </>
+                      )}
+                    </Button>
 
-                <div className="space-y-2">
-                  <Label htmlFor="list-audience">Target Audience *</Label>
-                  <Input
-                    id="list-audience"
-                    placeholder="Who is this book for?"
-                    value={listingForm.targetAudience}
-                    onChange={(e) =>
-                      setListingForm({ ...listingForm, targetAudience: e.target.value })
-                    }
-                  />
-                </div>
+                    {generateListing.data && (
+                      <div className="space-y-4">
+                        {/* Title */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold text-foreground">Optimized Title</h4>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyToClipboard(generateListing.data.title, "Title")}
+                            >
+                              <Copy className="w-4 h-4 mr-1" />
+                              Copy
+                            </Button>
+                          </div>
+                          <div className="bg-muted rounded-lg p-4">
+                            <p className="text-foreground">{generateListing.data.title}</p>
+                          </div>
+                        </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="list-benefit">Main Benefit/Transformation *</Label>
-                  <Input
-                    id="list-benefit"
-                    placeholder="What will readers achieve?"
-                    value={listingForm.mainBenefit}
-                    onChange={(e) =>
-                      setListingForm({ ...listingForm, mainBenefit: e.target.value })
-                    }
-                  />
-                </div>
+                        {/* Subtitle */}
+                        {generateListing.data.subtitle && (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-semibold text-foreground">Subtitle</h4>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => copyToClipboard(generateListing.data.subtitle!, "Subtitle")}
+                              >
+                                <Copy className="w-4 h-4 mr-1" />
+                                Copy
+                              </Button>
+                            </div>
+                            <div className="bg-muted rounded-lg p-4">
+                              <p className="text-foreground">{generateListing.data.subtitle}</p>
+                            </div>
+                          </div>
+                        )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="list-benefits">Key Benefits (one per line)</Label>
-                  <Textarea
-                    id="list-benefits"
-                    placeholder="Learn proven investment strategies&#10;Build wealth systematically&#10;Achieve financial freedom"
-                    rows={4}
-                    value={listingForm.keyBenefits}
-                    onChange={(e) =>
-                      setListingForm({ ...listingForm, keyBenefits: e.target.value })
-                    }
-                  />
-                </div>
+                        {/* Description */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold text-foreground">Book Description</h4>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyToClipboard(generateListing.data.description, "Description")}
+                            >
+                              <Copy className="w-4 h-4 mr-1" />
+                              Copy
+                            </Button>
+                          </div>
+                          <div className="bg-muted rounded-lg p-4">
+                            <p className="text-foreground whitespace-pre-wrap">{generateListing.data.description}</p>
+                          </div>
+                        </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="list-outline">Book Outline/Summary *</Label>
-                  <Textarea
-                    id="list-outline"
-                    placeholder="Brief overview of your book's content and structure"
-                    rows={4}
-                    value={listingForm.outline}
-                    onChange={(e) =>
-                      setListingForm({ ...listingForm, outline: e.target.value })
-                    }
-                  />
-                </div>
+                        {/* Keywords */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold text-foreground">7 Keywords (Amazon Limit)</h4>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyToClipboard(generateListing.data.keywords.join(", "), "Keywords")}
+                            >
+                              <Copy className="w-4 h-4 mr-1" />
+                              Copy
+                            </Button>
+                          </div>
+                          <div className="bg-muted rounded-lg p-4">
+                            <div className="flex flex-wrap gap-2">
+                              {generateListing.data.keywords.map((keyword, idx) => (
+                                <Badge key={idx} variant="secondary">
+                                  {keyword}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="list-author">Author Name *</Label>
-                    <Input
-                      id="list-author"
-                      placeholder="Your name"
-                      value={listingForm.authorName}
-                      onChange={(e) =>
-                        setListingForm({ ...listingForm, authorName: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="list-bio">Author Bio (optional)</Label>
-                    <Input
-                      id="list-bio"
-                      placeholder="Your credentials"
-                      value={listingForm.authorBio}
-                      onChange={(e) =>
-                        setListingForm({ ...listingForm, authorBio: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleGenerateListing}
-                  disabled={generateListing.isPending}
-                  className="w-full"
-                >
-                  {generateListing.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Optimizing Listing...
-                    </>
-                  ) : (
-                    <>
-                      <FileText className="mr-2 h-4 w-4" />
-                      Generate Optimized Listing
-                    </>
-                  )}
-                </Button>
+                        {/* Author Bio */}
+                        {generateListing.data.authorBio && (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-semibold text-foreground">Author Bio</h4>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => copyToClipboard(generateListing.data.authorBio!, "Author Bio")}
+                              >
+                                <Copy className="w-4 h-4 mr-1" />
+                                Copy
+                              </Button>
+                            </div>
+                            <div className="bg-muted rounded-lg p-4">
+                              <p className="text-foreground">{generateListing.data.authorBio}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
               </CardContent>
             </Card>
-
-            {/* Optimized Listing Results */}
-            {optimizedListing && (
-              <Card className="border-2 border-green-500">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                    Your Optimized Amazon Listing
-                  </CardTitle>
-                  <CardDescription>
-                    Copy these optimized fields to your Amazon KDP dashboard for maximum visibility and conversions.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label className="text-lg font-semibold">Optimized Title</Label>
-                    <div className="p-4 bg-slate-50 rounded-lg">
-                      <p className="font-medium text-lg">{optimizedListing.title}</p>
-                    </div>
-                  </div>
-
-                  {optimizedListing.subtitle && (
-                    <div className="space-y-2">
-                      <Label className="text-lg font-semibold">Optimized Subtitle</Label>
-                      <div className="p-4 bg-slate-50 rounded-lg">
-                        <p className="text-muted-foreground">{optimizedListing.subtitle}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label className="text-lg font-semibold">Optimized Description</Label>
-                    <div className="p-4 bg-slate-50 rounded-lg">
-                      <div
-                        className="prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: optimizedListing.description }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-lg font-semibold">Optimized Keywords (7 keywords)</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {optimizedListing.keywords.map((keyword, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-sm px-3 py-1">
-                          {keyword}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-lg font-semibold">Author Bio</Label>
-                    <div className="p-4 bg-slate-50 rounded-lg">
-                      <p className="text-sm">{optimizedListing.authorBio}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
 
           {/* KDP Upload Tab */}
           <TabsContent value="upload" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Direct KDP Upload</CardTitle>
+                <CardTitle>Amazon KDP Upload Guide</CardTitle>
                 <CardDescription>
-                  One-click upload to Amazon KDP (Coming Soon)
+                  Follow these steps to publish your book on Amazon KDP
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-blue-900">Feature In Development</p>
-                    <p className="text-sm text-blue-700">
-                      Direct KDP upload integration is currently being developed. For now, you can export your manuscript
-                      and use the optimized listing data to manually publish on Amazon KDP.
-                    </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-900">
+                    <strong>Note:</strong> Direct API integration with Amazon KDP requires approval from Amazon. 
+                    For now, follow these manual steps to publish your book.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                      1
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Export Your Manuscript</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Go to your book's dashboard and export as DOCX or PDF format.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                      2
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Create KDP Account</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Visit <a href="https://kdp.amazon.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">kdp.amazon.com</a> and sign in or create an account.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                      3
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Upload Manuscript & Cover</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Upload your exported manuscript and book cover generated from our Cover Generator tool.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                      4
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Use Optimized Listing Data</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Copy and paste the title, description, keywords, and categories from the "Listing Optimizer" tab above.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">
+                      5
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Set Pricing & Publish</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Choose your pricing strategy, select territories, and click "Publish Your Kindle eBook".
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <h3 className="font-semibold">Manual Publishing Steps:</h3>
-                  <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-                    <li>Export your manuscript from the Writing Studio (Day 2 page)</li>
-                    <li>Use the Category Research tool to find optimal categories</li>
-                    <li>Generate your optimized listing with the Listing Optimizer</li>
-                    <li>Go to <a href="https://kdp.amazon.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">kdp.amazon.com</a> and create a new book</li>
-                    <li>Upload your manuscript file (DOCX or PDF)</li>
-                    <li>Copy the optimized title, subtitle, description, and keywords</li>
-                    <li>Select your researched categories</li>
-                    <li>Complete pricing and rights information</li>
-                    <li>Publish your book!</li>
-                  </ol>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-6">
+                  <p className="text-sm text-green-900">
+                    <strong>Pro Tip:</strong> Your book will be live on Amazon within 24-72 hours after publishing. 
+                    Monitor your rankings in the categories you selected!
+                  </p>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

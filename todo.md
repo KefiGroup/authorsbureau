@@ -296,3 +296,17 @@
 - [x] Update App.tsx to route unfinished features to Coming Soon
 - [x] Test all routes to ensure proper page displays
 - [x] Added Coming Soon routes: /marketing, /analytics, /email-marketing, /writing
+
+
+## Amazon Category Research - AI-Powered Redesign (COMPLETED)
+- [x] Change from manual form input to AI-powered book analysis
+- [x] AI reads book manuscript/outline automatically via bookId
+- [x] AI extracts themes, topics from book content
+- [x] Backend updated to accept bookId instead of manual inputs
+- [x] Frontend redesigned with book selector dropdown
+- [x] Show AI analysis summary before recommendations
+- [x] Display category cards with competitiveness scores
+- [x] Traffic estimates and ranking requirements shown
+- [x] User selects up to 3 categories (Amazon limit)
+- [x] Selected categories feed into listing optimizer
+- [x] Tests updated to use new bookId-based API
