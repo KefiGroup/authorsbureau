@@ -1,7 +1,6 @@
 import { storagePut } from "./storage";
 import archiver from "archiver";
 import { Readable } from "stream";
-import { generateDOCX, generatePrintPDF, type Chapter } from "./manuscript-export";
 
 /**
  * Export bundle containing all publishing materials
@@ -10,45 +9,13 @@ export interface ExportBundle {
   zipUrl: string;
   zipKey: string;
   files: {
-    ebook_docx?: string;
-    paperback_pdf?: string;
+    manuscript_docx?: string;
+    manuscript_pdf?: string;
     cover_image?: string;
     kdp_metadata?: string;
     isbn_info?: string;
-    copyright_page?: string;
   };
   createdAt: number;
-}
-
-/**
- * Parse manuscript content into chapters
- * Expects format: "Chapter 1: Title\n\nContent...\n\nChapter 2: Title\n\nContent..."
- */
-function parseManuscriptToChapters(content: string): Chapter[] {
-  const chapters: Chapter[] = [];
-  
-  // Split by chapter markers
-  const chapterRegex = /Chapter\s+(\d+):\s*([^\n]+)\n+([\s\S]*?)(?=Chapter\s+\d+:|$)/gi;
-  let match;
-  
-  while ((match = chapterRegex.exec(content)) !== null) {
-    chapters.push({
-      number: parseInt(match[1]),
-      title: match[2].trim(),
-      content: match[3].trim(),
-    });
-  }
-  
-  // Fallback: if no chapters found, treat entire content as one chapter
-  if (chapters.length === 0) {
-    chapters.push({
-      number: 1,
-      title: "Main Content",
-      content: content.trim(),
-    });
-  }
-  
-  return chapters;
 }
 
 /**
@@ -69,9 +36,8 @@ export async function generateExportBundle(params: {
     genre: string;
   };
   isbn?: string;
-  copyrightPage?: string;
 }): Promise<ExportBundle> {
-  const { bookTitle, authorName, manuscriptContent, coverImageUrl, metadata, isbn, copyrightPage } = params;
+  const { bookTitle, authorName, manuscriptContent, coverImageUrl, metadata, isbn } = params;
   
   try {
     // Create ZIP archive in memory
@@ -80,26 +46,9 @@ export async function generateExportBundle(params: {
     
     archive.on("data", (chunk: Buffer) => chunks.push(chunk));
     
-    // Generate both eBook (DOCX) and Paperback (PDF) formats
-    // Parse manuscript content to extract chapters
-    const chapters = parseManuscriptToChapters(manuscriptContent);
-    
-    const manuscriptData = {
-      bookTitle,
-      subtitle: metadata.subtitle,
-      authorName,
-      chapters,
-    };
-    
-    // Generate eBook DOCX (reflowable, optimized for Kindle)
-    const ebookDocx = await generateDOCX(manuscriptData);
-    const ebookFilename = `${sanitizeFilename(bookTitle)}_eBook.docx`;
-    archive.append(ebookDocx, { name: ebookFilename });
-    
-    // Generate Paperback PDF (6"x9" trim, print-ready)
-    const paperbackPdf = await generatePrintPDF(manuscriptData);
-    const paperbackFilename = `${sanitizeFilename(bookTitle)}_Paperback.pdf`;
-    archive.append(paperbackPdf, { name: paperbackFilename });
+    // Add manuscript as TXT (DOCX generation would require additional library)
+    const manuscriptFilename = `${sanitizeFilename(bookTitle)}_manuscript.txt`;
+    archive.append(manuscriptContent, { name: manuscriptFilename });
     
     // Add KDP metadata file
     const metadataContent = generateKDPMetadata(metadata);
@@ -109,11 +58,6 @@ export async function generateExportBundle(params: {
     if (isbn) {
       const isbnContent = generateISBNInfo(isbn, bookTitle, authorName);
       archive.append(isbnContent, { name: "ISBN_Information.txt" });
-    }
-    
-    // Add copyright page if provided
-    if (copyrightPage) {
-      archive.append(copyrightPage, { name: "Copyright_Page.txt" });
     }
     
     // Add cover image if provided
@@ -147,15 +91,6 @@ export async function generateExportBundle(params: {
     const readmeContent = generateReadme(bookTitle, metadata);
     archive.append(readmeContent, { name: "README.txt" });
     
-    // Add comprehensive KDP Upload Guide
-    const kdpGuideContent = await import("fs/promises").then(fs => 
-      fs.readFile("/home/ubuntu/authors-bureau-v2/KDP_UPLOAD_GUIDE.md", "utf-8")
-    ).catch(() => 
-      // Fallback if file doesn't exist
-      "See README.txt for basic upload instructions. For detailed guidance, visit kdp.amazon.com/help"
-    );
-    archive.append(kdpGuideContent, { name: "KDP_Upload_Guide.txt" });
-    
     // Finalize archive
     await archive.finalize();
     
@@ -174,12 +109,10 @@ export async function generateExportBundle(params: {
       zipUrl,
       zipKey,
       files: {
-        ebook_docx: ebookFilename,
-        paperback_pdf: paperbackFilename,
+        manuscript_docx: manuscriptFilename,
         kdp_metadata: "KDP_Listing_Data.txt",
         cover_image: coverImageUrl ? `${sanitizeFilename(bookTitle)}_cover.png` : undefined,
         isbn_info: isbn ? "ISBN_Information.txt" : undefined,
-        copyright_page: copyrightPage ? "Copyright_Page.txt" : undefined,
       },
       createdAt: timestamp,
     };
@@ -273,57 +206,27 @@ ${"=".repeat(bookTitle.length + 24)}
 Welcome! This package contains everything you need to publish your book on Amazon KDP.
 
 WHAT'S INCLUDED:
-📚 eBook DOCX (reflowable format for Kindle eBook upload)
-📕 Paperback PDF (6"x9" trim size, print-ready with gutter margins)
-🎨 Book cover image (high-resolution, meets KDP requirements)
-📋 KDP listing metadata (optimized categories, keywords, description)
+📄 Manuscript file (ready to upload)
+🎨 Book cover image (high-resolution)
+📋 KDP listing metadata (categories, keywords, description)
 🔢 ISBN information and guidance
-📜 Copyright page (optional, ready to insert)
-📖 Complete KDP Upload Guide (step-by-step instructions)
 
-YOUR FILES ARE KDP-READY:
-✅ Manuscript formatted to Amazon's exact specifications
-✅ 1-inch margins, Times New Roman 12pt, 1.5 line spacing
-✅ Proper chapter headings and page breaks
-✅ First-line paragraph indentation (0.5 inches)
-✅ No track changes, comments, or formatting errors
-✅ Cover meets minimum 1000px requirement
-✅ Metadata optimized for Amazon search algorithms
-
-QUICK START (5-10 MINUTES PER FORMAT):
-
-FOR KINDLE eBOOK:
-1. Go to https://kdp.amazon.com and log in
-2. Click "Create New Title" → "Kindle eBook"
-3. Copy-paste information from "KDP_Listing_Data.txt"
-4. Upload "*_eBook.docx" file (reflowable, Kindle-optimized)
-5. Upload your cover image
-6. Set pricing ($2.99+ for 70% royalty)
-7. Preview and publish
-
-FOR PAPERBACK:
-1. Click "Create New Title" → "Paperback"
-2. Use same metadata from "KDP_Listing_Data.txt"
-3. Upload "*_Paperback.pdf" file (6"x9" trim, print-ready)
-4. Upload your cover (or use KDP Cover Creator)
-5. Set pricing (KDP shows minimum based on page count)
-6. Order proof copy (recommended!)
-7. Approve and publish
-
-DETAILED INSTRUCTIONS:
-See "KDP_Upload_Guide.txt" for complete step-by-step walkthrough with:
-- Account setup instructions
-- Field-by-field guidance
-- Pricing recommendations
-- Common mistakes to avoid
-- Troubleshooting tips
+NEXT STEPS:
+1. Review all files in this package
+2. Go to https://kdp.amazon.com and log in
+3. Click "Create New Title"
+4. Follow the KDP wizard and use the information from "KDP_Listing_Data.txt"
+5. Upload your manuscript and cover files
+6. Set your pricing and distribution options
+7. Preview your book
+8. Publish!
 
 NEED HELP?
 - Amazon KDP Help: https://kdp.amazon.com/en_US/help
 - KDP Community Forums: https://kdpcommunity.amazon.com
 
 Your book has been optimized by AI with bestseller-level intelligence.
-All the hard work is done - just upload and publish!
+Good luck with your launch!
 
 Generated by Authors Bureau AI
 ${new Date().toLocaleDateString()}

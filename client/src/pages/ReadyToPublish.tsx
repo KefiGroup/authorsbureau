@@ -11,13 +11,14 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Upload, FileText, Sparkles, Loader2, BookOpen, CheckCircle2,
   Lightbulb, TrendingUp, Edit3, RefreshCw, Download, Image as ImageIcon,
-  Check, ArrowRight
+  Check, ArrowRight, ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
+import { BookWrapDesigner } from "@/components/BookWrapDesigner";
 
-type WorkflowStep = "upload" | "analyzing" | "review" | "cover" | "amazon" | "export";
+type WorkflowStep = "upload" | "analyzing" | "review" | "cover" | "amazon" | "wrap" | "export";
 
 interface AIAnalysis {
   suggestedTitles: string[];
@@ -61,14 +62,6 @@ export default function ReadyToPublish() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [generatedKeywords, setGeneratedKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
-
-  // ISBN state
-  const [isbnSource, setIsbnSource] = useState<"own" | "amazon_free" | "bowker" | "">("");
-  const [isbnNumber, setIsbnNumber] = useState("");
-
-  // Copyright page state
-  const [copyrightPage, setCopyrightPage] = useState("");
-  const [showCopyrightGenerator, setShowCopyrightGenerator] = useState(false);
 
   // Load user's books to auto-select if no bookId provided
   const { data: userBooks } = trpc.book.getMyBooks.useQuery(undefined, {
@@ -525,14 +518,14 @@ export default function ReadyToPublish() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-6 md:grid-cols-3">
-                    <div className="space-y-3 p-4 rounded-lg border bg-card">
-                      <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide">Target Audience</h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{aiAnalysis.targetAudience}</p>
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">Target Audience</h4>
+                      <p className="text-sm text-muted-foreground">{aiAnalysis.targetAudience}</p>
                     </div>
-                    <div className="space-y-3 p-4 rounded-lg border bg-card">
-                      <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide">Main Themes</h4>
-                      <div className="flex flex-wrap gap-2">
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">Main Themes</h4>
+                      <div className="flex flex-wrap gap-1">
                         {aiAnalysis.themes.slice(0, 4).map((theme, idx) => (
                           <Badge key={idx} variant="secondary" className="text-xs">
                             {theme}
@@ -540,14 +533,11 @@ export default function ReadyToPublish() {
                         ))}
                       </div>
                     </div>
-                    <div className="space-y-3 p-4 rounded-lg border bg-card">
-                      <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide">Key Benefits</h4>
-                      <ul className="text-sm text-muted-foreground space-y-2 leading-relaxed">
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">Key Benefits</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
                         {aiAnalysis.keyBenefits.slice(0, 3).map((benefit, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="text-primary mt-0.5">•</span>
-                            <span>{benefit}</span>
-                          </li>
+                          <li key={idx}>• {benefit}</li>
                         ))}
                       </ul>
                     </div>
@@ -661,76 +651,23 @@ export default function ReadyToPublish() {
                 </CardContent>
               </Card>
 
-              {/* Description Editor */}
+              {/* Description */}
               <Card>
                 <CardHeader>
                   <CardTitle>Amazon Book Description</CardTitle>
                   <CardDescription>
-                    Review and customize your AI-generated description (2,000-4,000 characters recommended)
+                    Conversion-optimized description ready for Amazon KDP
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-sm font-medium">Description Text</label>
-                      <span className={`text-sm ${
-                        editedDescription.length < 2000 ? "text-amber-600" :
-                        editedDescription.length > 4000 ? "text-red-600" :
-                        "text-green-600"
-                      }`}>
-                        {editedDescription.length} characters
-                        {editedDescription.length < 2000 && " (add more detail)"}
-                        {editedDescription.length > 4000 && " (too long, trim down)"}
-                        {editedDescription.length >= 2000 && editedDescription.length <= 4000 && " ✓"}
-                      </span>
-                    </div>
-                    <Textarea
-                      value={editedDescription}
-                      onChange={(e) => setEditedDescription(e.target.value)}
-                      className="min-h-[300px] font-mono text-sm"
-                      placeholder="Your book description will appear here after AI analysis..."
-                    />
-                  </div>
-
-                  {/* Formatting Tips */}
-                  <div className="bg-muted rounded-lg p-4">
-                    <p className="text-sm font-medium mb-2">Amazon KDP Description Tips:</p>
-                    <ul className="text-xs text-muted-foreground space-y-1">
-                      <li>• <strong>Hook first 3 lines</strong> - Readers only see this before "Read more"</li>
-                      <li>• <strong>Use HTML formatting</strong> - &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;br/&gt; for line breaks</li>
-                      <li>• <strong>Bullet points</strong> - Use • or - for easy scanning</li>
-                      <li>• <strong>Call to action</strong> - End with "Scroll up and click Buy Now"</li>
-                      <li>• <strong>Keywords naturally</strong> - Include search terms readers use</li>
-                    </ul>
-                  </div>
-
-                  {/* Quick Actions */}
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        if (aiAnalysis?.bookDescription) {
-                          setEditedDescription(aiAnalysis.bookDescription);
-                          toast.success("Restored AI-generated description");
-                        }
-                      }}
-                      disabled={!aiAnalysis?.bookDescription}
-                    >
-                      Restore AI Version
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(editedDescription);
-                        toast.success("Description copied to clipboard");
-                      }}
-                      disabled={!editedDescription}
-                    >
-                      Copy to Clipboard
-                    </Button>
-                  </div>
+                  <Textarea
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    className="min-h-[200px]"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    You can edit this description or use it as-is. It's already optimized for Amazon conversions.
+                  </p>
                 </CardContent>
               </Card>
 
@@ -799,99 +736,46 @@ export default function ReadyToPublish() {
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold text-foreground mb-2">Choose Your Cover Approach</h3>
-                        <p className="text-muted-foreground max-w-md mx-auto mb-8">
-                          Get AI suggestions (fully editable) or design your own from scratch
+                        <h3 className="text-2xl font-bold text-foreground mb-2">Ready to Create Your Cover?</h3>
+                        <p className="text-muted-foreground max-w-md mx-auto">
+                          AI will analyze your manuscript themes and generate 3 distinct cover styles:
+                          Minimalist, Bold, and Artistic
                         </p>
                       </div>
-                      
-                      <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                        {/* Option 1: AI Suggestions (Editable) */}
-                        <Card className="border-2 hover:border-primary transition-colors">
-                          <CardContent className="pt-6 text-center space-y-4">
-                            <div className="w-16 h-16 mx-auto bg-purple-500/10 rounded-full flex items-center justify-center">
-                              <Sparkles className="w-8 h-8 text-purple-500" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-lg mb-2">Get AI Suggestions</h4>
-                              <p className="text-sm text-muted-foreground">
-                                3 professional designs you can fully customize (colors, text, style)
-                              </p>
-                            </div>
-                            <Button
-                              size="lg"
-                              className="w-full"
-                              onClick={() => {
-                                if (!aiAnalysis) return;
-                                generateCovers.mutate({
-                                  bookTitle: finalTitle,
-                                  authorName: "Author",
-                                  genre: aiAnalysis.detectedGenre,
-                                  themes: aiAnalysis.themes,
-                                  targetAudience: aiAnalysis.targetAudience,
-                                  count: 3,
-                                });
-                              }}
-                              disabled={generateCovers.isPending}
-                            >
-                              {generateCovers.isPending ? (
-                                <>
-                                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                  Generating...
-                                </>
-                              ) : (
-                                <>
-                                  <Sparkles className="w-5 h-5 mr-2" />
-                                  Generate AI Suggestions
-                                </>
-                              )}
-                            </Button>
-                          </CardContent>
-                        </Card>
-                        
-                        {/* Option 2: Design My Own */}
-                        <Card className="border-2 hover:border-primary transition-colors cursor-pointer" onClick={() => {
-                          document.getElementById('cover-upload-direct')?.click();
-                        }}>
-                          <CardContent className="pt-6 text-center space-y-4">
-                            <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                              <Upload className="w-8 h-8 text-primary" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-lg mb-2">Design My Own</h4>
-                              <p className="text-sm text-muted-foreground">
-                                Upload your custom cover design (minimum 1000px width)
-                              </p>
-                            </div>
-                            <Button size="lg" className="w-full" onClick={(e) => {
-                              e.stopPropagation();
-                              document.getElementById('cover-upload-direct')?.click();
-                            }}>
-                              <Upload className="w-5 h-5 mr-2" />
-                              Upload My Cover
-                            </Button>
-                            <input
-                              id="cover-upload-direct"
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  handleCustomCoverUpload(file);
-                                }
-                              }}
-                              className="hidden"
-                            />
-                          </CardContent>
-                        </Card>
-                      </div>
-                      
-                      <div className="mt-6 text-center">
+                      <div className="flex gap-4 justify-center">
                         <Button
-                          variant="ghost"
+                          size="lg"
+                          onClick={() => {
+                            if (!aiAnalysis) return;
+                            generateCovers.mutate({
+                              bookTitle: finalTitle,
+                              authorName: "Author", // TODO: Get from user profile
+                              genre: aiAnalysis.detectedGenre,
+                              themes: aiAnalysis.themes,
+                              targetAudience: aiAnalysis.targetAudience,
+                              count: 3,
+                            });
+                          }}
+                          disabled={generateCovers.isPending}
+                        >
+                          {generateCovers.isPending ? (
+                            <>
+                              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                              Generating Covers...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-5 h-5 mr-2" />
+                              Generate 3 Cover Designs
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="outline"
                           onClick={() => setCurrentStep("amazon")}
                         >
-                          Skip Cover for Now
+                          Skip for Now
                         </Button>
                       </div>
                     </div>
@@ -910,50 +794,20 @@ export default function ReadyToPublish() {
                       {generatedCovers.map((cover, idx) => (
                         <div
                           key={idx}
-                          className={`rounded-lg border-2 transition-all ${
+                          onClick={() => setSelectedCover(cover)}
+                          className={`cursor-pointer rounded-lg border-2 transition-all ${
                             selectedCover === cover
                               ? "border-primary ring-2 ring-primary/20"
                               : "border-border hover:border-primary/50"
                           }`}
                         >
-                          <div className="relative group">
-                            <img
-                              src={cover.imageUrl}
-                              alt={`Cover ${idx + 1}`}
-                              className="w-full aspect-[2/3] object-cover rounded-t-lg cursor-pointer"
-                              onClick={() => setSelectedCover(cover)}
-                            />
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-t-lg flex items-center justify-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => setSelectedCover(cover)}
-                              >
-                                <Check className="w-4 h-4 mr-1" />
-                                Select
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => {
-                                  setSelectedCover(cover);
-                                  setCoverFeedback("");
-                                  toast.info("Describe how you'd like to modify this cover below");
-                                }}
-                              >
-                                <Edit3 className="w-4 h-4 mr-1" />
-                                Edit
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="p-3 flex items-center justify-between">
+                          <img
+                            src={cover.imageUrl}
+                            alt={`Cover ${idx + 1}`}
+                            className="w-full aspect-[2/3] object-cover rounded-t-lg"
+                          />
+                          <div className="p-3">
                             <Badge>{cover.style}</Badge>
-                            {selectedCover === cover && (
-                              <Badge variant="default" className="bg-primary">
-                                <Check className="w-3 h-3 mr-1" />
-                                Selected
-                              </Badge>
-                            )}
                           </div>
                         </div>
                       ))}
@@ -961,113 +815,50 @@ export default function ReadyToPublish() {
 
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label className="text-base font-semibold">✨ Customize Your Selected Cover</Label>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Describe the changes you want (colors, style, text, mood, etc.)
-                        </p>
+                        <Label>Want to modify the selected cover?</Label>
                         <div className="flex gap-2">
                           <Input
-                            placeholder="e.g., make background darker, change to blue tones, add golden accents, more minimalist..."
+                            placeholder="e.g., make it darker, add more color, more professional..."
                             value={coverFeedback}
                             onChange={(e) => setCoverFeedback(e.target.value)}
-                            className="flex-1"
                           />
                           <Button
                             onClick={() => {
                               if (!selectedCover || !coverFeedback.trim() || !aiAnalysis) {
-                                toast.error("Please select a cover and describe your changes");
+                                toast.error("Please select a cover and provide modification feedback");
                                 return;
                               }
                               
-                              toast.info("Regenerating cover with your customizations...");
+                              toast.info("Regenerating cover with your feedback...");
                               
-                              // Regenerate with feedback by modifying themes
-                              const customThemes = [
-                                ...(aiAnalysis.themes || []),
-                                `Style: ${selectedCover.style}`,
-                                `Modifications: ${coverFeedback}`
-                              ];
-                              
-                              generateCovers.mutate({
-                                bookTitle: finalTitle,
-                                authorName: "Author",
-                                genre: aiAnalysis.detectedGenre,
-                                themes: customThemes,
-                                targetAudience: aiAnalysis.targetAudience,
-                                count: 1,
-                              });
-                              
-                              setCoverFeedback("");
+                              // Since we don't have bookId in this workflow, we'll regenerate directly
+                              // For now, show a message that this requires saving the book first
+                              toast.info("Cover regeneration requires saving your book first. For now, you can upload a custom cover or continue with the selected design.");
                             }}
-                            disabled={!selectedCover || !coverFeedback.trim() || generateCovers.isPending}
+                            disabled={!selectedCover || !coverFeedback.trim() || regenerateCover.isPending}
                           >
-                            {generateCovers.isPending ? (
+                            {regenerateCover.isPending ? (
                               <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Regenerating...</>
                             ) : (
-                              <><RefreshCw className="w-4 h-4 mr-2" />Apply Changes</>
+                              <><RefreshCw className="w-4 h-4 mr-2" />Regenerate</>
                             )}
                           </Button>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          💡 Tip: Be specific about colors, mood, and style for best results
-                        </p>
                       </div>
 
-                      <div className="border-t pt-6 mt-6">
-                        <div className="text-center space-y-4">
-                          <div>
-                            <h4 className="font-medium text-foreground mb-2">Have Your Own Cover Design?</h4>
-                            <p className="text-sm text-muted-foreground mb-4">Upload your custom cover image (minimum 1000px width)</p>
-                          </div>
-                          
-                          <div className="flex flex-col items-center gap-3">
-                            <label htmlFor="cover-upload" className="cursor-pointer">
-                              <div className="inline-flex items-center gap-2 px-6 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg border-2 border-dashed border-border hover:border-primary transition-colors">
-                                <Upload className="w-5 h-5" />
-                                <span className="font-medium">Upload Your Own Cover</span>
-                              </div>
-                              <input
-                                id="cover-upload"
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) {
-                                    handleCustomCoverUpload(file);
-                                  }
-                                }}
-                                className="hidden"
-                              />
-                            </label>
-                            
-                            {uploadedCoverUrl && (
-                              <div className="space-y-2">
-                                <div className="relative inline-block">
-                                  <img
-                                    src={uploadedCoverUrl}
-                                    alt="Uploaded cover"
-                                    className="w-48 h-auto rounded-lg border-2 border-primary"
-                                  />
-                                  <Badge className="absolute top-2 right-2 bg-green-500">
-                                    <Check className="w-3 h-3 mr-1" />
-                                    Uploaded
-                                  </Badge>
-                                </div>
-                                <p className="text-xs text-muted-foreground">Custom cover ready for eBook</p>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    toast.info("Book wrap generator coming soon! For now, use KDP Cover Creator for paperback wraps.");
-                                  }}
-                                >
-                                  <Sparkles className="w-4 h-4 mr-2" />
-                                  Generate Paperback Wrap
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground mb-2">Or upload your own cover</p>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleCustomCoverUpload(file);
+                            }
+                          }}
+                          className="max-w-xs mx-auto"
+                        />
                       </div>
                     </div>
 
@@ -1252,9 +1043,9 @@ export default function ReadyToPublish() {
                         onClick={() => {
                           if (!aiAnalysis) return;
                           
-                          // Royalty-aware pricing
-                          setSuggestedPrice("Kindle: $2.99 | Paperback: $12.99");
-                          toast.success("Pricing optimized for 70% royalty tier!");
+                          // Launch strategy pricing
+                          setSuggestedPrice("Kindle: $0.99 | Paperback: $8.99");
+                          toast.success("Launch pricing strategy ready!");
                         }}
                         disabled={!aiAnalysis}
                       >
@@ -1267,235 +1058,61 @@ export default function ReadyToPublish() {
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-center">
                           <p className="text-sm text-muted-foreground mb-2">Kindle eBook</p>
-                          <p className="text-4xl font-bold text-primary">$2.99</p>
-                          <p className="text-xs text-green-600 mt-2 font-medium">70% Royalty Tier ✓</p>
+                          <p className="text-4xl font-bold text-primary">$0.99</p>
+                          <p className="text-xs text-muted-foreground mt-2">Launch Price</p>
                         </div>
                         <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-center">
                           <p className="text-sm text-muted-foreground mb-2">Paperback</p>
-                          <p className="text-4xl font-bold text-primary">$12.99</p>
+                          <p className="text-4xl font-bold text-primary">$8.99</p>
                           <p className="text-xs text-muted-foreground mt-2">Print Edition</p>
                         </div>
                       </div>
                       <div className="bg-muted rounded-lg p-4">
                         <p className="text-sm font-medium mb-2">Launch Strategy</p>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          <strong className="text-amber-600">⚠️ Critical: Amazon Royalty Tiers</strong><br/>
-                          • <strong>$2.99-$9.99</strong>: 70% royalty (recommended)<br/>
-                          • <strong>$0.99-$2.98</strong>: Only 35% royalty (you lose 50% of earnings!)<br/>
-                          • <strong>$10.00+</strong>: Only 35% royalty<br/><br/>
-                          <strong>Recommended Strategy:</strong> Price Kindle at $2.99-$9.99 to maximize your earnings with 70% royalty. At $2.99, you earn $2.09 per sale vs only $0.35 at $0.99. Paperback at $12.99 covers printing costs plus healthy margin.
+                        <p className="text-sm text-muted-foreground">
+                          Start with $0.99 Kindle to maximize sales velocity and rank #1 in your low-competition categories quickly. Once you achieve Amazon Bestseller status, increase the Kindle price to $9.99-$14.99. The bestseller badge becomes your marketing asset. Paperback at $8.99 covers printing costs and provides reasonable margin.
                         </p>
-                        <a href="https://kdp.amazon.com/en_US/help/topic/G200634560" target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
-                          Learn more about Amazon KDP royalty rates →
-                        </a>
                       </div>
                     </div>
                   )}
                 </CardContent>
               </Card>
 
-              {/* Copyright Page Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Copyright Page (Optional)</CardTitle>
-                  <CardDescription>
-                    Professional copyright page to include at the beginning of your book
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {!copyrightPage ? (
-                      <div className="text-center py-6">
-                        <p className="text-sm text-muted-foreground mb-4">
-                          A copyright page protects your work and looks professional. We can generate one for you automatically.
-                        </p>
-                        <Button
-                          onClick={() => {
-                            if (!aiAnalysis) return;
-                            const currentYear = new Date().getFullYear();
-                            const disclaimerType = aiAnalysis.detectedGenre.toLowerCase().includes("technology") || 
-                                                   aiAnalysis.detectedGenre.toLowerCase().includes("ai") ? "technology" : "general";
-                            
-                            const generated = `${finalTitle || aiAnalysis.suggestedTitles[0]}\n\nCopyright © ${currentYear} by Author Name\n\nAll rights reserved. No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of the publisher, except in the case of brief quotations embodied in critical reviews and certain other noncommercial uses permitted by copyright law.\n\nPublished by Self-Published\n\nFirst Edition: ${currentYear}\n\nDISCLAIMER\n\nThe information provided in this book is for general informational purposes only. While the author has made every effort to ensure accuracy, the content should not be considered professional advice. Readers should consult with appropriate professionals for specific guidance related to their individual circumstances.\n\nThe author and publisher assume no responsibility for errors, omissions, or contrary interpretations of the subject matter. Any perceived slight of any individual or organization is purely unintentional.\n\nPrinted in the United States of America`;
-                            
-                            setCopyrightPage(generated);
-                            toast.success("Copyright page generated!");
-                          }}
-                          disabled={!aiAnalysis}
-                        >
-                          <Sparkles className="w-5 h-5 mr-2" />
-                          Generate Copyright Page
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <div className="bg-muted rounded-lg p-4">
-                          <div className="flex justify-between items-center mb-2">
-                            <label className="text-sm font-medium">Copyright Page Content</label>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setCopyrightPage("");
-                                toast.info("Copyright page removed");
-                              }}
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                          <Textarea
-                            value={copyrightPage}
-                            onChange={(e) => setCopyrightPage(e.target.value)}
-                            className="min-h-[200px] font-mono text-xs"
-                          />
-                          <p className="text-xs text-muted-foreground mt-2">
-                            This will be included as a separate file in your export package
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              navigator.clipboard.writeText(copyrightPage);
-                              toast.success("Copyright page copied to clipboard");
-                            }}
-                          >
-                            Copy to Clipboard
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* ISBN Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>ISBN (International Standard Book Number)</CardTitle>
-                  <CardDescription>
-                    Required for Amazon KDP publishing. Choose how you'll obtain your ISBN.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    {/* ISBN Options */}
-                    <div className="space-y-4">
-                      <label className="text-sm font-medium">Choose your ISBN option:</label>
-                      
-                      <div className="space-y-3">
-                        {/* Option 1: Use Own ISBN */}
-                        <div 
-                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                            isbnSource === "own" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                          }`}
-                          onClick={() => setIsbnSource("own")}
-                        >
-                          <div className="flex items-start gap-3">
-                            <input 
-                              type="radio" 
-                              checked={isbnSource === "own"}
-                              onChange={() => setIsbnSource("own")}
-                              className="mt-1"
-                            />
-                            <div className="flex-1">
-                              <p className="font-medium mb-1">I already have an ISBN</p>
-                              <p className="text-sm text-muted-foreground">You've purchased an ISBN from Bowker or another agency</p>
-                            </div>
-                          </div>
-                          {isbnSource === "own" && (
-                            <div className="mt-4 ml-6">
-                              <label className="text-sm font-medium mb-2 block">Enter your ISBN:</label>
-                              <input
-                                type="text"
-                                value={isbnNumber}
-                                onChange={(e) => setIsbnNumber(e.target.value)}
-                                placeholder="978-1-234567-89-0"
-                                className="w-full px-3 py-2 border rounded-md"
-                              />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Option 2: Free Amazon ISBN */}
-                        <div 
-                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                            isbnSource === "amazon_free" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                          }`}
-                          onClick={() => setIsbnSource("amazon_free")}
-                        >
-                          <div className="flex items-start gap-3">
-                            <input 
-                              type="radio" 
-                              checked={isbnSource === "amazon_free"}
-                              onChange={() => setIsbnSource("amazon_free")}
-                              className="mt-1"
-                            />
-                            <div className="flex-1">
-                              <p className="font-medium mb-1">Get free ISBN from Amazon KDP <span className="text-green-600">(Recommended)</span></p>
-                              <p className="text-sm text-muted-foreground mb-2">Amazon provides a free ISBN during the publishing process</p>
-                              <p className="text-xs text-amber-600">⚠️ Note: You can only sell on Amazon with this ISBN (not other retailers)</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Option 3: Purchase from Bowker */}
-                        <div 
-                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                            isbnSource === "bowker" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                          }`}
-                          onClick={() => setIsbnSource("bowker")}
-                        >
-                          <div className="flex items-start gap-3">
-                            <input 
-                              type="radio" 
-                              checked={isbnSource === "bowker"}
-                              onChange={() => setIsbnSource("bowker")}
-                              className="mt-1"
-                            />
-                            <div className="flex-1">
-                              <p className="font-medium mb-1">Purchase ISBN from Bowker ($125)</p>
-                              <p className="text-sm text-muted-foreground mb-2">Official US ISBN agency - allows selling on all platforms</p>
-                              <p className="text-xs text-green-600">✓ Best for: Authors planning to sell on multiple retailers (Amazon + others)</p>
-                            </div>
-                          </div>
-                          {isbnSource === "bowker" && (
-                            <div className="mt-4 ml-6">
-                              <a 
-                                href="https://www.myidentifiers.com/identify-protect-your-book/isbn/buy-isbn" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-                              >
-                                Purchase ISBN from Bowker →
-                              </a>
-                              <p className="text-xs text-muted-foreground mt-2">After purchasing, enter your ISBN above</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* ISBN Information */}
-                    <div className="bg-muted rounded-lg p-4">
-                      <p className="text-sm font-medium mb-2">About ISBNs:</p>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• Each format needs its own ISBN (eBook, paperback, hardcover)</li>
-                        <li>• Amazon assigns separate ISBNs automatically for each format</li>
-                        <li>• You don't need UPC/barcode - Amazon generates it from your ISBN</li>
-                        <li>• ISBN is permanent and cannot be changed after publishing</li>
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
               <div className="flex justify-end">
                 <Button
                   size="lg"
+                  onClick={() => setCurrentStep("wrap")}
+                >
+                  Continue to Book Wrap Designer
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Book Wrap Designer */}
+          {currentStep === "wrap" && selectedCover && aiAnalysis && (
+            <div className="space-y-6">
+              <BookWrapDesigner
+                frontCoverUrl={selectedCover.imageUrl}
+                bookTitle={finalTitle}
+                authorName="Author Name"
+                bookDescription={editedDescription || aiAnalysis.bookDescription}
+                pageCount={Math.ceil((manuscript?.split(/\s+/).length || 0) / 250)}
+                isbn={undefined}
+              />
+              
+              <div className="flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep("amazon")}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+                <Button
+                  size="lg"
                   onClick={() => setCurrentStep("export")}
-                  disabled={!isbnSource}
                 >
                   Continue to Export
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -1504,7 +1121,7 @@ export default function ReadyToPublish() {
             </div>
           )}
 
-          {/* Step 6: Export Bundle */}
+          {/* Step 7: Export Bundle */}
           {currentStep === "export" && aiAnalysis && (
             <div className="space-y-6">
               <Card className="border-primary/50 bg-primary/5">
@@ -1553,15 +1170,6 @@ export default function ReadyToPublish() {
                         <p className="text-sm text-muted-foreground">ISBN details and registration info</p>
                       </div>
                     </div>
-                    {copyrightPage && (
-                      <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                        <FileText className="w-5 h-5 text-primary" />
-                        <div>
-                          <p className="font-medium">Copyright Page (TXT)</p>
-                          <p className="text-sm text-muted-foreground">Professional copyright notice for your book</p>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   <div className="mt-8 text-center">
@@ -1589,8 +1197,6 @@ export default function ReadyToPublish() {
                             price: suggestedPrice,
                             genre: aiAnalysis.detectedGenre,
                           },
-                          isbn: isbnSource === "own" ? isbnNumber : undefined,
-                          copyrightPage: copyrightPage || undefined,
                         });
                       }}
                       disabled={!manuscript || !aiAnalysis || !selectedCover}

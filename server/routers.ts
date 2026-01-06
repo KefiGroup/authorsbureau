@@ -1,6 +1,6 @@
 import { COOKIE_NAME } from "@shared/const";
 import { generateBookOutline, generateSuckcessProfile, generateChapterDraft } from "./ai-generation";
-import { generateDOCX, generatePDF, generatePrintPDF } from "./manuscript-export";
+import { generateDOCX, generatePDF } from "./manuscript-export";
 import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategoryCombination } from "./amazon-category-research";
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
 import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt } from "./cover-generator";
@@ -464,7 +464,6 @@ export const appRouter = router({
           genre: z.string(),
         }),
         isbn: z.string().optional(),
-        copyrightPage: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         return await generateExportBundle(input);

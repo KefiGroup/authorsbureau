@@ -573,120 +573,19 @@
 - [ ] Auto-populate workflow with existing book data (title, content, genre)
 
 
-## Critical Fixes from Hemispheric Intelligence Walkthrough
-- [ ] Fix pricing: Add royalty tier warnings (35% vs 70%), recommend $2.99+ for eBooks instead of $0.99
-- [ ] Add ISBN guidance and collection system with cost warnings ($125 for one, $295 for 10)
-- [ ] Add book description editor with review step before export
-- [ ] Integrate copyright page generator into export package
-- [ ] Integrate back cover templates into export package  
-- [ ] Add format selection (eBook vs Print vs Both)
-- [ ] Add permanent metadata warning (9 unchangeable Amazon KDP fields that lose reviews if changed)
-- [ ] Add pre-export review step to verify all metadata before download
-- [ ] Fix category analysis to ensure it matches actual book content (currently analyzing wrong manuscript)
-- [ ] Add royalty calculator showing actual earnings per sale at different price points
-
-
-## Critical UX Fixes (From Walkthrough)
-- [x] Fix #1: Auto-load existing manuscripts in Ready to Publish workflow
-- [x] Fix #2: Royalty-aware pricing with 70% tier warnings and $2.99+ recommendations
-- [x] Fix #3: ISBN guidance and collection with 3 clear options (own, Amazon free, Bowker purchase)
-- [x] Fix #4: Book description editor with character count, formatting tips, and restore/copy buttons
-- [x] Fix #5: Copyright page generator integrated into workflow and export package
-- [ ] Fix #6: Format selection (eBook vs Print vs Both) with appropriate guidance
-- [ ] Fix #7: Permanent metadata warning modal before finalizing Amazon optimization
-- [ ] Fix #8: Comprehensive review step before export showing all collected data
-- [ ] Fix #9: Fix category analysis to properly match book content
-- [ ] Fix #10: Royalty calculator showing actual earnings per sale at different price points
-
-
-## KDP-Ready Package Preparation (No API Available)
-- [ ] Remove/simplify pricing section (KDP handles this with their calculator)
-- [ ] Enhance manuscript formatting to exact KDP specifications (margins, fonts, page breaks)
-- [ ] Verify DOCX export meets KDP requirements (no track changes, proper styles)
-- [ ] Add format selection (eBook only, Print only, or Both) with format-specific guidance
-- [ ] Create comprehensive KDP upload guide (step-by-step with screenshots)
-- [ ] Optimize metadata for easy copy-paste into KDP fields
-- [ ] Add KDP-specific formatting checklist (title length, description HTML, keyword format)
-- [ ] Create "What to expect in KDP" guide (pricing page, preview tool, publishing timeline)
-- [ ] Add validation warnings (title too long, description too short, missing ISBN for print)
-- [ ] Test complete workflow: Export → Manual KDP upload → Verify all fields work
-
-
-## Manuscript Formatting Enhancements (Completed)
-- [x] Enhanced DOCX export with KDP-compliant formatting
-- [x] Added proper line spacing (1.5 for readability)
-- [x] Added first-line paragraph indentation (0.5 inches)
-- [x] Set standard 1-inch margins on all sides
-- [x] Used Times New Roman 12pt font (KDP standard)
-- [x] Proper heading styles (H1 for chapters, Title for book title)
-- [x] Page breaks between chapters
-- [x] No headers/footers (KDP adds page numbers automatically)
-
-
-## Export Package Optimization (Completed)
-- [x] Enhanced README with detailed KDP-ready checklist
-- [x] Added comprehensive KDP Upload Guide to export package
-- [x] Included step-by-step instructions for manual KDP upload
-- [x] Listed all formatting specifications met by export
-- [x] Added pricing recommendations ($2.99+ for 70% royalty)
-- [x] Included troubleshooting tips and common mistakes to avoid
-- [x] Made all metadata copy-paste ready for KDP fields
-- [x] Emphasized 5-10 minute upload time with prepared files
-
-
-## KDP-Ready Preparation Strategy (Completed)
-- [x] Researched Amazon KDP API availability (confirmed: no public API exists)
-- [x] Pivoted strategy from automated upload to perfect preparation
-- [x] Created comprehensive KDP formatting requirements document
-- [x] Enhanced manuscript export to meet exact KDP specifications
-- [x] Created detailed step-by-step KDP upload guide
-- [x] Optimized export package for 5-10 minute manual upload
-- [x] Removed pricing calculator (KDP handles this during upload)
-- [x] Focused platform on what authors need BEFORE KDP (content optimization)
-- [x] Emphasized copy-paste ready metadata for easy KDP field population
-
-
-## Dual-Format Export (eBook + Paperback)
-- [x] Generate both eBook DOCX and Paperback PDF automatically (no user selection needed)
-- [x] eBook DOCX: Reflowable layout, no headers/footers, optimized for Kindle devices
-- [x] Paperback PDF: 6"x9" trim size (most popular), proper gutter margins for binding
-- [x] Paperback PDF: Embedded fonts, print-ready formatting
-- [x] Update export bundle to include both formats in single ZIP
-- [x] Update README to explain both formats and when to use each
-- [x] Add separate KDP upload instructions for eBook vs paperback
-- [ ] Test both formats meet KDP requirements
-
-
-## UI Fixes
-- [x] Fix AI Publisher Analysis table layout (text overlapping, columns misaligned)
-- [x] Add proper spacing, borders, and alignment to table
-- [x] Ensure responsive layout for table on different screen sizes
-
-
-## Download Functionality Fix
-- [ ] Fix "Download Publishing Package" button - not triggering download
-- [ ] Fix "Download Complete Package (ZIP)" button - not working
-- [ ] Ensure ZIP file downloads properly when buttons are clicked
-- [ ] Add loading state during ZIP generation
-- [ ] Add error handling if download fails
-
-
-## Custom Cover Upload & Book Wrap Generator
-- [x] Add "Upload Your Own Cover" button in cover selection section
-- [x] Implement file upload handling for custom cover images
-- [x] Validate uploaded cover dimensions (minimum 1000px for eBook)
-- [x] Show preview of uploaded cover with success badge
-- [ ] Add book wrap generator for paperback (front + spine + back)
-- [ ] Calculate spine width based on page count
-- [ ] Generate back cover with barcode placeholder and description
-- [ ] Allow preview of full wrap before export
-- [ ] Include both front cover (eBook) and full wrap (paperback) in export package
-
-
-## Cover Upload Flexibility
-- [x] Add choice: "Get AI Suggestions" vs "Design My Own"
-- [x] Make AI-generated covers editable (colors, text, style)
-- [x] Add "Edit" button for each AI suggestion (hover overlay)
-- [x] Provide cover customization interface with text input
-- [x] Allow custom upload in "Design My Own" path
-- [x] Support cover regeneration with specific modification prompts
+## Professional Book Wrap Designer
+- [x] Calculate spine width based on page count and paper type (cream/white)
+- [x] Support standard trim sizes (5x8, 5.5x8.5, 6x9, 7x10, 8.5x11)
+- [x] Add 0.125" bleed on all sides for print requirements
+- [x] Calculate total wrap dimensions (front + spine + back + bleed)
+- [x] Build visual wrap designer interface with three sections (front/spine/back)
+- [x] Front cover: Use selected AI cover or uploaded design
+- [x] Spine designer: Auto-calculate width, add title and author name vertically
+- [x] Back cover designer: Book description, author bio, barcode placeholder
+- [x] Color picker for background and text
+- [x] Font size slider for text customization
+- [x] Live preview of complete wrap with zoom controls
+- [x] Export as print-ready PNG at 300 DPI with proper bleed and dimensions
+- [x] Generate barcode placeholder with ISBN-13 format
+- [x] Safe zone calculations (avoid text in gutter/trim areas)
+- [x] Integrated into workflow after cover selection
