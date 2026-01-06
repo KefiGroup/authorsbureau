@@ -635,3 +635,30 @@
 - [ ] Add spine text (title + author name, vertical)
 - [ ] Export at print-ready resolution (300 DPI)
 - [ ] Include bleed area and trim marks
+
+
+---
+
+## Book Wrap Generation Backend (Current Focus)
+
+### Template-Based Generation ✅
+- [x] Create tRPC mutation for generating book wrap from template
+- [x] Use SVG/sharp to render back cover with template layout
+- [x] Render author photo, bio, description with selected colors/fonts
+- [x] Generate spine with vertical text (title + author)
+- [x] Combine front cover + spine + back cover into single image
+- [x] Export at 300 DPI for print quality
+- [x] Add bleed area (0.125" on all sides)
+- [x] Return S3 URL of generated wrap
+
+### Upload-Based Generation ✅
+- [x] For uploaded wraps, validate and store directly
+- [x] No generation needed, just pass through to export
+
+### Export Integration ✅
+- [x] Wire "Generate Book Wrap" button to backend mutation
+- [x] Show loading state during generation
+- [x] Toast notifications for success/failure
+- [ ] Display generated wrap in preview (future)
+- [ ] Add download button for generated wrap (future)
+- [ ] Include wrap in final export package (future)

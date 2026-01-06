@@ -56,6 +56,16 @@ export function BookWrapDesignerV2({
     },
   });
 
+  const generateWrapMutation = trpc.covers.generateWrap.useMutation({
+    onSuccess: (result) => {
+      onWrapGenerated(result.wrapUrl);
+      toast.success("Book wrap generated successfully!");
+    },
+    onError: (error) => {
+      toast.error(`Generation failed: ${error.message}`);
+    },
+  });
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -320,9 +330,42 @@ export function BookWrapDesignerV2({
                     </div>
                   </div>
 
-                  <Button className="w-full" size="lg">
-                    <Download className="w-4 h-4 mr-2" />
-                    Generate Book Wrap
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={() => {
+                      if (!frontCoverUrl) {
+                        toast.error("Please upload a front cover first");
+                        return;
+                      }
+                      toast.info("Generating book wrap...");
+                      generateWrapMutation.mutate({
+                        frontCoverUrl,
+                        bookTitle,
+                        authorName,
+                        authorPhotoUrl,
+                        authorBio,
+                        bookDescription,
+                        backgroundColor,
+                        textColor,
+                        fontSize,
+                        pageCount,
+                        template: selectedTemplate as "modern" | "classic" | "minimalist" | "bold",
+                      });
+                    }}
+                    disabled={generateWrapMutation.isPending || !frontCoverUrl}
+                  >
+                    {generateWrapMutation.isPending ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 mr-2" />
+                        Generate Book Wrap
+                      </>
+                    )}
                   </Button>
                 </CardContent>
               </Card>

@@ -4,6 +4,7 @@ import { generateDOCX, generatePDF } from "./manuscript-export";
 import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategoryCombination } from "./amazon-category-research";
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
 import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt, CoverCustomization } from "./cover-generator";
+import { generateBookWrap } from "./book-wrap-generator";
 import { generateExportBundle } from "./export-bundle";
 import { storagePut } from "./storage";
 import { parseIntoPages, generatePagePreviewHTML, getPreviewSummary } from "./interior-preview";
@@ -1044,6 +1045,26 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
         const { url } = await storagePut(fileKey, buffer, input.fileType);
 
         return { url, key: fileKey };
+      }),
+
+    // Generate complete book wrap (front + spine + back)
+    generateWrap: protectedProcedure
+      .input(z.object({
+        frontCoverUrl: z.string(),
+        bookTitle: z.string(),
+        authorName: z.string(),
+        authorPhotoUrl: z.string().optional(),
+        authorBio: z.string(),
+        bookDescription: z.string(),
+        backgroundColor: z.string(),
+        textColor: z.string(),
+        fontSize: z.number(),
+        pageCount: z.number(),
+        template: z.enum(["modern", "classic", "minimalist", "bold"]),
+      }))
+      .mutation(async ({ input }) => {
+        const wrapUrl = await generateBookWrap(input);
+        return { wrapUrl };
       }),
   }),
 });
