@@ -3,7 +3,7 @@ import { useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, BookOpen, FileText, Download, ArrowLeft } from "lucide-react";
+import { Loader2, BookOpen, FileText, Download, ArrowLeft, Upload, FileUp } from "lucide-react";
 // import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Link } from "wouter";
@@ -11,12 +11,49 @@ import { Link } from "wouter";
 export default function WritingProject() {
   const [, params] = useRoute("/writing/:id");
   const bookId = params?.id ? parseInt(params.id) : null;
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const { data: author, isLoading: authorLoading } = trpc.author.getProfile.useQuery();
-  const { data: book, isLoading: bookLoading, error } = trpc.book.getById.useQuery(
+  const { data: book, isLoading: bookLoading, error, refetch } = trpc.book.getById.useQuery(
     { bookId: bookId! },
     { enabled: !!bookId }
   );
+  
+  const updateBookMutation = trpc.book.update.useMutation({
+    onSuccess: () => {
+      refetch();
+      setIsUploading(false);
+      setUploadError(null);
+    },
+    onError: (error) => {
+      setUploadError(error.message);
+      setIsUploading(false);
+    },
+  });
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const text = await file.text();
+      const wordCount = text.split(/\s+/).filter(Boolean).length;
+      
+      await updateBookMutation.mutateAsync({
+        bookId: book!.id,
+        content: text,
+        wordCount,
+        status: 'drafting',
+      });
+    } catch (error) {
+      setUploadError('Failed to upload manuscript. Please try again.');
+      setIsUploading(false);
+    }
+  };
 
   const isLoading = authorLoading || bookLoading;
 
@@ -91,6 +128,63 @@ export default function WritingProject() {
             </Button>
           </div>
         </div>
+
+        {/* Upload Manuscript CTA - Show when no content */}
+        {(!book.content || book.wordCount === 0) && (
+          <Card className="border-primary bg-primary/5">
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <FileUp className="w-8 h-8 text-primary" />
+                  </div>
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-xl font-semibold mb-2">Upload Your Manuscript</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Have an existing manuscript? Upload it now to get started with AI-powered optimization, cover design, and Amazon KDP publishing.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <label htmlFor="manuscript-upload">
+                      <Button disabled={isUploading} size="lg" className="cursor-pointer">
+                        {isUploading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload Manuscript
+                          </>
+                        )}
+                      </Button>
+                    </label>
+                    <input
+                      id="manuscript-upload"
+                      type="file"
+                      accept=".txt,.doc,.docx"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <Button variant="outline" size="lg" asChild>
+                      <Link href="/writing-studio">
+                        <BookOpen className="w-4 h-4 mr-2" />
+                        Or Start Writing
+                      </Link>
+                    </Button>
+                  </div>
+                  {uploadError && (
+                    <p className="text-sm text-destructive mt-3">{uploadError}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Supported formats: TXT, DOC, DOCX • Max size: 10MB
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Book Status Card */}
         <Card>

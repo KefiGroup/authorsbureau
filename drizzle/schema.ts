@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean, json } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, mediumtext, timestamp, varchar, decimal, boolean, json } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -44,7 +44,7 @@ export const books = mysqlTable("books", {
   title: varchar("title", { length: 500 }).notNull(),
   subtitle: varchar("subtitle", { length: 500 }),
   description: text("description"),
-  content: text("content"), // Main manuscript content
+  content: mediumtext("content"), // Main manuscript content (supports up to 16MB)
   genre: varchar("genre", { length: 100 }),
   status: mysqlEnum("status", ["idea", "outlining", "drafting", "editing", "designed", "marketing", "published"]).default("idea").notNull(),
   coverUrl: varchar("coverUrl", { length: 500 }),

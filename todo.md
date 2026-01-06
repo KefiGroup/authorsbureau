@@ -533,3 +533,9 @@
 ## Bug Fixes - User Reported
 - [x] Fix "Continue Writing" button not clickable in Writing Studio - FIXED: Added Link navigation to /writing-studio
 - [x] Add tooltip/help text to explain what Export button does - FIXED: Added tooltip and alert dialog with detailed explanation
+
+## UX Improvements - User Reported
+- [x] Redesign book upload flow to be more intuitive - COMPLETED: Added prominent upload card with clear CTA
+- [x] Improve clarity of where/how to upload manuscript for existing books - COMPLETED: Upload button now primary action when book has no content
+- [x] Add clear visual hierarchy and guidance throughout upload process - COMPLETED: Blue highlighted card with icon, description, and file format guidance
+- [x] Increase database content field size to support full manuscripts - COMPLETED: Changed from TEXT (65KB) to MEDIUMTEXT (16MB)
