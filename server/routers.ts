@@ -66,6 +66,27 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // Upload profile photo to S3
+    uploadProfilePhoto: protectedProcedure
+      .input(z.object({
+        imageData: z.string(), // base64 encoded image
+        mimeType: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Convert base64 to buffer
+        const base64Data = input.imageData.split(',')[1] || input.imageData;
+        const buffer = Buffer.from(base64Data, 'base64');
+        
+        // Generate unique file key
+        const randomSuffix = Math.random().toString(36).substring(7);
+        const fileKey = `author-photos/${ctx.user.id}-${Date.now()}-${randomSuffix}.jpg`;
+        
+        // Upload to S3
+        const { url } = await storagePut(fileKey, buffer, input.mimeType);
+        
+        return { url };
+      }),
+
     // Update author profile
     updateProfile: protectedProcedure
       .input(z.object({

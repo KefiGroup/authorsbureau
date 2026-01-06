@@ -295,3 +295,17 @@
   - [ ] Create demo video or interactive walkthrough
   - [ ] Show sample book journey through all 8 steps
   - [ ] Add "Try It Yourself" CTA at the end
+
+
+---
+
+## Bug Fix: Profile Not Saving (Critical) ✅
+- [x] Investigate why profile data is not persisting to database
+- [x] Check profile save mutation in routers.ts
+- [x] Check database schema for author_profiles table
+- [x] Test profile update flow from Profile page
+- [x] Fix profile saving bug - avatar URL was using temporary blob URL instead of S3
+- [x] Add uploadProfilePhoto mutation to upload photos to S3
+- [x] Update Profile.tsx to use proper S3 upload instead of placeholder
+- [x] Convert cropped image to base64 and upload via tRPC
+- [ ] Verify profile data loads correctly after save (needs testing)

@@ -16,6 +16,7 @@ export default function Profile() {
   const { data: authorProfile, isLoading } = trpc.author.getProfile.useQuery();
   const createProfileMutation = trpc.author.createProfile.useMutation();
   const updateProfileMutation = trpc.author.updateProfile.useMutation();
+  const uploadPhotoMutation = trpc.author.uploadProfilePhoto.useMutation();
   const utils = trpc.useUtils();
 
   const [formData, setFormData] = useState({
@@ -103,14 +104,18 @@ export default function Profile() {
   const handleCropComplete = async (croppedBlob: Blob) => {
     setIsUploading(true);
     try {
-      const buffer = await croppedBlob.arrayBuffer();
-      const uint8Array = new Uint8Array(buffer);
-      const randomSuffix = Math.random().toString(36).substring(7);
-      const fileKey = `author-photos/${Date.now()}-${randomSuffix}.jpg`;
+      // Convert blob to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(croppedBlob);
+      await new Promise((resolve) => { reader.onloadend = resolve; });
+      const base64Data = reader.result as string;
       
-      // TODO: Implement storagePut - for now just use a placeholder
-      // const { url } = await storagePut(fileKey, uint8Array, "image/jpeg");
-      const url = URL.createObjectURL(croppedBlob);
+      // Upload to S3 via tRPC
+      const { url } = await uploadPhotoMutation.mutateAsync({
+        imageData: base64Data,
+        mimeType: "image/jpeg",
+      });
+      
       setFormData({ ...formData, avatarUrl: url });
       setImageToCrop(null);
       
