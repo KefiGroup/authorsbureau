@@ -9,6 +9,12 @@ vi.mock("./storage", () => ({
   })
 }));
 
+// Mock the manuscript-export module
+vi.mock("./manuscript-export", () => ({
+  generateDOCX: vi.fn().mockResolvedValue(Buffer.from("mock-docx-content")),
+  generatePDF: vi.fn().mockResolvedValue(Buffer.from("mock-pdf-content")),
+}));
+
 describe("Export Bundle - Data URL Cover Fix", () => {
   const testManuscript = "Chapter 1\n\nThis is a test manuscript.";
   

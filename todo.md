@@ -661,3 +661,27 @@
 - [ ] Ready to Publish: Test cover generation and customization
 - [ ] Ready to Publish: Test book wrap designer functionality
 - [ ] Ready to Publish: Verify export package includes all required files
+
+
+## Testing & Debugging - Ready to Publish Workflow
+- [ ] Test manuscript upload (paste text)
+- [ ] Test manuscript upload (file upload - DOCX/PDF/TXT)
+- [ ] Test AI analysis and chat responses
+- [ ] Test title/subtitle selection
+- [ ] Test cover generation (AI suggestions)
+- [ ] Test cover customization/editing
+- [ ] Test custom cover upload
+- [ ] Test book wrap designer
+- [ ] Test Amazon metadata (categories, keywords, description)
+- [ ] Test pricing recommendations
+- [ ] Test ISBN guidance section
+- [ ] Test copyright page generator
+- [x] Debug ZIP download functionality (primary issue)
+- [x] Verify export package contains all files (DOCX, PDF, covers, metadata, guide)
+- [x] Fixed download mechanism (using proper download link)
+- [x] Added DOCX and PDF generation to export bundle
+- [x] Added author profile integration for real author names
+- [x] Fixed archiver event handling (finish vs end)
+- [x] All export-bundle tests passing
+- [ ] Test Save Progress functionality
+- [ ] Test workflow resume from saved state

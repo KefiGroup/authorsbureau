@@ -64,6 +64,9 @@ export default function ReadyToPublish() {
   const [generatedKeywords, setGeneratedKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
 
+  // Load author profile
+  const { data: authorProfile } = trpc.author.getProfile.useQuery();
+
   // Load user's books to auto-select if no bookId provided
   const { data: userBooks } = trpc.book.getMyBooks.useQuery(undefined, {
     enabled: !bookId,
@@ -163,7 +166,15 @@ export default function ReadyToPublish() {
 
   const generateExportBundle = trpc.export.generateBundle.useMutation({
     onSuccess: (result) => {
-      window.open(result.zipUrl, "_blank");
+      // Create a temporary link element to trigger download
+      const link = document.createElement('a');
+      link.href = result.zipUrl;
+      link.download = result.zipKey.split('/').pop() || 'publishing-package.zip';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
       toast.success("Publishing package ready! Download started.");
     },
     onError: (error) => {
@@ -1066,7 +1077,7 @@ export default function ReadyToPublish() {
                         
                         generateExportBundle.mutate({
                           bookTitle: finalTitle || aiAnalysis.suggestedTitles[0],
-                          authorName: "Author Name", // TODO: Get from user profile
+                          authorName: authorProfile?.penName || "Author",
                           manuscriptContent: manuscript,
                           coverImageUrl: selectedCover,
                           metadata: {
