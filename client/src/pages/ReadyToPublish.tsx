@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
+import { useLocation } from "wouter";
 
 type WorkflowStep = "upload" | "analyzing" | "review" | "cover" | "amazon" | "export";
 
@@ -31,11 +32,15 @@ interface AIAnalysis {
 }
 
 export default function ReadyToPublish() {
+  const [location] = useLocation();
+  const bookIdFromUrl = new URLSearchParams(window.location.search).get('bookId');
+  const [bookId, setBookId] = useState<number | null>(bookIdFromUrl ? parseInt(bookIdFromUrl) : null);
   const [currentStep, setCurrentStep] = useState<WorkflowStep>("upload");
   const [manuscript, setManuscript] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [uploadMethod, setUploadMethod] = useState<"paste" | "file">("paste");
   const [isUploading, setIsUploading] = useState(false);
+  const [existingManuscriptLoaded, setExistingManuscriptLoaded] = useState(false);
   
   // AI Analysis state
   const [aiAnalysis, setAIAnalysis] = useState<AIAnalysis | null>(null);
@@ -56,6 +61,35 @@ export default function ReadyToPublish() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [generatedKeywords, setGeneratedKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
+
+  // Load user's books to auto-select if no bookId provided
+  const { data: userBooks } = trpc.book.getMyBooks.useQuery(undefined, {
+    enabled: !bookId,
+  });
+
+  // Auto-select most recent book if no bookId provided
+  useEffect(() => {
+    if (!bookId && userBooks && userBooks.length > 0) {
+      const mostRecentBook = userBooks[0]; // Already sorted by updatedAt DESC
+      setBookId(mostRecentBook.id);
+    }
+  }, [bookId, userBooks]);
+
+  // Load existing book if bookId is provided
+  const { data: existingBook } = trpc.book.getById.useQuery(
+    { bookId: bookId! },
+    { enabled: !!bookId }
+  );
+
+  // Auto-load existing manuscript
+  useEffect(() => {
+    if (existingBook && existingBook.content && !existingManuscriptLoaded) {
+      setManuscript(existingBook.content);
+      setWordCount(existingBook.wordCount || 0);
+      setExistingManuscriptLoaded(true);
+      toast.success(`Loaded existing manuscript: ${existingBook.title} (${existingBook.wordCount} words)`);
+    }
+  }, [existingBook, existingManuscriptLoaded]);
 
   // tRPC mutations
   const analyzeManuscript = trpc.manuscriptAnalysis.analyze.useMutation({
@@ -327,6 +361,32 @@ export default function ReadyToPublish() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Show existing manuscript loaded message */}
+                {existingManuscriptLoaded && existingBook && (
+                  <div className="bg-green-50 border-2 border-green-500 rounded-lg p-6 space-y-4">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-green-900 text-lg mb-2">
+                          ✓ Manuscript Loaded: {existingBook.title}
+                        </h3>
+                        <p className="text-green-800 mb-3">
+                          Your existing manuscript has been automatically loaded ({wordCount.toLocaleString()} words). 
+                          You can proceed directly to AI analysis or upload a different manuscript below.
+                        </p>
+                        <Button
+                          onClick={handleAnalyzeManuscript}
+                          size="lg"
+                          className="gap-2 bg-green-600 hover:bg-green-700"
+                        >
+                          <Sparkles className="w-5 h-5" />
+                          Use This Manuscript & Analyze
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <Tabs value={uploadMethod} onValueChange={(v) => setUploadMethod(v as "paste" | "file")}>
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="paste">Paste Text</TabsTrigger>

@@ -43,15 +43,34 @@ export default function Home() {
             dominate Amazon with our comprehensive AI-powered platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild>
-              <Link href="/choose-track">
-                Start Writing Your Book
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline">
-              Watch Demo
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Button size="lg" asChild>
+                  <Link href="/ready-to-publish">
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Upload Existing Manuscript
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/choose-track">
+                    Or Start Writing From Scratch
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button size="lg" asChild>
+                  <Link href="/choose-track">
+                    Start Writing Your Book
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline">
+                  Watch Demo
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </section>

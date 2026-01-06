@@ -254,7 +254,7 @@ export default function WritingProject() {
                   </p>
                   <div className="flex gap-3 flex-wrap">
                     <Button variant="outline" size="sm" asChild>
-                      <Link href="/ready-to-publish">
+                      <Link href={`/ready-to-publish?bookId=${book?.id}`}>
                         <FileText className="w-4 h-4 mr-2" />
                         Ready to Publish
                       </Link>

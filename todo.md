@@ -563,3 +563,11 @@
 ## Bug Fixes - Navigation
 - [x] Fix Amazon 404 error - COMPLETED: Added Coming Soon page for /amazon route
 - [ ] Implement Amazon KDP integration page with sales tracking - Future feature
+
+
+## Phase 1: Critical UX Fixes (Priority 1 - IN PROGRESS)
+- [ ] **FIX #1**: Detect existing manuscript in Ready to Publish workflow - skip upload step if manuscript exists
+- [ ] **FIX #2**: Add "Upload Existing Manuscript" CTA on homepage for authors with finished books
+- [ ] **FIX #3**: Implement workflow progress persistence - save covers, categories, keywords to database
+- [ ] Allow resuming Ready to Publish workflow from any step
+- [ ] Auto-populate workflow with existing book data (title, content, genre)

@@ -64,6 +64,16 @@ export const books = mysqlTable("books", {
   publisherName: varchar("publisherName", { length: 255 }),
   publisherWebsite: varchar("publisherWebsite", { length: 500 }),
   copyrightYear: int("copyrightYear"),
+  // Ready to Publish workflow progress (saved automatically)
+  workflowStep: varchar("workflowStep", { length: 50 }), // upload, analyzing, review, cover, amazon, export
+  aiAnalysis: text("aiAnalysis"), // JSON: AI analysis results (titles, subtitles, description, etc.)
+  selectedTitle: varchar("selectedTitle", { length: 500 }), // User's chosen title
+  selectedSubtitle: varchar("selectedSubtitle", { length: 500 }), // User's chosen subtitle
+  generatedCovers: text("generatedCovers"), // JSON: Array of generated cover URLs
+  selectedCoverUrl: varchar("selectedCoverUrl", { length: 500 }), // User's chosen cover
+  amazonCategories: text("amazonCategories"), // JSON: Selected Amazon categories
+  amazonKeywords: text("amazonKeywords"), // JSON: Generated keywords
+  suggestedPrice: varchar("suggestedPrice", { length: 20 }), // AI-suggested pricing
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
