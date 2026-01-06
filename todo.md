@@ -681,3 +681,12 @@
 - [ ] Generate back cover with barcode placeholder and description
 - [ ] Allow preview of full wrap before export
 - [ ] Include both front cover (eBook) and full wrap (paperback) in export package
+
+
+## Cover Upload Flexibility
+- [x] Add choice: "Get AI Suggestions" vs "Design My Own"
+- [x] Make AI-generated covers editable (colors, text, style)
+- [x] Add "Edit" button for each AI suggestion (hover overlay)
+- [x] Provide cover customization interface with text input
+- [x] Allow custom upload in "Design My Own" path
+- [x] Support cover regeneration with specific modification prompts

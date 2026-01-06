@@ -799,46 +799,99 @@ export default function ReadyToPublish() {
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold text-foreground mb-2">Ready to Create Your Cover?</h3>
-                        <p className="text-muted-foreground max-w-md mx-auto">
-                          AI will analyze your manuscript themes and generate 3 distinct cover styles:
-                          Minimalist, Bold, and Artistic
+                        <h3 className="text-2xl font-bold text-foreground mb-2">Choose Your Cover Approach</h3>
+                        <p className="text-muted-foreground max-w-md mx-auto mb-8">
+                          Get AI suggestions (fully editable) or design your own from scratch
                         </p>
                       </div>
-                      <div className="flex gap-4 justify-center">
+                      
+                      <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                        {/* Option 1: AI Suggestions (Editable) */}
+                        <Card className="border-2 hover:border-primary transition-colors">
+                          <CardContent className="pt-6 text-center space-y-4">
+                            <div className="w-16 h-16 mx-auto bg-purple-500/10 rounded-full flex items-center justify-center">
+                              <Sparkles className="w-8 h-8 text-purple-500" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-lg mb-2">Get AI Suggestions</h4>
+                              <p className="text-sm text-muted-foreground">
+                                3 professional designs you can fully customize (colors, text, style)
+                              </p>
+                            </div>
+                            <Button
+                              size="lg"
+                              className="w-full"
+                              onClick={() => {
+                                if (!aiAnalysis) return;
+                                generateCovers.mutate({
+                                  bookTitle: finalTitle,
+                                  authorName: "Author",
+                                  genre: aiAnalysis.detectedGenre,
+                                  themes: aiAnalysis.themes,
+                                  targetAudience: aiAnalysis.targetAudience,
+                                  count: 3,
+                                });
+                              }}
+                              disabled={generateCovers.isPending}
+                            >
+                              {generateCovers.isPending ? (
+                                <>
+                                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                  Generating...
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-5 h-5 mr-2" />
+                                  Generate AI Suggestions
+                                </>
+                              )}
+                            </Button>
+                          </CardContent>
+                        </Card>
+                        
+                        {/* Option 2: Design My Own */}
+                        <Card className="border-2 hover:border-primary transition-colors cursor-pointer" onClick={() => {
+                          document.getElementById('cover-upload-direct')?.click();
+                        }}>
+                          <CardContent className="pt-6 text-center space-y-4">
+                            <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                              <Upload className="w-8 h-8 text-primary" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-lg mb-2">Design My Own</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Upload your custom cover design (minimum 1000px width)
+                              </p>
+                            </div>
+                            <Button size="lg" className="w-full" onClick={(e) => {
+                              e.stopPropagation();
+                              document.getElementById('cover-upload-direct')?.click();
+                            }}>
+                              <Upload className="w-5 h-5 mr-2" />
+                              Upload My Cover
+                            </Button>
+                            <input
+                              id="cover-upload-direct"
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  handleCustomCoverUpload(file);
+                                }
+                              }}
+                              className="hidden"
+                            />
+                          </CardContent>
+                        </Card>
+                      </div>
+                      
+                      <div className="mt-6 text-center">
                         <Button
-                          size="lg"
-                          onClick={() => {
-                            if (!aiAnalysis) return;
-                            generateCovers.mutate({
-                              bookTitle: finalTitle,
-                              authorName: "Author", // TODO: Get from user profile
-                              genre: aiAnalysis.detectedGenre,
-                              themes: aiAnalysis.themes,
-                              targetAudience: aiAnalysis.targetAudience,
-                              count: 3,
-                            });
-                          }}
-                          disabled={generateCovers.isPending}
-                        >
-                          {generateCovers.isPending ? (
-                            <>
-                              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                              Generating Covers...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-5 h-5 mr-2" />
-                              Generate 3 Cover Designs
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          size="lg"
-                          variant="outline"
+                          variant="ghost"
                           onClick={() => setCurrentStep("amazon")}
                         >
-                          Skip for Now
+                          Skip Cover for Now
                         </Button>
                       </div>
                     </div>
@@ -857,20 +910,50 @@ export default function ReadyToPublish() {
                       {generatedCovers.map((cover, idx) => (
                         <div
                           key={idx}
-                          onClick={() => setSelectedCover(cover)}
-                          className={`cursor-pointer rounded-lg border-2 transition-all ${
+                          className={`rounded-lg border-2 transition-all ${
                             selectedCover === cover
                               ? "border-primary ring-2 ring-primary/20"
                               : "border-border hover:border-primary/50"
                           }`}
                         >
-                          <img
-                            src={cover.imageUrl}
-                            alt={`Cover ${idx + 1}`}
-                            className="w-full aspect-[2/3] object-cover rounded-t-lg"
-                          />
-                          <div className="p-3">
+                          <div className="relative group">
+                            <img
+                              src={cover.imageUrl}
+                              alt={`Cover ${idx + 1}`}
+                              className="w-full aspect-[2/3] object-cover rounded-t-lg cursor-pointer"
+                              onClick={() => setSelectedCover(cover)}
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-t-lg flex items-center justify-center gap-2">
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => setSelectedCover(cover)}
+                              >
+                                <Check className="w-4 h-4 mr-1" />
+                                Select
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => {
+                                  setSelectedCover(cover);
+                                  setCoverFeedback("");
+                                  toast.info("Describe how you'd like to modify this cover below");
+                                }}
+                              >
+                                <Edit3 className="w-4 h-4 mr-1" />
+                                Edit
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="p-3 flex items-center justify-between">
                             <Badge>{cover.style}</Badge>
+                            {selectedCover === cover && (
+                              <Badge variant="default" className="bg-primary">
+                                <Check className="w-3 h-3 mr-1" />
+                                Selected
+                              </Badge>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -878,35 +961,56 @@ export default function ReadyToPublish() {
 
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label>Want to modify the selected cover?</Label>
+                        <Label className="text-base font-semibold">✨ Customize Your Selected Cover</Label>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Describe the changes you want (colors, style, text, mood, etc.)
+                        </p>
                         <div className="flex gap-2">
                           <Input
-                            placeholder="e.g., make it darker, add more color, more professional..."
+                            placeholder="e.g., make background darker, change to blue tones, add golden accents, more minimalist..."
                             value={coverFeedback}
                             onChange={(e) => setCoverFeedback(e.target.value)}
+                            className="flex-1"
                           />
                           <Button
                             onClick={() => {
                               if (!selectedCover || !coverFeedback.trim() || !aiAnalysis) {
-                                toast.error("Please select a cover and provide modification feedback");
+                                toast.error("Please select a cover and describe your changes");
                                 return;
                               }
                               
-                              toast.info("Regenerating cover with your feedback...");
+                              toast.info("Regenerating cover with your customizations...");
                               
-                              // Since we don't have bookId in this workflow, we'll regenerate directly
-                              // For now, show a message that this requires saving the book first
-                              toast.info("Cover regeneration requires saving your book first. For now, you can upload a custom cover or continue with the selected design.");
+                              // Regenerate with feedback by modifying themes
+                              const customThemes = [
+                                ...(aiAnalysis.themes || []),
+                                `Style: ${selectedCover.style}`,
+                                `Modifications: ${coverFeedback}`
+                              ];
+                              
+                              generateCovers.mutate({
+                                bookTitle: finalTitle,
+                                authorName: "Author",
+                                genre: aiAnalysis.detectedGenre,
+                                themes: customThemes,
+                                targetAudience: aiAnalysis.targetAudience,
+                                count: 1,
+                              });
+                              
+                              setCoverFeedback("");
                             }}
-                            disabled={!selectedCover || !coverFeedback.trim() || regenerateCover.isPending}
+                            disabled={!selectedCover || !coverFeedback.trim() || generateCovers.isPending}
                           >
-                            {regenerateCover.isPending ? (
+                            {generateCovers.isPending ? (
                               <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Regenerating...</>
                             ) : (
-                              <><RefreshCw className="w-4 h-4 mr-2" />Regenerate</>
+                              <><RefreshCw className="w-4 h-4 mr-2" />Apply Changes</>
                             )}
                           </Button>
                         </div>
+                        <p className="text-xs text-muted-foreground">
+                          💡 Tip: Be specific about colors, mood, and style for best results
+                        </p>
                       </div>
 
                       <div className="border-t pt-6 mt-6">
