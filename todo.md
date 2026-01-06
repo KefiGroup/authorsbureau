@@ -624,3 +624,8 @@
 - [ ] Auto-resume workflow when returning to Ready to Publish (future enhancement)
 - [ ] Show resume prompt if incomplete workflow exists (future enhancement)
 - [ ] Preserve chat history in database (future enhancement)
+
+
+## Bug Fixes
+- [x] Fix ReferenceError: manuscriptContent is not defined during AI analysis
+- [x] Check variable naming in ReadyToPublish component (manuscript vs manuscriptContent)

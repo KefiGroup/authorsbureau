@@ -574,7 +574,7 @@ export default function ReadyToPublish() {
           {/* Step 3: Chat with Publisher AI */}
           {currentStep === "review" && aiAnalysis && (
             <PublisherChat
-              manuscript={manuscriptContent}
+              manuscript={manuscript}
               initialAnalysis={{
                 suggestedTitles: aiAnalysis.suggestedTitles,
                 suggestedSubtitles: aiAnalysis.suggestedSubtitles,
