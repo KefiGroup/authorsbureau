@@ -423,3 +423,17 @@
   - [x] Step 6 (Amazon) → Step 7 (Book Wrap)
   - [x] Step 7 (Wrap) → Step 8 (Export)p 7 (Book Wrap)
   - [ ] Step 7 (Wrap) → Step 8 (Export)
+
+
+---
+
+## CRITICAL BUG: Book Resume Not Loading Workflow Data ✅
+- [x] When clicking on existing book from dashboard, workflow progress doesn't load
+- [x] Manuscript, AI analysis, covers, and other data not restored
+- [x] This causes 404 errors on Amazon/Wrap/Export steps (missing aiAnalysis)
+- [x] Investigate handleResumeProgress logic
+- [x] Check if existingBook data is being passed correctly
+- [x] Verify all workflow state is restored from database
+- [x] Auto-restore workflow data when existingBook loads (no resume prompt needed)
+- [x] Restore AI analysis, titles, covers, and current step automatically
+- [ ] Test clicking book from "My Books" dashboard (needs user testing)

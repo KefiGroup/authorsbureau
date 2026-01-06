@@ -117,12 +117,51 @@ export default function ReadyToPublish() {
     { enabled: !!bookId }
   );
 
-  // Auto-load existing manuscript
+  // Auto-load existing manuscript and workflow data
   useEffect(() => {
     if (existingBook && existingBook.content && !existingManuscriptLoaded) {
       setManuscript(existingBook.content);
       setWordCount(existingBook.wordCount || 0);
       setExistingManuscriptLoaded(true);
+      
+      // Auto-restore workflow data if it exists
+      if (existingBook.aiAnalysis) {
+        try {
+          const parsedAnalysis = JSON.parse(existingBook.aiAnalysis);
+          setAIAnalysis(parsedAnalysis);
+          setEditedDescription(parsedAnalysis.bookDescription || "");
+        } catch (e) {
+          console.error("Failed to parse AI analysis:", e);
+        }
+      }
+      
+      if (existingBook.selectedTitle) {
+        setSelectedTitle(existingBook.selectedTitle);
+      }
+      if (existingBook.selectedSubtitle) {
+        setSelectedSubtitle(existingBook.selectedSubtitle);
+      }
+      
+      if (existingBook.generatedCovers) {
+        try {
+          const parsedCovers = JSON.parse(existingBook.generatedCovers);
+          setGeneratedCovers(parsedCovers);
+        } catch (e) {
+          console.error("Failed to parse generated covers:", e);
+        }
+      }
+      
+      if (existingBook.selectedCoverUrl) {
+        setSelectedCover(existingBook.selectedCoverUrl);
+      }
+      
+      // Set current step to saved workflow step or 'review' if data exists
+      if (existingBook.workflowStep && existingBook.workflowStep !== "upload" && existingBook.workflowStep !== "analyzing") {
+        setCurrentStep(existingBook.workflowStep as WorkflowStep);
+      } else if (existingBook.aiAnalysis) {
+        setCurrentStep("review");
+      }
+      
       toast.success(`Loaded existing manuscript: ${existingBook.title} (${existingBook.wordCount} words)`);
     }
   }, [existingBook, existingManuscriptLoaded]);
@@ -1130,7 +1169,7 @@ export default function ReadyToPublish() {
           )}
 
           {/* Step 6: Amazon Optimization */}
-          {currentStep === "amazon" && aiAnalysis && (
+          {currentStep === "amazon" && (
             <div className="space-y-6">
               {/* Back Button */}
               <Button
@@ -1423,6 +1462,30 @@ export default function ReadyToPublish() {
               <KDPUploadGuide onClose={() => setShowKDPGuide(false)} />
             </DialogContent>
           </Dialog>
+
+          {/* Missing AI Analysis Error for Amazon Step */}
+          {currentStep === "amazon" && !aiAnalysis && (
+            <Card className="border-destructive/50 bg-destructive/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-destructive">
+                  <AlertCircle className="w-5 h-5" />
+                  Missing Analysis Data
+                </CardTitle>
+                <CardDescription>
+                  AI analysis data is required to continue. Please go back to the Review step.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep("review")}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Review
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Step 7: Book Wrap Designer */}
           {currentStep === "wrap" && selectedCover && aiAnalysis && (
