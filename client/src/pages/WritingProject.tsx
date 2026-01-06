@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, BookOpen, FileText, Download, ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Link } from "wouter";
 
@@ -73,13 +73,21 @@ export default function WritingProject() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={() => {
+                alert("📦 Export Feature\n\nThis will download a complete publishing package containing:\n\n• Your manuscript (DOCX & PDF)\n• Book cover image (high-resolution PNG)\n• Amazon KDP metadata (categories, keywords, description)\n• ISBN information\n\nNote: This feature is currently available in the 'Ready to Publish' workflow.");
+              }}
+              title="Download your complete publishing package"
+            >
               <FileText className="w-4 h-4 mr-2" />
               Export
             </Button>
-            <Button>
-              <BookOpen className="w-4 h-4 mr-2" />
-              Continue Writing
+            <Button asChild>
+              <Link href="/writing-studio">
+                <BookOpen className="w-4 h-4 mr-2" />
+                Continue Writing
+              </Link>
             </Button>
           </div>
         </div>

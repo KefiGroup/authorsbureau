@@ -528,3 +528,8 @@
 - [x] Remove single $14.99 recommendation
 - [x] Show separate pricing for Kindle vs Paperback
 - [ ] Future: Add advanced AI pricing intelligence with launch timeline and strategy
+
+
+## Bug Fixes - User Reported
+- [x] Fix "Continue Writing" button not clickable in Writing Studio - FIXED: Added Link navigation to /writing-studio
+- [x] Add tooltip/help text to explain what Export button does - FIXED: Added tooltip and alert dialog with detailed explanation
