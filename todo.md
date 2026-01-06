@@ -767,3 +767,15 @@
 - [x] Make preview responsive and interactive
 - [x] Test AI Bio Generator (successfully generated 130-word professional bio)
 - [ ] Test wrap preview with complete author profile data (need to add photo)
+
+
+## Inline Photo Upload & Cover Generation Testing
+- [ ] Add photo upload component to Book Wrap Designer (when profile photo missing)
+- [ ] Allow authors to upload photo directly in workflow without leaving page
+- [ ] Update profile with uploaded photo from Book Wrap Designer
+- [ ] Test complete workflow: Upload manuscript → AI Analysis → Generate Covers
+- [ ] Verify AI cover generation works correctly
+- [ ] Verify back cover preview displays with real cover images
+- [ ] Verify back cover preview displays with real author photo and bio
+- [ ] Test Book Wrap Designer with complete data (cover + author profile)
+- [ ] Verify wrap canvas renders correctly with all elements

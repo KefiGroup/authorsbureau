@@ -366,15 +366,59 @@ export function BookWrapDesigner({
                 <div className="p-4 bg-amber-50 dark:bg-amber-950 rounded-lg border border-amber-200 dark:border-amber-800">
                   <h4 className="font-semibold mb-2 text-amber-900 dark:text-amber-100">Complete Your Profile</h4>
                   <p className="text-sm text-amber-800 dark:text-amber-200 mb-3">
-                    Your back cover needs an author photo and bio. Complete your profile to unlock the full wrap designer.
+                    {!authorPhotoUrl && !authorBio ? "Add your photo and bio to create a professional back cover." :
+                     !authorPhotoUrl ? "Add your photo to complete the back cover." :
+                     "Add your bio to complete the back cover."}
                   </p>
+                  
+                  {!authorPhotoUrl && (
+                    <div className="mb-3">
+                      <Label className="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2 block">Upload Author Photo</Label>
+                      <Input
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            // Validate file size (max 5MB)
+                            if (file.size > 5 * 1024 * 1024) {
+                              toast.error("File size must be under 5MB");
+                              return;
+                            }
+                            // Validate dimensions (min 300x300)
+                            const img = new Image();
+                            img.onload = () => {
+                              if (img.width < 300 || img.height < 300) {
+                                toast.error("Image must be at least 300x300 pixels");
+                                return;
+                              }
+                              // Upload to storage and update state
+                              const reader = new FileReader();
+                              reader.onload = (e) => {
+                                const dataUrl = e.target?.result as string;
+                                setAuthorPhotoUrl(dataUrl);
+                                toast.success("Photo uploaded! Don't forget to save your changes.");
+                              };
+                              reader.readAsDataURL(file);
+                            };
+                            img.src = URL.createObjectURL(file);
+                          }
+                        }}
+                        className="text-sm"
+                      />
+                      <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                        Min 300x300px, max 5MB (JPG, PNG, GIF)
+                      </p>
+                    </div>
+                  )}
+                  
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => window.location.href = '/profile'}
                     className="w-full"
                   >
-                    Go to Profile
+                    {!authorBio ? "Go to Profile to Add Bio" : "View Full Profile"}
                   </Button>
                 </div>
               )}
