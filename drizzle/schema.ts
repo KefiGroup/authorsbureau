@@ -25,9 +25,13 @@ export const authors = mysqlTable("authors", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
   penName: varchar("penName", { length: 255 }),
-  bio: text("bio"),
+  bio: text("bio"), // Author biography (2000 char max for Amazon Author Central)
   website: varchar("website", { length: 500 }),
-  avatarUrl: varchar("avatarUrl", { length: 500 }),
+  linkedInUrl: varchar("linkedInUrl", { length: 500 }), // LinkedIn profile URL (optional)
+  avatarUrl: varchar("avatarUrl", { length: 500 }), // Profile photo URL (min 300x300px)
+  booksAuthored: text("booksAuthored"), // Previous books authored (comma-separated or JSON)
+  accomplishments: text("accomplishments"), // Professional accomplishments and awards
+  education: text("education"), // Educational background
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

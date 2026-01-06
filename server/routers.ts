@@ -13,6 +13,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
+import { invokeLLM } from "./_core/llm";
 
 export const appRouter = router({
   system: systemRouter,
@@ -69,7 +70,11 @@ export const appRouter = router({
         penName: z.string().optional(),
         bio: z.string().optional(),
         website: z.string().url().optional().or(z.literal("")),
+        linkedInUrl: z.string().url().optional().or(z.literal("")),
         avatarUrl: z.string().url().optional().or(z.literal("")),
+        booksAuthored: z.string().optional(),
+        accomplishments: z.string().optional(),
+        education: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const author = await db.getAuthorByUserId(ctx.user.id);
@@ -84,10 +89,67 @@ export const appRouter = router({
           penName: input.penName,
           bio: input.bio,
           website: input.website || null,
+          linkedInUrl: input.linkedInUrl || null,
           avatarUrl: input.avatarUrl || null,
+          booksAuthored: input.booksAuthored || null,
+          accomplishments: input.accomplishments || null,
+          education: input.education || null,
         });
 
         return { success: true };
+      }),
+
+    // Generate author bio using AI
+    generateAuthorBio: protectedProcedure
+      .input(z.object({
+        booksAuthored: z.string().optional(),
+        accomplishments: z.string().optional(),
+        education: z.string().optional(),
+        additionalInfo: z.string().optional(),
+        targetLength: z.enum(["short", "medium", "long"]).default("medium"), // short=100 words, medium=150 words, long=200 words
+      }))
+      .mutation(async ({ input }) => {
+        const lengthMap = {
+          short: "100 words (suitable for back cover)",
+          medium: "150 words (suitable for Amazon Author Central)",
+          long: "200 words (suitable for website/press kit)",
+        };
+
+        const prompt = `You are a professional author bio writer. Create a compelling third-person author biography based on the following information:
+
+${input.booksAuthored ? `Books Authored: ${input.booksAuthored}` : ""}
+${input.accomplishments ? `Accomplishments: ${input.accomplishments}` : ""}
+${input.education ? `Education: ${input.education}` : ""}
+${input.additionalInfo ? `Additional Information: ${input.additionalInfo}` : ""}
+
+Requirements:
+- Write in third person (use "they" or the author's name if provided)
+- Target length: ${lengthMap[input.targetLength]}
+- Professional tone suitable for book publishing
+- Focus on credentials and achievements relevant to readers
+- No promotional language or excessive self-praise
+- Follow Amazon Author Central guidelines (no special formatting)
+
+Generate the author bio now:`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are a professional author bio writer specializing in book publishing." },
+            { role: "user", content: prompt },
+          ],
+        });
+
+        const content = response.choices[0].message.content;
+        const generatedBio = typeof content === "string" ? content.trim() : "";
+        const wordCount = generatedBio.split(/\s+/).length;
+        const charCount = generatedBio.length;
+
+        return {
+          bio: generatedBio,
+          wordCount,
+          charCount,
+          withinLimit: charCount <= 2000, // Amazon Author Central limit
+        };
       }),
 
     // Get all authors (admin only)

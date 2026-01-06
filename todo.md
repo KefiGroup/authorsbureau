@@ -697,3 +697,38 @@
 - [x] Test resume functionality with different workflow stages
 - [x] Ensure resume works after browser refresh or returning days later
 - [x] Simplified resume to always go to 'review' step for better UX
+
+
+## Complete Export Flow Testing
+- [ ] Upload fresh test manuscript (at least 5000 words)
+- [ ] Complete AI analysis step
+- [ ] Select title and subtitle
+- [ ] Generate cover designs
+- [ ] Select a cover
+- [ ] Complete Amazon optimization
+- [ ] Generate and download export ZIP
+- [ ] Verify ZIP contains: manuscript.docx, manuscript.pdf, front-cover.png, back-cover.png, full-wrap.png, metadata.json, README.md
+- [ ] Verify DOCX formatting is correct (chapters, formatting)
+- [ ] Verify PDF formatting is correct
+
+## Progress Indicators
+- [ ] Design progress indicator UI (percentage or X/Y steps)
+- [ ] Add progress calculation logic based on currentStep
+- [ ] Display progress indicator in workflow header
+- [ ] Update progress indicator as user moves through steps
+- [ ] Test progress indicator shows correct values for each step
+- [ ] Ensure progress indicator is responsive on mobile
+
+
+## Author Profile & Amazon Author Central Integration
+- [x] Update user schema to include: profilePhoto, authorBio, linkedInUrl, booksAuthored, accomplishments, education
+- [x] Push database schema changes
+- [ ] Create Author Profile page (/profile) with photo upload and form fields (IN PROGRESS)
+- [x] Implement AI bio generator tRPC procedure with guided prompts
+- [x] Bio length: 2000 characters max (Amazon Author Central), 100-150 words for back cover
+- [x] Photo requirements: Minimum 300x300px, JPG/PNG/GIF format
+- [x] Add LinkedIn profile URL field (optional)
+- [x] Create tRPC procedures: updateAuthorProfile (enhanced), generateAuthorBio
+- [ ] Update Book Wrap Designer to pull author photo, bio, book description, ISBN
+- [ ] Add "Setup Amazon Author Central" guide/link after profile completion
+- [ ] Test complete profile → wrap designer flow
