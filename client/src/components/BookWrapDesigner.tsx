@@ -278,6 +278,118 @@ export function BookWrapDesigner({
   
   return (
     <div className="space-y-6">
+      {/* Back Cover Preview */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Back Cover Preview</CardTitle>
+          <CardDescription>
+            See how your author profile and book description will appear on the back cover
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Visual Preview */}
+            <div className="space-y-4">
+              <div className="border-2 border-dashed rounded-lg p-6 bg-white" style={{ backgroundColor, color: textColor }}>
+                {/* Book Description */}
+                <div className="mb-6">
+                  <p className="text-sm leading-relaxed" style={{ fontSize: `${fontSize}pt` }}>
+                    {backDescription || "Your book description will appear here..."}
+                  </p>
+                </div>
+                
+                {/* Author Section */}
+                <div className="border-t pt-4 mt-4">
+                  <div className="flex items-start gap-4">
+                    {authorPhotoUrl ? (
+                      <img
+                        src={authorPhotoUrl}
+                        alt={authorName}
+                        className="w-20 h-20 rounded-full object-cover border-2"
+                        style={{ borderColor: textColor }}
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center border-2" style={{ borderColor: textColor }}>
+                        <span className="text-xs text-muted-foreground">Photo</span>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <h4 className="font-semibold mb-2" style={{ fontSize: `${fontSize + 2}pt` }}>
+                        About the Author
+                      </h4>
+                      <p className="text-xs leading-relaxed" style={{ fontSize: `${fontSize - 2}pt` }}>
+                        {authorBio || "Your author bio will appear here..."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* ISBN Placeholder */}
+                <div className="mt-6 pt-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs">
+                      <div className="font-mono">{isbn || "ISBN: XXXX-XXXX-XXXX"}</div>
+                    </div>
+                    <div className="w-24 h-16 border-2 flex items-center justify-center" style={{ borderColor: textColor }}>
+                      <span className="text-[8px]">BARCODE</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Info Panel */}
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">What You're Seeing</h4>
+                <ul className="text-sm space-y-2 text-blue-800 dark:text-blue-200">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 dark:text-blue-400">•</span>
+                    <span><strong>Book Description:</strong> Pulled from your AI analysis</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 dark:text-blue-400">•</span>
+                    <span><strong>Author Photo:</strong> From your profile ({authorPhotoUrl ? "✓ Added" : "⚠ Missing"})</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 dark:text-blue-400">•</span>
+                    <span><strong>Author Bio:</strong> From your profile ({authorBio ? "✓ Added" : "⚠ Missing"})</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-600 dark:text-blue-400">•</span>
+                    <span><strong>ISBN & Barcode:</strong> Will be added to final wrap</span>
+                  </li>
+                </ul>
+              </div>
+              
+              {(!authorPhotoUrl || !authorBio) && (
+                <div className="p-4 bg-amber-50 dark:bg-amber-950 rounded-lg border border-amber-200 dark:border-amber-800">
+                  <h4 className="font-semibold mb-2 text-amber-900 dark:text-amber-100">Complete Your Profile</h4>
+                  <p className="text-sm text-amber-800 dark:text-amber-200 mb-3">
+                    Your back cover needs an author photo and bio. Complete your profile to unlock the full wrap designer.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.location.href = '/profile'}
+                    className="w-full"
+                  >
+                    Go to Profile
+                  </Button>
+                </div>
+              )}
+              
+              <div className="p-4 bg-muted rounded-lg">
+                <h4 className="font-semibold mb-2">Customization Options</h4>
+                <p className="text-sm text-muted-foreground">
+                  Below you can customize colors, fonts, and layout. The preview will update in real-time as you make changes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
       <Card>
         <CardHeader>
           <CardTitle>Book Wrap Designer</CardTitle>

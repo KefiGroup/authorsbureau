@@ -750,3 +750,20 @@
 - [ ] Write unit tests for profile completion checks
 
 - [x] Remove percentage from progress indicator (keep only "Step X of 7")
+
+
+## Complete Export Flow & Wrap Preview
+- [x] Continue testing: Cover Design → Amazon KDP → Book Wrap (reached wrap step)
+- [ ] Download final ZIP package (blocked by missing cover)
+- [ ] Verify ZIP contains all files: manuscript.docx, manuscript.pdf, covers, metadata
+- [ ] Check DOCX formatting (chapters, page breaks, proper structure)
+- [ ] Check PDF formatting and quality
+- [ ] Verify cover images are high resolution
+- [x] Design live preview component for Book Wrap Designer
+- [x] Show author photo placement on back cover preview
+- [x] Show author bio text on back cover preview
+- [x] Show book description on back cover preview
+- [x] Add ISBN placement indicator in preview
+- [x] Make preview responsive and interactive
+- [x] Test AI Bio Generator (successfully generated 130-word professional bio)
+- [ ] Test wrap preview with complete author profile data (need to add photo)
