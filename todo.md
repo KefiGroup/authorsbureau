@@ -734,3 +734,19 @@
 - [x] Add profile completion check in Dashboard (shows prompt if incomplete)
 - [x] Add profile completion check in Book Wrap Designer (blocks if incomplete)
 - [ ] Test complete profile → wrap designer flow
+
+
+## Progress Indicators & Export Testing
+- [x] Add progress indicator to Ready to Publish workflow header (e.g., "Step 3 of 7" or percentage)
+- [x] Removed percentage, kept only step counter per user request
+- [x] Make progress indicator responsive on mobile
+- [x] Test complete export flow: Upload → AI Analysis (tested successfully)
+- [ ] Verify ZIP download works correctly
+- [ ] Verify ZIP contains: manuscript.docx, manuscript.pdf, front_cover.png, back_cover.png, full_wrap.png, metadata.txt, README.txt
+- [ ] Verify DOCX formatting is correct (chapters, page breaks)
+- [ ] Verify PDF formatting is correct
+- [ ] Verify cover images are high quality (300 DPI)
+- [ ] Write unit tests for generateAuthorBio procedure
+- [ ] Write unit tests for profile completion checks
+
+- [x] Remove percentage from progress indicator (keep only "Step X of 7")

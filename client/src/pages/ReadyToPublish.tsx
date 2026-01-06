@@ -393,6 +393,23 @@ export default function ReadyToPublish() {
         {/* Progress Indicator */}
         <Card>
           <CardContent className="pt-6">
+            {/* Step Counter */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Step {currentStep === "upload" ? "1" : currentStep === "analyzing" ? "2" : currentStep === "review" ? "3" : currentStep === "cover" ? "4" : currentStep === "amazon" ? "5" : currentStep === "wrap" ? "6" : "7"} of 7
+                </span>
+              </div>
+              <Badge variant="outline" className="text-xs">
+                {currentStep === "upload" ? "Upload Manuscript" : 
+                 currentStep === "analyzing" ? "AI Analysis" : 
+                 currentStep === "review" ? "Review & Edit" : 
+                 currentStep === "cover" ? "Cover Design" : 
+                 currentStep === "amazon" ? "Amazon KDP" : 
+                 currentStep === "wrap" ? "Book Wrap" : 
+                 "Export"}
+              </Badge>
+            </div>
             <div className="flex items-center justify-between gap-4">
               <div className={`flex flex-col items-center gap-2 flex-1 ${
                 ["upload", "analyzing", "review", "cover", "amazon", "export"].includes(currentStep)
