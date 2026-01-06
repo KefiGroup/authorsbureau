@@ -1,6 +1,6 @@
 # Authors Bureau Platform - Feature Tracking
 
-## Persona 2: Ready to Publish Workflow (7-Step Process)
+## Persona 2: Ready to Publish Workflow (8-Step Process)
 
 ### Step 1: Upload Manuscript ✅
 - [x] File upload (TXT, DOC, DOCX)
@@ -25,7 +25,7 @@
 - [x] Real-time character count
 - [x] Save selected title/subtitle
 
-### Step 4: Cover Design (In Progress)
+### Step 4: Cover Design ✅
 - [x] AI-powered cover generation (3 variations)
 - [x] Cover style selection (minimalist, bold, artistic)
 - [x] Cover preview and selection
@@ -232,3 +232,62 @@
 - [x] SEO optimization (meta tags, structured data, Open Graph)
 - [x] Homepage enhancement with clear CTAs
 
+
+
+---
+
+## Persona 2 UX Optimization (Amazon KDP Readiness)
+
+### Phase 1: Critical Fixes (Blocking Issues)
+- [x] Fix step numbering: Update "7-Step Process" → "8-Step Process" everywhere
+- [x] Fix Step 4 label: Change "(In Progress)" → "✅"
+- [x] Add author profile prompt in Step 1 or Step 2 (before Book Wrap needs it)
+  - [x] Add "Create Author Profile" card/section after AI analysis (new Step 3)
+  - [x] Show profile completion status (photo, bio, pen name)
+  - [x] Link to profile page with clear CTA
+  - [x] Explain why profile is needed ("Required for Book Wrap in Step 5")
+  - [x] Allow "Skip for Now" option with warning
+  - [x] Show green success state when profile is complete
+- [x] Add post-export KDP upload instructions modal
+  - [x] Create KDPUploadGuide component with step-by-step instructions
+  - [x] Show modal after successful export download
+  - [x] Include helpful resources and links
+  - [x] Provide direct links to KDP dashboard
+  - [x] Explain which files to upload where (EPUB for eBook, PDF for paperback, cover image)
+  - [x] Add 6-step upload guide with detailed instructions
+  - [x] Include pricing recommendations and category guidance
+
+### Phase 2: Flow Improvements (Suboptimal UX)
+- [ ] Add visual progress persistence (checkmarks on completed steps)
+  - [ ] Update progress indicator to show completed steps with checkmarks
+  - [ ] Persist completion status in database
+  - [ ] Show completion status on resume workflow
+- [ ] Add "Did You Know?" KDP tips during cover generation loading
+  - [ ] Create tip carousel component
+  - [ ] Include 5-10 helpful KDP tips (pricing, categories, keywords)
+  - [ ] Rotate tips during 15-30 second wait time
+- [ ] Make interior preview more discoverable
+  - [ ] Add tooltip on first visit: "👀 Preview how your book will look in print!"
+  - [ ] Highlight button with subtle animation
+  - [ ] Add "Recommended" badge to preview button
+- [ ] Show export package contents before download
+  - [ ] Add expandable file list above download button
+  - [ ] Show file names, types, and purposes
+  - [ ] Include file size estimates
+
+### Phase 3: Polish (Nice to Have)
+- [ ] Add estimated time remaining in progress indicator
+  - [ ] Calculate based on current step and average completion times
+  - [ ] Show "~15 minutes remaining" or "~5 minutes remaining"
+- [ ] Add back button between steps
+  - [ ] Add "← Back to [Previous Step]" button at top of each step
+  - [ ] Preserve data when going back
+  - [ ] Confirm before discarding unsaved changes
+- [ ] Add completion celebration moment
+  - [ ] Show success animation after export download
+  - [ ] Display "🎉 Congratulations! Your book is ready for Amazon KDP!"
+  - [ ] Offer next steps: "Upload to KDP" or "Start Another Book"
+- [ ] Add "Watch Demo" mode for new users
+  - [ ] Create demo video or interactive walkthrough
+  - [ ] Show sample book journey through all 8 steps
+  - [ ] Add "Try It Yourself" CTA at the end

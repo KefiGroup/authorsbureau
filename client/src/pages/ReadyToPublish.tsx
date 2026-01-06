@@ -22,6 +22,8 @@ import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
 import { CoverUpload } from "@/components/CoverUpload";
 import { InteriorPreview } from "@/components/InteriorPreview";
 import { CoverCustomizer } from "@/components/CoverCustomizer";
+import { KDPUploadGuide } from "@/components/KDPUploadGuide";
+import { AuthorProfilePrompt } from "@/components/AuthorProfilePrompt";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +33,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-type WorkflowStep = "upload" | "analyzing" | "review" | "cover" | "amazon" | "wrap" | "export";
+type WorkflowStep = "upload" | "analyzing" | "review" | "profile-check" | "cover" | "amazon" | "wrap" | "export";
 
 interface AIAnalysis {
   suggestedTitles: string[];
@@ -53,6 +55,7 @@ export default function ReadyToPublish() {
   const [accountChecklistComplete, setAccountChecklistComplete] = useState(false);
   const [showInteriorPreview, setShowInteriorPreview] = useState(false);
   const [customizingCover, setCustomizingCover] = useState<string | null>(null);
+  const [showKDPGuide, setShowKDPGuide] = useState(false);
   const [manuscript, setManuscript] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [uploadMethod, setUploadMethod] = useState<"paste" | "file">("paste");
@@ -275,6 +278,11 @@ export default function ReadyToPublish() {
       document.body.removeChild(link);
       
       toast.success("Publishing package ready! Download started.");
+      
+      // Show KDP upload guide after download
+      setTimeout(() => {
+        setShowKDPGuide(true);
+      }, 1000);
     },
     onError: (error) => {
       toast.error(error.message || "Failed to generate package. Please try again.");
@@ -783,11 +791,19 @@ export default function ReadyToPublish() {
                 themes: aiAnalysis.themes || [],
                 keyBenefits: aiAnalysis.keyBenefits || [],
               }}
-              onComplete={() => setCurrentStep("cover")}
+              onComplete={() => setCurrentStep("profile-check")}
             />
           )}
 
-
+          {/* Step 3: Author Profile Check */}
+          {currentStep === "profile-check" && (
+            <div className="space-y-6">
+              <AuthorProfilePrompt
+                authorProfile={authorProfile || null}
+                onContinue={() => setCurrentStep("cover")}
+              />
+            </div>
+          )}
 
           {/* Step 4: AI Cover Generation */}
           {currentStep === "cover" && aiAnalysis && (
@@ -1276,6 +1292,19 @@ export default function ReadyToPublish() {
                   onCancel={() => setCustomizingCover(null)}
                 />
               )}
+            </DialogContent>
+          </Dialog>
+
+          {/* KDP Upload Guide Dialog */}
+          <Dialog open={showKDPGuide} onOpenChange={setShowKDPGuide}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>How to Upload to Amazon KDP</DialogTitle>
+                <DialogDescription>
+                  Step-by-step instructions to publish your book on Amazon
+                </DialogDescription>
+              </DialogHeader>
+              <KDPUploadGuide onClose={() => setShowKDPGuide(false)} />
             </DialogContent>
           </Dialog>
 
