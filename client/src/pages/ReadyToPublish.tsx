@@ -909,19 +909,61 @@ export default function ReadyToPublish() {
                         </div>
                       </div>
 
-                      <div className="text-center">
-                        <p className="text-sm text-muted-foreground mb-2">Or upload your own cover</p>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              handleCustomCoverUpload(file);
-                            }
-                          }}
-                          className="max-w-xs mx-auto"
-                        />
+                      <div className="border-t pt-6 mt-6">
+                        <div className="text-center space-y-4">
+                          <div>
+                            <h4 className="font-medium text-foreground mb-2">Have Your Own Cover Design?</h4>
+                            <p className="text-sm text-muted-foreground mb-4">Upload your custom cover image (minimum 1000px width)</p>
+                          </div>
+                          
+                          <div className="flex flex-col items-center gap-3">
+                            <label htmlFor="cover-upload" className="cursor-pointer">
+                              <div className="inline-flex items-center gap-2 px-6 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg border-2 border-dashed border-border hover:border-primary transition-colors">
+                                <Upload className="w-5 h-5" />
+                                <span className="font-medium">Upload Your Own Cover</span>
+                              </div>
+                              <input
+                                id="cover-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    handleCustomCoverUpload(file);
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                            </label>
+                            
+                            {uploadedCoverUrl && (
+                              <div className="space-y-2">
+                                <div className="relative inline-block">
+                                  <img
+                                    src={uploadedCoverUrl}
+                                    alt="Uploaded cover"
+                                    className="w-48 h-auto rounded-lg border-2 border-primary"
+                                  />
+                                  <Badge className="absolute top-2 right-2 bg-green-500">
+                                    <Check className="w-3 h-3 mr-1" />
+                                    Uploaded
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground">Custom cover ready for eBook</p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    toast.info("Book wrap generator coming soon! For now, use KDP Cover Creator for paperback wraps.");
+                                  }}
+                                >
+                                  <Sparkles className="w-4 h-4 mr-2" />
+                                  Generate Paperback Wrap
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
 

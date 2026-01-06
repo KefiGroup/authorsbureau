@@ -661,3 +661,23 @@
 - [x] Fix AI Publisher Analysis table layout (text overlapping, columns misaligned)
 - [x] Add proper spacing, borders, and alignment to table
 - [x] Ensure responsive layout for table on different screen sizes
+
+
+## Download Functionality Fix
+- [ ] Fix "Download Publishing Package" button - not triggering download
+- [ ] Fix "Download Complete Package (ZIP)" button - not working
+- [ ] Ensure ZIP file downloads properly when buttons are clicked
+- [ ] Add loading state during ZIP generation
+- [ ] Add error handling if download fails
+
+
+## Custom Cover Upload & Book Wrap Generator
+- [x] Add "Upload Your Own Cover" button in cover selection section
+- [x] Implement file upload handling for custom cover images
+- [x] Validate uploaded cover dimensions (minimum 1000px for eBook)
+- [x] Show preview of uploaded cover with success badge
+- [ ] Add book wrap generator for paperback (front + spine + back)
+- [ ] Calculate spine width based on page count
+- [ ] Generate back cover with barcode placeholder and description
+- [ ] Allow preview of full wrap before export
+- [ ] Include both front cover (eBook) and full wrap (paperback) in export package
