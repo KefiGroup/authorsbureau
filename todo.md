@@ -559,3 +559,7 @@
 - [x] Fix ugly Book Content section - COMPLETED: Replaced raw text dump with clean manuscript card
 - [x] Improve manuscript display formatting - COMPLETED: Shows word count, page estimate, and action buttons
 - [x] Add Edit Manuscript button for proper editing interface - COMPLETED: Button added to manuscript card header
+
+## Bug Fixes - Navigation
+- [x] Fix Amazon 404 error - COMPLETED: Added Coming Soon page for /amazon route
+- [ ] Implement Amazon KDP integration page with sales tracking - Future feature

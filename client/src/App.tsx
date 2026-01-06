@@ -42,6 +42,7 @@ function Router() {
         <Route path="/ready-to-publish" component={ReadyToPublish} />
       
       {/* Coming Soon Routes */}
+      <Route path="/amazon" component={() => <ComingSoon featureName="Amazon KDP Integration" description="Track your book sales, rankings, reviews, and royalties across Amazon marketplaces. Manage your KDP listings and optimize your book's performance. This feature is coming soon!" />} />
       <Route path="/marketing" component={() => <ComingSoon featureName="Marketing Automation" description="Build landing pages, create funnels, and automate email sequences to maximize your book's revenue. This feature is coming soon!" />} />
       <Route path="/analytics" component={() => <ComingSoon featureName="Analytics Dashboard" description="Track your book sales, rankings, and reviews across Amazon marketplaces with detailed analytics and insights. This feature is coming soon!" />} />
       <Route path="/email-marketing" component={() => <ComingSoon featureName="Email Marketing" description="Capture reader emails, send launch announcements, and automate book promotion campaigns. This feature is coming soon!" />} />
