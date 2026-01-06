@@ -437,3 +437,83 @@
 - [x] Auto-restore workflow data when existingBook loads (no resume prompt needed)
 - [x] Restore AI analysis, titles, covers, and current step automatically
 - [ ] Test clicking book from "My Books" dashboard (needs user testing)
+
+
+---
+
+## Book Wrap Designer Bugs
+### Bio Text Not Editable ✅
+- [x] Author bio text is read-only in Book Wrap Designer
+- [x] Add "Edit Bio" button or make text directly editable
+- [x] Allow inline editing without going back to Profile page
+- [x] Save edited bio back to author profile
+- [x] Added "Save Bio to Profile" button that appears when bio is edited
+- [x] Real-time preview updates as bio is edited
+- [x] Toast notifications for save success/failure
+
+### Blank Preview Issue ✅
+- [x] Book Wrap preview shows completely white/blank - FIXED
+- [x] Uploaded cover image not showing in full wrap preview - FIXED
+- [x] Added error handling and debugging for image loading
+- [x] Added console logs to track image load success/failure
+- [x] Added fallback placeholder if image fails to load
+- [x] Test with actual uploaded cover to identify root cause
+- [x] Fix preview to show front cover, spine, and back cover properly
+- [x] Ensure uploaded custom covers work in preview (not just AI-generated)
+- [x] Added cover upload option directly in Book Wrap Designer step
+- [x] Removed selectedCover requirement from Book Wrap rendering condition
+- [x] Book Wrap Designer now accessible even without cover from previous step
+
+
+---
+
+## Critical KDP Manuscript Requirements (User Priority)
+
+### Manuscript Export Quality
+- [ ] **Copyright Page** - Auto-generate and include in all exports
+  - [ ] Title, author name, copyright year
+  - [ ] Publisher information
+  - [ ] ISBN (if provided)
+  - [ ] All rights reserved statement
+  - [ ] Disclaimer (genre-appropriate)
+- [ ] **Table of Contents** - Auto-generate from chapter structure
+  - [ ] Extract chapter titles from manuscript
+  - [ ] Include page numbers (for PDF/print)
+  - [ ] Hyperlinked TOC (for EPUB/eBook)
+- [ ] **Front Matter Order** - Proper KDP structure
+  - [ ] Title Page (book title, subtitle, author name)
+  - [ ] Copyright Page
+  - [ ] Table of Contents
+  - [ ] Dedication (optional, if provided)
+  - [ ] Foreword (optional, if provided)
+  - [ ] Main Content (chapters)
+- [ ] **Page Numbering** - Start after front matter
+  - [ ] Roman numerals for front matter (i, ii, iii)
+  - [ ] Arabic numerals for main content (1, 2, 3)
+  - [ ] Page numbers in footer (centered or right-aligned)
+- [ ] **Proper Page Size** - Support multiple trim sizes
+  - [ ] 6"x9" (most popular, current default)
+  - [ ] 5"x8" (compact)
+  - [ ] 5.5"x8.5" (digest)
+  - [ ] 8.5"x11" (large format)
+- [ ] **Chapter Formatting** - Professional appearance
+  - [ ] Chapter titles on new pages
+  - [ ] Consistent heading styles
+  - [ ] Page breaks between chapters
+  - [ ] First paragraph no indent, subsequent paragraphs indented
+
+### Paperback PDF Requirements
+- [ ] Verify 6"x9" trim size is correctly applied
+- [ ] Check margins (1" gutter/left, 0.75" other sides)
+- [ ] Ensure fonts are embedded
+- [ ] Verify 300 DPI resolution for images
+- [ ] Test PDF opens correctly in Adobe Reader
+- [ ] Confirm file size is under 650MB (KDP limit)
+
+### eBook DOCX/EPUB Requirements
+- [ ] Reflowable layout (no fixed page sizes)
+- [ ] Hyperlinked Table of Contents
+- [ ] Proper heading hierarchy (H1, H2, H3)
+- [ ] No page numbers (eBook readers add their own)
+- [ ] Optimized for Kindle devices
+- [ ] Test on Kindle Previewer tool

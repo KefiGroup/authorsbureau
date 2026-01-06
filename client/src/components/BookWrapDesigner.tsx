@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -59,6 +60,18 @@ export function BookWrapDesigner({
     preset: "classic",
     elements: LAYOUT_PRESETS.classic.elements || [],
   });
+  const [bioChanged, setBioChanged] = useState(false);
+  
+  // tRPC mutation for saving bio
+  const updateProfileMutation = trpc.author.updateProfile.useMutation({
+    onSuccess: () => {
+      toast.success('Author bio saved successfully!');
+      setBioChanged(false);
+    },
+    onError: (error) => {
+      toast.error(`Failed to save bio: ${error.message}`);
+    },
+  });
   
   // Calculate dimensions
   const dimensions = calculateWrapDimensions(trimSize, pageCount, paperType);
@@ -111,7 +124,9 @@ export function BookWrapDesigner({
     // Draw front cover (load image)
     const frontImg = new Image();
     frontImg.crossOrigin = "anonymous";
+    
     frontImg.onload = () => {
+      console.log('✅ Front cover image loaded successfully:', frontCoverUrl);
       ctx.drawImage(
         frontImg,
         bleedPx,
@@ -126,6 +141,30 @@ export function BookWrapDesigner({
       // Draw back cover
       drawBackCover(ctx);
     };
+    
+    frontImg.onerror = (error) => {
+      console.error('❌ Failed to load front cover image:', frontCoverUrl, error);
+      // Draw a fallback placeholder
+      ctx.fillStyle = '#E5E7EB';
+      ctx.fillRect(bleedPx, bleedPx, frontWidth, inchesToPixels(dimensions.trimHeight));
+      ctx.fillStyle = '#6B7280';
+      ctx.font = '24pt Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(
+        'Cover Image Failed to Load',
+        bleedPx + frontWidth / 2,
+        bleedPx + inchesToPixels(dimensions.trimHeight) / 2
+      );
+      
+      // Still draw spine and back cover
+      drawSpine(ctx);
+      drawBackCover(ctx);
+      
+      toast.error('Failed to load cover image. Please try re-uploading your cover.');
+    };
+    
+    console.log('🔄 Loading front cover image:', frontCoverUrl);
     frontImg.src = frontCoverUrl;
     
   }, [dimensions, frontCoverUrl, backDescription, authorBio, backgroundColor, textColor, fontSize, trimSize, paperType]);
@@ -536,14 +575,34 @@ export function BookWrapDesigner({
             </div>
             
             <div className="space-y-2">
-              <Label>Author Bio (Optional)</Label>
+              <div className="flex items-center justify-between">
+                <Label>Author Bio (Optional)</Label>
+                {bioChanged && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      updateProfileMutation.mutate({ bio: authorBio });
+                    }}
+                    disabled={updateProfileMutation.isPending}
+                  >
+                    {updateProfileMutation.isPending ? 'Saving...' : 'Save Bio to Profile'}
+                  </Button>
+                )}
+              </div>
               <Textarea
                 value={authorBio}
-                onChange={(e) => setAuthorBio(e.target.value)}
+                onChange={(e) => {
+                  setAuthorBio(e.target.value);
+                  setBioChanged(true);
+                }}
                 placeholder="Brief author biography for back cover..."
                 rows={3}
                 className="font-mono text-sm"
               />
+              <p className="text-xs text-muted-foreground">
+                Edit your bio here. Changes will update the back cover preview in real-time. Click "Save Bio to Profile" to permanently save changes.
+              </p>
             </div>
           </div>
           
