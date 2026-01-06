@@ -337,3 +337,89 @@
 - [x] Display author avatar image if available
 - [x] Show pen name instead of user name when available
 - [x] Add "View Profile" menu item to dropdown
+
+
+---
+
+## Email Notification System
+### Welcome & Onboarding Emails
+- [ ] Welcome email immediately after signup
+  - [ ] Introduce Authors Bureau and 2-day program
+  - [ ] Explain the two personas (write from scratch vs upload manuscript)
+  - [ ] Set expectations for the journey ahead
+  - [ ] Add "Complete Your Profile" CTA
+- [ ] Day 1 follow-up if no activity ("Need help getting started?")
+- [ ] Day 3 follow-up if profile incomplete ("Your author profile is waiting")
+
+### Progress & Milestone Emails
+- [ ] Profile completion emails
+  - [ ] 50% completion - "You're halfway there!"
+  - [ ] 75% completion - "Almost done with your profile!"
+  - [ ] 100% completion - "🎉 Your profile is complete!"
+- [ ] Manuscript upload confirmation ("We received your manuscript!")
+- [ ] AI analysis complete ("Your book analysis is ready")
+- [ ] Cover generation complete ("Your book covers are ready to view")
+- [ ] Export package ready ("Your KDP files are ready to download")
+- [ ] First book published celebration ("Congratulations on publishing!")
+
+### Engagement & Re-engagement Emails
+- [ ] Weekly progress summary (if book in progress)
+- [ ] Abandoned workflow reminder (started but didn't finish Ready to Publish)
+- [ ] 30-day inactive reminder ("We miss you! Come back and finish your book")
+- [ ] New feature announcements
+- [ ] Success stories and tips from other authors
+
+### Email Infrastructure
+- [ ] Set up email service integration (SendGrid, AWS SES, or Resend)
+- [ ] Create email templates with Authors Bureau branding
+- [ ] Design responsive HTML email templates
+- [ ] Add email preferences to user settings (opt-in/opt-out per category)
+- [ ] Track email delivery status and open rates
+- [ ] Add unsubscribe link to all emails (legal requirement)
+- [ ] Implement email queue system for batch sending
+- [ ] Test email delivery in sandbox/production
+- [ ] Add email preview in admin dashboard
+
+---
+
+## Profile Preview Modal
+- [ ] Create ProfilePreviewModal component
+- [ ] Add "Preview Profile" button on Profile page
+- [ ] Simulate Amazon Author Central profile view
+- [ ] Show how profile appears to readers
+- [ ] Include avatar, pen name, bio, website, accomplishments
+- [ ] Add "Looks good!" and "Edit Profile" CTAs
+- [ ] Make it shareable (generate preview link)
+
+---
+
+## LinkedIn Import Feature
+- [ ] Add "Import from LinkedIn" button on Profile page
+- [ ] Prompt user to paste LinkedIn profile URL
+- [ ] Use web scraping or LinkedIn API to extract data
+- [ ] Parse and extract:
+  - [ ] Profile photo
+  - [ ] Headline (use as bio starter)
+  - [ ] Summary/About section
+  - [ ] Experience (map to accomplishments)
+  - [ ] Education
+- [ ] Show preview of imported data before applying
+- [ ] Let user review and edit before saving
+- [ ] Add "Import" and "Cancel" buttons
+- [ ] Handle LinkedIn URL validation
+- [ ] Handle private/restricted profiles gracefully
+
+
+---
+
+## Bug Fix: Incorrect Button Text in Step 3 ✅
+- [x] Fix "Continue to Cover Design" button in Step 3 (Review) → should say "Continue to Profile Check"
+- [x] Verify all step transition buttons match the correct workflow order:
+  - [x] Step 1 (Upload) → Step 2 (Analyzing)
+  - [x] Step 2 (Analyzing) → Step 3 (Review)
+  - [x] Step 3 (Review) → Step 4 (Profile Check)
+  - [x] Step 4 (Profile Check) → Step 5 (Cover Design)
+  - [x] Step 5 (Cover) → Step 6 (Amazon KDP)
+  - [x] Step 6 (Amazon) → Step 7 (Book Wrap)
+  - [x] Step 7 (Wrap) → Step 8 (Export)p 7 (Book Wrap)
+  - [ ] Step 7 (Wrap) → Step 8 (Export)

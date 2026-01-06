@@ -187,7 +187,7 @@ Just type your question or let me know what you'd like to explore!`,
 
       <div className="flex justify-end">
         <Button onClick={onComplete} size="lg">
-          Continue to Cover Design
+          Continue to Profile Check
         </Button>
       </div>
     </div>
