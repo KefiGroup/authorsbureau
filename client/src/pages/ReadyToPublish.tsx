@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
-import { BookWrapDesignerV2 } from "@/components/BookWrapDesignerV2";
+import { BookWrapVisualEditor } from "@/components/BookWrapVisualEditor";
 import { PublisherChat } from "@/components/PublisherChat";
 import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
 import { CoverUpload } from "@/components/CoverUpload";
@@ -1549,79 +1549,8 @@ export default function ReadyToPublish() {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Amazon KDP
               </Button>
-              {/* Cover Upload Check */}
-              {!selectedCover ? (
-                <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950">
-                  <CardHeader>
-                    <div className="flex items-start gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
-                        <ImageIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div className="flex-1">
-                        <CardTitle className="text-blue-900 dark:text-blue-100 mb-2">
-                          Upload Your Book Cover
-                        </CardTitle>
-                        <CardDescription className="text-blue-700 dark:text-blue-300 mb-4">
-                          The Book Wrap Designer needs a front cover image to create the complete paperback wrap. Upload your cover design to continue.
-                        </CardDescription>
-                        <div className="space-y-4">
-                          <div>
-                            <Label htmlFor="wrap-cover-upload" className="text-blue-900 dark:text-blue-100">Upload Cover Image</Label>
-                            <Input
-                              id="wrap-cover-upload"
-                              type="file"
-                              accept="image/png,image/jpeg,image/jpg"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  // Validate file
-                                  if (file.size > 50 * 1024 * 1024) {
-                                    toast.error('File size must be under 50MB');
-                                    return;
-                                  }
-                                  // Create preview and upload
-                                  const reader = new FileReader();
-                                  reader.onload = async (event) => {
-                                    const dataUrl = event.target?.result as string;
-                                    // Upload to S3
-                                    try {
-                                      const base64Data = dataUrl.split(',')[1];
-                                      const mimeType = dataUrl.split(';')[0].split(':')[1];
-                                      const result = await uploadCustomCoverMutation.mutateAsync({ 
-                                        fileName: file.name,
-                                        fileType: mimeType,
-                                        fileData: base64Data 
-                                      });
-                                      setSelectedCover({ imageUrl: result.url, style: 'custom' });
-                                      toast.success('Cover uploaded successfully!');
-                                    } catch (error) {
-                                      toast.error('Failed to upload cover');
-                                    }
-                                  };
-                                  reader.readAsDataURL(file);
-                                }
-                              }}
-                              className="mt-2"
-                            />
-                            <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
-                              Recommended: 1600x2560px (5:8 ratio), PNG or JPG, max 50MB
-                            </p>
-                          </div>
-                          <div className="flex gap-3">
-                            <Button
-                              variant="outline"
-                              onClick={() => setCurrentStep("cover")}
-                            >
-                              <ArrowLeft className="w-4 h-4 mr-2" />
-                              Go Back to Cover Design
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                </Card>
-              ) : (!authorProfile?.avatarUrl || !authorProfile?.bio) ? (
+              {/* Author Profile Check */}
+              {(!authorProfile?.avatarUrl || !authorProfile?.bio) ? (
                 <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950">
                   <CardHeader>
                     <div className="flex items-start gap-4">
@@ -1657,15 +1586,12 @@ export default function ReadyToPublish() {
                 </Card>
               ) : (
                 <>
-                  <BookWrapDesignerV2
-                    frontCoverUrl={selectedCover}
+                  <BookWrapVisualEditor
+                    bookId={bookId?.toString() || ''}
                     bookTitle={finalTitle}
                     authorName={authorProfile.penName || "Author Name"}
-                    authorPhotoUrl={authorProfile.avatarUrl}
-                    authorBio={authorProfile.bio || ""}
-                    bookDescription={editedDescription || aiAnalysis.bookDescription}
                     pageCount={Math.ceil((manuscript?.split(/\s+/).length || 0) / 250)}
-                    onWrapGenerated={(wrapUrl) => {
+                    onWrapGenerated={(wrapUrl: string) => {
                       toast.success("Book wrap generated successfully!");
                       // Store the wrap URL for export
                     }}
