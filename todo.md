@@ -779,3 +779,14 @@
 - [ ] Verify back cover preview displays with real author photo and bio
 - [ ] Test Book Wrap Designer with complete data (cover + author profile)
 - [ ] Verify wrap canvas renders correctly with all elements
+
+
+## Photo Crop & Zoom Feature
+- [x] Install react-easy-crop or similar image cropper library
+- [x] Create ImageCropper component with zoom slider and crop controls
+- [x] Integrate cropper into Profile page photo upload flow
+- [x] Show cropper dialog after user selects photo file
+- [x] Allow users to zoom in/out and reposition photo
+- [x] Save cropped image to S3 after user confirms
+- [ ] Test photo upload with crop/zoom on Profile page (ready for testing)
+- [ ] Test inline photo upload with crop/zoom in Book Wrap Designer (ready for testing)

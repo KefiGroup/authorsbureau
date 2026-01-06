@@ -10,6 +10,7 @@ import { trpc } from "@/lib/trpc";
 import { Loader2, Save, User, Upload, Sparkles, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ImageCropper } from "@/components/ImageCropper";
 
 export default function Profile() {
   const { data: authorProfile, isLoading } = trpc.author.getProfile.useQuery();
@@ -33,6 +34,7 @@ export default function Profile() {
   const [isUploading, setIsUploading] = useState(false);
   const [bioWordCount, setBioWordCount] = useState(0);
   const [bioCharCount, setBioCharCount] = useState(0);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 
   const generateBio = trpc.author.generateAuthorBio.useMutation();
 
@@ -93,17 +95,24 @@ export default function Profile() {
       return;
     }
 
+    // Show cropper with selected image
+    const imageUrl = URL.createObjectURL(file);
+    setImageToCrop(imageUrl);
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
     setIsUploading(true);
     try {
-      const buffer = await file.arrayBuffer();
+      const buffer = await croppedBlob.arrayBuffer();
       const uint8Array = new Uint8Array(buffer);
       const randomSuffix = Math.random().toString(36).substring(7);
-      const fileKey = `author-photos/${Date.now()}-${randomSuffix}.${file.name.split(".").pop()}`;
+      const fileKey = `author-photos/${Date.now()}-${randomSuffix}.jpg`;
       
       // TODO: Implement storagePut - for now just use a placeholder
-      // const { url } = await storagePut(fileKey, uint8Array, file.type);
-      const url = URL.createObjectURL(file);
+      // const { url } = await storagePut(fileKey, uint8Array, "image/jpeg");
+      const url = URL.createObjectURL(croppedBlob);
       setFormData({ ...formData, avatarUrl: url });
+      setImageToCrop(null);
       
       toast.success("Photo uploaded successfully");
     } catch (error) {
@@ -112,6 +121,10 @@ export default function Profile() {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleCropCancel = () => {
+    setImageToCrop(null);
   };
 
   const handleGenerateBio = async () => {
@@ -466,6 +479,16 @@ export default function Profile() {
           </Card>
         )}
       </div>
+
+      {/* Image Cropper Dialog */}
+      {imageToCrop && (
+        <ImageCropper
+          image={imageToCrop}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={1}
+        />
+      )}
     </DashboardLayout>
   );
 }
