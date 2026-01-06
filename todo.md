@@ -790,3 +790,20 @@
 - [x] Save cropped image to S3 after user confirms
 - [ ] Test photo upload with crop/zoom on Profile page (ready for testing)
 - [ ] Test inline photo upload with crop/zoom in Book Wrap Designer (ready for testing)
+
+
+## Flexible Back Cover Customization
+- [x] Design layout preset system (Classic, Modern, Minimal, Bold)
+- [x] Add toggle controls for standard elements (photo, bio, description, ISBN)
+- [x] Add optional element options (foreword, testimonials, awards, series info, quotes)
+- [x] Implement custom text block feature for additional content
+- [x] Implement layout presets with predefined arrangements
+- [x] Add "Custom Layout" mode for full control
+- [x] Update BookWrapDesigner to support flexible layouts
+- [x] Add preview showing real-time layout changes
+- [x] Created BackCoverLayoutEditor component with accordion controls
+- [x] Created BackCoverPreview component with live rendering
+- [ ] Add drag-and-drop positioning system for elements (future enhancement)
+- [ ] Add element resize controls (photo size, text area size) (future enhancement)
+- [ ] Save layout preferences with book project
+- [ ] Test all layout presets and custom positioning

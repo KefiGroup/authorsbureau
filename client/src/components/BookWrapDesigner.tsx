@@ -8,6 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Download, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import { BackCoverLayoutEditor } from "@/components/BackCoverLayoutEditor";
+import { BackCoverPreview } from "@/components/BackCoverPreview";
+import type { BackCoverLayout } from "../../../shared/back-cover-types";
+import { LAYOUT_PRESETS } from "../../../shared/back-cover-types";
 import {
   TrimSize,
   PaperType,
@@ -51,6 +55,10 @@ export function BookWrapDesigner({
   const [textColor, setTextColor] = useState("#000000");
   const [fontSize, setFontSize] = useState(11);
   const [zoom, setZoom] = useState(0.3); // Start zoomed out to see full wrap
+  const [backCoverLayout, setBackCoverLayout] = useState<BackCoverLayout>({
+    preset: "classic",
+    elements: LAYOUT_PRESETS.classic.elements || [],
+  });
   
   // Calculate dimensions
   const dimensions = calculateWrapDimensions(trimSize, pageCount, paperType);
@@ -278,10 +286,40 @@ export function BookWrapDesigner({
   
   return (
     <div className="space-y-6">
-      {/* Back Cover Preview */}
-      <Card>
+      {/* Back Cover Layout Customization */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Layout Editor */}
+        <BackCoverLayoutEditor
+          layout={backCoverLayout}
+          onChange={setBackCoverLayout}
+        />
+        
+        {/* Live Preview */}
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Live Preview</CardTitle>
+              <CardDescription>
+                See how your back cover will look with the selected layout
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BackCoverPreview
+                layout={backCoverLayout}
+                authorPhoto={authorPhotoUrl}
+                authorBio={authorBio}
+                bookDescription={backDescription}
+                isbn={isbn}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Original Back Cover Preview (kept for reference) */}
+      <Card className="hidden">
         <CardHeader>
-          <CardTitle>Back Cover Preview</CardTitle>
+          <CardTitle>Back Cover Preview (Old)</CardTitle>
           <CardDescription>
             See how your author profile and book description will appear on the back cover
           </CardDescription>
