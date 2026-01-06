@@ -34,16 +34,7 @@
 - [ ] Cover dimension validation (1600x2560px for eBook)
 - [ ] Cover customization tools (fonts, colors, layouts)
 
-### Step 5: Amazon KDP Optimization ✅
-- [x] AI category research and recommendations
-- [x] Keyword generation (7 buyer-intent keywords)
-- [x] Book description optimization (2000-4000 chars)
-- [x] Description editor with character counter
-- [x] Pricing recommendations ($2.99+ for 70% royalty)
-- [x] ISBN guidance (own, Amazon free, Bowker purchase)
-- [x] Copyright page generation
-
-### Step 6: Book Wrap Designer (Paperback) ✅
+### Step 5: Book Wrap Designer (Paperback) ✅
 - [x] Author profile integration (photo, bio)
 - [x] Back cover layout presets (Classic, Modern, Minimal, Bold, Custom)
 - [x] Toggle elements (photo, bio, description, ISBN)
@@ -54,7 +45,26 @@
 - [x] Full wrap generation (front + spine + back + bleed)
 - [x] Export as PNG (300 DPI, print-ready)
 
-### Step 7: Export Package ✅
+### Step 6: Amazon KDP Optimization ✅
+- [x] AI category research and recommendations
+- [x] Keyword generation (7 buyer-intent keywords)
+- [x] Book description optimization (2000-4000 chars)
+- [x] Description editor with character counter
+- [x] Pricing recommendations ($2.99+ for 70% royalty)
+- [x] ISBN guidance (own, Amazon free, Bowker purchase)
+- [x] Copyright page generation
+
+### Step 7: Pre-Publishing Checklist ✅
+- [x] **Amazon KDP account setup reminder** (with signup link)
+- [x] **Amazon Author Central account setup reminder** (with signup link)
+- [x] Account verification checklist (tax info, payment method)
+- [x] Display account setup guide with step-by-step instructions
+- [x] Link to KDP signup: https://kdp.amazon.com
+- [x] Link to Author Central: https://authorcentral.amazon.com
+- [x] Checkbox confirmation for each setup step
+- [x] Disable download button until checklist complete
+
+### Step 8: Export Package ✅
 - [x] DOCX export (eBook format, editable)
 - [x] PDF export (Paperback 6"x9", print-ready)
 - [x] EPUB export (Kindle/KDP eBook format)

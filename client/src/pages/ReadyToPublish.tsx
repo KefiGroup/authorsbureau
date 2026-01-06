@@ -18,6 +18,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
 import { BookWrapDesigner } from "@/components/BookWrapDesigner";
 import { PublisherChat } from "@/components/PublisherChat";
+import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,7 @@ export default function ReadyToPublish() {
   const bookIdFromUrl = new URLSearchParams(window.location.search).get('bookId');
   const [bookId, setBookId] = useState<number | null>(bookIdFromUrl ? parseInt(bookIdFromUrl) : null);
   const [currentStep, setCurrentStep] = useState<WorkflowStep>("upload");
+  const [accountChecklistComplete, setAccountChecklistComplete] = useState(false);
   const [manuscript, setManuscript] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [uploadMethod, setUploadMethod] = useState<"paste" | "file">("paste");
@@ -1248,6 +1250,11 @@ export default function ReadyToPublish() {
                 </CardHeader>
               </Card>
 
+              {/* Amazon Account Setup Checklist */}
+              {!accountChecklistComplete && (
+                <AmazonAccountChecklist onComplete={() => setAccountChecklistComplete(true)} />
+              )}
+
               <Card>
                 <CardHeader>
                   <CardTitle>Your Publishing Package Includes:</CardTitle>
@@ -1293,6 +1300,11 @@ export default function ReadyToPublish() {
                           return;
                         }
                         
+                        if (!accountChecklistComplete) {
+                          toast.error("Please complete the Amazon account setup checklist first.");
+                          return;
+                        }
+                        
                         toast.info("Generating your publishing package...");
                         
                         generateExportBundle.mutate({
@@ -1312,14 +1324,16 @@ export default function ReadyToPublish() {
                           copyrightPage: undefined, // TODO: Add copyright page generation
                         });
                       }}
-                      disabled={!manuscript || !aiAnalysis || !selectedCover}
+                      disabled={!manuscript || !aiAnalysis || !selectedCover || !accountChecklistComplete}
                     >
                       <Download className="w-5 h-5 mr-2" />
-                      Download Complete Package (ZIP)
+                      {accountChecklistComplete ? "Download Complete Package (ZIP)" : "Complete Account Setup First"}
                     </Button>
-                    <p className="text-sm text-muted-foreground mt-4">
-                      Ready to upload to Amazon KDP!
-                    </p>
+                    {accountChecklistComplete && (
+                      <p className="text-sm text-muted-foreground mt-4">
+                        Ready to upload to Amazon KDP!
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
