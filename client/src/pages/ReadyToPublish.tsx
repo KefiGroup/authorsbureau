@@ -56,6 +56,17 @@ export default function ReadyToPublish() {
   const [showInteriorPreview, setShowInteriorPreview] = useState(false);
   const [customizingCover, setCustomizingCover] = useState<string | null>(null);
   const [showKDPGuide, setShowKDPGuide] = useState(false);
+
+  // Back navigation helper
+  const handleBackNavigation = () => {
+    const stepOrder: WorkflowStep[] = ["upload", "analyzing", "review", "profile-check", "cover", "amazon", "wrap", "export"];
+    const currentIndex = stepOrder.indexOf(currentStep);
+    if (currentIndex > 0) {
+      // Skip analyzing step when going back
+      const previousStep = stepOrder[currentIndex - 1];
+      setCurrentStep(previousStep === "analyzing" ? "upload" : previousStep);
+    }
+  };
   const [manuscript, setManuscript] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [uploadMethod, setUploadMethod] = useState<"paste" | "file">("paste");
@@ -412,102 +423,169 @@ export default function ReadyToPublish() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-muted-foreground">
-                  Step {currentStep === "upload" ? "1" : currentStep === "analyzing" ? "2" : currentStep === "review" ? "3" : currentStep === "cover" ? "4" : currentStep === "amazon" ? "5" : currentStep === "wrap" ? "6" : "7"} of 7
+                  Step {currentStep === "upload" ? "1" : currentStep === "analyzing" ? "2" : currentStep === "review" ? "3" : currentStep === "profile-check" ? "4" : currentStep === "cover" ? "5" : currentStep === "amazon" ? "6" : currentStep === "wrap" ? "7" : "8"} of 8
                 </span>
               </div>
               <Badge variant="outline" className="text-xs">
                 {currentStep === "upload" ? "Upload Manuscript" : 
                  currentStep === "analyzing" ? "AI Analysis" : 
                  currentStep === "review" ? "Review & Edit" : 
+                 currentStep === "profile-check" ? "Author Profile" : 
                  currentStep === "cover" ? "Cover Design" : 
                  currentStep === "amazon" ? "Amazon KDP" : 
                  currentStep === "wrap" ? "Book Wrap" : 
                  "Export"}
               </Badge>
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <div className={`flex flex-col items-center gap-2 flex-1 ${
-                ["upload", "analyzing", "review", "cover", "amazon", "export"].includes(currentStep)
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              }`}>
+            <div className="flex items-center justify-between gap-2">
+              {/* Step 1: Upload */}
+              <div className="flex flex-col items-center gap-2 flex-1">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   currentStep === "upload" || currentStep === "analyzing"
                     ? "bg-primary text-primary-foreground"
-                    : ["review", "cover", "amazon", "export"].includes(currentStep)
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted"
+                    : "bg-primary/20 text-primary"
                 }`}>
-                  {["review", "cover", "amazon", "export"].includes(currentStep) ? (
+                  {["review", "profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep) ? (
                     <CheckCircle2 className="w-5 h-5" />
                   ) : (
                     <Upload className="w-5 h-5" />
                   )}
                 </div>
-                <span className="text-xs font-medium">Upload</span>
+                <span className="text-xs font-medium text-center">Upload</span>
               </div>
 
               <div className="h-0.5 flex-1 bg-border" />
 
-              <div className={`flex flex-col items-center gap-2 flex-1 ${
-                ["review", "cover", "amazon", "export"].includes(currentStep)
-                  ? "text-primary"
-                  : currentStep === "analyzing"
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              }`}>
+              {/* Step 2: AI Analysis */}
+              <div className="flex flex-col items-center gap-2 flex-1">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   currentStep === "analyzing"
                     ? "bg-primary text-primary-foreground animate-pulse"
-                    : ["review", "cover", "amazon", "export"].includes(currentStep)
+                    : ["review", "profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep)
                     ? "bg-primary/20 text-primary"
-                    : "bg-muted"
+                    : "bg-muted text-muted-foreground"
                 }`}>
-                  {["cover", "amazon", "export"].includes(currentStep) ? (
+                  {["review", "profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep) ? (
                     <CheckCircle2 className="w-5 h-5" />
                   ) : (
                     <Sparkles className="w-5 h-5" />
                   )}
                 </div>
-                <span className="text-xs font-medium">AI Analysis</span>
+                <span className="text-xs font-medium text-center">Analysis</span>
               </div>
 
               <div className="h-0.5 flex-1 bg-border" />
 
-              <div className={`flex flex-col items-center gap-2 flex-1 ${
-                ["review", "cover", "amazon", "export"].includes(currentStep)
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              }`}>
+              {/* Step 3: Review */}
+              <div className="flex flex-col items-center gap-2 flex-1">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   currentStep === "review"
                     ? "bg-primary text-primary-foreground"
-                    : ["cover", "amazon", "export"].includes(currentStep)
+                    : ["profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep)
                     ? "bg-primary/20 text-primary"
-                    : "bg-muted"
+                    : "bg-muted text-muted-foreground"
                 }`}>
-                  {["cover", "amazon", "export"].includes(currentStep) ? (
+                  {["profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep) ? (
                     <CheckCircle2 className="w-5 h-5" />
                   ) : (
                     <Edit3 className="w-5 h-5" />
                   )}
                 </div>
-                <span className="text-xs font-medium">Review & Edit</span>
+                <span className="text-xs font-medium text-center">Review</span>
               </div>
 
               <div className="h-0.5 flex-1 bg-border" />
 
-              <div className={`flex flex-col items-center gap-2 flex-1 ${
-                currentStep === "export" ? "text-primary" : "text-muted-foreground"
-              }`}>
+              {/* Step 4: Profile */}
+              <div className="flex flex-col items-center gap-2 flex-1">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  currentStep === "profile-check"
+                    ? "bg-primary text-primary-foreground"
+                    : ["cover", "amazon", "wrap", "export"].includes(currentStep)
+                    ? "bg-primary/20 text-primary"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {["cover", "amazon", "wrap", "export"].includes(currentStep) ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    <User className="w-5 h-5" />
+                  )}
+                </div>
+                <span className="text-xs font-medium text-center">Profile</span>
+              </div>
+
+              <div className="h-0.5 flex-1 bg-border" />
+
+              {/* Step 5: Cover */}
+              <div className="flex flex-col items-center gap-2 flex-1">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  currentStep === "cover"
+                    ? "bg-primary text-primary-foreground"
+                    : ["amazon", "wrap", "export"].includes(currentStep)
+                    ? "bg-primary/20 text-primary"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {["amazon", "wrap", "export"].includes(currentStep) ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    <ImageIcon className="w-5 h-5" />
+                  )}
+                </div>
+                <span className="text-xs font-medium text-center">Cover</span>
+              </div>
+
+              <div className="h-0.5 flex-1 bg-border" />
+
+              {/* Step 6: Amazon KDP */}
+              <div className="flex flex-col items-center gap-2 flex-1">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  currentStep === "amazon"
+                    ? "bg-primary text-primary-foreground"
+                    : ["wrap", "export"].includes(currentStep)
+                    ? "bg-primary/20 text-primary"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {["wrap", "export"].includes(currentStep) ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    <TrendingUp className="w-5 h-5" />
+                  )}
+                </div>
+                <span className="text-xs font-medium text-center">Amazon</span>
+              </div>
+
+              <div className="h-0.5 flex-1 bg-border" />
+
+              {/* Step 7: Book Wrap */}
+              <div className="flex flex-col items-center gap-2 flex-1">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  currentStep === "wrap"
+                    ? "bg-primary text-primary-foreground"
+                    : currentStep === "export"
+                    ? "bg-primary/20 text-primary"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {currentStep === "export" ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    <BookOpen className="w-5 h-5" />
+                  )}
+                </div>
+                <span className="text-xs font-medium text-center">Wrap</span>
+              </div>
+
+              <div className="h-0.5 flex-1 bg-border" />
+
+              {/* Step 8: Export */}
+              <div className="flex flex-col items-center gap-2 flex-1">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   currentStep === "export"
                     ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
+                    : "bg-muted text-muted-foreground"
                 }`}>
-                  <CheckCircle2 className="w-5 h-5" />
+                  <Download className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-medium">Publish</span>
+                <span className="text-xs font-medium text-center">Export</span>
               </div>
             </div>
           </CardContent>
@@ -780,6 +858,16 @@ export default function ReadyToPublish() {
 
           {/* Step 3: Chat with Publisher AI */}
           {currentStep === "review" && aiAnalysis && (
+            <>
+            {/* Back Button */}
+            <Button
+              variant="ghost"
+              onClick={handleBackNavigation}
+              className="mb-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Upload
+            </Button>
             <PublisherChat
               manuscript={manuscript}
               initialAnalysis={{
@@ -793,11 +881,21 @@ export default function ReadyToPublish() {
               }}
               onComplete={() => setCurrentStep("profile-check")}
             />
+            </>
           )}
 
-          {/* Step 3: Author Profile Check */}
+          {/* Step 4: Author Profile Check */}
           {currentStep === "profile-check" && (
             <div className="space-y-6">
+              {/* Back Button */}
+              <Button
+                variant="ghost"
+                onClick={handleBackNavigation}
+                className="mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Review
+              </Button>
               <AuthorProfilePrompt
                 authorProfile={authorProfile || null}
                 onContinue={() => setCurrentStep("cover")}
@@ -805,9 +903,18 @@ export default function ReadyToPublish() {
             </div>
           )}
 
-          {/* Step 4: AI Cover Generation */}
+          {/* Step 5: AI Cover Generation */}
           {currentStep === "cover" && aiAnalysis && (
             <div className="space-y-6">
+              {/* Back Button */}
+              <Button
+                variant="ghost"
+                onClick={handleBackNavigation}
+                className="mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Author Profile
+              </Button>
               <Card className="border-primary/50 bg-primary/5">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -1022,9 +1129,18 @@ export default function ReadyToPublish() {
             </div>
           )}
 
-          {/* Step 5: Amazon Optimization */}
+          {/* Step 6: Amazon Optimization */}
           {currentStep === "amazon" && aiAnalysis && (
             <div className="space-y-6">
+              {/* Back Button */}
+              <Button
+                variant="ghost"
+                onClick={handleBackNavigation}
+                className="mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Cover Design
+              </Button>
               <Card className="border-primary/50 bg-primary/5">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -1308,9 +1424,18 @@ export default function ReadyToPublish() {
             </DialogContent>
           </Dialog>
 
-          {/* Step 6: Book Wrap Designer */}
+          {/* Step 7: Book Wrap Designer */}
           {currentStep === "wrap" && selectedCover && aiAnalysis && (
             <div className="space-y-6">
+              {/* Back Button */}
+              <Button
+                variant="ghost"
+                onClick={handleBackNavigation}
+                className="mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Amazon KDP
+              </Button>
               {/* Profile Completion Check */}
               {(!authorProfile?.avatarUrl || !authorProfile?.bio) ? (
                 <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950">
@@ -1380,9 +1505,18 @@ export default function ReadyToPublish() {
             </div>
           )}
 
-          {/* Step 7: Export Bundle */}
+          {/* Step 8: Export Bundle */}
           {currentStep === "export" && aiAnalysis && (
             <div className="space-y-6">
+              {/* Back Button */}
+              <Button
+                variant="ghost"
+                onClick={handleBackNavigation}
+                className="mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Book Wrap
+              </Button>
               <Card className="border-primary/50 bg-primary/5">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">

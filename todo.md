@@ -258,10 +258,18 @@
   - [x] Include pricing recommendations and category guidance
 
 ### Phase 2: Flow Improvements (Suboptimal UX)
-- [ ] Add visual progress persistence (checkmarks on completed steps)
-  - [ ] Update progress indicator to show completed steps with checkmarks
-  - [ ] Persist completion status in database
-  - [ ] Show completion status on resume workflow
+- [x] Fix progress indicator for 8-step workflow
+  - [x] Update step counter from "7 of 7" to "8 of 8"
+  - [x] Add profile-check step to visual progress circles
+  - [x] Update step number logic to include profile-check
+  - [x] Fix checkmark logic for all 8 steps
+  - [x] Add proper icons for each step (Upload, Analysis, Review, Profile, Cover, Amazon, Wrap, Export)
+- [x] Add back navigation buttons
+  - [x] Add "← Back to [Previous Step]" button at top of each step
+  - [x] Implement navigation logic (review → upload, profile-check → review, cover → profile-check, etc.)
+  - [x] Preserve data when going back (data persists in state)
+  - [x] Skip analyzing step when navigating backwards
+  - [x] Add back buttons to all 6 navigable steps (Review, Profile, Cover, Amazon, Wrap, Export)
 - [ ] Add "Did You Know?" KDP tips during cover generation loading
   - [ ] Create tip carousel component
   - [ ] Include 5-10 helpful KDP tips (pricing, categories, keywords)
@@ -279,10 +287,6 @@
 - [ ] Add estimated time remaining in progress indicator
   - [ ] Calculate based on current step and average completion times
   - [ ] Show "~15 minutes remaining" or "~5 minutes remaining"
-- [ ] Add back button between steps
-  - [ ] Add "← Back to [Previous Step]" button at top of each step
-  - [ ] Preserve data when going back
-  - [ ] Confirm before discarding unsaved changes
 - [ ] Add completion celebration moment
   - [ ] Show success animation after export download
   - [ ] Display "🎉 Congratulations! Your book is ready for Amazon KDP!"
