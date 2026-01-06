@@ -227,15 +227,46 @@ export default function WritingProject() {
           </CardContent>
         </Card>
 
-        {/* Content */}
-        {book.content && (
+        {/* Manuscript Preview */}
+        {book.content && (book.wordCount || 0) > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Book Content</CardTitle>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Manuscript</CardTitle>
+                  <CardDescription>
+                    {(book.wordCount || 0).toLocaleString()} words • {Math.ceil((book.wordCount || 0) / 250)} pages (estimated)
+                  </CardDescription>
+                </div>
+                <Button variant="outline" asChild>
+                  <Link href="/writing-studio">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Edit Manuscript
+                  </Link>
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-sm max-w-none">
-                <pre className="whitespace-pre-wrap font-sans">{book.content.substring(0, 1000)}...</pre>
+              <div className="bg-muted/30 rounded-lg p-6 border">
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    📄 Your manuscript is ready for publishing. Click "Edit Manuscript" to make changes, or proceed to the publishing workflow to generate your copyright page, back cover, and export package.
+                  </p>
+                  <div className="flex gap-3 flex-wrap">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/ready-to-publish">
+                        <FileText className="w-4 h-4 mr-2" />
+                        Ready to Publish
+                      </Link>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/writing-studio">
+                        <BookOpen className="w-4 h-4 mr-2" />
+                        Continue Writing
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

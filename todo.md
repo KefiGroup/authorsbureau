@@ -554,3 +554,8 @@
 - [ ] Include endorsement/testimonial placeholders
 - [ ] Add ISBN barcode placement guide
 - [ ] Generate formatted back cover copy for export
+
+## UI Fixes - User Reported
+- [x] Fix ugly Book Content section - COMPLETED: Replaced raw text dump with clean manuscript card
+- [x] Improve manuscript display formatting - COMPLETED: Shows word count, page estimate, and action buttons
+- [x] Add Edit Manuscript button for proper editing interface - COMPLETED: Button added to manuscript card header
