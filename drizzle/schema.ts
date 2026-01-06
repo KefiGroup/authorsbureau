@@ -55,6 +55,15 @@ export const books = mysqlTable("books", {
   // 2-Day Program tracking
   programDay: int("programDay").default(0), // 0 = not started, 1 = day 1, 2 = day 2, 3 = completed
   programStep: int("programStep").default(0),
+  // Publishing materials
+  copyrightPage: text("copyrightPage"), // Generated copyright page content
+  backCoverCopy: text("backCoverCopy"), // Back cover description
+  authorBio: text("authorBio"), // Author biography for back cover
+  backCoverStyle: varchar("backCoverStyle", { length: 50 }), // professional, narrative, or problem-solution
+  isbn: varchar("isbn", { length: 20 }),
+  publisherName: varchar("publisherName", { length: 255 }),
+  publisherWebsite: varchar("publisherWebsite", { length: 500 }),
+  copyrightYear: int("copyrightYear"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

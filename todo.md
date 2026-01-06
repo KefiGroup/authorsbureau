@@ -539,3 +539,18 @@
 - [x] Improve clarity of where/how to upload manuscript for existing books - COMPLETED: Upload button now primary action when book has no content
 - [x] Add clear visual hierarchy and guidance throughout upload process - COMPLETED: Blue highlighted card with icon, description, and file format guidance
 - [x] Increase database content field size to support full manuscripts - COMPLETED: Changed from TEXT (65KB) to MEDIUMTEXT (16MB)
+
+## New Feature - Copyright & Legal Pages
+- [x] Design copyright page template with customizable fields - COMPLETED
+- [x] Add legal disclaimer templates for different book types (fiction, non-fiction, advice, etc.) - COMPLETED: Non-fiction and Technology disclaimers
+- [x] Create UI for generating and editing copyright/disclaimer pages - COMPLETED: CopyrightPageGenerator component created
+- [x] Include ISBN, publisher info, copyright year, and rights statements - COMPLETED
+- [ ] Add to export package as separate formatted page - IN PROGRESS
+
+## New Feature - Back Cover Templates
+- [ ] Create 3 back cover templates (Professional/Academic, Narrative, Problem-Solution)
+- [ ] Include author bio section with photo placeholder
+- [ ] Add book description/blurb section
+- [ ] Include endorsement/testimonial placeholders
+- [ ] Add ISBN barcode placement guide
+- [ ] Generate formatted back cover copy for export
