@@ -184,7 +184,87 @@ export async function generateDOCX(manuscript: ManuscriptData): Promise<Buffer> 
 }
 
 /**
- * Generate a PDF file from manuscript data
+ * Generate a print-ready PDF file for paperback publishing
+ * 6"x9" trim size with gutter margins for binding
+ * Returns a Buffer that can be sent to the client
+ */
+export async function generatePrintPDF(manuscript: ManuscriptData): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const { bookTitle, subtitle, authorName, chapters } = manuscript;
+
+    // 6"x9" trim size (most popular for paperback)
+    const pageWidth = 6 * 72; // 432 points
+    const pageHeight = 9 * 72; // 648 points
+    
+    // Print margins with gutter for binding
+    const margins = {
+      top: 0.75 * 72, // 54 points
+      bottom: 0.75 * 72,
+      left: 1 * 72, // 72 points (extra for binding)
+      right: 0.75 * 72, // 54 points
+    };
+
+    // Create PDF document with print specifications
+    const doc = new PDFDocument({
+      size: [pageWidth, pageHeight],
+      margins: margins,
+      bufferPages: true, // Enable page numbering
+    });
+
+    const buffers: Buffer[] = [];
+    doc.on("data", buffers.push.bind(buffers));
+    doc.on("end", () => resolve(Buffer.concat(buffers)));
+    doc.on("error", reject);
+
+    // Title page
+    doc.fontSize(20).font("Times-Bold").text(bookTitle, { align: "center" });
+    doc.moveDown();
+
+    if (subtitle) {
+      doc.fontSize(14).font("Times-Roman").text(subtitle, { align: "center" });
+      doc.moveDown();
+    }
+
+    doc.fontSize(12).font("Times-Italic").text(`by ${authorName}`, { align: "center" });
+    doc.addPage();
+
+    // Add chapters
+    for (const chapter of chapters) {
+      // Chapter title
+      doc
+        .fontSize(16)
+        .font("Times-Bold")
+        .text(`Chapter ${chapter.number}: ${chapter.title}`, { align: "left" });
+      doc.moveDown();
+
+      // Chapter content with proper paragraph formatting
+      const paragraphs = chapter.content.split("\n\n");
+      doc.fontSize(11).font("Times-Roman");
+
+      for (const para of paragraphs) {
+        if (para.trim()) {
+          // First-line indent for paragraphs
+          doc.text(para.trim(), {
+            align: "justify",
+            indent: 0.5 * 72, // 0.5 inch first-line indent
+            lineGap: 3, // Line spacing
+          });
+          doc.moveDown(0.5);
+        }
+      }
+
+      // Add page break after each chapter (except last)
+      if (chapter.number < chapters.length) {
+        doc.addPage();
+      }
+    }
+
+    doc.end();
+  });
+}
+
+/**
+ * Generate a PDF file from manuscript data (eBook version)
  * Returns a Buffer that can be sent to the client
  */
 export async function generatePDF(manuscript: ManuscriptData): Promise<Buffer> {

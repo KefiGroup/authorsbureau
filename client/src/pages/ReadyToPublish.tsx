@@ -525,14 +525,14 @@ export default function ReadyToPublish() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">Target Audience</h4>
-                      <p className="text-sm text-muted-foreground">{aiAnalysis.targetAudience}</p>
+                  <div className="grid gap-6 md:grid-cols-3">
+                    <div className="space-y-3 p-4 rounded-lg border bg-card">
+                      <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide">Target Audience</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{aiAnalysis.targetAudience}</p>
                     </div>
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">Main Themes</h4>
-                      <div className="flex flex-wrap gap-1">
+                    <div className="space-y-3 p-4 rounded-lg border bg-card">
+                      <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide">Main Themes</h4>
+                      <div className="flex flex-wrap gap-2">
                         {aiAnalysis.themes.slice(0, 4).map((theme, idx) => (
                           <Badge key={idx} variant="secondary" className="text-xs">
                             {theme}
@@ -540,11 +540,14 @@ export default function ReadyToPublish() {
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">Key Benefits</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
+                    <div className="space-y-3 p-4 rounded-lg border bg-card">
+                      <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide">Key Benefits</h4>
+                      <ul className="text-sm text-muted-foreground space-y-2 leading-relaxed">
                         {aiAnalysis.keyBenefits.slice(0, 3).map((benefit, idx) => (
-                          <li key={idx}>• {benefit}</li>
+                          <li key={idx} className="flex items-start gap-2">
+                            <span className="text-primary mt-0.5">•</span>
+                            <span>{benefit}</span>
+                          </li>
                         ))}
                       </ul>
                     </div>

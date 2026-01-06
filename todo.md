@@ -644,3 +644,20 @@
 - [x] Removed pricing calculator (KDP handles this during upload)
 - [x] Focused platform on what authors need BEFORE KDP (content optimization)
 - [x] Emphasized copy-paste ready metadata for easy KDP field population
+
+
+## Dual-Format Export (eBook + Paperback)
+- [x] Generate both eBook DOCX and Paperback PDF automatically (no user selection needed)
+- [x] eBook DOCX: Reflowable layout, no headers/footers, optimized for Kindle devices
+- [x] Paperback PDF: 6"x9" trim size (most popular), proper gutter margins for binding
+- [x] Paperback PDF: Embedded fonts, print-ready formatting
+- [x] Update export bundle to include both formats in single ZIP
+- [x] Update README to explain both formats and when to use each
+- [x] Add separate KDP upload instructions for eBook vs paperback
+- [ ] Test both formats meet KDP requirements
+
+
+## UI Fixes
+- [x] Fix AI Publisher Analysis table layout (text overlapping, columns misaligned)
+- [x] Add proper spacing, borders, and alignment to table
+- [x] Ensure responsive layout for table on different screen sizes
