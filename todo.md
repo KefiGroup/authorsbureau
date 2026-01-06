@@ -232,3 +232,69 @@
 - [ ] Print-on-demand integration
 - [ ] Audiobook production tools
 - [ ] Translation services integration
+
+
+---
+
+## Visual Editor Enhancements (In Progress)
+
+### Phase 2: Enhanced Interactions
+- [x] Double-click text boxes to edit content (dialog with input field)
+- [x] Improved drag-and-drop with cursor feedback (move cursor when dragging)
+- [x] Resize handles on selected elements (8-point handles: corners + midpoints)
+- [ ] Visual feedback during resize (show dimensions)
+- [ ] Maintain aspect ratio option for images during resize
+- [ ] Snap-to-grid for better alignment
+- [ ] Undo/redo functionality (Ctrl+Z, Ctrl+Y)
+
+
+---
+
+## 🔄 Fabric.js Visual Editor Rebuild (CURRENT PRIORITY)
+
+### Reason for Rebuild
+Raw canvas approach has complex event handling issues. Fabric.js provides built-in interactions (drag, resize, rotate, text editing) for faster development and better UX.
+
+### Implementation Tasks
+- [ ] Create new BookWrapVisualEditor component using Fabric.js
+- [ ] Set correct canvas dimensions for 6"×9" book (14.084" × 10.417" overall with bleed)
+- [ ] Load KDP template as background image (non-interactive layer)
+- [ ] Add text button creates Fabric.IText objects (editable on double-click)
+- [ ] Add image button creates Fabric.Image objects (draggable, resizable)
+- [ ] Upload front cover positions image on right side (front cover area)
+- [ ] All elements draggable, resizable, rotatable by default
+- [ ] Delete selected element functionality
+- [ ] Export to PNG with correct resolution (300 DPI for print)
+- [ ] Test complete workflow in browser
+
+
+---
+
+## 🐛 Bug Fixes
+
+### Workflow Navigation Issue
+- [x] Fix Resume Progress always returning to Review step instead of saved Wrap step
+- [ ] Investigate handleResumeProgress function in ReadyToPublish.tsx
+- [ ] Ensure workflowStep state properly restores to 'wrap' when saved progress includes wrap step
+- [ ] Test navigation through all workflow steps to ensure state persistence
+
+
+---
+
+## 🔄 Konva.js Visual Editor Rebuild (SWITCHING FROM FABRIC.JS)
+
+**Reason:** Fabric.js v7 initialization failing silently, switching to Konva.js for better React integration and clearer APIs
+
+### Implementation Tasks
+- [x] Install konva and react-konva packages
+- [x] Create BookWrapVisualEditorKonva component
+- [x] Implement KDP template as background image layer
+- [x] Add text elements with double-click editing
+- [x] Add image upload and positioning
+- [x] Enable drag-and-drop for all elements
+- [x] Add resize transformer with handles
+- [x] Add rotation capability
+- [x] Implement delete selected element
+- [x] Export to PNG at 300 DPI
+- [x] Replace Fabric component in ReadyToPublish.tsx
+- [x] Test all features in browser (Add Text confirmed working, other features require manual testing)

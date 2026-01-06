@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
-import { BookWrapVisualEditor } from "@/components/BookWrapVisualEditor";
+import { BookWrapVisualEditorKonva } from '@/components/BookWrapVisualEditorKonva';
 import { PublisherChat } from "@/components/PublisherChat";
 import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
 import { CoverUpload } from "@/components/CoverUpload";
@@ -189,9 +189,11 @@ export default function ReadyToPublish() {
   const handleResumeProgress = () => {
     if (!existingBook) return;
 
-    // Always resume to 'review' step to show AI Publisher chat
-    // This is safer than trying to restore complex step states
-    setCurrentStep("review");
+    // Restore to saved workflow step, or default to 'review' if not set
+    const savedStep = existingBook.workflowStep as WorkflowStep;
+    const resumeStep = savedStep && savedStep !== "upload" && savedStep !== "analyzing" ? savedStep : "review";
+    setCurrentStep(resumeStep);
+    console.log('[DEBUG] Resuming to step:', resumeStep, 'from saved:', savedStep);
 
     // Restore AI analysis
     if (existingBook.aiAnalysis) {
@@ -1586,15 +1588,8 @@ export default function ReadyToPublish() {
                 </Card>
               ) : (
                 <>
-                  <BookWrapVisualEditor
+                  <BookWrapVisualEditorKonva
                     bookId={bookId?.toString() || ''}
-                    bookTitle={finalTitle}
-                    authorName={authorProfile.penName || "Author Name"}
-                    pageCount={Math.ceil((manuscript?.split(/\s+/).length || 0) / 250)}
-                    onWrapGenerated={(wrapUrl: string) => {
-                      toast.success("Book wrap generated successfully!");
-                      // Store the wrap URL for export
-                    }}
                   />
               
                   <div className="flex justify-between">

@@ -13,6 +13,15 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 interface CanvasElement {
   id: string;
@@ -48,6 +57,12 @@ export function BookWrapVisualEditor({
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [templateLoaded, setTemplateLoaded] = useState(false);
+  const [editingElement, setEditingElement] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+  const [cursorStyle, setCursorStyle] = useState<'default' | 'move' | 'crosshair'>('crosshair');
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeHandle, setResizeHandle] = useState<string | null>(null);
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [frontCoverUrl, setFrontCoverUrl] = useState<string | null>(null);
 
   // KDP template dimensions (matching the uploaded template)
@@ -98,6 +113,29 @@ export function BookWrapVisualEditor({
     };
   }, []);
 
+  // Helper to draw resize handles
+  const drawResizeHandles = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
+    const handleSize = 12;
+    const handles = [
+      { x: x, y: y }, // nw
+      { x: x + width / 2, y: y }, // n
+      { x: x + width, y: y }, // ne
+      { x: x + width, y: y + height / 2 }, // e
+      { x: x + width, y: y + height }, // se
+      { x: x + width / 2, y: y + height }, // s
+      { x: x, y: y + height }, // sw
+      { x: x, y: y + height / 2 }, // w
+    ];
+    
+    ctx.fillStyle = '#3b82f6';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    handles.forEach(handle => {
+      ctx.fillRect(handle.x - handleSize / 2, handle.y - handleSize / 2, handleSize, handleSize);
+      ctx.strokeRect(handle.x - handleSize / 2, handle.y - handleSize / 2, handleSize, handleSize);
+    });
+  };
+
   // Render canvas with all elements
   const renderCanvas = () => {
     const canvas = canvasRef.current;
@@ -116,6 +154,36 @@ export function BookWrapVisualEditor({
     templateImg.onload = () => {
       ctx.drawImage(templateImg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       
+      // Track image loading
+      const imageElements = elements.filter(el => el.type === 'image');
+      let imagesLoaded = 0;
+      const totalImages = imageElements.length;
+      
+      // Function to draw selection and handles after all content is rendered
+      const drawSelectionAndHandles = () => {
+        const selected = elements.find(el => el.id === selectedElement);
+        if (!selected) return;
+        
+        if (selected.type === 'image') {
+          ctx.strokeStyle = '#3b82f6';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(selected.x, selected.y, selected.width, selected.height);
+          drawResizeHandles(ctx, selected.x, selected.y, selected.width, selected.height);
+        } else if (selected.type === 'text') {
+          ctx.font = `${selected.fontSize || 24}px ${selected.fontFamily || 'Arial'}`;
+          const metrics = ctx.measureText(selected.content);
+          const boxX = selected.x - 5;
+          const boxY = selected.y - (selected.fontSize || 24);
+          const boxWidth = metrics.width + 10;
+          const boxHeight = (selected.fontSize || 24) + 10;
+          
+          ctx.strokeStyle = '#3b82f6';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+          drawResizeHandles(ctx, boxX, boxY, boxWidth, boxHeight);
+        }
+      };
+      
       // Draw all elements
       elements.forEach(element => {
         if (element.type === 'image') {
@@ -124,28 +192,29 @@ export function BookWrapVisualEditor({
           img.src = element.content;
           img.onload = () => {
             ctx.drawImage(img, element.x, element.y, element.width, element.height);
-            
-            // Draw selection border if selected
-            if (element.id === selectedElement) {
-              ctx.strokeStyle = '#3b82f6';
-              ctx.lineWidth = 3;
-              ctx.strokeRect(element.x, element.y, element.width, element.height);
+            imagesLoaded++;
+            // When all images are loaded, draw selection and handles on top
+            if (imagesLoaded === totalImages) {
+              drawSelectionAndHandles();
+            }
+          };
+          img.onerror = () => {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) {
+              drawSelectionAndHandles();
             }
           };
         } else if (element.type === 'text') {
           ctx.font = `${element.fontSize || 24}px ${element.fontFamily || 'Arial'}`;
           ctx.fillStyle = element.color || '#000000';
           ctx.fillText(element.content, element.x, element.y);
-          
-          // Draw selection border if selected
-          if (element.id === selectedElement) {
-            const metrics = ctx.measureText(element.content);
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(element.x - 5, element.y - (element.fontSize || 24), metrics.width + 10, (element.fontSize || 24) + 10);
-          }
         }
       });
+      
+      // If no images, draw selection immediately
+      if (totalImages === 0) {
+        drawSelectionAndHandles();
+      }
     };
   };
 
@@ -155,6 +224,65 @@ export function BookWrapVisualEditor({
       renderCanvas();
     }
   }, [elements, selectedElement, templateLoaded]);
+
+  // Add native double-click listener (React's onDoubleClick doesn't work reliably on canvas)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      console.log('useEffect: canvas ref not available');
+      return;
+    }
+
+    console.log('useEffect: Adding native dblclick listener, elements count:', elements.length);
+
+    const handleNativeDoubleClick = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
+      console.log('Native double-click at:', x, y);
+
+      // Check if double-clicked on a text element
+      for (let i = elements.length - 1; i >= 0; i--) {
+        const element = elements[i];
+        if (element.type === 'text') {
+          // Measure actual text width
+          const ctx = canvas.getContext('2d');
+          if (!ctx) continue;
+          
+          ctx.font = `${element.fontSize || 24}px ${element.fontFamily || 'Arial'}`;
+          const metrics = ctx.measureText(element.content);
+          
+          // Text hit box
+          const textBoxX = element.x - 5;
+          const textBoxY = element.y - (element.fontSize || 24);
+          const textBoxWidth = metrics.width + 10;
+          const textBoxHeight = (element.fontSize || 24) + 10;
+          
+          console.log('Checking element:', element.id, 'box:', textBoxX, textBoxY, textBoxWidth, textBoxHeight);
+          
+          if (
+            x >= textBoxX &&
+            x <= textBoxX + textBoxWidth &&
+            y >= textBoxY &&
+            y <= textBoxY + textBoxHeight
+          ) {
+            console.log('Hit! Opening edit dialog');
+            setEditingElement(element.id);
+            setEditText(element.content);
+            toast.info("Edit the text and click Save Changes");
+            return;
+          }
+        }
+      }
+      console.log('No text element hit');
+    };
+
+    canvas.addEventListener('dblclick', handleNativeDoubleClick);
+    return () => canvas.removeEventListener('dblclick', handleNativeDoubleClick);
+  }, [elements]);
 
   // Handle front cover upload
   const handleFrontCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -265,7 +393,98 @@ export function BookWrapVisualEditor({
     setSelectedElement(null);
   };
 
-  // Handle mouse down for dragging
+  // Handle canvas double-click for text editing
+  const handleCanvasDoubleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    console.log('Double-click at:', x, y);
+
+    // Check if double-clicked on a text element
+    for (let i = elements.length - 1; i >= 0; i--) {
+      const element = elements[i];
+      if (element.type === 'text') {
+        // Measure actual text width
+        const ctx = canvas.getContext('2d');
+        if (!ctx) continue;
+        
+        ctx.font = `${element.fontSize || 24}px ${element.fontFamily || 'Arial'}`;
+        const metrics = ctx.measureText(element.content);
+        
+        // Text hit box: x to x+textWidth, y-fontSize to y+10
+        const textBoxX = element.x - 5;
+        const textBoxY = element.y - (element.fontSize || 24);
+        const textBoxWidth = metrics.width + 10;
+        const textBoxHeight = (element.fontSize || 24) + 10;
+        
+        console.log('Checking element:', element.id, 'box:', textBoxX, textBoxY, textBoxWidth, textBoxHeight);
+        
+        if (
+          x >= textBoxX &&
+          x <= textBoxX + textBoxWidth &&
+          y >= textBoxY &&
+          y <= textBoxY + textBoxHeight
+        ) {
+          console.log('Hit! Opening edit dialog');
+          setEditingElement(element.id);
+          setEditText(element.content);
+          toast.info("Edit the text and click Save Changes");
+          return;
+        }
+      }
+    }
+    console.log('No text element hit');
+  };
+
+  // Save edited text
+  const saveEditedText = () => {
+    if (!editingElement) return;
+
+    setElements(elements.map(el =>
+      el.id === editingElement
+        ? { ...el, content: editText }
+        : el
+    ));
+
+    setEditingElement(null);
+    setEditText("");
+    toast.success("Text updated successfully!");
+  };
+
+  // Check if mouse is over a resize handle
+  const getResizeHandle = (x: number, y: number, element: CanvasElement): string | null => {
+    const handleSize = 12;
+    const handles = [
+      { name: 'nw', x: element.x, y: element.y },
+      { name: 'n', x: element.x + element.width / 2, y: element.y },
+      { name: 'ne', x: element.x + element.width, y: element.y },
+      { name: 'e', x: element.x + element.width, y: element.y + element.height / 2 },
+      { name: 'se', x: element.x + element.width, y: element.y + element.height },
+      { name: 's', x: element.x + element.width / 2, y: element.y + element.height },
+      { name: 'sw', x: element.x, y: element.y + element.height },
+      { name: 'w', x: element.x, y: element.y + element.height / 2 },
+    ];
+
+    for (const handle of handles) {
+      if (
+        x >= handle.x - handleSize &&
+        x <= handle.x + handleSize &&
+        y >= handle.y - handleSize &&
+        y <= handle.y + handleSize
+      ) {
+        return handle.name;
+      }
+    }
+    return null;
+  };
+
+  // Handle mouse down for dragging or resizing
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!selectedElement) return;
 
@@ -279,17 +498,31 @@ export function BookWrapVisualEditor({
     const element = elements.find(el => el.id === selectedElement);
     if (!element) return;
 
+    // Check if clicking on resize handle
+    const handle = getResizeHandle(x, y, element);
+    if (handle) {
+      setIsResizing(true);
+      setResizeHandle(handle);
+      setResizeStart({
+        x: e.clientX,
+        y: e.clientY,
+        width: element.width,
+        height: element.height,
+      });
+      return;
+    }
+
+    // Otherwise, start dragging
     setIsDragging(true);
+    setCursorStyle('move');
     setDragOffset({
       x: x - element.x,
       y: y - element.y,
     });
   };
 
-  // Handle mouse move for dragging
+  // Handle mouse move for dragging or resizing
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDragging || !selectedElement) return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -297,16 +530,55 @@ export function BookWrapVisualEditor({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    setElements(elements.map(el => 
-      el.id === selectedElement
-        ? { ...el, x: x - dragOffset.x, y: y - dragOffset.y }
-        : el
-    ));
+    // Handle resizing
+    if (isResizing && selectedElement && resizeHandle) {
+      const element = elements.find(el => el.id === selectedElement);
+      if (!element) return;
+
+      const dx = e.clientX - resizeStart.x;
+      const dy = e.clientY - resizeStart.y;
+
+      let newWidth = resizeStart.width;
+      let newHeight = resizeStart.height;
+      let newX = element.x;
+      let newY = element.y;
+
+      // Calculate new dimensions based on handle
+      if (resizeHandle.includes('e')) newWidth = Math.max(20, resizeStart.width + dx);
+      if (resizeHandle.includes('w')) {
+        newWidth = Math.max(20, resizeStart.width - dx);
+        newX = element.x + (resizeStart.width - newWidth);
+      }
+      if (resizeHandle.includes('s')) newHeight = Math.max(20, resizeStart.height + dy);
+      if (resizeHandle.includes('n')) {
+        newHeight = Math.max(20, resizeStart.height - dy);
+        newY = element.y + (resizeStart.height - newHeight);
+      }
+
+      setElements(elements.map(el =>
+        el.id === selectedElement
+          ? { ...el, x: newX, y: newY, width: newWidth, height: newHeight }
+          : el
+      ));
+      return;
+    }
+
+    // Handle dragging
+    if (isDragging && selectedElement) {
+      setElements(elements.map(el => 
+        el.id === selectedElement
+          ? { ...el, x: x - dragOffset.x, y: y - dragOffset.y }
+          : el
+      ));
+    }
   };
 
   // Handle mouse up
   const handleMouseUp = () => {
     setIsDragging(false);
+    setIsResizing(false);
+    setResizeHandle(null);
+    setCursorStyle('crosshair');
   };
 
   // Delete selected element
@@ -481,12 +753,44 @@ export function BookWrapVisualEditor({
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
-              className="cursor-crosshair"
+              className={isDragging ? 'cursor-move' : selectedElement ? 'cursor-pointer' : 'cursor-crosshair'}
               style={{ maxWidth: '100%', height: 'auto' }}
             />
           </div>
         </CardContent>
       </Card>
+
+      {/* Text Editing Dialog */}
+      <Dialog open={!!editingElement} onOpenChange={() => setEditingElement(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Text</DialogTitle>
+            <DialogDescription>
+              Edit the text content for this element.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-text">Text Content</Label>
+              <Textarea
+                id="edit-text"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                placeholder="Enter text..."
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingElement(null)}>
+              Cancel
+            </Button>
+            <Button onClick={saveEditedText}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
