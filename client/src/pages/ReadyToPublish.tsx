@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Upload, FileText, Sparkles, Loader2, BookOpen, CheckCircle2,
   Lightbulb, TrendingUp, Edit3, RefreshCw, Download, Image as ImageIcon,
-  Check, ArrowRight, ArrowLeft
+  Check, ArrowRight, ArrowLeft, Save
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -94,6 +94,33 @@ export default function ReadyToPublish() {
   }, [existingBook, existingManuscriptLoaded]);
 
   // tRPC mutations
+  // Save progress mutation
+  const saveProgressMutation = trpc.book.saveWorkflowProgress.useMutation({
+    onSuccess: () => {
+      toast.success("Progress saved! You can resume anytime.");
+    },
+    onError: (error) => {
+      toast.error("Failed to save progress: " + error.message);
+    },
+  });
+
+  const handleSaveProgress = () => {
+    if (!bookId) {
+      toast.error("No book ID found");
+      return;
+    }
+
+    saveProgressMutation.mutate({
+      bookId,
+      workflowStep: currentStep,
+      aiAnalysis: aiAnalysis ? JSON.stringify(aiAnalysis) : undefined,
+      selectedTitle: selectedTitle || undefined,
+      selectedSubtitle: selectedSubtitle || undefined,
+      selectedCoverUrl: selectedCover || uploadedCoverUrl || undefined,
+      generatedCovers: generatedCovers.length > 0 ? JSON.stringify(generatedCovers) : undefined,
+    });
+  };
+
   const analyzeManuscript = trpc.manuscriptAnalysis.analyze.useMutation({
     onSuccess: (data) => {
       setAIAnalysis(data);
@@ -248,14 +275,37 @@ export default function ReadyToPublish() {
     <DashboardLayout>
       <div className="space-y-6 max-w-5xl mx-auto">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-            <Sparkles className="w-8 h-8 text-primary" />
-            AI-Powered Publishing
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Upload your manuscript and let our AI publisher optimize everything for Amazon KDP success
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+              <Sparkles className="w-8 h-8 text-primary" />
+              AI-Powered Publishing
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Upload your manuscript and let our AI publisher optimize everything for Amazon KDP success
+            </p>
+          </div>
+          
+          {/* Save Progress Button */}
+          {currentStep !== "upload" && currentStep !== "analyzing" && bookId && (
+            <Button
+              variant="outline"
+              onClick={handleSaveProgress}
+              disabled={saveProgressMutation.isPending}
+            >
+              {saveProgressMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Progress
+                </>
+              )}
+            </Button>
+          )}
         </div>
 
         {/* Progress Indicator */}
@@ -524,12 +574,15 @@ export default function ReadyToPublish() {
           {/* Step 3: Chat with Publisher AI */}
           {currentStep === "review" && aiAnalysis && (
             <PublisherChat
+              manuscript={manuscriptContent}
               initialAnalysis={{
                 suggestedTitles: aiAnalysis.suggestedTitles,
                 suggestedSubtitles: aiAnalysis.suggestedSubtitles,
                 bookDescription: aiAnalysis.bookDescription,
                 detectedGenre: aiAnalysis.detectedGenre,
                 targetAudience: aiAnalysis.targetAudience,
+                themes: aiAnalysis.themes || [],
+                keyBenefits: aiAnalysis.keyBenefits || [],
               }}
               onComplete={() => setCurrentStep("cover")}
             />

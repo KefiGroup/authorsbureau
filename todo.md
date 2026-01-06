@@ -601,3 +601,26 @@
 - [x] Allow authors to ask questions about their manuscript
 - [x] Publisher AI provides feedback, suggestions, and guidance
 - [x] Keep manuscript in background (not displayed)
+
+
+## Real AI Chat Responses
+- [x] Create tRPC mutation for publisher chat (chatWithPublisher)
+- [x] Accept message history and user question as input
+- [x] Call invokeLLM with publisher persona system prompt
+- [x] Include manuscript analysis context in prompt
+- [x] Return AI response to frontend
+- [x] Update PublisherChat component to use real mutation
+- [x] Handle loading states and errors
+- [x] Maintain conversation context across messages
+- [x] Remove markdown formatting (**, ##) from AI responses
+
+## Save Progress Feature
+- [x] Add workflow state fields to books table (currentStep, selectedTitle, selectedCover, etc.)
+- [x] Create tRPC mutation to save workflow progress (saveWorkflowProgress)
+- [x] Add "Save Progress" button in workflow header
+- [x] Save current step, AI analysis, selected title/subtitle/cover
+- [x] Show success toast when saved
+- [x] Create tRPC query to load workflow progress (getWorkflowProgress)
+- [ ] Auto-resume workflow when returning to Ready to Publish (future enhancement)
+- [ ] Show resume prompt if incomplete workflow exists (future enhancement)
+- [ ] Preserve chat history in database (future enhancement)

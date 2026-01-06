@@ -234,6 +234,78 @@ export const appRouter = router({
         await db.deleteBook(input.bookId);
         return { success: true };
       }),
+
+    // Save workflow progress (Ready to Publish)
+    saveWorkflowProgress: protectedProcedure
+      .input(z.object({
+        bookId: z.number(),
+        workflowStep: z.string(),
+        aiAnalysis: z.string().optional(), // JSON string
+        selectedTitle: z.string().optional(),
+        selectedSubtitle: z.string().optional(),
+        selectedCoverUrl: z.string().optional(),
+        generatedCovers: z.string().optional(), // JSON string
+        amazonCategories: z.string().optional(), // JSON string
+        amazonKeywords: z.string().optional(), // JSON string
+        suggestedPrice: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { bookId, ...progressData } = input;
+
+        // Verify ownership
+        const book = await db.getBookById(bookId);
+        if (!book) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Book not found",
+          });
+        }
+
+        const author = await db.getAuthorByUserId(ctx.user.id);
+        if (!author || book.authorId !== author.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        await db.updateBook(bookId, progressData);
+        return { success: true };
+      }),
+
+    // Get workflow progress (Resume workflow)
+    getWorkflowProgress: protectedProcedure
+      .input(z.object({ bookId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const book = await db.getBookById(input.bookId);
+        if (!book) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Book not found",
+          });
+        }
+
+        // Verify ownership
+        const author = await db.getAuthorByUserId(ctx.user.id);
+        if (!author || book.authorId !== author.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        return {
+          workflowStep: book.workflowStep,
+          aiAnalysis: book.aiAnalysis ? JSON.parse(book.aiAnalysis) : null,
+          selectedTitle: book.selectedTitle,
+          selectedSubtitle: book.selectedSubtitle,
+          selectedCoverUrl: book.selectedCoverUrl,
+          generatedCovers: book.generatedCovers ? JSON.parse(book.generatedCovers) : null,
+          amazonCategories: book.amazonCategories ? JSON.parse(book.amazonCategories) : null,
+          amazonKeywords: book.amazonKeywords ? JSON.parse(book.amazonKeywords) : null,
+          suggestedPrice: book.suggestedPrice,
+        };
+      }),
   }),
 
   // Chapter management
@@ -443,6 +515,68 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         return await refineDescription(input);
+      }),
+
+    chatWithPublisher: protectedProcedure
+      .input(z.object({
+        manuscript: z.string(),
+        analysis: z.object({
+          suggestedTitles: z.array(z.string()),
+          suggestedSubtitles: z.array(z.string()),
+          bookDescription: z.string(),
+          detectedGenre: z.string(),
+          targetAudience: z.string(),
+          themes: z.array(z.string()),
+          keyBenefits: z.array(z.string()),
+        }),
+        messageHistory: z.array(z.object({
+          role: z.enum(["assistant", "user"]),
+          content: z.string(),
+        })),
+        userMessage: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const { invokeLLM } = await import("./_core/llm");
+        
+        // Build context from analysis
+        const context = `You are a senior New York Times publisher with 20+ years of experience helping authors create bestsellers.
+
+Manuscript Analysis:
+- Genre: ${input.analysis.detectedGenre}
+- Target Audience: ${input.analysis.targetAudience}
+- Main Themes: ${input.analysis.themes.join(", ")}
+- Key Benefits: ${input.analysis.keyBenefits.join(", ")}
+
+Suggested Titles:
+${input.analysis.suggestedTitles.map((t, i) => `${i + 1}. ${t}`).join("\n")}
+
+Book Description:
+${input.analysis.bookDescription}
+
+Your role is to provide expert guidance on:
+- Title selection and refinement
+- Cover design strategy
+- Market positioning
+- Pricing and launch strategy
+- Amazon KDP optimization
+
+Be conversational, encouraging, and specific. Reference the manuscript analysis when relevant.`;
+
+        // Build message history for LLM
+        const messages = [
+          { role: "system" as const, content: context },
+          ...input.messageHistory.map(msg => ({
+            role: msg.role === "assistant" ? "assistant" as const : "user" as const,
+            content: msg.content,
+          })),
+          { role: "user" as const, content: input.userMessage },
+        ];
+
+        const response = await invokeLLM({ messages });
+        
+        return {
+          message: response.choices[0].message.content || "I'm here to help! What would you like to discuss?",
+        };
       }),
   }),
 

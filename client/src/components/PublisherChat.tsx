@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Loader2, Send, User, Sparkles } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 interface Message {
   role: "assistant" | "user";
@@ -11,32 +12,36 @@ interface Message {
 }
 
 interface PublisherChatProps {
+  manuscript: string;
   initialAnalysis: {
     suggestedTitles: string[];
     suggestedSubtitles: string[];
     bookDescription: string;
     detectedGenre: string;
     targetAudience: string;
+    themes: string[];
+    keyBenefits: string[];
   };
   onComplete: () => void;
 }
 
-export function PublisherChat({ initialAnalysis, onComplete }: PublisherChatProps) {
+export function PublisherChat({ manuscript, initialAnalysis, onComplete }: PublisherChatProps) {
+  const chatMutation = trpc.manuscriptAnalysis.chatWithPublisher.useMutation();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
       content: `Hello! I'm your AI publishing consultant with 20+ years of experience at the New York Times. I've analyzed your manuscript and I'm excited to help you transform it into a bestseller.
 
-**Initial Analysis:**
-- **Genre**: ${initialAnalysis.detectedGenre}
-- **Target Audience**: ${initialAnalysis.targetAudience}
+Initial Analysis:
+- Genre: ${initialAnalysis.detectedGenre}
+- Target Audience: ${initialAnalysis.targetAudience}
 
 I've prepared several title options and marketing strategies for you. What would you like to discuss first?
 
-1. **Book titles** - I have ${initialAnalysis.suggestedTitles.length} compelling options
-2. **Cover design** - Visual strategy to attract your audience
-3. **Market positioning** - How to stand out in your category
-4. **Pricing strategy** - Maximize sales and royalties
+1. Book titles - I have ${initialAnalysis.suggestedTitles.length} compelling options
+2. Cover design - Visual strategy to attract your audience
+3. Market positioning - How to stand out in your category
+4. Pricing strategy - Maximize sales and royalties
 
 Just type your question or let me know what you'd like to explore!`,
     },
@@ -61,18 +66,32 @@ Just type your question or let me know what you'd like to explore!`,
     setInput("");
     setIsLoading(true);
 
-    // Simulate AI response (in real implementation, call tRPC mutation)
-    setTimeout(() => {
-      const responses = [
-        `Great question! Based on your manuscript, I recommend focusing on ${initialAnalysis.detectedGenre} readers who are ${initialAnalysis.targetAudience}. This audience is actively searching for books like yours on Amazon.`,
-        `Let me share the title options I've prepared:\n\n${initialAnalysis.suggestedTitles.map((t, i) => `${i + 1}. **${t}**`).join("\n")}\n\nWhich one resonates with you? Or would you like me to generate more options?`,
-        `Excellent choice! Now let's talk about your book description. I've crafted one that highlights your unique value proposition:\n\n"${initialAnalysis.bookDescription.substring(0, 200)}..."\n\nWould you like to refine this, or shall we move on to cover design?`,
-      ];
-
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      setMessages((prev) => [...prev, { role: "assistant", content: randomResponse }]);
-      setIsLoading(false);
-    }, 1500);
+    // Call real AI chat mutation
+    chatMutation.mutate(
+      {
+        manuscript,
+        analysis: initialAnalysis,
+        messageHistory: messages,
+        userMessage: input,
+      },
+      {
+        onSuccess: (data) => {
+          setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
+          setIsLoading(false);
+        },
+        onError: (error) => {
+          console.error("Chat error:", error);
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: "I apologize, but I'm having trouble responding right now. Please try again.",
+            },
+          ]);
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
