@@ -579,3 +579,59 @@
 - [x] Open modal automatically when preview is ready
 - [ ] Implement backend preview generation endpoint (currently simulated)
 - [ ] Add actual PDF preview generation with first 5 pages only
+
+
+---
+
+## Book Wrap Designer Redesign (Three Options)
+
+### Option 1: Upload Your Own Design (Primary) ✅
+- [x] Add file upload for complete book wrap (PDF or PNG)
+- [x] Support standard KDP 6"x9" book wrap dimensions
+- [x] Validate uploaded file dimensions and resolution
+- [x] Show preview of uploaded wrap
+- [x] Allow re-upload/replace
+- [x] Store uploaded wrap URL in database
+- [x] Tab-based interface for three options
+
+### Option 2: Use Templates (Quick & Easy) ✅
+- [x] Create 4 professional book wrap templates (Modern, Classic, Minimalist, Bold)
+- [x] Each template has predefined layout for: author photo, bio, book description
+- [x] Template selection with descriptions
+- [x] Template preview thumbnails for selection
+
+### Auto-Population ✅
+- [x] Automatically pull book title, subtitle from AI analysis
+- [x] Automatically pull author name, bio, photo from author profile
+- [x] Automatically pull book description from AI analysis or user edits
+- [x] Pre-fill all fields when user enters Book Wrap step
+- [x] Allow inline editing of any auto-populated field
+
+### Live Preview ✅
+- [x] Real-time back cover preview
+- [x] Show author photo, bio, description in selected template
+- [x] Update preview instantly when user changes colors/fonts/text
+- [ ] Display ISBN at bottom if provided (future)
+- [ ] Show template guidelines (safe area, bleed area) (future)
+
+### Customization Options ✅
+- [x] Background color picker
+- [x] Text color picker
+- [x] Font size slider
+- [x] Template selector (grid)
+- [ ] Author photo upload/replace (future)
+- [x] Text editing (bio, description)
+
+### Option 3: AI-Generated Design
+- [ ] Analyze book genre and suggest matching template
+- [ ] Suggest color scheme based on cover image colors
+- [ ] Suggest font size based on text length
+- [ ] Show "AI Recommended" badge on suggested template
+
+### Export
+- [ ] Generate full book wrap (front cover + spine + back cover) as PNG
+- [ ] Use uploaded/generated front cover image
+- [ ] Calculate spine width based on page count
+- [ ] Add spine text (title + author name, vertical)
+- [ ] Export at print-ready resolution (300 DPI)
+- [ ] Include bleed area and trim marks

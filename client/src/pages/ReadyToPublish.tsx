@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
-import { BookWrapDesigner } from "@/components/BookWrapDesigner";
+import { BookWrapDesignerV2 } from "@/components/BookWrapDesignerV2";
 import { PublisherChat } from "@/components/PublisherChat";
 import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
 import { CoverUpload } from "@/components/CoverUpload";
@@ -1657,15 +1657,18 @@ export default function ReadyToPublish() {
                 </Card>
               ) : (
                 <>
-                  <BookWrapDesigner
+                  <BookWrapDesignerV2
                     frontCoverUrl={selectedCover.imageUrl}
                     bookTitle={finalTitle}
                     authorName={authorProfile.penName || "Author Name"}
-                    authorPhoto={authorProfile.avatarUrl}
+                    authorPhotoUrl={authorProfile.avatarUrl}
                     authorBio={authorProfile.bio || ""}
                     bookDescription={editedDescription || aiAnalysis.bookDescription}
                     pageCount={Math.ceil((manuscript?.split(/\s+/).length || 0) / 250)}
-                    isbn={undefined}
+                    onWrapGenerated={(wrapUrl) => {
+                      toast.success("Book wrap generated successfully!");
+                      // Store the wrap URL for export
+                    }}
                   />
               
                   <div className="flex justify-between">
