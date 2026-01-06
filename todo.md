@@ -589,3 +589,15 @@
 - [x] Generate barcode placeholder with ISBN-13 format
 - [x] Safe zone calculations (avoid text in gutter/trim areas)
 - [x] Integrated into workflow after cover selection
+
+
+## Manuscript Upload UI Redesign
+- [x] Remove giant textarea showing full manuscript content
+- [x] Show only manuscript stats (word count, file name)
+- [x] Keep blue "What happens next?" info box style
+- [x] Replace review step with chat interface
+- [x] Create NY Times Publisher AI persona for chat
+- [x] Add chat bubbles for back-and-forth conversation
+- [x] Allow authors to ask questions about their manuscript
+- [x] Publisher AI provides feedback, suggestions, and guidance
+- [x] Keep manuscript in background (not displayed)

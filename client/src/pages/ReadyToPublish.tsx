@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
 import { BookWrapDesigner } from "@/components/BookWrapDesigner";
+import { PublisherChat } from "@/components/PublisherChat";
 
 type WorkflowStep = "upload" | "analyzing" | "review" | "cover" | "amazon" | "wrap" | "export";
 
@@ -395,21 +396,38 @@ export default function ReadyToPublish() {
                   </TabsList>
 
                   <TabsContent value="paste" className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="manuscript">Manuscript Content</Label>
-                      <Textarea
-                        id="manuscript"
-                        placeholder="Paste your complete manuscript here..."
-                        value={manuscript}
-                        onChange={(e) => handleManuscriptPaste(e.target.value)}
-                        className="min-h-[300px] font-mono text-sm"
-                      />
-                      {wordCount > 0 && (
-                        <p className="text-sm text-muted-foreground">
-                          Word count: {wordCount.toLocaleString()} words
-                        </p>
-                      )}
-                    </div>
+                    {!manuscript ? (
+                      <div className="space-y-2">
+                        <Label htmlFor="manuscript">Manuscript Content</Label>
+                        <Textarea
+                          id="manuscript"
+                          placeholder="Paste your complete manuscript here..."
+                          value={manuscript}
+                          onChange={(e) => handleManuscriptPaste(e.target.value)}
+                          className="min-h-[300px] font-mono text-sm"
+                        />
+                      </div>
+                    ) : (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                            <CheckCircle2 className="w-6 h-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-green-900">Manuscript Loaded</p>
+                            <p className="text-sm text-green-700">{wordCount.toLocaleString()} words ready for analysis</p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => { setManuscript(""); setWordCount(0); }}
+                          className="text-green-700 border-green-300 hover:bg-green-100"
+                        >
+                          Clear & Upload Different Manuscript
+                        </Button>
+                      </div>
+                    )}
                   </TabsContent>
 
                   <TabsContent value="file" className="space-y-4">
@@ -503,8 +521,22 @@ export default function ReadyToPublish() {
             </Card>
           )}
 
-          {/* Step 3: Review AI Suggestions */}
+          {/* Step 3: Chat with Publisher AI */}
           {currentStep === "review" && aiAnalysis && (
+            <PublisherChat
+              initialAnalysis={{
+                suggestedTitles: aiAnalysis.suggestedTitles,
+                suggestedSubtitles: aiAnalysis.suggestedSubtitles,
+                bookDescription: aiAnalysis.bookDescription,
+                detectedGenre: aiAnalysis.detectedGenre,
+                targetAudience: aiAnalysis.targetAudience,
+              }}
+              onComplete={() => setCurrentStep("cover")}
+            />
+          )}
+
+          {/* Old review step - keeping for reference, can be removed later */}
+          {false && currentStep === "review_old" && aiAnalysis && (
             <div className="space-y-6">
               {/* AI Analysis Summary */}
               <Card className="border-primary/50 bg-primary/5">
