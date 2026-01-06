@@ -24,6 +24,7 @@ import { InteriorPreview } from "@/components/InteriorPreview";
 import { CoverCustomizer } from "@/components/CoverCustomizer";
 import { KDPUploadGuide } from "@/components/KDPUploadGuide";
 import { AuthorProfilePrompt } from "@/components/AuthorProfilePrompt";
+import { ManuscriptPreviewModal } from "@/components/ManuscriptPreviewModal";
 import {
   Dialog,
   DialogContent,
@@ -56,6 +57,9 @@ export default function ReadyToPublish() {
   const [showInteriorPreview, setShowInteriorPreview] = useState(false);
   const [customizingCover, setCustomizingCover] = useState<string | null>(null);
   const [showKDPGuide, setShowKDPGuide] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
+  const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
 
   // Back navigation helper
   const handleBackNavigation = () => {
@@ -1473,6 +1477,42 @@ export default function ReadyToPublish() {
             </DialogContent>
           </Dialog>
 
+          {/* Manuscript Preview Modal */}
+          <ManuscriptPreviewModal
+            open={previewModalOpen}
+            onClose={() => setPreviewModalOpen(false)}
+            pdfUrl={previewPdfUrl}
+            onDownload={() => {
+              // Trigger the full export download
+              if (!manuscript || !aiAnalysis || !selectedCover) {
+                toast.error("Missing required data. Please complete all steps.");
+                return;
+              }
+              
+              toast.info("Generating your publishing package...");
+              
+              generateExportBundle.mutate({
+                bookTitle: finalTitle || aiAnalysis.suggestedTitles[0],
+                authorName: authorProfile?.penName || "Author",
+                manuscriptContent: manuscript,
+                coverImageUrl: selectedCover,
+                metadata: {
+                  title: finalTitle || aiAnalysis.suggestedTitles[0],
+                  subtitle: finalSubtitle || aiAnalysis.suggestedSubtitles[0],
+                  description: editedDescription || aiAnalysis.bookDescription,
+                  categories: selectedCategories,
+                  keywords: generatedKeywords,
+                  price: suggestedPrice,
+                  genre: aiAnalysis.detectedGenre,
+                },
+                copyrightPage: undefined,
+              });
+              
+              setPreviewModalOpen(false);
+            }}
+            isLoading={isGeneratingPreview}
+          />
+
           {/* Missing AI Analysis Error for Amazon Step */}
           {currentStep === "amazon" && !aiAnalysis && (
             <Card className="border-destructive/50 bg-destructive/5">
@@ -1714,10 +1754,36 @@ export default function ReadyToPublish() {
                     </div>
                   </div>
 
-                  <div className="mt-8 text-center">
-                    <Button
-                      size="lg"
-                      onClick={() => {
+                  <div className="mt-8 space-y-4">
+                    <div className="text-center">
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        onClick={() => {
+                          if (!manuscript || !aiAnalysis) {
+                            toast.error("Missing required data. Please complete all steps.");
+                            return;
+                          }
+                          setPreviewModalOpen(true);
+                          setIsGeneratingPreview(true);
+                          
+                          // Generate preview PDF
+                          setTimeout(() => {
+                            // In a real implementation, this would call the backend
+                            // For now, we'll simulate it
+                            setPreviewPdfUrl("/api/preview-pdf");
+                            setIsGeneratingPreview(false);
+                          }, 1500);
+                        }}
+                        disabled={!manuscript || !aiAnalysis}
+                        className="mr-4"
+                      >
+                        <FileText className="w-5 h-5 mr-2" />
+                        Preview Manuscript
+                      </Button>
+                      <Button
+                        size="lg"
+                        onClick={() => {
                         if (!manuscript || !aiAnalysis || !selectedCover) {
                           toast.error("Missing required data. Please complete all steps.");
                           return;
@@ -1757,6 +1823,7 @@ export default function ReadyToPublish() {
                         Ready to upload to Amazon KDP!
                       </p>
                     )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

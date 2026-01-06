@@ -558,3 +558,24 @@
 - [ ] Optional: Acknowledgments page (future enhancement)
 - [x] Page 1: Chapter 1 starts here
 - [x] Ensure proper page breaks between front matter sections
+
+
+---
+
+## Export Preview Modal ✅
+
+### Preview Modal Implementation
+- [x] Create ManuscriptPreviewModal component
+- [x] Add PDF viewer using iframe or embed
+- [x] Show first 5 pages (title, copyright, TOC, first 2 chapter pages)
+- [x] Add "Download Full Manuscript" button in modal
+- [x] Add "Close Preview" button
+- [x] Display loading state while generating preview
+- [x] Handle preview generation errors gracefully
+
+### Integration with Export Section
+- [x] Add "Preview Manuscript" button in Export step
+- [x] Generate preview on button click
+- [x] Open modal automatically when preview is ready
+- [ ] Implement backend preview generation endpoint (currently simulated)
+- [ ] Add actual PDF preview generation with first 5 pages only
