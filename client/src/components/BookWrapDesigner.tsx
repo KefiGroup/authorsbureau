@@ -22,6 +22,8 @@ interface BookWrapDesignerProps {
   frontCoverUrl: string;
   bookTitle: string;
   authorName: string;
+  authorPhoto?: string;
+  authorBio?: string;
   bookDescription: string;
   pageCount: number;
   isbn?: string;
@@ -31,6 +33,8 @@ export function BookWrapDesigner({
   frontCoverUrl,
   bookTitle,
   authorName,
+  authorPhoto,
+  authorBio: initialAuthorBio,
   bookDescription,
   pageCount,
   isbn,
@@ -41,7 +45,8 @@ export function BookWrapDesigner({
   const [trimSize, setTrimSize] = useState<TrimSize>('6x9');
   const [paperType, setPaperType] = useState<PaperType>('white');
   const [backDescription, setBackDescription] = useState(bookDescription);
-  const [authorBio, setAuthorBio] = useState("");
+  const [authorBio, setAuthorBio] = useState(initialAuthorBio || "");
+  const [authorPhotoUrl, setAuthorPhotoUrl] = useState(authorPhoto || "");
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [textColor, setTextColor] = useState("#000000");
   const [fontSize, setFontSize] = useState(11);

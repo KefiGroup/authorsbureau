@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { trpc } from "@/lib/trpc";
 import { Loader2, Save, User, Upload, Sparkles, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -168,6 +170,52 @@ export default function Profile() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Profile Photo */}
+                <div className="space-y-2">
+                  <Label>Profile Photo *</Label>
+                  <div className="flex items-start gap-6">
+                    {formData.avatarUrl && (
+                      <div className="w-32 h-32 rounded-lg overflow-hidden border-2 border-border">
+                        <img
+                          src={formData.avatarUrl}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <Label htmlFor="photo-upload" className="cursor-pointer">
+                        <div className="border-2 border-dashed border-border rounded-lg p-6 hover:border-primary transition-colors">
+                          <div className="flex flex-col items-center gap-2">
+                            {isUploading ? (
+                              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                            ) : (
+                              <Upload className="w-8 h-8 text-muted-foreground" />
+                            )}
+                            <p className="text-sm font-medium">
+                              {isUploading ? "Uploading..." : "Click to upload photo"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Min 300x300px, max 5MB (JPG, PNG, GIF)
+                            </p>
+                          </div>
+                        </div>
+                        <Input
+                          id="photo-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handlePhotoUpload}
+                          disabled={isUploading}
+                        />
+                      </Label>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Professional photo for book covers and Amazon Author Central (required)
+                  </p>
+                </div>
+
                 {/* Pen Name */}
                 <div className="space-y-2">
                   <Label htmlFor="penName">Pen Name</Label>
@@ -182,19 +230,107 @@ export default function Profile() {
                   </p>
                 </div>
 
+                {/* AI Bio Generator Section */}
+                <div className="border-t pt-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    <h3 className="text-lg font-semibold">AI Bio Generator</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Provide your information and let AI create a professional author bio
+                  </p>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="booksAuthored">Books You've Authored</Label>
+                      <Textarea
+                        id="booksAuthored"
+                        placeholder="e.g., The Digital Marketing Handbook (2022), Social Media Mastery (2020)"
+                        rows={2}
+                        value={formData.booksAuthored}
+                        onChange={(e) => setFormData({ ...formData, booksAuthored: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="accomplishments">Accomplishments & Awards</Label>
+                      <Textarea
+                        id="accomplishments"
+                        placeholder="e.g., Featured in Forbes, TEDx Speaker, 10+ years marketing experience"
+                        rows={2}
+                        value={formData.accomplishments}
+                        onChange={(e) => setFormData({ ...formData, accomplishments: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="education">Education Background</Label>
+                      <Textarea
+                        id="education"
+                        placeholder="e.g., MBA from Stanford University, BA in Marketing"
+                        rows={2}
+                        value={formData.education}
+                        onChange={(e) => setFormData({ ...formData, education: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="additionalInfo">Additional Information</Label>
+                      <Textarea
+                        id="additionalInfo"
+                        placeholder="Any other relevant information you'd like to include"
+                        rows={2}
+                        value={additionalInfo}
+                        onChange={(e) => setAdditionalInfo(e.target.value)}
+                      />
+                    </div>
+
+                    <Button
+                      type="button"
+                      onClick={handleGenerateBio}
+                      disabled={generateBio.isPending}
+                      className="w-full"
+                      variant="outline"
+                    >
+                      {generateBio.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Generating Bio...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          Generate Professional Bio
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
                 {/* Bio */}
                 <div className="space-y-2">
-                  <Label htmlFor="bio">Biography</Label>
+                  <Label htmlFor="bio">Biography *</Label>
                   <Textarea
                     id="bio"
-                    placeholder="Tell readers about yourself..."
-                    rows={6}
+                    placeholder="Write your author bio in third person... or use the AI generator above"
+                    rows={8}
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    className={!bioWithinLimit ? "border-red-500" : ""}
                   />
-                  <p className="text-sm text-muted-foreground">
-                    A brief description of your background and writing style
-                  </p>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {bioWordCount} words, {bioCharCount} characters
+                    </span>
+                    <span className={bioCharCount > 2000 ? "text-red-500 font-medium" : "text-muted-foreground"}>
+                      {bioCharCount}/2000 characters (Amazon Author Central limit)
+                    </span>
+                  </div>
+                  {!bioWithinLimit && (
+                    <p className="text-sm text-red-500">
+                      Bio exceeds Amazon Author Central's 2,000 character limit
+                    </p>
+                  )}
                 </div>
 
                 {/* Website */}
@@ -209,6 +345,21 @@ export default function Profile() {
                   />
                   <p className="text-sm text-muted-foreground">
                     Your personal website or author page
+                  </p>
+                </div>
+
+                {/* LinkedIn */}
+                <div className="space-y-2">
+                  <Label htmlFor="linkedIn">LinkedIn Profile (Optional)</Label>
+                  <Input
+                    id="linkedIn"
+                    type="url"
+                    placeholder="https://linkedin.com/in/yourprofile"
+                    value={formData.linkedInUrl}
+                    onChange={(e) => setFormData({ ...formData, linkedInUrl: e.target.value })}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Your LinkedIn profile URL
                   </p>
                 </div>
 
@@ -232,6 +383,53 @@ export default function Profile() {
             )}
           </CardContent>
         </Card>
+
+        {/* Profile Completion Status */}
+        {!isProfileComplete && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Complete your profile (pen name, bio, and photo) to use the Book Wrap Designer and export your books
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {isProfileComplete && (
+          <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800 dark:text-green-200">
+              Profile complete! Your information will be used for book covers and Amazon Author Central
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Amazon Author Central Guide */}
+        {isProfileComplete && (
+          <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950">
+            <CardHeader>
+              <CardTitle className="text-blue-900 dark:text-blue-100">
+                Next Step: Setup Amazon Author Central
+              </CardTitle>
+              <CardDescription className="text-blue-700 dark:text-blue-300">
+                Use your profile information to create your Amazon Author Central account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-blue-800 dark:text-blue-200 mb-4">
+                Amazon Author Central lets you manage your author page, connect with readers, and track book sales. 
+                Use the profile information you've created here to set up your account.
+              </p>
+              <Button
+                variant="outline"
+                className="border-blue-300 text-blue-900 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-100 dark:hover:bg-blue-900"
+                onClick={() => window.open("https://author.amazon.com/", "_blank")}
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Go to Amazon Author Central
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Profile Preview */}
         {authorProfile && (

@@ -723,12 +723,14 @@
 ## Author Profile & Amazon Author Central Integration
 - [x] Update user schema to include: profilePhoto, authorBio, linkedInUrl, booksAuthored, accomplishments, education
 - [x] Push database schema changes
-- [ ] Create Author Profile page (/profile) with photo upload and form fields (IN PROGRESS)
+- [x] Create Author Profile page (/profile) with photo upload and form fields
 - [x] Implement AI bio generator tRPC procedure with guided prompts
 - [x] Bio length: 2000 characters max (Amazon Author Central), 100-150 words for back cover
 - [x] Photo requirements: Minimum 300x300px, JPG/PNG/GIF format
 - [x] Add LinkedIn profile URL field (optional)
 - [x] Create tRPC procedures: updateAuthorProfile (enhanced), generateAuthorBio
-- [ ] Update Book Wrap Designer to pull author photo, bio, book description, ISBN
-- [ ] Add "Setup Amazon Author Central" guide/link after profile completion
+- [x] Update Book Wrap Designer to pull author photo, bio, book description, ISBN
+- [x] Add "Setup Amazon Author Central" guide/link after profile completion
+- [x] Add profile completion check in Dashboard (shows prompt if incomplete)
+- [x] Add profile completion check in Book Wrap Designer (blocks if incomplete)
 - [ ] Test complete profile → wrap designer flow

@@ -2,7 +2,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight, Sparkles, Upload } from "lucide-react";
+import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight, Sparkles, Upload, User, AlertCircle } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Dashboard() {
@@ -94,6 +94,33 @@ export default function Dashboard() {
             </Card>
           ))}
         </div>
+
+        {/* Profile Completion Prompt */}
+        {authorProfile && !authorProfile.avatarUrl && (
+          <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950">
+            <CardHeader>
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
+                  <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-amber-900 dark:text-amber-100 mb-2">
+                    Complete Your Author Profile
+                  </CardTitle>
+                  <CardDescription className="text-amber-700 dark:text-amber-300 mb-4">
+                    Add your photo and bio to unlock the Book Wrap Designer and create professional back covers for your books.
+                  </CardDescription>
+                  <Link href="/profile">
+                    <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                      <User className="w-4 h-4 mr-2" />
+                      Complete Profile Now
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        )}
 
         {/* Quick Actions */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

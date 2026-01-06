@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Upload, FileText, Sparkles, Loader2, BookOpen, CheckCircle2,
   Lightbulb, TrendingUp, Edit3, RefreshCw, Download, Image as ImageIcon,
-  Check, ArrowRight, ArrowLeft, Save, Clock
+  Check, ArrowRight, ArrowLeft, Save, Clock, AlertCircle, User
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -1147,31 +1147,72 @@ export default function ReadyToPublish() {
           {/* Step 6: Book Wrap Designer */}
           {currentStep === "wrap" && selectedCover && aiAnalysis && (
             <div className="space-y-6">
-              <BookWrapDesigner
-                frontCoverUrl={selectedCover.imageUrl}
-                bookTitle={finalTitle}
-                authorName="Author Name"
-                bookDescription={editedDescription || aiAnalysis.bookDescription}
-                pageCount={Math.ceil((manuscript?.split(/\s+/).length || 0) / 250)}
-                isbn={undefined}
-              />
+              {/* Profile Completion Check */}
+              {(!authorProfile?.avatarUrl || !authorProfile?.bio) ? (
+                <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950">
+                  <CardHeader>
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center flex-shrink-0">
+                        <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-amber-900 dark:text-amber-100 mb-2">
+                          Complete Your Author Profile First
+                        </CardTitle>
+                        <CardDescription className="text-amber-700 dark:text-amber-300 mb-4">
+                          The Book Wrap Designer needs your author photo and bio to create a professional back cover. Please complete your profile to continue.
+                        </CardDescription>
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={() => window.open("/profile", "_blank")}
+                            className="bg-amber-600 hover:bg-amber-700 text-white"
+                          >
+                            <User className="w-4 h-4 mr-2" />
+                            Complete Profile
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setCurrentStep("amazon")}
+                          >
+                            <ArrowLeft className="w-4 h-4 mr-2" />
+                            Go Back
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ) : (
+                <>
+                  <BookWrapDesigner
+                    frontCoverUrl={selectedCover.imageUrl}
+                    bookTitle={finalTitle}
+                    authorName={authorProfile.penName || "Author Name"}
+                    authorPhoto={authorProfile.avatarUrl}
+                    authorBio={authorProfile.bio || ""}
+                    bookDescription={editedDescription || aiAnalysis.bookDescription}
+                    pageCount={Math.ceil((manuscript?.split(/\s+/).length || 0) / 250)}
+                    isbn={undefined}
+                  />
               
-              <div className="flex justify-between">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentStep("amazon")}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={() => setCurrentStep("export")}
-                >
-                  Continue to Export
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
+                  <div className="flex justify-between">
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentStep("amazon")}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back
+                    </Button>
+                    <Button
+                      size="lg"
+                      onClick={() => setCurrentStep("export")}
+                    >
+                      Continue to Export
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
