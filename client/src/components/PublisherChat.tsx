@@ -76,7 +76,7 @@ Just type your question or let me know what you'd like to explore!`,
       },
       {
         onSuccess: (data) => {
-          setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
+          setMessages((prev) => [...prev, { role: "assistant", content: String(data.message || "") }]);
           setIsLoading(false);
         },
         onError: (error) => {
