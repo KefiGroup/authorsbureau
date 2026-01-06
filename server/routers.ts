@@ -5,6 +5,7 @@ import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategory
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
 import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt } from "./cover-generator";
 import { generateExportBundle } from "./export-bundle";
+import { storagePut } from "./storage";
 import { parseIntoPages, generatePagePreviewHTML, getPreviewSummary } from "./interior-preview";
 import { analyzeManuscript, generateMoreTitles, refineDescription } from "./manuscript-analyzer";
 import * as dbCovers from "./db-covers";
@@ -950,6 +951,46 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
       .mutation(async ({ input }) => {
         await dbCovers.deleteBookCover(input.coverId);
         return { success: true };
+      }),
+
+    // Upload custom cover
+    uploadCustomCover: protectedProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileType: z.string(),
+        fileData: z.string(), // base64 encoded
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Validate file type
+        if (!['image/png', 'image/jpeg', 'image/jpg'].includes(input.fileType)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid file type. Only PNG and JPG are supported.",
+          });
+        }
+
+        // Convert base64 to buffer
+        const base64Data = input.fileData.split(',')[1] || input.fileData;
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        // Validate file size (max 50MB)
+        if (buffer.length > 50 * 1024 * 1024) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "File size exceeds 50MB limit.",
+          });
+        }
+
+        // Generate unique file key
+        const timestamp = Date.now();
+        const randomSuffix = Math.random().toString(36).substring(2, 8);
+        const extension = input.fileType.split('/')[1];
+        const fileKey = `covers/${ctx.user.id}-${timestamp}-${randomSuffix}.${extension}`;
+
+        // Upload to S3
+        const { url } = await storagePut(fileKey, buffer, input.fileType);
+
+        return { url, key: fileKey };
       }),
   }),
 });

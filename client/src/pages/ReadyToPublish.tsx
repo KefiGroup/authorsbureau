@@ -19,6 +19,8 @@ import { useLocation } from "wouter";
 import { BookWrapDesigner } from "@/components/BookWrapDesigner";
 import { PublisherChat } from "@/components/PublisherChat";
 import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
+import { CoverUpload } from "@/components/CoverUpload";
+import { InteriorPreview } from "@/components/InteriorPreview";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +50,7 @@ export default function ReadyToPublish() {
   const [bookId, setBookId] = useState<number | null>(bookIdFromUrl ? parseInt(bookIdFromUrl) : null);
   const [currentStep, setCurrentStep] = useState<WorkflowStep>("upload");
   const [accountChecklistComplete, setAccountChecklistComplete] = useState(false);
+  const [showInteriorPreview, setShowInteriorPreview] = useState(false);
   const [manuscript, setManuscript] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [uploadMethod, setUploadMethod] = useState<"paste" | "file">("paste");
@@ -791,13 +794,27 @@ export default function ReadyToPublish() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-primary" />
-                    AI Cover Design Studio
+                    Cover Design
                   </CardTitle>
                   <CardDescription>
-                    Our AI will generate 3 professional cover designs based on your book's themes and genre
+                    Generate AI covers or upload your own pre-designed cover
                   </CardDescription>
                 </CardHeader>
               </Card>
+
+              <Tabs defaultValue="ai-generate" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="ai-generate">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    AI Generate
+                  </TabsTrigger>
+                  <TabsTrigger value="upload">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Your Own
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="ai-generate" className="space-y-6 mt-6">
 
               {generatedCovers.length === 0 ? (
                 <Card>
@@ -948,6 +965,30 @@ export default function ReadyToPublish() {
                   </CardContent>
                 </Card>
               )}
+                </TabsContent>
+
+                <TabsContent value="upload" className="space-y-6 mt-6">
+                  <CoverUpload
+                    onUploadComplete={(url) => {
+                      setSelectedCover(url);
+                      toast.success("Cover uploaded! You can now continue to the next step.");
+                    }}
+                    currentCoverUrl={selectedCover}
+                  />
+
+                  {selectedCover && (
+                    <div className="flex justify-end">
+                      <Button
+                        size="lg"
+                        onClick={() => setCurrentStep("wrap")}
+                      >
+                        Continue to Book Wrap Designer
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
             </div>
           )}
 
@@ -1151,7 +1192,16 @@ export default function ReadyToPublish() {
                 </CardContent>
               </Card>
 
-              <div className="flex justify-end">
+              <div className="flex justify-between items-center">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => setShowInteriorPreview(true)}
+                  disabled={!manuscript}
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Preview Pages
+                </Button>
                 <Button
                   size="lg"
                   onClick={() => setCurrentStep("wrap")}
@@ -1162,6 +1212,25 @@ export default function ReadyToPublish() {
               </div>
             </div>
           )}
+
+          {/* Interior Preview Dialog */}
+          <Dialog open={showInteriorPreview} onOpenChange={setShowInteriorPreview}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Interior Preview</DialogTitle>
+                <DialogDescription>
+                  Review how your manuscript will look when formatted for print
+                </DialogDescription>
+              </DialogHeader>
+              {manuscript && (
+                <InteriorPreview
+                  manuscript={manuscript}
+                  bookTitle={finalTitle || aiAnalysis?.suggestedTitles[0] || "Untitled"}
+                  authorName={authorProfile?.penName || "Author"}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
 
           {/* Step 6: Book Wrap Designer */}
           {currentStep === "wrap" && selectedCover && aiAnalysis && (

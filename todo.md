@@ -25,14 +25,31 @@
 - [x] Real-time character count
 - [x] Save selected title/subtitle
 
-### Step 4: Cover Design ✅
+### Step 4: Cover Design (In Progress)
 - [x] AI-powered cover generation (3 variations)
 - [x] Cover style selection (minimalist, bold, artistic)
 - [x] Cover preview and selection
 - [x] Edit/regenerate covers with feedback
-- [ ] **Custom cover upload option** (for pre-designed covers like Bob's)
-- [ ] Cover dimension validation (1600x2560px for eBook)
-- [ ] Cover customization tools (fonts, colors, layouts)
+- [x] **Custom cover upload option** (for pre-designed covers like Bob's)
+  - [x] Add "Upload Your Own Cover" tab/option
+  - [x] File upload input with drag-and-drop support
+  - [x] Image dimension validation (1600x2560px recommended for eBook)
+  - [x] Image format validation (PNG, JPG, JPEG)
+  - [x] File size validation (max 50MB)
+  - [x] Cover preview after upload
+  - [x] Store uploaded cover URL and use in export
+  - [x] S3 storage integration with unique file keys
+  - [x] Upload progress indicator
+  - [x] Success/error alerts
+  - [x] Remove and replace uploaded cover
+- [ ] **Cover customization tools** (edit AI-generated covers)
+  - [ ] Add "Customize Cover" button for AI-generated covers
+  - [ ] Font selection dropdown (title, author name, subtitle)
+  - [ ] Color picker for text colors
+  - [ ] Color picker for background/accent colors
+  - [ ] Text positioning controls (top, center, bottom)
+  - [ ] Live preview of customization changes
+  - [ ] Save and apply customized settings
 
 ### Step 5: Book Wrap Designer (Paperback) ✅
 - [x] Author profile integration (photo, bio)
@@ -53,6 +70,11 @@
 - [x] Pricing recommendations ($2.99+ for 70% royalty)
 - [x] ISBN guidance (own, Amazon free, Bowker purchase)
 - [x] Copyright page generation
+- [x] **Interior preview button** (optional: review formatting)
+  - [x] Add "Preview Pages" button in this step
+  - [x] Open InteriorPreview component in modal/dialog
+  - [x] Display page navigation and formatting preview
+  - [x] Allow close and return to workflow
 
 ### Step 7: Pre-Publishing Checklist ✅
 - [x] **Amazon KDP account setup reminder** (with signup link)
@@ -63,6 +85,9 @@
 - [x] Link to Author Central: https://authorcentral.amazon.com
 - [x] Checkbox confirmation for each setup step
 - [x] Disable download button until checklist complete
+- [x] **Interior preview button** (alternative placement)
+  - [x] Add "Preview Pages" button before export
+  - [x] Final formatting review before download
 
 ### Step 8: Export Package ✅
 - [x] DOCX export (eBook format, editable)
@@ -82,7 +107,7 @@
 - [x] Preview summary (total pages, word count, read time)
 - [x] Quick jump to first/middle/last pages
 - [x] Professional formatting (Times New Roman, 1.5 spacing, justified)
-- [ ] **Integrate into workflow** (add preview step before export)
+- [x] **Integrate into workflow** (added to Step 6 with dialog modal)
 
 ---
 
@@ -197,18 +222,3 @@
 - [x] SEO optimization (meta tags, structured data, Open Graph)
 - [x] Homepage enhancement with clear CTAs
 
-### AI Integration
-- [x] Real LLM integration (replaced simulated responses)
-- [x] invokeLLM helper for book outline generation
-- [x] invokeLLM helper for SUCKcess profile generation
-- [x] Error handling and retry logic for AI calls
-
-### Featured Authors Section
-- [x] Pauline Teo profile with Be SUCKcessful book
-- [x] Felicia Tan profile with 3-book trilogy
-- [x] Author achievements and book covers display
-
-### Dual-Track System
-- [x] Track selection interface (Independent Author vs Anthology Contributor)
-- [x] Track 1: Independent Author Path (write your own book)
-- [x] Track 1: Topic selection and custom book generation
