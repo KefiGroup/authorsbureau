@@ -685,3 +685,15 @@
 - [x] All export-bundle tests passing
 - [ ] Test Save Progress functionality
 - [ ] Test workflow resume from saved state
+
+
+## Workflow Resume Detection
+- [x] Review current save progress database schema and implementation
+- [x] Add resume detection logic on Ready to Publish page load
+- [x] Create "Resume where you left off?" prompt UI component
+- [x] Show last completed step in resume prompt
+- [x] Add "Start Fresh" vs "Resume" action buttons
+- [x] Restore all workflow state when user clicks Resume (manuscript, analysis, titles, covers)
+- [x] Test resume functionality with different workflow stages
+- [x] Ensure resume works after browser refresh or returning days later
+- [x] Simplified resume to always go to 'review' step for better UX

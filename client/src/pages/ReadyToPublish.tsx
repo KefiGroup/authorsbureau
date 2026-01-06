@@ -11,13 +11,21 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Upload, FileText, Sparkles, Loader2, BookOpen, CheckCircle2,
   Lightbulb, TrendingUp, Edit3, RefreshCw, Download, Image as ImageIcon,
-  Check, ArrowRight, ArrowLeft, Save
+  Check, ArrowRight, ArrowLeft, Save, Clock
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
 import { BookWrapDesigner } from "@/components/BookWrapDesigner";
 import { PublisherChat } from "@/components/PublisherChat";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type WorkflowStep = "upload" | "analyzing" | "review" | "cover" | "amazon" | "wrap" | "export";
 
@@ -43,6 +51,8 @@ export default function ReadyToPublish() {
   const [uploadMethod, setUploadMethod] = useState<"paste" | "file">("paste");
   const [isUploading, setIsUploading] = useState(false);
   const [existingManuscriptLoaded, setExistingManuscriptLoaded] = useState(false);
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
+  const [hasCheckedResume, setHasCheckedResume] = useState(false);
   
   // AI Analysis state
   const [aiAnalysis, setAIAnalysis] = useState<AIAnalysis | null>(null);
@@ -95,6 +105,88 @@ export default function ReadyToPublish() {
       toast.success(`Loaded existing manuscript: ${existingBook.title} (${existingBook.wordCount} words)`);
     }
   }, [existingBook, existingManuscriptLoaded]);
+
+  // Resume detection: Check if user has saved workflow progress
+  useEffect(() => {
+    if (existingBook && !hasCheckedResume && existingManuscriptLoaded) {
+      // Check if there's saved workflow progress
+      const hasSavedProgress = existingBook.workflowStep && 
+        existingBook.workflowStep !== "upload" && 
+        existingBook.workflowStep !== "analyzing";
+      
+      if (hasSavedProgress) {
+        setShowResumePrompt(true);
+      }
+      setHasCheckedResume(true);
+    }
+  }, [existingBook, hasCheckedResume, existingManuscriptLoaded]);
+
+  // Handler to resume from saved progress
+  const handleResumeProgress = () => {
+    if (!existingBook) return;
+
+    // Always resume to 'review' step to show AI Publisher chat
+    // This is safer than trying to restore complex step states
+    setCurrentStep("review");
+
+    // Restore AI analysis
+    if (existingBook.aiAnalysis) {
+      try {
+        const parsedAnalysis = JSON.parse(existingBook.aiAnalysis);
+        setAIAnalysis(parsedAnalysis);
+        setEditedDescription(parsedAnalysis.bookDescription || "");
+      } catch (e) {
+        console.error("Failed to parse AI analysis:", e);
+      }
+    }
+
+    // Restore selected title/subtitle
+    if (existingBook.selectedTitle) {
+      setSelectedTitle(existingBook.selectedTitle);
+    }
+    if (existingBook.selectedSubtitle) {
+      setSelectedSubtitle(existingBook.selectedSubtitle);
+    }
+
+    // Restore generated covers
+    if (existingBook.generatedCovers) {
+      try {
+        const parsedCovers = JSON.parse(existingBook.generatedCovers);
+        setGeneratedCovers(parsedCovers);
+      } catch (e) {
+        console.error("Failed to parse generated covers:", e);
+      }
+    }
+
+    // Restore selected cover (reconstruct as object if it's a URL string)
+    if (existingBook.selectedCoverUrl) {
+      // Check if it's already an object or just a URL string
+      if (typeof existingBook.selectedCoverUrl === 'string') {
+        setSelectedCover({
+          imageUrl: existingBook.selectedCoverUrl,
+          style: 'unknown'
+        });
+      } else {
+        setSelectedCover(existingBook.selectedCoverUrl);
+      }
+    }
+
+    setShowResumePrompt(false);
+    toast.success("Resumed from where you left off!");
+  };
+
+  // Handler to start fresh (ignore saved progress)
+  const handleStartFresh = () => {
+    setShowResumePrompt(false);
+    setCurrentStep("upload");
+    // Keep manuscript loaded but reset workflow state
+    setAIAnalysis(null);
+    setSelectedTitle("");
+    setSelectedSubtitle("");
+    setGeneratedCovers([]);
+    setSelectedCover(null);
+    toast.info("Starting fresh workflow");
+  };
 
   // tRPC mutations
   // Save progress mutation
@@ -411,6 +503,76 @@ export default function ReadyToPublish() {
             </Button>
           </div>
         )}
+
+        {/* Resume Progress Dialog */}
+        <Dialog open={showResumePrompt} onOpenChange={setShowResumePrompt}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-primary" />
+                Resume Where You Left Off?
+              </DialogTitle>
+              <DialogDescription>
+                We found saved progress for this manuscript. You were working on the{" "}
+                <strong>
+                  {existingBook?.workflowStep === "review" && "Review & Edit"}
+                  {existingBook?.workflowStep === "cover" && "Cover Design"}
+                  {existingBook?.workflowStep === "amazon" && "Amazon Optimization"}
+                  {existingBook?.workflowStep === "wrap" && "Book Wrap Design"}
+                  {existingBook?.workflowStep === "export" && "Export & Download"}
+                </strong>{" "}
+                step.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="rounded-lg bg-muted p-4 space-y-2">
+                <p className="text-sm font-medium">Saved Progress Includes:</p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  {existingBook?.aiAnalysis && (
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-primary" />
+                      AI analysis and suggestions
+                    </li>
+                  )}
+                  {existingBook?.selectedTitle && (
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-primary" />
+                      Selected title: {existingBook.selectedTitle}
+                    </li>
+                  )}
+                  {existingBook?.generatedCovers && (
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-primary" />
+                      Generated cover designs
+                    </li>
+                  )}
+                  {existingBook?.selectedCoverUrl && (
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-primary" />
+                      Selected cover design
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={handleStartFresh}
+                className="w-full sm:w-auto"
+              >
+                Start Fresh
+              </Button>
+              <Button
+                onClick={handleResumeProgress}
+                className="w-full sm:w-auto"
+              >
+                <Clock className="w-4 h-4 mr-2" />
+                Resume Progress
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Step Content */}
         {/* Step 1: Upload Manuscript */}
