@@ -662,3 +662,14 @@
 - [ ] Display generated wrap in preview (future)
 - [ ] Add download button for generated wrap (future)
 - [ ] Include wrap in final export package (future)
+
+
+---
+
+## Book Wrap Designer Bugs (User Testing)
+
+### Template Generation Button Disabled ✅
+- [x] "Generate Book Wrap" button is grayed out even after uploading cover
+- [x] frontCoverUrl prop not being passed correctly to BookWrapDesignerV2
+- [x] Fixed: Changed from `selectedCover.imageUrl` to `selectedCover` (it's a string, not an object)
+- [x] Button should now be enabled when cover is uploaded

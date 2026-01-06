@@ -1658,7 +1658,7 @@ export default function ReadyToPublish() {
               ) : (
                 <>
                   <BookWrapDesignerV2
-                    frontCoverUrl={selectedCover.imageUrl}
+                    frontCoverUrl={selectedCover}
                     bookTitle={finalTitle}
                     authorName={authorProfile.penName || "Author Name"}
                     authorPhotoUrl={authorProfile.avatarUrl}
