@@ -11,6 +11,7 @@ import { Loader2, Save, User, Upload, Sparkles, CheckCircle2, AlertCircle, Exter
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ImageCropper } from "@/components/ImageCropper";
+import { ProfileCompletionIndicator } from "@/components/ProfileCompletionIndicator";
 
 export default function Profile() {
   const { data: authorProfile, isLoading } = trpc.author.getProfile.useQuery();
@@ -165,6 +166,17 @@ export default function Profile() {
             Manage your author information and public profile
           </p>
         </div>
+
+        {/* Profile Completion Indicator */}
+        {!isLoading && (
+          <ProfileCompletionIndicator
+            penName={formData.penName}
+            bio={formData.bio}
+            avatarUrl={formData.avatarUrl}
+            website={formData.website}
+            accomplishments={formData.accomplishments}
+          />
+        )}
 
         {/* Profile Form */}
         <Card>

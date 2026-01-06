@@ -309,3 +309,31 @@
 - [x] Update Profile.tsx to use proper S3 upload instead of placeholder
 - [x] Convert cropped image to base64 and upload via tRPC
 - [ ] Verify profile data loads correctly after save (needs testing)
+
+
+---
+
+## Profile UX Improvements
+### Profile Completion Indicator ✅
+- [x] Calculate profile completion percentage (5 fields: photo, pen name, bio, website, accomplishments)
+- [x] Add progress bar at top of Profile page showing completion percentage
+- [x] Add checklist showing which fields are complete/incomplete
+- [x] Use visual indicators (checkmarks for complete, empty circles for incomplete)
+- [x] Show encouraging message when profile is complete ("Your profile is ready!")
+- [x] Add CTA to complete profile if incomplete ("Complete your profile to unlock Book Wrap")
+- [x] Create ProfileCompletionIndicator component
+- [x] Display completion percentage and progress bar
+- [x] Mark required fields with asterisk (*)
+- [x] Show different messages based on completion status
+
+### Profile Preview in Navigation ✅
+- [x] Add profile preview component to header/navigation
+- [x] Display small avatar (32x32px) in sidebar footer
+- [x] Display pen name next to avatar
+- [x] Add dropdown menu on click (View Profile, Logout)
+- [x] Show default avatar if no photo uploaded (initials fallback)
+- [x] Make it responsive (hide pen name when sidebar collapsed)
+- [x] Fetch author profile data with trpc query
+- [x] Display author avatar image if available
+- [x] Show pen name instead of user name when available
+- [x] Add "View Profile" menu item to dropdown
