@@ -1309,6 +1309,7 @@ export default function ReadyToPublish() {
                             price: suggestedPrice,
                             genre: aiAnalysis.detectedGenre,
                           },
+                          copyrightPage: undefined, // TODO: Add copyright page generation
                         });
                       }}
                       disabled={!manuscript || !aiAnalysis || !selectedCover}

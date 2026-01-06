@@ -2,6 +2,7 @@ import { storagePut } from "./storage";
 import archiver from "archiver";
 import { Readable } from "stream";
 import { generateDOCX, generatePDF, type ManuscriptData } from "./manuscript-export";
+import { generateEpub } from "./epub-generator";
 
 /**
  * Export bundle containing all publishing materials
@@ -12,6 +13,7 @@ export interface ExportBundle {
   files: {
     manuscript_docx?: string;
     manuscript_pdf?: string;
+    manuscript_epub?: string;
     cover_image?: string;
     kdp_metadata?: string;
     isbn_info?: string;
@@ -37,6 +39,7 @@ export async function generateExportBundle(params: {
     genre: string;
   };
   isbn?: string;
+  copyrightPage?: string;
 }): Promise<ExportBundle> {
   const { bookTitle, authorName, manuscriptContent, coverImageUrl, metadata, isbn } = params;
   
@@ -84,6 +87,24 @@ export async function generateExportBundle(params: {
     } catch (error) {
       console.error("[Export Bundle] Failed to generate PDF:", error);
       // Continue without PDF if generation fails
+    }
+    
+    // Generate EPUB (eBook format for Kindle)
+    try {
+      const epubBuffer = await generateEpub(chapters, {
+        title: bookTitle,
+        author: authorName,
+        coverUrl: coverImageUrl,
+        description: metadata.description,
+        publisher: "Authors Bureau",
+        isbn: isbn,
+        copyrightPage: params.copyrightPage,
+      });
+      const epubFilename = `${sanitizeFilename(bookTitle)}_eBook.epub`;
+      archive.append(epubBuffer, { name: epubFilename });
+    } catch (error) {
+      console.error("[Export Bundle] Failed to generate EPUB:", error);
+      // Continue without EPUB if generation fails
     }
     
     // Add KDP metadata file
@@ -145,6 +166,7 @@ export async function generateExportBundle(params: {
       files: {
         manuscript_docx: `${sanitizeFilename(bookTitle)}_eBook.docx`,
         manuscript_pdf: `${sanitizeFilename(bookTitle)}_Paperback.pdf`,
+        manuscript_epub: `${sanitizeFilename(bookTitle)}_eBook.epub`,
         kdp_metadata: "KDP_Listing_Data.txt",
         cover_image: coverImageUrl ? `${sanitizeFilename(bookTitle)}_cover.png` : undefined,
         isbn_info: isbn ? "ISBN_Information.txt" : undefined,

@@ -5,6 +5,7 @@ import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategory
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
 import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt } from "./cover-generator";
 import { generateExportBundle } from "./export-bundle";
+import { parseIntoPages, generatePagePreviewHTML, getPreviewSummary } from "./interior-preview";
 import { analyzeManuscript, generateMoreTitles, refineDescription } from "./manuscript-analyzer";
 import * as dbCovers from "./db-covers";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -642,6 +643,50 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
       }),
   }),
 
+  // Interior Preview
+  preview: router({
+    getSummary: protectedProcedure
+      .input(z.object({
+        content: z.string(),
+      }))
+      .query(({ input }) => {
+        return getPreviewSummary(input.content);
+      }),
+    
+    getPage: protectedProcedure
+      .input(z.object({
+        content: z.string(),
+        pageNumber: z.number().min(1),
+        bookTitle: z.string(),
+        authorName: z.string(),
+        fontSize: z.number().optional(),
+        lineSpacing: z.number().optional(),
+      }))
+      .query(({ input }) => {
+        const pages = parseIntoPages(input.content);
+        const page = pages.find(p => p.pageNumber === input.pageNumber);
+        
+        if (!page) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: `Page ${input.pageNumber} not found`,
+          });
+        }
+        
+        const html = generatePagePreviewHTML(page, {
+          bookTitle: input.bookTitle,
+          authorName: input.authorName,
+          fontSize: input.fontSize,
+          lineSpacing: input.lineSpacing,
+        });
+        
+        return {
+          page,
+          html,
+        };
+      }),
+  }),
+
   // Export Bundle
   export: router({
     generateBundle: protectedProcedure
@@ -660,6 +705,7 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
           genre: z.string(),
         }),
         isbn: z.string().optional(),
+        copyrightPage: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         return await generateExportBundle(input);

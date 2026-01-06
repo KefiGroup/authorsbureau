@@ -25,13 +25,36 @@
 - [ ] Version history and auto-save functionality
 
 ## Phase 4: Book Design Service
-- [ ] AI-powered book cover generation with prompt input
-- [ ] Cover customization tools (fonts, colors, layouts)
-- [ ] Design element library and templates
-- [ ] Manuscript formatting for industry standards
-- [ ] Multi-format export (EPUB, MOBI, PDF)
-- [ ] Print-ready file generation
-- [ ] Cover and interior preview system
+
+### Completed (Developed First)
+- [x] Book Wrap Designer with flexible back cover layout system
+- [x] Back cover layout presets (Classic, Modern, Minimal, Bold, Custom)
+- [x] Toggle controls for back cover elements (photo, bio, description, ISBN)
+- [x] Optional back cover elements (foreword, testimonials, awards, series info, custom text)
+- [x] Live back cover preview with real-time updates
+- [x] Photo cropping and zoom for author profile uploads
+- [x] Inline photo upload in Book Wrap Designer workflow
+- [x] AI-powered book cover generation with prompt input (already exists)
+- [x] Cover and interior preview system (partially done)
+
+### Remaining Tasks (KDP-Aligned - All books use 6"x9" trim size)
+
+#### Priority 1: Critical KDP Requirements
+- [x] EPUB generation for eBook publishing (required by Amazon KDP)
+- [x] Interior preview system - show formatted pages before export
+- [ ] Custom cover upload option - for authors with pre-designed covers (like Bob's bone cover)
+
+#### Priority 2: Enhanced Customization
+- [ ] Cover customization tools - edit fonts, colors, layouts on AI-generated covers
+- [ ] Cover font selection (title, author name, subtitle)
+- [ ] Cover color palette customization
+- [ ] Cover text positioning controls
+
+#### Priority 3: Professional Polish
+- [ ] MOBI generation for older Kindle devices (converted from EPUB)
+- [ ] Enhanced PDF export with embedded fonts and high-res images
+- [ ] Design element library and cover templates gallery
+- [ ] Genre-specific cover templates (business, self-help, fiction, etc.)
 
 ## Phase 5: Marketing Automation System
 - [ ] Landing page builder with templates
