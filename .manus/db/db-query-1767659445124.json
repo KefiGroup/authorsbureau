@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, openId, name, email, role FROM users LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, openId, name, email, role FROM users LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "JPSBzQoYnjgT93FM8sS7Mn",
+      "name": "pauline teo",
+      "email": "paulinet77@gmail.com",
+      "role": "admin"
+    },
+    {
+      "id": "3",
+      "openId": "test-user-1",
+      "name": "Test Author 1",
+      "email": "author1@example.com",
+      "role": "user"
+    },
+    {
+      "id": "4",
+      "openId": "test-user-2",
+      "name": "Test Author 2",
+      "email": "author2@example.com",
+      "role": "user"
+    },
+    {
+      "id": "5",
+      "openId": "test-user-3",
+      "name": "Test Author 3",
+      "email": "author3@example.com",
+      "role": "user"
+    },
+    {
+      "id": "6",
+      "openId": "test-user-4",
+      "name": "Test Author 4",
+      "email": "author4@example.com",
+      "role": "user"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\trole\n1\tJPSBzQoYnjgT93FM8sS7Mn\tpauline teo\tpaulinet77@gmail.com\tadmin\n3\ttest-user-1\tTest Author 1\tauthor1@example.com\tuser\n4\ttest-user-2\tTest Author 2\tauthor2@example.com\tuser\n5\ttest-user-3\tTest Author 3\tauthor3@example.com\tuser\n6\ttest-user-4\tTest Author 4\tauthor4@example.com\tuser\n",
+  "stderr": "",
+  "execution_time_ms": 93
+}

@@ -229,3 +229,57 @@ export const amazonListings = mysqlTable("amazonListings", {
 
 export type AmazonListing = typeof amazonListings.$inferSelect;
 export type InsertAmazonListing = typeof amazonListings.$inferInsert;
+
+/**
+ * Publishing drafts for wizard state persistence
+ * Allows users to save progress and resume from any step
+ */
+export const publishingDrafts = mysqlTable("publishingDrafts", {
+  id: int("id").autoincrement().primaryKey(),
+  authorId: int("authorId").notNull().references(() => authors.id, { onDelete: "cascade" }),
+  
+  // Wizard progress
+  currentStep: varchar("currentStep", { length: 50 }).notNull(), // "upload", "analyzing", "review", "cover", "amazon", "export"
+  completionPercentage: int("completionPercentage").default(0), // 0-100
+  
+  // Step 1: Upload
+  manuscript: text("manuscript"),
+  wordCount: int("wordCount").default(0),
+  
+  // Step 2: AI Analysis
+  aiAnalysis: json("aiAnalysis").$type<{
+    suggestedTitles: string[];
+    suggestedSubtitles: string[];
+    detectedGenre: string;
+    themes: string[];
+    targetAudience: string;
+    bookDescription: string;
+    keyBenefits: string[];
+    tone: string;
+  }>(),
+  
+  // Step 3: Metadata
+  selectedTitle: varchar("selectedTitle", { length: 500 }),
+  selectedSubtitle: varchar("selectedSubtitle", { length: 500 }),
+  description: text("description"),
+  
+  // Step 4: Categories
+  categories: json("categories").$type<string[]>(),
+  keywords: json("keywords").$type<string[]>(),
+  
+  // Step 5: Cover
+  coverUrl: varchar("coverUrl", { length: 500 }),
+  generatedCovers: json("generatedCovers").$type<Array<{ url: string; style: string }>>(),
+  
+  // Step 6: ISBN
+  isbnChoice: varchar("isbnChoice", { length: 100 }), // "amazon-free", "purchase-own", "have-isbn"
+  isbnNumber: varchar("isbnNumber", { length: 20 }),
+  
+  // Metadata
+  lastSavedStep: varchar("lastSavedStep", { length: 50 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PublishingDraft = typeof publishingDrafts.$inferSelect;
+export type InsertPublishingDraft = typeof publishingDrafts.$inferInsert;

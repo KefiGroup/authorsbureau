@@ -184,4 +184,9 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* Fix for Manus preview mode overlay blocking clicks */
+  #manus-previewer-root {
+    pointer-events: none !important;
+  }
 }

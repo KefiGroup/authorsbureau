@@ -63,12 +63,27 @@ export async function generateExportBundle(params: {
     // Add cover image if provided
     if (coverImageUrl) {
       try {
-        const coverResponse = await fetch(coverImageUrl);
-        const coverBuffer = Buffer.from(await coverResponse.arrayBuffer());
+        let coverBuffer: Buffer;
+        
+        // Handle data URLs (base64 encoded images from custom upload)
+        if (coverImageUrl.startsWith('data:')) {
+          // Extract base64 data from data URL
+          const base64Data = coverImageUrl.split(',')[1];
+          if (!base64Data) {
+            throw new Error('Invalid data URL format');
+          }
+          coverBuffer = Buffer.from(base64Data, 'base64');
+        } else {
+          // Handle regular HTTP/HTTPS URLs
+          const coverResponse = await fetch(coverImageUrl);
+          coverBuffer = Buffer.from(await coverResponse.arrayBuffer());
+        }
+        
         const coverFilename = `${sanitizeFilename(bookTitle)}_cover.png`;
         archive.append(coverBuffer, { name: coverFilename });
       } catch (error) {
-        console.error("[Export Bundle] Failed to fetch cover image:", error);
+        console.error("[Export Bundle] Failed to process cover image:", error);
+        // Don't throw - continue with export even if cover fails
       }
     }
     

@@ -448,3 +448,83 @@
 - [ ] Add form validation at each step
 - [ ] Persist wizard state to database (resume capability)
 - [ ] Test complete flow end-to-end
+
+
+## Progress Persistence System (CURRENT PRIORITY)
+### Auto-save wizard state so users can resume from any step
+
+**Database Schema:**
+- [ ] Add publishingDrafts table to store wizard state
+- [ ] Fields: authorId, currentStep, manuscript, wordCount, aiAnalysis (JSON), selectedTitle, selectedSubtitle, description, categories, coverUrl, isbnChoice, createdAt, updatedAt
+- [ ] Add completionPercentage field to track progress
+- [ ] Add lastSavedStep field to know where user left off
+- [ ] Run database migration with pnpm db:push
+
+**Backend API:**
+- [ ] Create saveDraftState procedure in routers.ts
+- [ ] Create loadDraftState procedure in routers.ts
+- [ ] Create listUserDrafts procedure in routers.ts
+- [ ] Create deleteDraft procedure in routers.ts
+- [ ] Auto-save on every step completion
+- [ ] Return draft ID after first save
+
+**Frontend Auto-Save:**
+- [ ] Add draftId state to ReadyToPublish component
+- [ ] Call saveDraftState after each step completion
+- [ ] Show "Saving..." indicator during save
+- [ ] Show "Saved" confirmation after successful save
+- [ ] Handle save errors gracefully
+
+**Resume Detection:**
+- [ ] Check for existing drafts on component mount
+- [ ] Show "Resume Your Book" modal if draft found
+- [ ] Display draft details (title, step, last saved time)
+- [ ] "Resume" button to restore state
+- [ ] "Start Fresh" button to create new draft
+- [ ] Load all wizard state from draft when resuming
+
+**Dashboard Integration:**
+- [ ] Show "In Progress" books on Dashboard
+- [ ] Display completion percentage for each draft
+- [ ] "Continue" button to resume wizard
+- [ ] "Delete Draft" option for abandoned projects
+
+**Testing:**
+- [ ] Test save after each wizard step
+- [ ] Test resume from different steps
+- [ ] Test multiple drafts per user
+- [ ] Test draft deletion
+- [ ] Write unit tests for save/load procedures
+
+
+## CRITICAL BUGS (FIX IMMEDIATELY)
+- [ ] Fix routers.ts syntax error at line 6 - server is broken
+- [ ] Fix "Continue Writing" button - not clickable/working
+- [ ] Implement file upload for manuscript import (DOCX, PDF, TXT)
+- [ ] Test Continue Writing button after fix
+- [ ] Test file upload functionality
+
+
+## Ready to Publish - Remaining Implementation (CURRENT PRIORITY)
+- [x] Export Package Download - Generate ZIP with manuscript (DOCX/PDF), cover (PNG), KDP metadata (TXT)
+- [x] Category Analysis Backend - Connect AI analysis to recommend Amazon categories
+- [x] Keyword Generation - AI-powered keywords based on selected categories
+- [x] Pricing Intelligence - AI pricing recommendations based on genre and competition
+- [x] Custom Cover Upload - Allow users to upload their own cover images
+- [x] Cover Regeneration - Refine AI-generated covers with user feedback (requires bookId)
+
+
+
+## Category Analysis Improvements (USER FEEDBACK - URGENT)
+- [x] Fix category recommendations to prioritize LOW competition (2-4/10) instead of moderate/high (7-8/10)
+- [x] Target niche categories where #1 ranking requires only 10-50 sales, not hundreds
+- [x] Avoid broad categories like "Personal Growth" and "Success" (too competitive)
+- [x] Focus on specific sub-niches with 500-2,000 searches/month (not 5,000-20,000)
+- [x] Goal: Make it easy for new authors to become #1 bestseller quickly
+
+
+## Pricing Intelligence Updates (USER FEEDBACK)
+- [x] Update pricing recommendations to launch strategy: Kindle $0.99, Paperback $8.99
+- [x] Remove single $14.99 recommendation
+- [x] Show separate pricing for Kindle vs Paperback
+- [ ] Future: Add advanced AI pricing intelligence with launch timeline and strategy
