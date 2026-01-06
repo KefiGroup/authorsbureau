@@ -42,14 +42,24 @@
   - [x] Upload progress indicator
   - [x] Success/error alerts
   - [x] Remove and replace uploaded cover
-- [ ] **Cover customization tools** (edit AI-generated covers)
-  - [ ] Add "Customize Cover" button for AI-generated covers
-  - [ ] Font selection dropdown (title, author name, subtitle)
-  - [ ] Color picker for text colors
-  - [ ] Color picker for background/accent colors
-  - [ ] Text positioning controls (top, center, bottom)
-  - [ ] Live preview of customization changes
-  - [ ] Save and apply customized settings
+- [x] **Cover customization tools** (edit AI-generated covers)
+  - [x] Create CoverCustomizer component with controls panel
+  - [x] Add "Customize" button next to each AI-generated cover
+  - [x] Font family selection dropdown (title, author name, subtitle)
+    - [x] Include popular book fonts (Playfair Display, Montserrat, Merriweather, etc.)
+  - [x] Color picker for title text color
+  - [x] Color picker for author name text color
+  - [x] Color picker for background overlay/accent colors
+  - [x] Text positioning controls (top, center, bottom alignment)
+  - [x] Font size sliders (title, author name)
+  - [x] Live preview showing changes in real-time
+  - [x] Backend: Update cover-generator.ts to accept custom style parameters
+  - [x] Backend: Add customizeCover mutation to routers.ts
+  - [x] Save customized settings and regenerate cover with new parameters
+  - [x] Replace original cover with customized version in workflow
+  - [x] Integrate CoverCustomizer dialog into ReadyToPublish
+  - [x] Update generatedCovers array with customized cover
+  - [x] Auto-select customized cover after applying changes
 
 ### Step 5: Book Wrap Designer (Paperback) ✅
 - [x] Author profile integration (photo, bio)

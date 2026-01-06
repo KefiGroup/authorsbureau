@@ -3,7 +3,7 @@ import { generateBookOutline, generateSuckcessProfile, generateChapterDraft } fr
 import { generateDOCX, generatePDF } from "./manuscript-export";
 import { researchAmazonCategories, analyzeCategoryCompetition, recommendCategoryCombination } from "./amazon-category-research";
 import { generateOptimizedTitle, generateOptimizedDescription, generateOptimizedKeywords, generateCompleteListing } from "./kdp-listing-optimizer";
-import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt } from "./cover-generator";
+import { generateBookCover, generateCoverVariations, regenerateCoverWithPrompt, CoverCustomization } from "./cover-generator";
 import { generateExportBundle } from "./export-bundle";
 import { storagePut } from "./storage";
 import { parseIntoPages, generatePagePreviewHTML, getPreviewSummary } from "./interior-preview";
@@ -951,6 +951,38 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
       .mutation(async ({ input }) => {
         await dbCovers.deleteBookCover(input.coverId);
         return { success: true };
+      }),
+
+    // Customize existing cover with new style parameters
+    customizeCover: protectedProcedure
+      .input(z.object({
+        bookTitle: z.string(),
+        authorName: z.string(),
+        genre: z.string(),
+        customization: z.object({
+          titleFont: z.string().optional(),
+          authorFont: z.string().optional(),
+          titleColor: z.string().optional(),
+          authorColor: z.string().optional(),
+          backgroundColor: z.string().optional(),
+          titlePosition: z.enum(["top", "center", "bottom"]).optional(),
+          titleSize: z.number().optional(),
+          authorSize: z.number().optional(),
+        }),
+      }))
+      .mutation(async ({ input }) => {
+        const { bookTitle, authorName, genre, customization } = input;
+        
+        // Generate new cover with customization
+        const cover = await generateBookCover({
+          bookTitle,
+          authorName,
+          genre,
+          style: "professional",
+          customization: customization as CoverCustomization,
+        });
+        
+        return { coverUrl: cover.imageUrl };
       }),
 
     // Upload custom cover

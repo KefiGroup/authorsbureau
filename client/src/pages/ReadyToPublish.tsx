@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Upload, FileText, Sparkles, Loader2, BookOpen, CheckCircle2,
   Lightbulb, TrendingUp, Edit3, RefreshCw, Download, Image as ImageIcon,
-  Check, ArrowRight, ArrowLeft, Save, Clock, AlertCircle, User
+  Check, ArrowRight, ArrowLeft, Save, Clock, AlertCircle, User, Palette
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -21,6 +21,7 @@ import { PublisherChat } from "@/components/PublisherChat";
 import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
 import { CoverUpload } from "@/components/CoverUpload";
 import { InteriorPreview } from "@/components/InteriorPreview";
+import { CoverCustomizer } from "@/components/CoverCustomizer";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +52,7 @@ export default function ReadyToPublish() {
   const [currentStep, setCurrentStep] = useState<WorkflowStep>("upload");
   const [accountChecklistComplete, setAccountChecklistComplete] = useState(false);
   const [showInteriorPreview, setShowInteriorPreview] = useState(false);
+  const [customizingCover, setCustomizingCover] = useState<string | null>(null);
   const [manuscript, setManuscript] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [uploadMethod, setUploadMethod] = useState<"paste" | "file">("paste");
@@ -896,8 +898,20 @@ export default function ReadyToPublish() {
                             alt={`Cover ${idx + 1}`}
                             className="w-full aspect-[2/3] object-cover rounded-t-lg"
                           />
-                          <div className="p-3">
+                          <div className="p-3 space-y-2">
                             <Badge>{cover.style}</Badge>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCustomizingCover(cover.imageUrl);
+                              }}
+                            >
+                              <Palette className="w-3 h-3 mr-1" />
+                              Customize
+                            </Button>
                           </div>
                         </div>
                       ))}
@@ -1227,6 +1241,39 @@ export default function ReadyToPublish() {
                   manuscript={manuscript}
                   bookTitle={finalTitle || aiAnalysis?.suggestedTitles[0] || "Untitled"}
                   authorName={authorProfile?.penName || "Author"}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
+
+          {/* Cover Customizer Dialog */}
+          <Dialog open={!!customizingCover} onOpenChange={(open) => !open && setCustomizingCover(null)}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Customize Cover</DialogTitle>
+                <DialogDescription>
+                  Adjust fonts, colors, and positioning to match your vision
+                </DialogDescription>
+              </DialogHeader>
+              {customizingCover && aiAnalysis && (
+                <CoverCustomizer
+                  coverUrl={customizingCover}
+                  bookTitle={finalTitle || aiAnalysis.suggestedTitles[0]}
+                  authorName={authorProfile?.penName || "Author"}
+                  genre={aiAnalysis.detectedGenre}
+                  onCustomizationComplete={(newCoverUrl) => {
+                    // Replace the cover in generatedCovers array
+                    const updatedCovers = generatedCovers.map((cover) =>
+                      cover.imageUrl === customizingCover
+                        ? { ...cover, imageUrl: newCoverUrl }
+                        : cover
+                    );
+                    setGeneratedCovers(updatedCovers);
+                    setSelectedCover(newCoverUrl);
+                    setCustomizingCover(null);
+                    toast.success("Cover updated with your customizations!");
+                  }}
+                  onCancel={() => setCustomizingCover(null)}
                 />
               )}
             </DialogContent>

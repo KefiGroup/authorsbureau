@@ -13,6 +13,17 @@ export interface BookCover {
   createdAt: number;
 }
 
+export interface CoverCustomization {
+  titleFont?: string;
+  authorFont?: string;
+  titleColor?: string;
+  authorColor?: string;
+  backgroundColor?: string;
+  titlePosition?: "top" | "center" | "bottom";
+  titleSize?: number;
+  authorSize?: number;
+}
+
 /**
  * Generate AI book cover based on book details
  */
@@ -22,8 +33,9 @@ export async function generateBookCover(params: {
   genre: string;
   style?: string;
   customPrompt?: string;
+  customization?: CoverCustomization;
 }): Promise<BookCover> {
-  const { bookTitle, authorName, genre, style = "professional", customPrompt } = params;
+  const { bookTitle, authorName, genre, style = "professional", customPrompt, customization } = params;
 
   // Build comprehensive prompt for book cover generation
   const basePrompt = customPrompt || buildCoverPrompt({
@@ -31,6 +43,7 @@ export async function generateBookCover(params: {
     authorName,
     genre,
     style,
+    customization,
   });
 
   try {
@@ -75,8 +88,51 @@ function buildCoverPrompt(params: {
   authorName: string;
   genre: string;
   style: string;
+  customization?: CoverCustomization;
 }): string {
-  const { bookTitle, authorName, genre, style } = params;
+  const { bookTitle, authorName, genre, style, customization } = params;
+
+  // Font mapping for AI generation
+  const fontMap: Record<string, string> = {
+    playfair: "Playfair Display (elegant serif)",
+    montserrat: "Montserrat (modern sans-serif)",
+    merriweather: "Merriweather (classic serif)",
+    lora: "Lora (readable serif)",
+    raleway: "Raleway (clean sans-serif)",
+    crimson: "Crimson Text (traditional serif)",
+    oswald: "Oswald (bold sans-serif)",
+    bitter: "Bitter (strong serif)",
+  };
+
+  // Build customization instructions
+  let customizationInstructions = "";
+  if (customization) {
+    const parts: string[] = [];
+    
+    if (customization.titleFont) {
+      parts.push(`Title font: ${fontMap[customization.titleFont] || customization.titleFont}`);
+    }
+    if (customization.authorFont) {
+      parts.push(`Author name font: ${fontMap[customization.authorFont] || customization.authorFont}`);
+    }
+    if (customization.titleColor) {
+      parts.push(`Title color: ${customization.titleColor}`);
+    }
+    if (customization.authorColor) {
+      parts.push(`Author name color: ${customization.authorColor}`);
+    }
+    if (customization.titlePosition) {
+      parts.push(`Title positioned at ${customization.titlePosition} of cover`);
+    }
+    if (customization.titleSize) {
+      const sizeDesc = customization.titleSize > 80 ? "very large" : customization.titleSize > 60 ? "large" : "medium";
+      parts.push(`Title size: ${sizeDesc}`);
+    }
+    
+    if (parts.length > 0) {
+      customizationInstructions = `\nCustomization requirements:\n- ${parts.join("\n- ")}\n`;
+    }
+  }
 
   // Genre-specific visual elements
   const genreStyles: Record<string, string> = {
@@ -105,7 +161,7 @@ function buildCoverPrompt(params: {
   // Construct comprehensive prompt
   const prompt = `Professional book cover design for "${bookTitle}" by ${authorName}. 
 Genre: ${genre}. 
-Style: ${genreStyle}, ${styleModifier}.
+Style: ${genreStyle}, ${styleModifier}.${customizationInstructions}
 Requirements: 
 - Book title prominently displayed with clear, readable typography
 - Author name visible but secondary to title
