@@ -14,6 +14,7 @@ export interface ExportBundle {
     cover_image?: string;
     kdp_metadata?: string;
     isbn_info?: string;
+    copyright_page?: string;
   };
   createdAt: number;
 }
@@ -36,8 +37,9 @@ export async function generateExportBundle(params: {
     genre: string;
   };
   isbn?: string;
+  copyrightPage?: string;
 }): Promise<ExportBundle> {
-  const { bookTitle, authorName, manuscriptContent, coverImageUrl, metadata, isbn } = params;
+  const { bookTitle, authorName, manuscriptContent, coverImageUrl, metadata, isbn, copyrightPage } = params;
   
   try {
     // Create ZIP archive in memory
@@ -58,6 +60,11 @@ export async function generateExportBundle(params: {
     if (isbn) {
       const isbnContent = generateISBNInfo(isbn, bookTitle, authorName);
       archive.append(isbnContent, { name: "ISBN_Information.txt" });
+    }
+    
+    // Add copyright page if provided
+    if (copyrightPage) {
+      archive.append(copyrightPage, { name: "Copyright_Page.txt" });
     }
     
     // Add cover image if provided
@@ -113,6 +120,7 @@ export async function generateExportBundle(params: {
         kdp_metadata: "KDP_Listing_Data.txt",
         cover_image: coverImageUrl ? `${sanitizeFilename(bookTitle)}_cover.png` : undefined,
         isbn_info: isbn ? "ISBN_Information.txt" : undefined,
+        copyright_page: copyrightPage ? "Copyright_Page.txt" : undefined,
       },
       createdAt: timestamp,
     };

@@ -1,0 +1,1 @@
+ALTER TABLE `books` ADD `isbnSource` enum('own','amazon_free','bowker');

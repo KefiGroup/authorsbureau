@@ -464,6 +464,7 @@ export const appRouter = router({
           genre: z.string(),
         }),
         isbn: z.string().optional(),
+        copyrightPage: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         return await generateExportBundle(input);

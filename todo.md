@@ -571,3 +571,29 @@
 - [ ] **FIX #3**: Implement workflow progress persistence - save covers, categories, keywords to database
 - [ ] Allow resuming Ready to Publish workflow from any step
 - [ ] Auto-populate workflow with existing book data (title, content, genre)
+
+
+## Critical Fixes from Hemispheric Intelligence Walkthrough
+- [ ] Fix pricing: Add royalty tier warnings (35% vs 70%), recommend $2.99+ for eBooks instead of $0.99
+- [ ] Add ISBN guidance and collection system with cost warnings ($125 for one, $295 for 10)
+- [ ] Add book description editor with review step before export
+- [ ] Integrate copyright page generator into export package
+- [ ] Integrate back cover templates into export package  
+- [ ] Add format selection (eBook vs Print vs Both)
+- [ ] Add permanent metadata warning (9 unchangeable Amazon KDP fields that lose reviews if changed)
+- [ ] Add pre-export review step to verify all metadata before download
+- [ ] Fix category analysis to ensure it matches actual book content (currently analyzing wrong manuscript)
+- [ ] Add royalty calculator showing actual earnings per sale at different price points
+
+
+## Critical UX Fixes (From Walkthrough)
+- [x] Fix #1: Auto-load existing manuscripts in Ready to Publish workflow
+- [x] Fix #2: Royalty-aware pricing with 70% tier warnings and $2.99+ recommendations
+- [x] Fix #3: ISBN guidance and collection with 3 clear options (own, Amazon free, Bowker purchase)
+- [x] Fix #4: Book description editor with character count, formatting tips, and restore/copy buttons
+- [x] Fix #5: Copyright page generator integrated into workflow and export package
+- [ ] Fix #6: Format selection (eBook vs Print vs Both) with appropriate guidance
+- [ ] Fix #7: Permanent metadata warning modal before finalizing Amazon optimization
+- [ ] Fix #8: Comprehensive review step before export showing all collected data
+- [ ] Fix #9: Fix category analysis to properly match book content
+- [ ] Fix #10: Royalty calculator showing actual earnings per sale at different price points

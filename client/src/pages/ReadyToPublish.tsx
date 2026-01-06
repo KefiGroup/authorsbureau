@@ -62,6 +62,14 @@ export default function ReadyToPublish() {
   const [generatedKeywords, setGeneratedKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
 
+  // ISBN state
+  const [isbnSource, setIsbnSource] = useState<"own" | "amazon_free" | "bowker" | "">("");
+  const [isbnNumber, setIsbnNumber] = useState("");
+
+  // Copyright page state
+  const [copyrightPage, setCopyrightPage] = useState("");
+  const [showCopyrightGenerator, setShowCopyrightGenerator] = useState(false);
+
   // Load user's books to auto-select if no bookId provided
   const { data: userBooks } = trpc.book.getMyBooks.useQuery(undefined, {
     enabled: !bookId,
@@ -650,23 +658,76 @@ export default function ReadyToPublish() {
                 </CardContent>
               </Card>
 
-              {/* Description */}
+              {/* Description Editor */}
               <Card>
                 <CardHeader>
                   <CardTitle>Amazon Book Description</CardTitle>
                   <CardDescription>
-                    Conversion-optimized description ready for Amazon KDP
+                    Review and customize your AI-generated description (2,000-4,000 characters recommended)
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Textarea
-                    value={editedDescription}
-                    onChange={(e) => setEditedDescription(e.target.value)}
-                    className="min-h-[200px]"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    You can edit this description or use it as-is. It's already optimized for Amazon conversions.
-                  </p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-sm font-medium">Description Text</label>
+                      <span className={`text-sm ${
+                        editedDescription.length < 2000 ? "text-amber-600" :
+                        editedDescription.length > 4000 ? "text-red-600" :
+                        "text-green-600"
+                      }`}>
+                        {editedDescription.length} characters
+                        {editedDescription.length < 2000 && " (add more detail)"}
+                        {editedDescription.length > 4000 && " (too long, trim down)"}
+                        {editedDescription.length >= 2000 && editedDescription.length <= 4000 && " ✓"}
+                      </span>
+                    </div>
+                    <Textarea
+                      value={editedDescription}
+                      onChange={(e) => setEditedDescription(e.target.value)}
+                      className="min-h-[300px] font-mono text-sm"
+                      placeholder="Your book description will appear here after AI analysis..."
+                    />
+                  </div>
+
+                  {/* Formatting Tips */}
+                  <div className="bg-muted rounded-lg p-4">
+                    <p className="text-sm font-medium mb-2">Amazon KDP Description Tips:</p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      <li>• <strong>Hook first 3 lines</strong> - Readers only see this before "Read more"</li>
+                      <li>• <strong>Use HTML formatting</strong> - &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;br/&gt; for line breaks</li>
+                      <li>• <strong>Bullet points</strong> - Use • or - for easy scanning</li>
+                      <li>• <strong>Call to action</strong> - End with "Scroll up and click Buy Now"</li>
+                      <li>• <strong>Keywords naturally</strong> - Include search terms readers use</li>
+                    </ul>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (aiAnalysis?.bookDescription) {
+                          setEditedDescription(aiAnalysis.bookDescription);
+                          toast.success("Restored AI-generated description");
+                        }
+                      }}
+                      disabled={!aiAnalysis?.bookDescription}
+                    >
+                      Restore AI Version
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(editedDescription);
+                        toast.success("Description copied to clipboard");
+                      }}
+                      disabled={!editedDescription}
+                    >
+                      Copy to Clipboard
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -1042,9 +1103,9 @@ export default function ReadyToPublish() {
                         onClick={() => {
                           if (!aiAnalysis) return;
                           
-                          // Launch strategy pricing
-                          setSuggestedPrice("Kindle: $0.99 | Paperback: $8.99");
-                          toast.success("Launch pricing strategy ready!");
+                          // Royalty-aware pricing
+                          setSuggestedPrice("Kindle: $2.99 | Paperback: $12.99");
+                          toast.success("Pricing optimized for 70% royalty tier!");
                         }}
                         disabled={!aiAnalysis}
                       >
@@ -1057,23 +1118,227 @@ export default function ReadyToPublish() {
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-center">
                           <p className="text-sm text-muted-foreground mb-2">Kindle eBook</p>
-                          <p className="text-4xl font-bold text-primary">$0.99</p>
-                          <p className="text-xs text-muted-foreground mt-2">Launch Price</p>
+                          <p className="text-4xl font-bold text-primary">$2.99</p>
+                          <p className="text-xs text-green-600 mt-2 font-medium">70% Royalty Tier ✓</p>
                         </div>
                         <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-center">
                           <p className="text-sm text-muted-foreground mb-2">Paperback</p>
-                          <p className="text-4xl font-bold text-primary">$8.99</p>
+                          <p className="text-4xl font-bold text-primary">$12.99</p>
                           <p className="text-xs text-muted-foreground mt-2">Print Edition</p>
                         </div>
                       </div>
                       <div className="bg-muted rounded-lg p-4">
                         <p className="text-sm font-medium mb-2">Launch Strategy</p>
-                        <p className="text-sm text-muted-foreground">
-                          Start with $0.99 Kindle to maximize sales velocity and rank #1 in your low-competition categories quickly. Once you achieve Amazon Bestseller status, increase the Kindle price to $9.99-$14.99. The bestseller badge becomes your marketing asset. Paperback at $8.99 covers printing costs and provides reasonable margin.
+                        <p className="text-sm text-muted-foreground mb-3">
+                          <strong className="text-amber-600">⚠️ Critical: Amazon Royalty Tiers</strong><br/>
+                          • <strong>$2.99-$9.99</strong>: 70% royalty (recommended)<br/>
+                          • <strong>$0.99-$2.98</strong>: Only 35% royalty (you lose 50% of earnings!)<br/>
+                          • <strong>$10.00+</strong>: Only 35% royalty<br/><br/>
+                          <strong>Recommended Strategy:</strong> Price Kindle at $2.99-$9.99 to maximize your earnings with 70% royalty. At $2.99, you earn $2.09 per sale vs only $0.35 at $0.99. Paperback at $12.99 covers printing costs plus healthy margin.
                         </p>
+                        <a href="https://kdp.amazon.com/en_US/help/topic/G200634560" target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+                          Learn more about Amazon KDP royalty rates →
+                        </a>
                       </div>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+
+              {/* Copyright Page Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Copyright Page (Optional)</CardTitle>
+                  <CardDescription>
+                    Professional copyright page to include at the beginning of your book
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {!copyrightPage ? (
+                      <div className="text-center py-6">
+                        <p className="text-sm text-muted-foreground mb-4">
+                          A copyright page protects your work and looks professional. We can generate one for you automatically.
+                        </p>
+                        <Button
+                          onClick={() => {
+                            if (!aiAnalysis) return;
+                            const currentYear = new Date().getFullYear();
+                            const disclaimerType = aiAnalysis.detectedGenre.toLowerCase().includes("technology") || 
+                                                   aiAnalysis.detectedGenre.toLowerCase().includes("ai") ? "technology" : "general";
+                            
+                            const generated = `${finalTitle || aiAnalysis.suggestedTitles[0]}\n\nCopyright © ${currentYear} by Author Name\n\nAll rights reserved. No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of the publisher, except in the case of brief quotations embodied in critical reviews and certain other noncommercial uses permitted by copyright law.\n\nPublished by Self-Published\n\nFirst Edition: ${currentYear}\n\nDISCLAIMER\n\nThe information provided in this book is for general informational purposes only. While the author has made every effort to ensure accuracy, the content should not be considered professional advice. Readers should consult with appropriate professionals for specific guidance related to their individual circumstances.\n\nThe author and publisher assume no responsibility for errors, omissions, or contrary interpretations of the subject matter. Any perceived slight of any individual or organization is purely unintentional.\n\nPrinted in the United States of America`;
+                            
+                            setCopyrightPage(generated);
+                            toast.success("Copyright page generated!");
+                          }}
+                          disabled={!aiAnalysis}
+                        >
+                          <Sparkles className="w-5 h-5 mr-2" />
+                          Generate Copyright Page
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="bg-muted rounded-lg p-4">
+                          <div className="flex justify-between items-center mb-2">
+                            <label className="text-sm font-medium">Copyright Page Content</label>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setCopyrightPage("");
+                                toast.info("Copyright page removed");
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                          <Textarea
+                            value={copyrightPage}
+                            onChange={(e) => setCopyrightPage(e.target.value)}
+                            className="min-h-[200px] font-mono text-xs"
+                          />
+                          <p className="text-xs text-muted-foreground mt-2">
+                            This will be included as a separate file in your export package
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              navigator.clipboard.writeText(copyrightPage);
+                              toast.success("Copyright page copied to clipboard");
+                            }}
+                          >
+                            Copy to Clipboard
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* ISBN Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>ISBN (International Standard Book Number)</CardTitle>
+                  <CardDescription>
+                    Required for Amazon KDP publishing. Choose how you'll obtain your ISBN.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {/* ISBN Options */}
+                    <div className="space-y-4">
+                      <label className="text-sm font-medium">Choose your ISBN option:</label>
+                      
+                      <div className="space-y-3">
+                        {/* Option 1: Use Own ISBN */}
+                        <div 
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                            isbnSource === "own" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                          }`}
+                          onClick={() => setIsbnSource("own")}
+                        >
+                          <div className="flex items-start gap-3">
+                            <input 
+                              type="radio" 
+                              checked={isbnSource === "own"}
+                              onChange={() => setIsbnSource("own")}
+                              className="mt-1"
+                            />
+                            <div className="flex-1">
+                              <p className="font-medium mb-1">I already have an ISBN</p>
+                              <p className="text-sm text-muted-foreground">You've purchased an ISBN from Bowker or another agency</p>
+                            </div>
+                          </div>
+                          {isbnSource === "own" && (
+                            <div className="mt-4 ml-6">
+                              <label className="text-sm font-medium mb-2 block">Enter your ISBN:</label>
+                              <input
+                                type="text"
+                                value={isbnNumber}
+                                onChange={(e) => setIsbnNumber(e.target.value)}
+                                placeholder="978-1-234567-89-0"
+                                className="w-full px-3 py-2 border rounded-md"
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Option 2: Free Amazon ISBN */}
+                        <div 
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                            isbnSource === "amazon_free" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                          }`}
+                          onClick={() => setIsbnSource("amazon_free")}
+                        >
+                          <div className="flex items-start gap-3">
+                            <input 
+                              type="radio" 
+                              checked={isbnSource === "amazon_free"}
+                              onChange={() => setIsbnSource("amazon_free")}
+                              className="mt-1"
+                            />
+                            <div className="flex-1">
+                              <p className="font-medium mb-1">Get free ISBN from Amazon KDP <span className="text-green-600">(Recommended)</span></p>
+                              <p className="text-sm text-muted-foreground mb-2">Amazon provides a free ISBN during the publishing process</p>
+                              <p className="text-xs text-amber-600">⚠️ Note: You can only sell on Amazon with this ISBN (not other retailers)</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Option 3: Purchase from Bowker */}
+                        <div 
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                            isbnSource === "bowker" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                          }`}
+                          onClick={() => setIsbnSource("bowker")}
+                        >
+                          <div className="flex items-start gap-3">
+                            <input 
+                              type="radio" 
+                              checked={isbnSource === "bowker"}
+                              onChange={() => setIsbnSource("bowker")}
+                              className="mt-1"
+                            />
+                            <div className="flex-1">
+                              <p className="font-medium mb-1">Purchase ISBN from Bowker ($125)</p>
+                              <p className="text-sm text-muted-foreground mb-2">Official US ISBN agency - allows selling on all platforms</p>
+                              <p className="text-xs text-green-600">✓ Best for: Authors planning to sell on multiple retailers (Amazon + others)</p>
+                            </div>
+                          </div>
+                          {isbnSource === "bowker" && (
+                            <div className="mt-4 ml-6">
+                              <a 
+                                href="https://www.myidentifiers.com/identify-protect-your-book/isbn/buy-isbn" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                              >
+                                Purchase ISBN from Bowker →
+                              </a>
+                              <p className="text-xs text-muted-foreground mt-2">After purchasing, enter your ISBN above</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ISBN Information */}
+                    <div className="bg-muted rounded-lg p-4">
+                      <p className="text-sm font-medium mb-2">About ISBNs:</p>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• Each format needs its own ISBN (eBook, paperback, hardcover)</li>
+                        <li>• Amazon assigns separate ISBNs automatically for each format</li>
+                        <li>• You don't need UPC/barcode - Amazon generates it from your ISBN</li>
+                        <li>• ISBN is permanent and cannot be changed after publishing</li>
+                      </ul>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -1081,6 +1346,7 @@ export default function ReadyToPublish() {
                 <Button
                   size="lg"
                   onClick={() => setCurrentStep("export")}
+                  disabled={!isbnSource}
                 >
                   Continue to Export
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -1138,6 +1404,15 @@ export default function ReadyToPublish() {
                         <p className="text-sm text-muted-foreground">ISBN details and registration info</p>
                       </div>
                     </div>
+                    {copyrightPage && (
+                      <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                        <FileText className="w-5 h-5 text-primary" />
+                        <div>
+                          <p className="font-medium">Copyright Page (TXT)</p>
+                          <p className="text-sm text-muted-foreground">Professional copyright notice for your book</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-8 text-center">
@@ -1165,6 +1440,8 @@ export default function ReadyToPublish() {
                             price: suggestedPrice,
                             genre: aiAnalysis.detectedGenre,
                           },
+                          isbn: isbnSource === "own" ? isbnNumber : undefined,
+                          copyrightPage: copyrightPage || undefined,
                         });
                       }}
                       disabled={!manuscript || !aiAnalysis || !selectedCover}
