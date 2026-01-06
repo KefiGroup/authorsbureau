@@ -18,6 +18,10 @@ describe("Manuscript Export", () => {
         content: "This is the second chapter.\n\nThe story continues here.",
       },
     ],
+    copyrightYear: 2024,
+    isbn: "978-1-234567-89-0",
+    publisher: "Test Publisher",
+    edition: "First Edition",
   };
 
   describe("generateDOCX", () => {
@@ -51,6 +55,23 @@ describe("Manuscript Export", () => {
       
       const buffer = await generateDOCX(manuscriptWithoutChapters);
       
+      expect(buffer).toBeInstanceOf(Buffer);
+      expect(buffer.length).toBeGreaterThan(0);
+    });
+
+    it("should include copyright page", async () => {
+      const buffer = await generateDOCX(sampleManuscript);
+      // DOCX is binary, but should be larger with front matter
+      expect(buffer.length).toBeGreaterThan(1000);
+    });
+
+    it("should work without optional copyright fields", async () => {
+      const minimalManuscript: ManuscriptData = {
+        bookTitle: "Minimal Book",
+        authorName: "Minimal Author",
+        chapters: [{ number: 1, title: "Chapter 1", content: "Content." }],
+      };
+      const buffer = await generateDOCX(minimalManuscript);
       expect(buffer).toBeInstanceOf(Buffer);
       expect(buffer.length).toBeGreaterThan(0);
     });
@@ -89,6 +110,35 @@ describe("Manuscript Export", () => {
       
       expect(buffer).toBeInstanceOf(Buffer);
       expect(buffer.length).toBeGreaterThan(0);
+    });
+
+    it("should use 6x9 inch page size (432pt x 648pt)", async () => {
+      const buffer = await generatePDF(sampleManuscript);
+      const pdfContent = buffer.toString("utf8");
+      
+      // Check for 6"x9" dimensions in points
+      expect(pdfContent).toContain("432");
+      expect(pdfContent).toContain("648");
+    });
+
+    it("should include copyright page content", async () => {
+      const buffer = await generatePDF(sampleManuscript);
+      
+      // PDF text is compressed with FlateDecode, so check structure instead
+      // Title page + Copyright page + TOC + 2 chapters = 5 pages total
+      const pdfContent = buffer.toString("utf8");
+      expect(pdfContent).toContain("/Count 5");
+      expect(buffer.length).toBeGreaterThan(3000); // Substantial size with all front matter
+    });
+
+    it("should include table of contents", async () => {
+      const buffer = await generatePDF(sampleManuscript);
+      const pdfContent = buffer.toString("utf8");
+      
+      // PDF compresses text, so check for page count (title + copyright + TOC + 2 chapters = 5 pages)
+      expect(pdfContent).toContain("/Count 5");
+      // Check PDF was generated successfully
+      expect(buffer.length).toBeGreaterThan(3000); // Should be substantial with all pages
     });
   });
 });

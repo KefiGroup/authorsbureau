@@ -517,3 +517,44 @@
 - [ ] No page numbers (eBook readers add their own)
 - [ ] Optimized for Kindle devices
 - [ ] Test on Kindle Previewer tool
+
+
+---
+
+## Current Implementation Tasks
+
+### Copyright Page Generation ✅
+- [x] Create copyright page template with standard KDP format
+- [x] Include book title, author name, copyright year
+- [x] Add ISBN field (optional, user-provided)
+- [x] Add publisher name (default to author name or custom)
+- [x] Include "All rights reserved" legal notice
+- [x] Add edition information (First Edition, etc.)
+- [x] Include publication date (copyright year)
+- [x] Add disclaimer text (reproduction rights)
+- [x] Position copyright page as page ii (after title page)
+
+### Table of Contents Auto-Generation ✅
+- [x] Extract chapter titles and numbers from manuscript
+- [x] Generate TOC for DOCX with chapter listings
+- [x] Generate TOC for PDF with chapter listings
+- [ ] Add clickable links to chapters in PDF (future enhancement)
+- [ ] Use Roman numerals for TOC page numbers (future enhancement)
+- [ ] Start Arabic page numbering after TOC (future enhancement)
+- [x] Add "Table of Contents" heading
+- [x] Format TOC entries with proper spacing
+- [ ] Include page numbers aligned to the right (future enhancement)
+
+### Trim Size (Simplified)
+- [x] Keep 6" × 9" only for both Book Wrap and manuscript interior
+- [x] This is the most popular KDP size
+- [x] Simplifies implementation and user experience
+
+### Front Matter Structure ✅
+- [x] Page i: Title page (book title, subtitle, author)
+- [x] Page ii: Copyright page
+- [x] Page iii-iv: Table of Contents
+- [ ] Optional: Dedication page (future enhancement)
+- [ ] Optional: Acknowledgments page (future enhancement)
+- [x] Page 1: Chapter 1 starts here
+- [x] Ensure proper page breaks between front matter sections

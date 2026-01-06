@@ -12,6 +12,115 @@ export interface ManuscriptData {
   subtitle?: string;
   authorName: string;
   chapters: Chapter[];
+  // Copyright page options
+  copyrightYear?: number;
+  isbn?: string;
+  publisher?: string;
+  edition?: string;
+}
+
+/**
+ * Generate copyright page paragraphs
+ */
+function generateCopyrightPage(manuscript: ManuscriptData): Paragraph[] {
+  const { bookTitle, authorName, copyrightYear, isbn, publisher, edition } = manuscript;
+  const year = copyrightYear || new Date().getFullYear();
+  const pub = publisher || authorName;
+  const ed = edition || 'First Edition';
+
+  const copyrightParagraphs: Paragraph[] = [];
+
+  // Copyright symbol and year
+  copyrightParagraphs.push(
+    new Paragraph({
+      text: `Copyright © ${year} by ${authorName}`,
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+    })
+  );
+
+  // All rights reserved
+  copyrightParagraphs.push(
+    new Paragraph({
+      text: 'All rights reserved.',
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+    })
+  );
+
+  // Edition
+  copyrightParagraphs.push(
+    new Paragraph({
+      text: ed,
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+    })
+  );
+
+  // ISBN if provided
+  if (isbn) {
+    copyrightParagraphs.push(
+      new Paragraph({
+        text: `ISBN: ${isbn}`,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+      })
+    );
+  }
+
+  // Publisher
+  copyrightParagraphs.push(
+    new Paragraph({
+      text: `Published by ${pub}`,
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 400 },
+    })
+  );
+
+  // Legal notice
+  copyrightParagraphs.push(
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: 'No part of this book may be reproduced in any form or by any electronic or mechanical means, including information storage and retrieval systems, without written permission from the author, except for the use of brief quotations in a book review.',
+          size: 20,
+        }),
+      ],
+      alignment: AlignmentType.JUSTIFIED,
+      spacing: { after: 200 },
+    })
+  );
+
+  return copyrightParagraphs;
+}
+
+/**
+ * Generate table of contents paragraphs
+ */
+function generateTableOfContents(chapters: Chapter[]): Paragraph[] {
+  const tocParagraphs: Paragraph[] = [];
+
+  // TOC heading
+  tocParagraphs.push(
+    new Paragraph({
+      text: 'Table of Contents',
+      heading: HeadingLevel.HEADING_1,
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 400 },
+    })
+  );
+
+  // Chapter entries
+  for (const chapter of chapters) {
+    tocParagraphs.push(
+      new Paragraph({
+        text: `Chapter ${chapter.number}: ${chapter.title}`,
+        spacing: { after: 100 },
+      })
+    );
+  }
+
+  return tocParagraphs;
 }
 
 /**
@@ -51,6 +160,30 @@ export async function generateDOCX(manuscript: ManuscriptData): Promise<Buffer> 
       spacing: { after: 400 },
     })
   );
+
+  // Page break before copyright page
+  docSections.push(
+    new Paragraph({
+      text: "",
+      pageBreakBefore: true,
+    })
+  );
+
+  // Copyright page
+  const copyrightPage = generateCopyrightPage(manuscript);
+  docSections.push(...copyrightPage);
+
+  // Page break before TOC
+  docSections.push(
+    new Paragraph({
+      text: "",
+      pageBreakBefore: true,
+    })
+  );
+
+  // Table of Contents
+  const toc = generateTableOfContents(chapters);
+  docSections.push(...toc);
 
   // Page break before chapters
   docSections.push(
@@ -116,10 +249,10 @@ export async function generatePDF(manuscript: ManuscriptData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const { bookTitle, subtitle, authorName, chapters } = manuscript;
 
-    // Create PDF document
+    // Create PDF document (6" x 9" = 432pt x 648pt)
     const doc = new PDFDocument({
-      size: "A4",
-      margins: { top: 72, bottom: 72, left: 72, right: 72 },
+      size: [432, 648],
+      margins: { top: 54, bottom: 54, left: 54, right: 54 },
     });
 
     const buffers: Buffer[] = [];
@@ -137,6 +270,42 @@ export async function generatePDF(manuscript: ManuscriptData): Promise<Buffer> {
     }
 
     doc.fontSize(14).font("Helvetica-Oblique").text(`by ${authorName}`, { align: "center" });
+    doc.addPage();
+
+    // Copyright page
+    const year = manuscript.copyrightYear || new Date().getFullYear();
+    const publisher = manuscript.publisher || authorName;
+    const edition = manuscript.edition || 'First Edition';
+
+    doc.fontSize(12).font("Helvetica").text(`Copyright © ${year} by ${authorName}`, { align: "center" });
+    doc.moveDown();
+    doc.text('All rights reserved.', { align: "center" });
+    doc.moveDown();
+    doc.text(edition, { align: "center" });
+    doc.moveDown();
+    
+    if (manuscript.isbn) {
+      doc.text(`ISBN: ${manuscript.isbn}`, { align: "center" });
+      doc.moveDown();
+    }
+    
+    doc.text(`Published by ${publisher}`, { align: "center" });
+    doc.moveDown(2);
+    doc.fontSize(10).text(
+      'No part of this book may be reproduced in any form or by any electronic or mechanical means, including information storage and retrieval systems, without written permission from the author, except for the use of brief quotations in a book review.',
+      { align: "justify" }
+    );
+    doc.addPage();
+
+    // Table of Contents
+    doc.fontSize(18).font("Helvetica-Bold").text('Table of Contents', { align: "center" });
+    doc.moveDown(2);
+    doc.fontSize(12).font("Helvetica");
+    
+    for (const chapter of chapters) {
+      doc.text(`Chapter ${chapter.number}: ${chapter.title}`);
+      doc.moveDown(0.5);
+    }
     doc.addPage();
 
     // Add chapters
