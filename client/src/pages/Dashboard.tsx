@@ -97,62 +97,6 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/writing">
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <PenTool className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Start Writing</CardTitle>
-                <CardDescription>
-                  Begin your 2-day book writing program or continue where you left off
-                </CardDescription>
-              </CardHeader>
-            </Link>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/marketing">
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-accent" />
-                </div>
-                <CardTitle>Create Campaign</CardTitle>
-                <CardDescription>
-                  Build landing pages, funnels, and automated email sequences
-                </CardDescription>
-              </CardHeader>
-            </Link>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/amazon-publishing">
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Rocket className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Amazon Publishing</CardTitle>
-                <CardDescription>
-                  Category research, listing optimization, and KDP upload
-                </CardDescription>
-              </CardHeader>
-            </Link>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/cover-generator">
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-purple-600" />
-                </div>
-                <CardTitle>AI Cover Generator</CardTitle>
-                <CardDescription>
-                  Create stunning professional book covers with AI in seconds
-                </CardDescription>
-              </CardHeader>
-            </Link>
-          </Card>
-
           <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-primary">
             <Link href="/ready-to-publish">
               <CardHeader>
@@ -161,10 +105,41 @@ export default function Dashboard() {
                 </div>
                 <CardTitle className="flex items-center gap-2">
                   Ready to Publish
-                  <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">NEW</span>
+                  <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">FEATURED</span>
                 </CardTitle>
                 <CardDescription>
-                  Upload manuscript → ISBN → Cover → Amazon KDP (Complete workflow)
+                  Upload your manuscript and get a complete KDP-ready package with cover, formatting, and metadata
+                </CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Link href="/books">
+              <CardHeader>
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <BookOpen className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>My Books</CardTitle>
+                <CardDescription>
+                  View and manage all your book projects in one place
+                </CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer opacity-60">
+            <Link href="/writing">
+              <CardHeader>
+                <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center mb-4">
+                  <PenTool className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <CardTitle className="flex items-center gap-2">
+                  Start Writing
+                  <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">COMING SOON</span>
+                </CardTitle>
+                <CardDescription>
+                  Write your book from scratch with AI assistance (2-Day Program)
                 </CardDescription>
               </CardHeader>
             </Link>

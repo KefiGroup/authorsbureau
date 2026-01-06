@@ -634,3 +634,30 @@
 - [x] Add null checks before accessing aiAnalysis properties
 - [x] Ensure type safety throughout ReadyToPublish component
 - [x] Fix remaining Message type error in chat component (ensured content is always string)
+
+
+## UI Positioning Fixes
+- [x] Move Save Progress button below step progress indicator
+- [x] Ensure button doesn't overlap with step content
+
+- [ ] Remove or redirect "Coming Soon" Amazon KDP Integration page
+- [ ] Ensure all navigation points to working Ready to Publish workflow
+
+
+## Persona 2 (Ready Publisher) Workflow - Phase 1 Cleanup
+- [x] Dashboard: Remove "Amazon Publishing" standalone card (integrated into Ready to Publish)
+- [x] Dashboard: Remove "Cover Generator" standalone card (integrated into Ready to Publish)
+- [x] Dashboard: Remove "Create Campaign" marketing card (Coming Soon, not ready)
+- [x] Dashboard: Simplify to 3 main cards: Start Writing, Ready to Publish, My Books
+- [x] Dashboard: Update card descriptions to be clearer and more action-oriented
+- [x] App.tsx: Remove /amazon Coming Soon route (causes confusion)
+- [ ] App.tsx: Keep /amazon-publishing as integrated tool within workflow only
+- [ ] Navigation: Ensure all links point to correct destinations
+- [x] Ready to Publish: Move Save Progress button below step indicator (not floating at top)
+- [ ] Ready to Publish: Test complete workflow from upload through export
+- [ ] Ready to Publish: Debug ZIP download functionality (not triggering download)
+- [ ] Ready to Publish: Ensure workflow state persists correctly across all steps
+- [ ] Ready to Publish: Verify AI chat responses work properly
+- [ ] Ready to Publish: Test cover generation and customization
+- [ ] Ready to Publish: Test book wrap designer functionality
+- [ ] Ready to Publish: Verify export package includes all required files

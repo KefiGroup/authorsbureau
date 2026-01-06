@@ -285,27 +285,6 @@ export default function ReadyToPublish() {
               Upload your manuscript and let our AI publisher optimize everything for Amazon KDP success
             </p>
           </div>
-          
-          {/* Save Progress Button */}
-          {currentStep !== "upload" && currentStep !== "analyzing" && bookId && (
-            <Button
-              variant="outline"
-              onClick={handleSaveProgress}
-              disabled={saveProgressMutation.isPending}
-            >
-              {saveProgressMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Progress
-                </>
-              )}
-            </Button>
-          )}
         </div>
 
         {/* Progress Indicator */}
@@ -398,6 +377,29 @@ export default function ReadyToPublish() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Save Progress Button */}
+        {currentStep !== "upload" && currentStep !== "analyzing" && bookId && (
+          <div className="flex justify-center">
+            <Button
+              variant="outline"
+              onClick={handleSaveProgress}
+              disabled={saveProgressMutation.isPending}
+            >
+              {saveProgressMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Progress
+                </>
+              )}
+            </Button>
+          </div>
+        )}
 
         {/* Step Content */}
         {/* Step 1: Upload Manuscript */}
