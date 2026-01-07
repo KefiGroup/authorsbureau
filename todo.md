@@ -353,3 +353,10 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Update Profile page to show author profile from workflow
 - [x] Update App.tsx routing for all new pages
 - [ ] Test navigation flow: sidebar → My Books → individual book workflow
+
+### Fix Kindle vs Paperback Category Trees
+- [x] Update category analysis AI prompt to specify format (Kindle or Paperback)
+- [x] Ensure Kindle analysis returns "Kindle Store > Kindle eBooks > ..." categories
+- [x] Ensure Paperback analysis returns "Books > ..." categories (already correct)
+- [ ] Update backend mutation to pass format parameter to AI
+- [ ] Test both Kindle and Paperback category analysis with real book data

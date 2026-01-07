@@ -1231,21 +1231,21 @@ export default function ReadyToPublish() {
                           // Generate LOW-COMPETITION niche categories for easy #1 bestseller ranking
                           const mockCategories = [
                             {
-                              category: `Books > Self-Help > Personal Transformation > Overcoming Adversity`,
+                              category: `Kindle Store > Kindle eBooks > Self-Help > Personal Transformation > Overcoming Adversity`,
                               competitivenessScore: 3.2,
                               estimatedMonthlySearches: "800-1,500",
                               reasoning: "LOW competition niche - Become #1 with just 15-30 sales. Perfect for new authors!",
                               recommended: true,
                             },
                             {
-                              category: `Books > Business & Money > Success > Failure & Resilience`,
+                              category: `Kindle Store > Kindle eBooks > Business & Money > Success > Failure & Resilience`,
                               competitivenessScore: 2.8,
                               estimatedMonthlySearches: "600-1,200",
                               reasoning: "VERY LOW competition - Achieve #1 bestseller status with only 10-20 sales. Hidden gem category!",
                               recommended: true,
                             },
                             {
-                              category: `Books > Self-Help > Motivational > Turning Setbacks into Success`,
+                              category: `Kindle Store > Kindle eBooks > Self-Help > Motivational > Turning Setbacks into Success`,
                               competitivenessScore: 3.5,
                               estimatedMonthlySearches: "900-1,800",
                               reasoning: "LOW competition with engaged audience - Reach #1 with 20-40 sales. Great for visibility!",

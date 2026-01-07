@@ -23,6 +23,7 @@ export async function researchAmazonCategories(params: {
   keywords: string[];
   targetAudience: string;
   bookContent?: string;
+  format?: 'kindle' | 'paperback'; // Specify format for correct category tree
 }): Promise<CategoryAnalysis[]> {
   const prompt = `You are an Amazon KDP category research expert. Analyze and recommend the best categories for this book to become a bestseller.
 
@@ -33,15 +34,17 @@ export async function researchAmazonCategories(params: {
 - Target Audience: ${params.targetAudience}
 ${params.bookContent ? `- Book Content/Description: ${params.bookContent.substring(0, 500)}...` : ""}
 
+**Format:** ${params.format === 'kindle' ? 'Kindle eBook (use "Kindle Store > Kindle eBooks > ..." category paths)' : 'Paperback (use "Books > ..." category paths)'}
+
 **Task:**
-Recommend 5-8 Amazon KDP categories that are the "smartest" choices for this book. Smart categories are:
+Recommend 5-8 Amazon KDP categories that are the "smartest" choices for this ${params.format || 'book'}. Smart categories are:
 1. **Relevant** to the book's content and genre
 2. **Less competitive** (easier to rank as bestseller)
 3. **High traffic** (good search volume)
 4. **Specific enough** to dominate (avoid overly broad categories)
 
 For each category, provide:
-1. Full category path (e.g., "Books > Business & Money > Investing > Stocks")
+1. Full category path ${params.format === 'kindle' ? '(e.g., "Kindle Store > Kindle eBooks > Business & Investing > Investing > Stocks")' : '(e.g., "Books > Business & Money > Investing > Stocks")'}
 2. Competitiveness score (1-10, where 1 = easiest to rank, 10 = extremely competitive)
 3. Estimated monthly searches (Low/Medium/High/Very High)
 4. Top seller requirement (estimated sales needed to hit #1)
@@ -52,7 +55,7 @@ For each category, provide:
 \`\`\`json
 [
   {
-    "category": "Books > Business & Money > Investing",
+    "category": "${params.format === 'kindle' ? 'Kindle Store > Kindle eBooks > Business & Investing > Investing' : 'Books > Business & Money > Investing'}",
     "subcategory": "Stocks",
     "competitivenessScore": 4,
     "estimatedMonthlySearches": "High",
