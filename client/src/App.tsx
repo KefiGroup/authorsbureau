@@ -20,6 +20,9 @@ import CoverGenerator from "@/pages/CoverGenerator";
 import ReadyToPublish from "@/pages/ReadyToPublish";
 import WritingProject from "@/pages/WritingProject";
 import ComingSoon from "@/pages/ComingSoon";
+import MyBooks from "@/pages/MyBooks";
+import Marketing from "@/pages/Marketing";
+import Settings from "@/pages/Settings";
 
 
 function Router() {
@@ -31,7 +34,7 @@ function Router() {
 
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/profile"} component={Profile} />
-      <Route path={"/books"} component={Books} />
+      <Route path={"/books"} component={MyBooks} />
       <Route path={"/writing/:id"} component={WritingProject} />
       <Route path={"/writing-studio"} component={WritingStudio} />
       <Route path={"/writing-studio/day-1"} component={WritingStudioDay1} />
@@ -41,8 +44,10 @@ function Router() {
         <Route path="/cover-generator" component={CoverGenerator} />
         <Route path="/ready-to-publish" component={ReadyToPublish} />
       
+      <Route path="/marketing" component={Marketing} />
+      <Route path="/settings" component={Settings} />
+      
       {/* Coming Soon Routes */}
-      <Route path="/marketing" component={() => <ComingSoon featureName="Marketing Automation" description="Build landing pages, create funnels, and automate email sequences to maximize your book's revenue. This feature is coming soon!" />} />
       <Route path="/analytics" component={() => <ComingSoon featureName="Analytics Dashboard" description="Track your book sales, rankings, and reviews across Amazon marketplaces with detailed analytics and insights. This feature is coming soon!" />} />
       <Route path="/email-marketing" component={() => <ComingSoon featureName="Email Marketing" description="Capture reader emails, send launch announcements, and automate book promotion campaigns. This feature is coming soon!" />} />
       <Route path="/writing" component={() => <ComingSoon featureName="Writing Studio" description="Access your writing projects and continue where you left off. For now, please use the 'New Book' button to start a new project." />} />

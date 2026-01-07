@@ -22,19 +22,22 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { BookOpen, LayoutDashboard, LogOut, PanelLeft, PenTool, Rocket, TrendingUp, User } from "lucide-react";
+import { BookOpen, LayoutDashboard, LogOut, PanelLeft, PenTool, TrendingUp, User, Settings } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
-const menuItems = [
+const mainMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+  { icon: PenTool, label: "AI Writing Studio", path: "/writing-studio" },
   { icon: BookOpen, label: "My Books", path: "/books" },
-  { icon: PenTool, label: "Writing Studio", path: "/writing-studio" },
   { icon: TrendingUp, label: "Marketing", path: "/marketing" },
-  { icon: Rocket, label: "Amazon", path: "/amazon" },
+];
+
+const accountMenuItems = [
   { icon: User, label: "Profile", path: "/profile" },
+  { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -118,7 +121,8 @@ function DashboardLayoutContent({
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const activeMenuItem = menuItems.find(item => item.path === location);
+  const allMenuItems = [...mainMenuItems, ...accountMenuItems];
+  const activeMenuItem = allMenuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -185,8 +189,37 @@ function DashboardLayoutContent({
           </SidebarHeader>
 
           <SidebarContent className="gap-0">
+            {/* Main Navigation */}
+            <div className="px-3 py-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Main</p>
+            </div>
             <SidebarMenu className="px-2 py-1">
-              {menuItems.map(item => {
+              {mainMenuItems.map(item => {
+                const isActive = location === item.path;
+                return (
+                  <SidebarMenuItem key={item.path}>
+                    <SidebarMenuButton
+                      isActive={isActive}
+                      onClick={() => setLocation(item.path)}
+                      tooltip={item.label}
+                      className={`h-10 transition-all font-normal`}
+                    >
+                      <item.icon
+                        className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
+                      />
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+
+            {/* Account Section */}
+            <div className="px-3 py-2 mt-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Account</p>
+            </div>
+            <SidebarMenu className="px-2 py-1">
+              {accountMenuItems.map(item => {
                 const isActive = location === item.path;
                 return (
                   <SidebarMenuItem key={item.path}>

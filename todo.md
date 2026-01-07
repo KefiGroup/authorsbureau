@@ -340,3 +340,16 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Ensure AI analysis considers format-specific category differences
 - [x] Allow separate category selection for each format (up to 3 each)
 - [x] Update state management to store Kindle and Paperback categories separately
+
+### Navigation Sidebar Reorganization
+- [x] Update DashboardLayout sidebar navigation structure:
+  - [x] Main section: Dashboard, AI Writing Studio, My Books, Marketing
+  - [x] Account section: Profile, Settings
+- [x] Create My Books page (list of all user's books)
+- [x] Ensure clicking a book from My Books opens its 8-step workflow (ReadyToPublish with bookId)
+- [x] AI Writing Studio page already exists with SUCKcess Theory framework
+- [x] Create Marketing page (placeholder for book promotion tools)
+- [x] Create Settings page (password, preferences, etc.)
+- [ ] Update Profile page to show author profile from workflow
+- [x] Update App.tsx routing for all new pages
+- [ ] Test navigation flow: sidebar → My Books → individual book workflow
