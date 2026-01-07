@@ -36,20 +36,24 @@ ${params.bookContent ? `- Book Content/Description: ${params.bookContent.substri
 
 **Format:** ${params.format === 'kindle' ? 'Kindle eBook (use "Kindle Store > Kindle eBooks > ..." category paths)' : 'Paperback (use "Books > ..." category paths)'}
 
+**PRIMARY GOAL:** Find LOW-COMPETITION "hidden gem" categories where the author can realistically become a #1 BESTSELLER with minimal sales (10-50 sales).
+
 **Task:**
-Recommend 5-8 Amazon KDP categories that are the "smartest" choices for this ${params.format || 'book'}. Smart categories are:
-1. **Relevant** to the book's content and genre
-2. **Less competitive** (easier to rank as bestseller)
-3. **High traffic** (good search volume)
-4. **Specific enough** to dominate (avoid overly broad categories)
+Recommend 5-8 Amazon KDP categories that are the "smartest" choices for this ${params.format || 'book'}. Prioritize categories in this order:
+1. **LOW COMPETITION FIRST** - Categories where 10-50 sales can hit #1 (competitiveness score 1-4)
+2. **Relevant** to the book's content and genre
+3. **Decent traffic** - At least 500-1000 monthly searches (avoid dead categories)
+4. **Specific/niche enough** to dominate (avoid overly broad categories like "Business" or "Self-Help")
+
+**CRITICAL:** Avoid competitive categories (score 7+). Focus on niche subcategories 3-4 levels deep in the category tree.
 
 For each category, provide:
-1. Full category path ${params.format === 'kindle' ? '(e.g., "Kindle Store > Kindle eBooks > Business & Investing > Investing > Stocks")' : '(e.g., "Books > Business & Money > Investing > Stocks")'}
-2. Competitiveness score (1-10, where 1 = easiest to rank, 10 = extremely competitive)
-3. Estimated monthly searches (Low/Medium/High/Very High)
-4. Top seller requirement (estimated sales needed to hit #1)
-5. Why this category is a smart choice
-6. Whether you recommend it (true/false)
+1. Full category path ${params.format === 'kindle' ? '(e.g., "Kindle Store > Kindle eBooks > Business & Investing > Investing > Options Trading > Day Trading")' : '(e.g., "Books > Business & Money > Investing > Options Trading > Day Trading")'} - **MUST be 3-4 levels deep for low competition**
+2. Competitiveness score (1-10, where 1 = easiest to rank, 10 = extremely competitive) - **Target 1-4 only**
+3. Estimated monthly searches (provide numeric range like "600-1,200/mo")
+4. Top seller requirement (estimated sales needed to hit #1) - **Target categories requiring 10-50 sales**
+5. Why this category is a LOW-COMPETITION smart choice for becoming #1 bestseller
+6. Whether you recommend it (true/false) - **Only recommend if competitiveness ≤ 4**
 
 **Output Format (JSON):**
 \`\`\`json

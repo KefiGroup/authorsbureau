@@ -360,3 +360,12 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Ensure Paperback analysis returns "Books > ..." categories (already correct)
 - [ ] Update backend mutation to pass format parameter to AI
 - [ ] Test both Kindle and Paperback category analysis with real book data
+
+### Connect Real AI Category Analysis
+- [x] Update backend `amazon.researchCategories` mutation to accept format parameter
+- [x] Pass format parameter to `researchAmazonCategories` function
+- [x] Strengthen AI prompt to prioritize LOW-COMPETITION categories for #1 bestseller ranking
+- [x] Replace Kindle mock data with real tRPC mutation call
+- [x] Replace Paperback mock data with real tRPC mutation call
+- [x] Add loading states for category analysis
+- [ ] Test AI category generation for both Kindle and Paperback formats with real book data

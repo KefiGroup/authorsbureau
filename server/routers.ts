@@ -741,6 +741,7 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
     researchCategories: protectedProcedure
       .input(z.object({
         bookId: z.number(),
+        format: z.enum(['kindle', 'paperback']).optional(), // Specify Kindle or Paperback for correct category tree
       }))
       .mutation(async ({ input, ctx }) => {
         // Get book data
@@ -768,6 +769,7 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
           keywords: [], // Will be extracted from book content
           targetAudience: "General readers", // Extract from book description
           bookContent: book.description || book.content || "",
+          format: input.format, // Pass format to get correct category tree
         });
         
         return { 

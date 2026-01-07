@@ -369,6 +369,36 @@ export default function ReadyToPublish() {
     },
   });
 
+  const researchKindleCategories = trpc.amazon.researchCategories.useMutation({
+    onSuccess: (data: any) => {
+      setRecommendedKindleCategories(data.categories);
+      toast.success("Kindle category analysis complete! Select up to 3 low-competition categories.");
+      
+      // Auto-generate keywords after categories
+      if (aiAnalysis) {
+        generateKeywords.mutate({
+          title: finalTitle || aiAnalysis.suggestedTitles[0],
+          genre: aiAnalysis.detectedGenre,
+          targetAudience: aiAnalysis.targetAudience,
+          mainTopics: aiAnalysis.themes,
+        });
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to analyze Kindle categories");
+    },
+  });
+
+  const researchPaperbackCategories = trpc.amazon.researchCategories.useMutation({
+    onSuccess: (data: any) => {
+      setRecommendedPaperbackCategories(data.categories);
+      toast.success("Paperback category analysis complete! Select up to 3 low-competition categories.");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to analyze Paperback categories");
+    },
+  });
+
   const regenerateCover = trpc.covers.regenerate.useMutation({
     onSuccess: (newCover: any) => {
       // Replace the selected cover with the regenerated one
@@ -1226,48 +1256,27 @@ export default function ReadyToPublish() {
                       <Button
                         size="lg"
                         onClick={() => {
-                          if (!aiAnalysis) return;
+                          if (!aiAnalysis || !bookId) return;
                           
-                          // Generate LOW-COMPETITION niche categories for easy #1 bestseller ranking
-                          const mockCategories = [
-                            {
-                              category: `Kindle Store > Kindle eBooks > Self-Help > Personal Transformation > Overcoming Adversity`,
-                              competitivenessScore: 3.2,
-                              estimatedMonthlySearches: "800-1,500",
-                              reasoning: "LOW competition niche - Become #1 with just 15-30 sales. Perfect for new authors!",
-                              recommended: true,
-                            },
-                            {
-                              category: `Kindle Store > Kindle eBooks > Business & Money > Success > Failure & Resilience`,
-                              competitivenessScore: 2.8,
-                              estimatedMonthlySearches: "600-1,200",
-                              reasoning: "VERY LOW competition - Achieve #1 bestseller status with only 10-20 sales. Hidden gem category!",
-                              recommended: true,
-                            },
-                            {
-                              category: `Kindle Store > Kindle eBooks > Self-Help > Motivational > Turning Setbacks into Success`,
-                              competitivenessScore: 3.5,
-                              estimatedMonthlySearches: "900-1,800",
-                              reasoning: "LOW competition with engaged audience - Reach #1 with 20-40 sales. Great for visibility!",
-                              recommended: true,
-                            },
-                          ];
-                          
-                          setRecommendedKindleCategories(mockCategories);
-                          toast.success("Kindle category analysis complete! Select up to 3 categories.");
-                          
-                          // Auto-generate keywords
-                          generateKeywords.mutate({
-                            title: finalTitle || aiAnalysis.suggestedTitles[0],
-                            genre: aiAnalysis.detectedGenre,
-                            targetAudience: aiAnalysis.targetAudience,
-                            mainTopics: aiAnalysis.themes,
+                          // Call real AI category research with Kindle format
+                          researchKindleCategories.mutate({
+                            bookId: bookId,
+                            format: 'kindle',
                           });
                         }}
-                        disabled={!aiAnalysis}
+                        disabled={!aiAnalysis || !bookId || researchKindleCategories.isPending}
                       >
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        Analyze Kindle Categories
+                        {researchKindleCategories.isPending ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Analyzing Kindle Categories...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-2" />
+                            Analyze Kindle Categories
+                          </>
+                        )}
                       </Button>
                     </div>
                   ) : (
@@ -1327,40 +1336,27 @@ export default function ReadyToPublish() {
                       <Button
                         size="lg"
                         onClick={() => {
-                          if (!aiAnalysis) return;
+                          if (!aiAnalysis || !bookId) return;
                           
-                          // Generate LOW-COMPETITION niche categories for Paperback
-                          const mockCategories = [
-                            {
-                              category: `Books > Self-Help > Personal Transformation > Overcoming Adversity`,
-                              competitivenessScore: 3.2,
-                              estimatedMonthlySearches: "800-1,500",
-                              reasoning: "LOW competition niche - Become #1 with just 15-30 sales. Perfect for new authors!",
-                              recommended: true,
-                            },
-                            {
-                              category: `Books > Business & Money > Success > Failure & Resilience`,
-                              competitivenessScore: 2.8,
-                              estimatedMonthlySearches: "600-1,200",
-                              reasoning: "VERY LOW competition - Achieve #1 bestseller status with only 10-20 sales. Hidden gem category!",
-                              recommended: true,
-                            },
-                            {
-                              category: `Books > Self-Help > Motivational > Turning Setbacks into Success`,
-                              competitivenessScore: 3.5,
-                              estimatedMonthlySearches: "900-1,800",
-                              reasoning: "LOW competition with engaged audience - Reach #1 with 20-40 sales. Great for visibility!",
-                              recommended: true,
-                            },
-                          ];
-                          
-                          setRecommendedPaperbackCategories(mockCategories);
-                          toast.success("Paperback category analysis complete! Select up to 3 categories.");
+                          // Call real AI category research with Paperback format
+                          researchPaperbackCategories.mutate({
+                            bookId: bookId,
+                            format: 'paperback',
+                          });
                         }}
-                        disabled={!aiAnalysis}
+                        disabled={!aiAnalysis || !bookId || researchPaperbackCategories.isPending}
                       >
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        Analyze Paperback Categories
+                        {researchPaperbackCategories.isPending ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Analyzing Paperback Categories...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-2" />
+                            Analyze Paperback Categories
+                          </>
+                        )}
                       </Button>
                     </div>
                   ) : (
