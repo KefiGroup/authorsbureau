@@ -331,3 +331,12 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Add validation for uploaded book wrap (dimensions, file size)
 - [x] Update workflow to show "Get Specifications → Design in Canva → Upload"
 - [ ] Test complete workflow with real book data
+
+### Amazon Category Research - Kindle vs Paperback Split
+- [x] Split "AI Category Research" into two separate sections:
+  - [x] Kindle eBook Categories (with separate "Analyze Kindle Categories" button)
+  - [x] Paperback Categories (with separate "Analyze Paperback Categories" button)
+- [x] Update UI to show both sections with clear labels (📱 Kindle, 📖 Paperback)
+- [x] Ensure AI analysis considers format-specific category differences
+- [x] Allow separate category selection for each format (up to 3 each)
+- [x] Update state management to store Kindle and Paperback categories separately

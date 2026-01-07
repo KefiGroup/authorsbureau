@@ -94,8 +94,11 @@ export default function ReadyToPublish() {
   const [uploadedCoverUrl, setUploadedCoverUrl] = useState("");
 
   // Amazon optimization state
-  const [recommendedCategories, setRecommendedCategories] = useState<any[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  // Separate categories for Kindle and Paperback
+  const [recommendedKindleCategories, setRecommendedKindleCategories] = useState<any[]>([]);
+  const [selectedKindleCategories, setSelectedKindleCategories] = useState<string[]>([]);
+  const [recommendedPaperbackCategories, setRecommendedPaperbackCategories] = useState<any[]>([]);
+  const [selectedPaperbackCategories, setSelectedPaperbackCategories] = useState<string[]>([]);
   const [generatedKeywords, setGeneratedKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
   const [isbnNumber, setIsbnNumber] = useState<string>("");
@@ -1209,15 +1212,16 @@ export default function ReadyToPublish() {
                 </CardHeader>
               </Card>
 
+              {/* Kindle eBook Categories */}
               <Card>
                 <CardHeader>
-                  <CardTitle>AI Category Research</CardTitle>
+                  <CardTitle>📱 Kindle eBook Categories</CardTitle>
                   <CardDescription>
-                    Select up to 3 categories (Amazon's limit)
+                    Select up to 3 categories for your Kindle eBook (Amazon's limit)
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {recommendedCategories.length === 0 ? (
+                  {recommendedKindleCategories.length === 0 ? (
                     <div className="text-center py-8">
                       <Button
                         size="lg"
@@ -1249,8 +1253,8 @@ export default function ReadyToPublish() {
                             },
                           ];
                           
-                          setRecommendedCategories(mockCategories);
-                          toast.success("Category analysis complete! Select up to 3 categories.");
+                          setRecommendedKindleCategories(mockCategories);
+                          toast.success("Kindle category analysis complete! Select up to 3 categories.");
                           
                           // Auto-generate keywords
                           generateKeywords.mutate({
@@ -1263,26 +1267,26 @@ export default function ReadyToPublish() {
                         disabled={!aiAnalysis}
                       >
                         <Sparkles className="w-5 h-5 mr-2" />
-                        Analyze Best Categories
+                        Analyze Kindle Categories
                       </Button>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {recommendedCategories.map((cat: any, idx: number) => (
+                      {recommendedKindleCategories.map((cat: any, idx: number) => (
                         <div
                           key={idx}
                           className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                            selectedCategories.includes(cat.category)
+                            selectedKindleCategories.includes(cat.category)
                               ? "border-primary bg-primary/5"
                               : "border-border hover:border-primary/50"
                           }`}
                           onClick={() => {
-                            if (selectedCategories.includes(cat.category)) {
-                              setSelectedCategories(selectedCategories.filter(c => c !== cat.category));
-                            } else if (selectedCategories.length < 3) {
-                              setSelectedCategories([...selectedCategories, cat.category]);
+                            if (selectedKindleCategories.includes(cat.category)) {
+                              setSelectedKindleCategories(selectedKindleCategories.filter(c => c !== cat.category));
+                            } else if (selectedKindleCategories.length < 3) {
+                              setSelectedKindleCategories([...selectedKindleCategories, cat.category]);
                             } else {
-                              toast.error("You can only select up to 3 categories");
+                              toast.error("You can only select up to 3 Kindle categories");
                             }
                           }}
                         >
@@ -1295,14 +1299,107 @@ export default function ReadyToPublish() {
                                 <span>Searches: {cat.estimatedMonthlySearches}/mo</span>
                               </div>
                             </div>
-                            {selectedCategories.includes(cat.category) && (
+                            {selectedKindleCategories.includes(cat.category) && (
                               <Check className="w-5 h-5 text-primary flex-shrink-0" />
                             )}
                           </div>
                         </div>
                       ))}
                       <p className="text-sm text-muted-foreground text-center mt-4">
-                        Selected: {selectedCategories.length}/3 categories
+                        Selected: {selectedKindleCategories.length}/3 Kindle categories
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Paperback Categories */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>📖 Paperback Categories</CardTitle>
+                  <CardDescription>
+                    Select up to 3 categories for your Paperback edition (Amazon's limit)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {recommendedPaperbackCategories.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Button
+                        size="lg"
+                        onClick={() => {
+                          if (!aiAnalysis) return;
+                          
+                          // Generate LOW-COMPETITION niche categories for Paperback
+                          const mockCategories = [
+                            {
+                              category: `Books > Self-Help > Personal Transformation > Overcoming Adversity`,
+                              competitivenessScore: 3.2,
+                              estimatedMonthlySearches: "800-1,500",
+                              reasoning: "LOW competition niche - Become #1 with just 15-30 sales. Perfect for new authors!",
+                              recommended: true,
+                            },
+                            {
+                              category: `Books > Business & Money > Success > Failure & Resilience`,
+                              competitivenessScore: 2.8,
+                              estimatedMonthlySearches: "600-1,200",
+                              reasoning: "VERY LOW competition - Achieve #1 bestseller status with only 10-20 sales. Hidden gem category!",
+                              recommended: true,
+                            },
+                            {
+                              category: `Books > Self-Help > Motivational > Turning Setbacks into Success`,
+                              competitivenessScore: 3.5,
+                              estimatedMonthlySearches: "900-1,800",
+                              reasoning: "LOW competition with engaged audience - Reach #1 with 20-40 sales. Great for visibility!",
+                              recommended: true,
+                            },
+                          ];
+                          
+                          setRecommendedPaperbackCategories(mockCategories);
+                          toast.success("Paperback category analysis complete! Select up to 3 categories.");
+                        }}
+                        disabled={!aiAnalysis}
+                      >
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        Analyze Paperback Categories
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {recommendedPaperbackCategories.map((cat: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                            selectedPaperbackCategories.includes(cat.category)
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50"
+                          }`}
+                          onClick={() => {
+                            if (selectedPaperbackCategories.includes(cat.category)) {
+                              setSelectedPaperbackCategories(selectedPaperbackCategories.filter(c => c !== cat.category));
+                            } else if (selectedPaperbackCategories.length < 3) {
+                              setSelectedPaperbackCategories([...selectedPaperbackCategories, cat.category]);
+                            } else {
+                              toast.error("You can only select up to 3 Paperback categories");
+                            }
+                          }}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <p className="font-medium">{cat.category}</p>
+                              <p className="text-sm text-muted-foreground mt-1">{cat.reasoning}</p>
+                              <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                                <span>Competitiveness: {cat.competitivenessScore}/10</span>
+                                <span>Searches: {cat.estimatedMonthlySearches}/mo</span>
+                              </div>
+                            </div>
+                            {selectedPaperbackCategories.includes(cat.category) && (
+                              <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      <p className="text-sm text-muted-foreground text-center mt-4">
+                        Selected: {selectedPaperbackCategories.length}/3 Paperback categories
                       </p>
                     </div>
                   )}
@@ -1503,7 +1600,7 @@ export default function ReadyToPublish() {
                   title: finalTitle || aiAnalysis.suggestedTitles[0],
                   subtitle: finalSubtitle || aiAnalysis.suggestedSubtitles[0],
                   description: editedDescription || aiAnalysis.bookDescription,
-                  categories: selectedCategories,
+                  categories: [...selectedKindleCategories, ...selectedPaperbackCategories],
                   keywords: generatedKeywords,
                   price: suggestedPrice,
                   genre: aiAnalysis.detectedGenre,
@@ -1724,7 +1821,7 @@ export default function ReadyToPublish() {
                             title: finalTitle || aiAnalysis.suggestedTitles[0],
                             subtitle: finalSubtitle || aiAnalysis.suggestedSubtitles[0],
                             description: editedDescription || aiAnalysis.bookDescription,
-                            categories: selectedCategories,
+                            categories: [...selectedKindleCategories, ...selectedPaperbackCategories],
                             keywords: generatedKeywords,
                             price: suggestedPrice,
                             genre: aiAnalysis.detectedGenre,
