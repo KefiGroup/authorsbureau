@@ -298,3 +298,21 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Export to PNG at 300 DPI
 - [x] Replace Fabric component in ReadyToPublish.tsx
 - [x] Test all features in browser (Add Text confirmed working, other features require manual testing)
+
+
+---
+
+## 🎯 Simplify Book Wrap Visual Editor (CURRENT)
+
+**Strategy:** Keep it simple - direct users to Canva for complex design, use our tool just for KDP template positioning
+
+### Simplification Tasks
+- [x] Remove "Add Image" button (users design everything in Canva first)
+- [x] Remove "Delete Selected" button (avoid buggy feature)
+- [x] Keep "Upload Front Cover", "Add Text", and "Export Book Wrap" only
+- [x] Update "How to Use" instructions to direct users to Canva
+- [x] Add clear workflow: Design in Canva → Upload here → Position on template → Export
+- [ ] Test simplified editor with basic workflow
+- [x] Add prominent Canva link with "Design in Canva" button
+- [x] Add detailed step-by-step Canva instructions
+- [x] Include Canva template dimensions (6"×9" = 1800×2700 pixels at 300 DPI)

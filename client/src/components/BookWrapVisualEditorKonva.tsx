@@ -215,6 +215,38 @@ export function BookWrapVisualEditorKonva({ bookId }: BookWrapVisualEditorKonvaP
           </p>
         </div>
 
+        {/* Prominent Canva Instructions */}
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-lg p-6 mb-4">
+          <div className="flex items-start gap-4">
+            <div className="text-4xl">🎨</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-purple-900 mb-2">Design Your Cover in Canva First!</h3>
+              <p className="text-sm text-gray-700 mb-3">
+                For best results, create your complete 6"×9" book cover design in Canva before uploading here.
+                This tool is for positioning your finished design on the KDP template.
+              </p>
+              <div className="bg-white rounded p-3 mb-3 text-sm">
+                <p className="font-semibold mb-1">📐 Canva Settings:</p>
+                <ul className="text-xs space-y-1 text-gray-600">
+                  <li>• Create custom size: <strong>1800 × 2700 pixels</strong> (6" × 9" at 300 DPI)</li>
+                  <li>• Design your front cover with title, author name, and imagery</li>
+                  <li>• Download as PNG (highest quality)</li>
+                </ul>
+              </div>
+              <a 
+                href="https://www.canva.com/create/book-covers/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block"
+              >
+                <Button className="bg-purple-600 hover:bg-purple-700">
+                  🚀 Open Canva Book Cover Designer
+                </Button>
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-wrap gap-2">
           <label>
             <Button variant="outline" asChild>
@@ -234,23 +266,7 @@ export function BookWrapVisualEditorKonva({ bookId }: BookWrapVisualEditorKonvaP
             Add Text
           </Button>
 
-          <label>
-            <Button variant="outline" asChild>
-              <span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAddImage}
-                  className="hidden"
-                />
-                Add Image
-              </span>
-            </Button>
-          </label>
-
-          <Button onClick={handleDeleteSelected} variant="destructive">
-            Delete Selected
-          </Button>
+          {/* Removed Add Image and Delete Selected - users should design in Canva */}
 
           <Button onClick={handleExport} className="ml-auto">
             Export Book Wrap
@@ -259,16 +275,13 @@ export function BookWrapVisualEditorKonva({ bookId }: BookWrapVisualEditorKonvaP
 
         <div className="bg-muted p-4 rounded-lg">
           <h3 className="font-semibold mb-2">How to Use:</h3>
-          <ul className="text-sm space-y-1 text-muted-foreground">
-            <li>• Click "Upload Front Cover" to add your cover to the right side</li>
-            <li>• Click "Add Text" or "Add Image" to add elements anywhere</li>
-            <li>• Click any element to select it (shows resize handles)</li>
-            <li>• Double-click text to edit it directly</li>
-            <li>• Drag elements to reposition them</li>
-            <li>• Drag corner handles to resize elements</li>
-            <li>• Drag rotation handle (top) to rotate elements</li>
-            <li>• The template shows safe zones, spine area, and bleed marks</li>
-            <li>• Click "Export Book Wrap" when done to download print-ready PNG</li>
+          <ul className="text-sm space-y-2 text-muted-foreground">
+            <li><strong>Step 1:</strong> Design your complete 6"×9" book cover in <a href="https://www.canva.com" target="_blank" className="text-primary underline">Canva</a> or your preferred design tool</li>
+            <li><strong>Step 2:</strong> Click "Upload Front Cover" to add your cover to the right side of the template</li>
+            <li><strong>Step 3:</strong> (Optional) Click "Add Text" to add simple text elements like title or author name</li>
+            <li><strong>Step 4:</strong> Drag and resize elements to position them correctly</li>
+            <li><strong>Step 5:</strong> Click "Export Book Wrap" to download your print-ready PNG file for KDP</li>
+            <li className="text-xs italic mt-2">💡 Tip: The pink template shows safe zones, spine area, and bleed marks for proper KDP formatting</li>
           </ul>
         </div>
 
