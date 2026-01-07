@@ -316,3 +316,18 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Add prominent Canva link with "Design in Canva" button
 - [x] Add detailed step-by-step Canva instructions
 - [x] Include Canva template dimensions (6"×9" = 1800×2700 pixels at 300 DPI)
+
+### Book Wrap Editor Complete Simplification (Copy & Upload Only)
+- [x] Remove all canvas/Konva.js visual editor code (replaced with BookWrapSpecifications)
+- [x] Create BookWrapSpecifications component showing:
+  - [x] Exact Canva dimensions for book wrap (based on page count + spine width)
+  - [x] Spine width calculation display
+  - [x] Book title, subtitle, author name (for copy-paste)
+  - [x] Book description (for back cover, copy-paste)
+  - [x] Author bio (for back cover, copy-paste)
+  - [x] ISBN number (for barcode placement)
+  - [x] Visual guide/diagram showing front/spine/back layout
+- [x] Add simple upload interface for finished book wrap design
+- [x] Add validation for uploaded book wrap (dimensions, file size)
+- [x] Update workflow to show "Get Specifications → Design in Canva → Upload"
+- [ ] Test complete workflow with real book data

@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
-import { BookWrapVisualEditorKonva } from '@/components/BookWrapVisualEditorKonva';
+import { BookWrapSpecifications } from '@/components/BookWrapSpecifications';
 import { PublisherChat } from "@/components/PublisherChat";
 import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
 import { CoverUpload } from "@/components/CoverUpload";
@@ -98,6 +98,7 @@ export default function ReadyToPublish() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [generatedKeywords, setGeneratedKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
+  const [isbnNumber, setIsbnNumber] = useState<string>("");
 
   // Load author profile
   const { data: authorProfile } = trpc.author.getProfile.useQuery();
@@ -1588,26 +1589,20 @@ export default function ReadyToPublish() {
                 </Card>
               ) : (
                 <>
-                  <BookWrapVisualEditorKonva
-                    bookId={bookId?.toString() || ''}
+                  <BookWrapSpecifications
+                    bookId={bookId || 0}
+                    bookTitle={selectedTitle || customTitle || aiAnalysis.suggestedTitles[0] || ""}
+                    bookSubtitle={selectedSubtitle || customSubtitle}
+                    authorName={authorProfile?.penName || ""}
+                    bookDescription={editedDescription || aiAnalysis.bookDescription}
+                    authorBio={authorProfile?.bio || ""}
+                    isbn={isbnNumber || undefined}
+                    pageCount={Math.ceil(wordCount / 250)}
+                    onUploadComplete={(wrapUrl) => {
+                      toast.success("Book wrap uploaded! Ready to export.");
+                      setCurrentStep("export");
+                    }}
                   />
-              
-                  <div className="flex justify-between">
-                    <Button
-                      variant="outline"
-                      onClick={() => setCurrentStep("amazon")}
-                    >
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Back
-                    </Button>
-                    <Button
-                      size="lg"
-                      onClick={() => setCurrentStep("export")}
-                    >
-                      Continue to Export
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </div>
                 </>
               )}
             </div>
