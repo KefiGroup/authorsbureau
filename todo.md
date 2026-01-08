@@ -369,3 +369,13 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Replace Paperback mock data with real tRPC mutation call
 - [x] Add loading states for category analysis
 - [ ] Test AI category generation for both Kindle and Paperback formats with real book data
+
+### Make Book Wrap Step Optional (Authors Design Externally)
+- [x] Add "Skip Book Wrap - I'll Design Externally" button in Step 7
+- [x] Update step progression logic to allow Amazon KDP (Step 6) → Export (Step 8) flow
+- [x] Add explanatory text that complete book design (cover + interior + wrap) can be done in Canva or by designer
+- [x] Ensure Export step works correctly without book wrap upload (already works)
+- [x] Update progress indicator to show Step 7 as optional
+- [x] Test complete workflow with Book Wrap skipped (WORKS PERFECTLY)
+- [x] Review entire 8-step flow for logical consistency
+- [x] Update Book Wrap page to clearly state it's optional

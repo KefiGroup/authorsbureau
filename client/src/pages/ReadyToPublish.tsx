@@ -522,7 +522,7 @@ export default function ReadyToPublish() {
                  currentStep === "profile-check" ? "Author Profile" : 
                  currentStep === "cover" ? "Cover Design" : 
                  currentStep === "amazon" ? "Amazon KDP" : 
-                 currentStep === "wrap" ? "Book Wrap" : 
+                 currentStep === "wrap" ? "Book Wrap (Optional)" : 
                  "Export"}
               </Badge>
             </div>
@@ -1682,20 +1682,54 @@ export default function ReadyToPublish() {
                 </Card>
               ) : (
                 <>
-                  <BookWrapSpecifications
-                    bookId={bookId || 0}
-                    bookTitle={selectedTitle || customTitle || aiAnalysis.suggestedTitles[0] || ""}
-                    bookSubtitle={selectedSubtitle || customSubtitle}
-                    authorName={authorProfile?.penName || ""}
-                    bookDescription={editedDescription || aiAnalysis.bookDescription}
-                    authorBio={authorProfile?.bio || ""}
-                    isbn={isbnNumber || undefined}
-                    pageCount={Math.ceil(wordCount / 250)}
-                    onUploadComplete={(wrapUrl) => {
-                      toast.success("Book wrap uploaded! Ready to export.");
-                      setCurrentStep("export");
-                    }}
-                  />
+                  <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950 mb-6">
+                    <CardHeader>
+                      <CardTitle className="text-blue-900 dark:text-blue-100">📖 Book Wrap for Paperback (Optional)</CardTitle>
+                      <CardDescription className="text-blue-700 dark:text-blue-300">
+                        The book wrap is only needed for paperback printing. If you're publishing Kindle eBook only, or prefer to design your complete book wrap externally in Canva or with a designer, you can skip this step.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => {
+                            toast.info("Skipping book wrap. You can design it externally and upload to KDP directly.");
+                            setCurrentStep("export");
+                          }}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Skip - I'll Design Externally
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            // Scroll to specifications below
+                            document.getElementById('book-wrap-specs')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="flex-1"
+                        >
+                          Get Specifications for Canva
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <div id="book-wrap-specs">
+                    <BookWrapSpecifications
+                      bookId={bookId || 0}
+                      bookTitle={selectedTitle || customTitle || aiAnalysis.suggestedTitles[0] || ""}
+                      bookSubtitle={selectedSubtitle || customSubtitle}
+                      authorName={authorProfile?.penName || ""}
+                      bookDescription={editedDescription || aiAnalysis.bookDescription}
+                      authorBio={authorProfile?.bio || ""}
+                      isbn={isbnNumber || undefined}
+                      pageCount={Math.ceil(wordCount / 250)}
+                      onUploadComplete={(wrapUrl) => {
+                        toast.success("Book wrap uploaded! Ready to export.");
+                        setCurrentStep("export");
+                      }}
+                    />
+                  </div>
                 </>
               )}
             </div>
@@ -1711,7 +1745,7 @@ export default function ReadyToPublish() {
                 className="mb-4"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Book Wrap
+                Back to Previous Step
               </Button>
               <Card className="border-primary/50 bg-primary/5">
                 <CardHeader>
