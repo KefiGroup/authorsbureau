@@ -78,6 +78,7 @@ export default function ReadyToPublish() {
   const [existingManuscriptLoaded, setExistingManuscriptLoaded] = useState(false);
   const [showResumePrompt, setShowResumePrompt] = useState(false);
   const [hasCheckedResume, setHasCheckedResume] = useState(false);
+  const [startingFresh, setStartingFresh] = useState(false);
   
   // AI Analysis state
   const [aiAnalysis, setAIAnalysis] = useState<AIAnalysis | null>(null);
@@ -113,13 +114,15 @@ export default function ReadyToPublish() {
     enabled: !bookId,
   });
 
-  // Auto-select most recent book if no bookId provided
+  // Auto-select most recent book if no bookId provided (unless user explicitly starting fresh)
   useEffect(() => {
-    if (!bookId && userBooks && userBooks.length > 0) {
+    console.log('[Auto-select] bookId:', bookId, 'startingFresh:', startingFresh, 'userBooks:', userBooks?.length);
+    if (!bookId && !startingFresh && userBooks && userBooks.length > 0) {
       const mostRecentBook = userBooks[0]; // Already sorted by updatedAt DESC
+      console.log('[Auto-select] Setting bookId to:', mostRecentBook.id);
       setBookId(mostRecentBook.id);
     }
-  }, [bookId, userBooks]);
+  }, [bookId, startingFresh, userBooks]);
 
   // Load existing book if bookId is provided
   const { data: existingBook } = trpc.book.getById.useQuery(
@@ -249,15 +252,33 @@ export default function ReadyToPublish() {
 
   // Handler to start fresh (ignore saved progress)
   const handleStartFresh = () => {
+    console.log('[Start Fresh] Clearing bookId and setting startingFresh=true');
     setShowResumePrompt(false);
     setCurrentStep("upload");
-    // Keep manuscript loaded but reset workflow state
+    // Set flag to prevent auto-select from running
+    setStartingFresh(true);
+    // Clear bookId to create a NEW book (not reuse existing)
+    setBookId(null);
+    console.log('[Start Fresh] bookId cleared, startingFresh set to true');
+    // Reset all workflow state
+    setManuscript("");
+    setWordCount(0);
     setAIAnalysis(null);
     setSelectedTitle("");
     setSelectedSubtitle("");
+    setCustomTitle("");
+    setCustomSubtitle("");
     setGeneratedCovers([]);
     setSelectedCover(null);
-    toast.info("Starting fresh workflow");
+    setRecommendedKindleCategories([]);
+    setSelectedKindleCategories([]);
+    setRecommendedPaperbackCategories([]);
+    setSelectedPaperbackCategories([]);
+    setKindleKeywords([]);
+    setPaperbackKeywords([]);
+    // Set to true to prevent auto-reload effect from running
+    setExistingManuscriptLoaded(true);
+    toast.info("Starting fresh - ready to create a new book!");
   };
 
   // tRPC mutations
@@ -447,6 +468,11 @@ export default function ReadyToPublish() {
       setManuscript(text);
       setWordCount(count);
       
+      // Reset startingFresh flag when user uploads new content
+      if (startingFresh) {
+        setStartingFresh(false);
+      }
+      
       toast.success(`Manuscript uploaded! ${count.toLocaleString()} words detected.`);
     } catch (error) {
       toast.error("Failed to read file. Please try again.");
@@ -457,8 +483,14 @@ export default function ReadyToPublish() {
 
   const handleManuscriptPaste = (text: string) => {
     const count = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+    console.log('[Paste] Text length:', text.length, 'Word count:', count, 'startingFresh:', startingFresh);
     setManuscript(text);
     setWordCount(count);
+    // Reset startingFresh flag when user uploads new content
+    if (startingFresh && text.length > 0) {
+      console.log('[Paste] Resetting startingFresh flag');
+      setStartingFresh(false);
+    }
   };
 
   const handleCustomCoverUpload = async (file: File) => {
@@ -810,7 +842,7 @@ export default function ReadyToPublish() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Show existing manuscript loaded message */}
-                {existingManuscriptLoaded && existingBook && (
+                {existingManuscriptLoaded && existingBook && bookId && (
                   <div className="bg-green-50 border-2 border-green-500 rounded-lg p-6 space-y-4">
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
@@ -819,7 +851,7 @@ export default function ReadyToPublish() {
                           ✓ Manuscript Loaded: {existingBook.title}
                         </h3>
                         <p className="text-green-800 mb-3">
-                          Your existing manuscript has been automatically loaded ({wordCount.toLocaleString()} words). 
+                          Your existing manuscript has been automatically loaded. 
                           You can proceed directly to AI analysis or upload a different manuscript below.
                         </p>
                         <Button
@@ -861,7 +893,7 @@ export default function ReadyToPublish() {
                           </div>
                           <div>
                             <p className="font-semibold text-green-900">Manuscript Loaded</p>
-                            <p className="text-sm text-green-700">{wordCount.toLocaleString()} words ready for analysis</p>
+                            <p className="text-sm text-green-700">Ready for analysis</p>
                           </div>
                         </div>
                         <Button
@@ -906,7 +938,6 @@ export default function ReadyToPublish() {
                         <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-900">
                           <CheckCircle2 className="w-5 h-5 mx-auto mb-2" />
                           <p className="font-medium">File uploaded successfully!</p>
-                          <p className="text-sm">{wordCount.toLocaleString()} words detected</p>
                         </div>
                       )}
                     </div>

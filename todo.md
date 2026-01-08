@@ -392,3 +392,26 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Ensure keywords are only generated after categories are selected
 - [x] Display keywords with badge UI (copy functionality via selection)
 - [x] Test keyword generation with real category data for both formats (ready for user testing)
+
+### Fix "Start New Book" Workflow Bug
+**Issue:** When clicking "Start New Book", the "Resume Where You Left Off?" dialog appears. Clicking "Start Fresh" reuses the existing book ID instead of creating a completely new book entry.
+
+**Expected Behavior:**
+- "Resume Progress" → Continue working on existing book at saved step
+- "Start Fresh" / "Start New Book" → Create brand new book entry with new bookId
+
+**Tasks:**
+- [x] Identify where resume dialog logic is in ReadyToPublish.tsx (handleStartFresh function)
+- [x] Update "Start Fresh" to clear bookId state (setBookId(null))
+- [x] Reset all workflow state variables (manuscript, covers, categories, keywords)
+- [x] Ensure "Start Fresh" creates new book entry by clearing bookId
+- [x] Add startingFresh flag to prevent auto-select from reloading old book
+- [x] Modify auto-select logic to check !startingFresh before auto-selecting
+- [x] Add bookId check to green "Manuscript Loaded" box condition
+- [x] Reset startingFresh flag when user uploads new content
+- [x] Add console logging for debugging state changes
+- [x] Remove word count display from upload manuscript UI
+- [ ] Test: Click "Start New Book" from homepage → Should go to Step 1 with clean slate
+- [ ] Test: Upload new manuscript → Should create NEW book in database
+- [ ] Verify existing book remains intact in My Books list
+- [ ] Test complete new book creation workflow end-to-end

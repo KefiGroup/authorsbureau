@@ -1,0 +1,388 @@
+{
+  "query": "SELECT id, title, status, wordCount, createdAt FROM books ORDER BY createdAt DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, title, status, wordCount, createdAt FROM books ORDER BY createdAt DESC;",
+  "rows": [
+    {
+      "id": "150005",
+      "title": "The Digital Marketing Revolution",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-06 15:24:54"
+    },
+    {
+      "id": "150004",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-06 14:54:23"
+    },
+    {
+      "id": "150002",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-06 14:54:23"
+    },
+    {
+      "id": "150001",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-06 14:54:23"
+    },
+    {
+      "id": "120025",
+      "title": "Hemispheric Intelligence",
+      "status": "drafting",
+      "wordCount": "13201",
+      "createdAt": "2026-01-05 20:57:01"
+    },
+    {
+      "id": "120024",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 20:14:02"
+    },
+    {
+      "id": "120022",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 20:14:02"
+    },
+    {
+      "id": "120021",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 20:14:02"
+    },
+    {
+      "id": "120020",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:45:18"
+    },
+    {
+      "id": "120018",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:45:18"
+    },
+    {
+      "id": "120017",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:45:17"
+    },
+    {
+      "id": "120016",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:26:13"
+    },
+    {
+      "id": "120014",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:26:12"
+    },
+    {
+      "id": "120013",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:26:12"
+    },
+    {
+      "id": "120012",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:20:19"
+    },
+    {
+      "id": "120009",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:20:18"
+    },
+    {
+      "id": "120010",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 19:20:18"
+    },
+    {
+      "id": "120008",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 18:57:29"
+    },
+    {
+      "id": "120006",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 18:57:28"
+    },
+    {
+      "id": "120005",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 18:57:28"
+    },
+    {
+      "id": "120004",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 18:45:54"
+    },
+    {
+      "id": "120002",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 18:45:54"
+    },
+    {
+      "id": "120001",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 18:45:54"
+    },
+    {
+      "id": "90009",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:46:03"
+    },
+    {
+      "id": "90012",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:46:03"
+    },
+    {
+      "id": "90010",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:46:03"
+    },
+    {
+      "id": "90006",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:43:29"
+    },
+    {
+      "id": "90008",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:43:29"
+    },
+    {
+      "id": "90005",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:43:29"
+    },
+    {
+      "id": "90004",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:41:24"
+    },
+    {
+      "id": "90002",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:41:24"
+    },
+    {
+      "id": "90001",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:41:24"
+    },
+    {
+      "id": "60004",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:18:03"
+    },
+    {
+      "id": "60002",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:18:03"
+    },
+    {
+      "id": "60001",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 17:18:03"
+    },
+    {
+      "id": "30012",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:52:16"
+    },
+    {
+      "id": "30009",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:52:15"
+    },
+    {
+      "id": "30010",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:52:15"
+    },
+    {
+      "id": "30008",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:45:21"
+    },
+    {
+      "id": "30006",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:45:20"
+    },
+    {
+      "id": "30005",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:45:20"
+    },
+    {
+      "id": "30001",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:32:20"
+    },
+    {
+      "id": "30004",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:32:20"
+    },
+    {
+      "id": "30002",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:32:20"
+    },
+    {
+      "id": "13",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:03:33"
+    },
+    {
+      "id": "11",
+      "title": "Second Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:03:32"
+    },
+    {
+      "id": "10",
+      "title": "First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:03:32"
+    },
+    {
+      "id": "9",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:02:54"
+    },
+    {
+      "id": "8",
+      "title": "Updated Title",
+      "status": "drafting",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:02:54"
+    },
+    {
+      "id": "2",
+      "title": "My First Book",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:02:26"
+    },
+    {
+      "id": "7",
+      "title": "Book with Chapters",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:02:26"
+    },
+    {
+      "id": "5",
+      "title": "Updated Title",
+      "status": "drafting",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:02:26"
+    },
+    {
+      "id": "4",
+      "title": "Book Two",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:02:26"
+    },
+    {
+      "id": "3",
+      "title": "Book One",
+      "status": "idea",
+      "wordCount": "0",
+      "createdAt": "2026-01-05 16:02:26"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tstatus\twordCount\tcreatedAt\n150005\tThe Digital Marketing Revolution\tidea\t0\t2026-01-06 15:24:54\n150004\tBook with Chapters\tidea\t0\t2026-01-06 14:54:23\n150002\tSecond Book\tidea\t0\t2026-01-06 14:54:23\n150001\tFirst Book\tidea\t0\t2026-01-06 14:54:23\n120025\tHemispheric Intelligence\tdrafting\t13201\t2026-01-05 20:57:01\n120024\tBook with Chapters\tidea\t0\t2026-01-05 20:14:02\n120022\tSecond Book\tidea\t0\t2026-01-05 20:14:02\n120021\tFirst Book\tidea\t0\t2026-01-05 20:14:02\n120020\tBook with Chapters\tidea\t0\t2026-01-05 19:45:18\n120018\tSecond Book\tidea\t0\t2026-01-05 19:45:18\n120017\tFirst Book\tidea\t0\t2026-01-05 19:45:17\n120016\tBook with Chapters\tidea\t0\t2026-01-05 19:26:13\n120014\tSecond Book\tidea\t0\t2026-01-05 19:26:12\n120013\tFirst Book\tidea\t0\t2026-01-05 19:26:12\n120012\tBook with Chapters\tidea\t0\t2026-01-05 19:20:19\n120009\tFirst Book\tidea\t0\t2026-01-05 19:20:18\n120010\tSecond Book\tidea\t0\t2026-01-05 19:20:18\n120008\tBook with Chapters\tidea\t0\t2026-01-05 18:57:29\n120006\tSecond Book\tidea\t0\t2026-01-05 18:57:28\n120005\tFirst Book\tidea\t0\t2026-01-05 18:57:28\n120004\tBook with Chapters\tidea\t0\t2026-01-05 18:45:54\n120002\tSecond Book\tidea\t0\t2026-01-05 18:45:54\n120001\tFirst Book\tidea\t0\t2026-01-05 18:45:54\n90009\tFirst Book\tidea\t0\t2026-01-05 17:46:03\n90012\tBook with Chapters\tidea\t0\t2026-01-05 17:46:03\n90010\tSecond Book\tidea\t0\t2026-01-05 17:46:03\n90006\tSecond Book\tidea\t0\t2026-01-05 17:43:29\n90008\tBook with Chapters\tidea\t0\t2026-01-05 17:43:29\n90005\tFirst Book\tidea\t0\t2026-01-05 17:43:29\n90004\tBook with Chapters\tidea\t0\t2026-01-05 17:41:24\n90002\tSecond Book\tidea\t0\t2026-01-05 17:41:24\n90001\tFirst Book\tidea\t0\t2026-01-05 17:41:24\n60004\tBook with Chapters\tidea\t0\t2026-01-05 17:18:03\n60002\tSecond Book\tidea\t0\t2026-01-05 17:18:03\n60001\tFirst Book\tidea\t0\t2026-01-05 17:18:03\n30012\tBook with Chapters\tidea\t0\t2026-01-05 16:52:16\n30009\tFirst Book\tidea\t0\t2026-01-05 16:52:15\n30010\tSecond Book\tidea\t0\t2026-01-05 16:52:15\n30008\tBook with Chapters\tidea\t0\t2026-01-05 16:45:21\n30006\tSecond Book\tidea\t0\t2026-01-05 16:45:20\n30005\tFirst Book\tidea\t0\t2026-01-05 16:45:20\n30001\tFirst Book\tidea\t0\t2026-01-05 16:32:20\n30004\tBook with Chapters\tidea\t0\t2026-01-05 16:32:20\n30002\tSecond Book\tidea\t0\t2026-01-05 16:32:20\n13\tBook with Chapters\tidea\t0\t2026-01-05 16:03:33\n11\tSecond Book\tidea\t0\t2026-01-05 16:03:32\n10\tFirst Book\tidea\t0\t2026-01-05 16:03:32\n9\tBook with Chapters\tidea\t0\t2026-01-05 16:02:54\n8\tUpdated Title\tdrafting\t0\t2026-01-05 16:02:54\n2\tMy First Book\tidea\t0\t2026-01-05 16:02:26\n7\tBook with Chapters\tidea\t0\t2026-01-05 16:02:26\n5\tUpdated Title\tdrafting\t0\t2026-01-05 16:02:26\n4\tBook Two\tidea\t0\t2026-01-05 16:02:26\n3\tBook One\tidea\t0\t2026-01-05 16:02:26\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}
