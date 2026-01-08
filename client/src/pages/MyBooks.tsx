@@ -62,7 +62,21 @@ export default function MyBooks() {
                 onClick={() => setLocation(`/ready-to-publish?bookId=${book.id}`)}
               >
                 <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    {/* Book Cover Thumbnail */}
+                    <div className="w-24 h-32 flex-shrink-0 rounded-md overflow-hidden bg-muted flex items-center justify-center">
+                      {(book.selectedCoverUrl || book.coverUrl) ? (
+                        <img
+                          src={book.selectedCoverUrl || book.coverUrl || ''}
+                          alt={book.title || "Book cover"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <BookOpen className="w-8 h-8 text-muted-foreground" />
+                      )}
+                    </div>
+                    
+                    {/* Book Info */}
                     <div className="flex-1 min-w-0">
                       <CardTitle className="truncate group-hover:text-primary transition-colors">
                         {book.title || "Untitled Book"}
@@ -73,7 +87,6 @@ export default function MyBooks() {
                         </CardDescription>
                       )}
                     </div>
-                    <BookOpen className="w-5 h-5 text-muted-foreground shrink-0" />
                   </div>
                 </CardHeader>
                 <CardContent>

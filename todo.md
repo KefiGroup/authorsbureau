@@ -513,3 +513,14 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Update AI prompt to target ultra-low-competition categories (30 sales or less in 24hr)
 - [x] Remove competitiveness score and search volume from display
 - [x] Make it clear and actionable for authors
+
+
+### Add Book Cover Preview in My Books List - COMPLETED ✅
+**User Request:** Show thumbnail of book cover next to each book title in My Books list for better visual recognition.
+
+**Tasks:**
+- [x] Check database schema for cover image URL field (selectedCoverUrl and coverUrl)
+- [x] Update MyBooks.tsx to display cover thumbnails (96x128px on left side)
+- [x] Add placeholder BookOpen icon for books without covers
+- [x] Make layout responsive with cover on left, info on right
+- [x] Test with books that have and don't have covers
