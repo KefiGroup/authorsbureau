@@ -474,3 +474,16 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Added delete button UI (only shows for non-published books)
 - [x] Tested on dev server - delete button now visible and functional
 - [x] Ready for checkpoint and publish to production
+
+
+### Add Book Title Field at Step 1 (Upload Manuscript) - COMPLETED ✅
+**User Request:** Users should be able to enter a book title at Step 1 instead of waiting for AI to suggest one. This title will be shown in "My Books" list.
+
+**Tasks:**
+- [x] Add "Book Title" input field at Step 1 (Upload Manuscript page)
+- [x] Add state variable for initial book title
+- [x] Update backend mutation to accept initial title parameter
+- [x] Use user-provided title instead of AI-suggested title when creating book
+- [x] Allow users to change title later in workflow (Step 3 Review already has this)
+- [x] Move Save Progress button to top of page for better visibility (now inside step indicator card)
+- [x] Test complete workflow with custom title

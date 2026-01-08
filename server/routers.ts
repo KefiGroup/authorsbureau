@@ -578,15 +578,18 @@ Generate the author bio now:`;
       .input(z.object({
         manuscript: z.string().min(100),
         wordCount: z.number(),
+        initialTitle: z.string().optional(),
       }))
       .mutation(async ({ input, ctx }) => {
         // Analyze the manuscript
         const analysis = await analyzeManuscript(input);
         
         // Create a book in the database
+        // Use initialTitle if provided, otherwise use first AI-suggested title
+        const bookTitle = input.initialTitle || analysis.suggestedTitles[0];
         const insertResult = await db.createBook({
           authorId: ctx.user.id,
-          title: analysis.suggestedTitles[0], // Use first suggested title as default
+          title: bookTitle,
           subtitle: analysis.suggestedSubtitles[0],
           genre: analysis.detectedGenre,
           targetWordCount: input.wordCount,

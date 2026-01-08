@@ -79,6 +79,7 @@ export default function ReadyToPublish() {
   const [showResumePrompt, setShowResumePrompt] = useState(false);
   const [hasCheckedResume, setHasCheckedResume] = useState(false);
   const [startingFresh, setStartingFresh] = useState(false);
+  const [initialTitle, setInitialTitle] = useState("");
   
   // AI Analysis state
   const [aiAnalysis, setAIAnalysis] = useState<AIAnalysis | null>(null);
@@ -553,7 +554,7 @@ export default function ReadyToPublish() {
     }
     
     setCurrentStep("analyzing");
-    analyzeManuscript.mutate({ manuscript, wordCount });
+    analyzeManuscript.mutate({ manuscript, wordCount, initialTitle: initialTitle.trim() || undefined });
   };
 
   const handleGenerateMoreTitles = () => {
@@ -766,31 +767,32 @@ export default function ReadyToPublish() {
                 <span className="text-xs font-medium text-center">Export</span>
               </div>
             </div>
+
+            {/* Save Progress Button - Moved inside card for visibility */}
+            {bookId && (
+              <div className="flex justify-center pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={handleSaveProgress}
+                  disabled={saveProgressMutation.isPending}
+                  size="lg"
+                >
+                  {saveProgressMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Progress
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
-
-        {/* Save Progress Button */}
-        {bookId && (
-          <div className="flex justify-center">
-            <Button
-              variant="outline"
-              onClick={handleSaveProgress}
-              disabled={saveProgressMutation.isPending}
-            >
-              {saveProgressMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Progress
-                </>
-              )}
-            </Button>
-          </div>
-        )}
 
         {/* Resume Progress Dialog */}
         <Dialog open={showResumePrompt} onOpenChange={setShowResumePrompt}>
@@ -901,6 +903,23 @@ export default function ReadyToPublish() {
                     </div>
                   </div>
                 )}
+
+                {/* Book Title Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="initialTitle" className="text-base font-semibold">
+                    Book Title <span className="text-muted-foreground font-normal">(Optional)</span>
+                  </Label>
+                  <Input
+                    id="initialTitle"
+                    placeholder="Enter your book title (AI will also suggest titles after analysis)"
+                    value={initialTitle}
+                    onChange={(e) => setInitialTitle(e.target.value)}
+                    className="text-lg"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    You can enter a title now or let our AI suggest titles after analyzing your manuscript. You can always change it later.
+                  </p>
+                </div>
 
                 <Tabs value={uploadMethod} onValueChange={(v) => setUploadMethod(v as "paste" | "file")}>
                   <TabsList className="grid w-full grid-cols-2">
