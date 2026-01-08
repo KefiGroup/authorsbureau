@@ -80,6 +80,7 @@ export default function ReadyToPublish() {
   const [hasCheckedResume, setHasCheckedResume] = useState(false);
   const [startingFresh, setStartingFresh] = useState(false);
   const [initialTitle, setInitialTitle] = useState("");
+  const [isSavingTitle, setIsSavingTitle] = useState(false);
   
   // AI Analysis state
   const [aiAnalysis, setAIAnalysis] = useState<AIAnalysis | null>(null);
@@ -136,6 +137,10 @@ export default function ReadyToPublish() {
     if (existingBook && existingBook.content && !existingManuscriptLoaded) {
       setManuscript(existingBook.content);
       setWordCount(existingBook.wordCount || 0);
+      // Load existing title if available
+      if (existingBook.title && !initialTitle) {
+        setInitialTitle(existingBook.title);
+      }
       setExistingManuscriptLoaded(true);
       
       // Auto-restore workflow data if it exists
@@ -179,6 +184,21 @@ export default function ReadyToPublish() {
       toast.success(`Loaded existing manuscript: ${existingBook.title} (${existingBook.wordCount} words)`);
     }
   }, [existingBook, existingManuscriptLoaded]);
+
+  // Auto-save title with debounce
+  useEffect(() => {
+    if (!bookId || !initialTitle.trim()) return;
+
+    setIsSavingTitle(true);
+    const timeoutId = setTimeout(() => {
+      updateBookTitleMutation.mutate({
+        bookId: bookId,
+        title: initialTitle.trim(),
+      });
+    }, 1000); // 1 second debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [initialTitle, bookId]);
 
   // Resume detection: Check if user has saved workflow progress
   useEffect(() => {
@@ -289,7 +309,19 @@ export default function ReadyToPublish() {
       toast.success("Progress saved! You can resume anytime.");
     },
     onError: (error) => {
-      toast.error("Failed to save progress: " + error.message);
+      console.error('Save progress error:', error);
+      toast.error("Failed to save progress. Please try again.");
+    },
+  });
+
+  // Update book title mutation (for auto-save)
+  const updateBookTitleMutation = trpc.book.update.useMutation({
+    onSuccess: () => {
+      setIsSavingTitle(false);
+    },
+    onError: (error) => {
+      console.error('Auto-save title error:', error);
+      setIsSavingTitle(false);
     },
   });
 
@@ -927,18 +959,21 @@ export default function ReadyToPublish() {
 
                 {/* Book Title Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="initialTitle" className="text-base font-semibold">
-                    Book Title <span className="text-muted-foreground font-normal">(Optional)</span>
+                  <Label htmlFor="initialTitle" className="text-base font-semibold flex items-center gap-2">
+                    Book Title <span className="text-muted-foreground font-normal">(Draft)</span>
+                    {isSavingTitle && bookId && (
+                      <span className="text-xs text-muted-foreground font-normal">Saving...</span>
+                    )}
                   </Label>
                   <Input
                     id="initialTitle"
-                    placeholder="Enter your book title (AI will also suggest titles after analysis)"
+                    placeholder="Enter a working title for your book"
                     value={initialTitle}
                     onChange={(e) => setInitialTitle(e.target.value)}
                     className="text-lg"
                   />
                   <p className="text-sm text-muted-foreground">
-                    You can enter a title now or let our AI suggest titles after analyzing your manuscript. You can always change it later.
+                    Enter a draft title now, or let our AI suggest optimized titles after analyzing your manuscript. You can change it anytime.
                   </p>
                 </div>
 

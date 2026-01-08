@@ -524,3 +524,23 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Add placeholder BookOpen icon for books without covers
 - [x] Make layout responsive with cover on left, info on right
 - [x] Test with books that have and don't have covers
+
+
+### Add Auto-Save for Book Title Field - COMPLETED ✅
+**User Request:** Book title entered at Step 1 should auto-save as user types, without requiring "Analyze" button click.
+
+**Tasks:**
+- [x] Add backend mutation to update book title only (using existing book.update)
+- [x] Implement debounced auto-save (1 second delay after typing stops)
+- [x] Show save indicator when auto-saving ("Saving..." text)
+- [x] Load existing book title when resuming
+- [x] Test that title persists when navigating away and back
+
+
+### Update Book Title Label to "Book Title (Draft)" - COMPLETED ✅
+**User Request:** Change the label from "Book Title (Optional)" to "Book Title (Draft)" to emphasize it's not final.
+
+**Tasks:**
+- [x] Update label text in ReadyToPublish.tsx to "Book Title (Draft)"
+- [x] Update placeholder text to "Enter a working title for your book"
+- [x] Update helper text to clarify it's a draft
