@@ -421,3 +421,12 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Show Save Progress button on Step 1 (Upload) after book is created
 - [x] Show Save Progress button on Step 2 (AI Analysis) 
 - [x] Ensure Save Progress button is visible on all steps 3-8
+
+### Bug: Save Progress Button Not Appearing
+- [x] Investigate why Save Progress button is not showing at Cover Design step
+- [x] Root cause: analyzeManuscript mutation doesn't create book or return bookId
+- [x] Fix: Modified manuscriptAnalysis.analyze to create book in database after analysis
+- [x] Fix: Return bookId in analysis response
+- [x] Fix: Frontend captures bookId from response and sets it in state
+- [ ] Test: Upload manuscript and verify Save Progress button appears after analysis (manual test required)
+- [ ] Test: Verify button works on all workflow steps (manual test required)

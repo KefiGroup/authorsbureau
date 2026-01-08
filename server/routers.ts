@@ -579,8 +579,30 @@ Generate the author bio now:`;
         manuscript: z.string().min(100),
         wordCount: z.number(),
       }))
-      .mutation(async ({ input }) => {
-        return await analyzeManuscript(input);
+      .mutation(async ({ input, ctx }) => {
+        // Analyze the manuscript
+        const analysis = await analyzeManuscript(input);
+        
+        // Create a book in the database
+        const insertResult = await db.createBook({
+          authorId: ctx.user.id,
+          title: analysis.suggestedTitles[0], // Use first suggested title as default
+          subtitle: analysis.suggestedSubtitles[0],
+          genre: analysis.detectedGenre,
+          targetWordCount: input.wordCount,
+          content: input.manuscript,
+          wordCount: input.wordCount,
+          status: "drafting", // Valid status from schema
+        });
+        
+        // Get the newly created book ID (cast to any to access insertId)
+        const bookId = Number((insertResult as any).insertId);
+        
+        // Return both analysis and bookId
+        return {
+          ...analysis,
+          bookId,
+        };
       }),
 
     generateMoreTitles: protectedProcedure

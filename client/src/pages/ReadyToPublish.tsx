@@ -325,6 +325,10 @@ export default function ReadyToPublish() {
       setSelectedTitle(data.suggestedTitles[0]);
       setSelectedSubtitle(data.suggestedSubtitles[0]);
       setEditedDescription(data.bookDescription);
+      // Capture the bookId from the response
+      if (data.bookId) {
+        setBookId(data.bookId);
+      }
       setCurrentStep("review");
       toast.success("AI analysis complete! Review the suggestions below.");
     },
