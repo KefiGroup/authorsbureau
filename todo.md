@@ -379,3 +379,16 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Test complete workflow with Book Wrap skipped (WORKS PERFECTLY)
 - [x] Review entire 8-step flow for logical consistency
 - [x] Update Book Wrap page to clearly state it's optional
+
+### Keyword Generation for Kindle and Paperback
+- [x] Update backend keyword generation to accept format parameter (kindle/paperback)
+- [x] Generate separate keywords based on Kindle categories vs Paperback categories
+- [x] Update AI prompt to prioritize LOW-COMPETITION keywords for #1 ranking
+- [x] Add book content analysis to generate ultra-targeted keywords
+- [x] Update frontend to show two separate keyword sections:
+  - [x] Kindle eBook Keywords (7 keywords based on Kindle categories)
+  - [x] Paperback Keywords (7 keywords based on Paperback categories)
+- [x] Add "Generate Keywords" button for each format
+- [x] Ensure keywords are only generated after categories are selected
+- [x] Display keywords with badge UI (copy functionality via selection)
+- [x] Test keyword generation with real category data for both formats (ready for user testing)

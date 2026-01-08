@@ -133,38 +133,42 @@ export async function generateOptimizedKeywords(params: {
   genre: string;
   targetAudience: string;
   mainTopics: string[];
+  bookContent?: string;
+  selectedCategories?: string[];
+  format?: 'kindle' | 'paperback';
 }): Promise<{ keywords: string[]; reasoning: string }> {
-  const prompt = `You are an Amazon KDP keyword research expert. Generate 7 optimal keywords for this book.
+  const formatLabel = params.format === 'kindle' ? 'Kindle eBook' : params.format === 'paperback' ? 'Paperback' : 'book';
+  const categoryContext = params.selectedCategories && params.selectedCategories.length > 0
+    ? `\n**Selected ${formatLabel} Categories:** ${params.selectedCategories.join(" | ")}`
+    : '';
+  const contentContext = params.bookContent
+    ? `\n**Book Content Summary:** ${params.bookContent.substring(0, 1000)}...`
+    : '';
+
+  const prompt = `You are an Amazon KDP keyword research expert specializing in LOW-COMPETITION keyword strategies. Generate 7 optimal keywords for this ${formatLabel}.
 
 **Book Title:** "${params.title}"
 **Genre:** ${params.genre}
 **Target Audience:** ${params.targetAudience}
-**Main Topics:** ${params.mainTopics.join(", ")}
+**Main Topics:** ${params.mainTopics.join(", ")}${categoryContext}${contentContext}
 
-**Requirements:**
+**CRITICAL REQUIREMENTS - LOW-COMPETITION FOCUS:**
 1. Amazon allows 7 keyword phrases (each can be multiple words)
-2. Focus on buyer-intent keywords (what people search when ready to buy)
-3. Include long-tail keywords (3-5 words) for easier ranking
-4. Avoid overly competitive single words
-5. Mix of high-volume and low-competition keywords
-6. Don't repeat words already in title/subtitle
-7. Research actual Amazon search terms in this genre
+2. **PRIORITY: Find NICHE, LOW-COMPETITION keywords** - avoid oversaturated terms
+3. Focus on long-tail keywords (3-5 words) that have low competition but relevant search intent
+4. Target keywords where this book can realistically rank in TOP 10 with minimal sales
+5. Analyze the selected categories and find hidden gem keywords within those niches
+6. Include buyer-intent keywords (what people search when ready to buy)
+7. Don't repeat words already in title/subtitle
+8. If book content is provided, extract specific themes and unique angles for ultra-targeted keywords
+9. Aim for keywords with competitiveness score 1-4 out of 10 (very low competition)
+10. Mix of: 3 ultra-niche keywords (almost no competition) + 3 medium-niche keywords + 1 broader keyword for discovery
 
-**Output Format (JSON):**
-\`\`\`json
+Return a JSON object with this structure:
 {
-  "keywords": [
-    "keyword phrase 1",
-    "keyword phrase 2",
-    "keyword phrase 3",
-    "keyword phrase 4",
-    "keyword phrase 5",
-    "keyword phrase 6",
-    "keyword phrase 7"
-  ],
-  "reasoning": "Explanation of keyword strategy"
-}
-\`\`\``;
+  "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5", "keyword 6", "keyword 7"],
+  "reasoning": "Explanation of LOW-COMPETITION keyword strategy with estimated competition level for each keyword"
+}`;
 
   try {
     const response = await invokeLLM({

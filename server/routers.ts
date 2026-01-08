@@ -844,13 +844,33 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
     // Research and generate optimal keywords
     optimizeKeywords: protectedProcedure
       .input(z.object({
-        title: z.string(),
-        genre: z.string(),
-        targetAudience: z.string(),
-        mainTopics: z.array(z.string())
+        bookId: z.string().optional(),
+        title: z.string().optional(),
+        genre: z.string().optional(),
+        targetAudience: z.string().optional(),
+        mainTopics: z.array(z.string()).optional(),
+        format: z.enum(['kindle', 'paperback']).optional(),
+        categories: z.array(z.string()).optional()
       }))
-      .mutation(async ({ input }) => {
-        const result = await generateOptimizedKeywords(input);
+      .mutation(async ({ input, ctx }) => {
+        // If bookId is provided, fetch book data
+        let bookData: any = null;
+        if (input.bookId) {
+          bookData = await db.getBookById(parseInt(input.bookId));
+          if (!bookData) {
+            throw new Error("Book not found");
+          }
+        }
+
+        const result = await generateOptimizedKeywords({
+          title: input.title || bookData?.title || "Untitled",
+          genre: input.genre || bookData?.genre || "General",
+          targetAudience: input.targetAudience || bookData?.targetAudience || "General readers",
+          mainTopics: input.mainTopics || [],
+          bookContent: bookData?.content || bookData?.description,
+          selectedCategories: input.categories,
+          format: input.format
+        });
         return result;
       }),
 

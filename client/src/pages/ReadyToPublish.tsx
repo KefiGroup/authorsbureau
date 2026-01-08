@@ -100,6 +100,8 @@ export default function ReadyToPublish() {
   const [recommendedPaperbackCategories, setRecommendedPaperbackCategories] = useState<any[]>([]);
   const [selectedPaperbackCategories, setSelectedPaperbackCategories] = useState<string[]>([]);
   const [generatedKeywords, setGeneratedKeywords] = useState<string[]>([]);
+  const [kindleKeywords, setKindleKeywords] = useState<string[]>([]);
+  const [paperbackKeywords, setPaperbackKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
   const [isbnNumber, setIsbnNumber] = useState<string>("");
 
@@ -366,6 +368,26 @@ export default function ReadyToPublish() {
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to generate keywords");
+    },
+  });
+
+  const generateKindleKeywords = trpc.amazon.optimizeKeywords.useMutation({
+    onSuccess: (data: any) => {
+      setKindleKeywords(data.keywords);
+      toast.success("💡 Kindle keywords generated! Low-competition keywords ready.");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to generate Kindle keywords");
+    },
+  });
+
+  const generatePaperbackKeywords = trpc.amazon.optimizeKeywords.useMutation({
+    onSuccess: (data: any) => {
+      setPaperbackKeywords(data.keywords);
+      toast.success("💡 Paperback keywords generated! Low-competition keywords ready.");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to generate Paperback keywords");
     },
   });
 
@@ -1402,36 +1424,122 @@ export default function ReadyToPublish() {
                 </CardContent>
               </Card>
 
+              {/* Kindle Keywords */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Optimized Keywords</CardTitle>
+                  <CardTitle>📱 Kindle eBook Keywords</CardTitle>
                   <CardDescription>
-                    AI-generated keywords for Amazon search visibility
+                    AI-generated low-competition keywords for Kindle eBook (7 keywords max)
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {generatedKeywords.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      {generateKeywords.isPending ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          <span>Generating keywords...</span>
-                        </div>
-                      ) : (
-                        "Generate categories first to get keyword recommendations"
+                  {kindleKeywords.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Button
+                        size="lg"
+                        onClick={() => {
+                          if (!aiAnalysis || !bookId || selectedKindleCategories.length === 0) {
+                            toast.error("Please select Kindle categories first");
+                            return;
+                          }
+                          generateKindleKeywords.mutate({
+                            bookId: bookId?.toString(),
+                            format: 'kindle',
+                            categories: selectedKindleCategories,
+                          });
+                        }}
+                        disabled={!aiAnalysis || !bookId || selectedKindleCategories.length === 0 || generateKindleKeywords.isPending}
+                      >
+                        {generateKindleKeywords.isPending ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Generating Kindle Keywords...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-2" />
+                            Generate Kindle Keywords
+                          </>
+                        )}
+                      </Button>
+                      {selectedKindleCategories.length === 0 && (
+                        <p className="text-sm text-muted-foreground mt-4">
+                          Select Kindle categories first to generate keywords
+                        </p>
                       )}
                     </div>
                   ) : (
                     <div className="space-y-3">
                       <div className="flex flex-wrap gap-2">
-                        {generatedKeywords.map((keyword: string, idx: number) => (
+                        {kindleKeywords.map((keyword: string, idx: number) => (
                           <Badge key={idx} variant="secondary" className="px-3 py-1">
                             {keyword}
                           </Badge>
                         ))}
                       </div>
                       <p className="text-sm text-muted-foreground mt-4">
-                        Copy these keywords exactly as shown when setting up your Amazon KDP listing
+                        💡 These low-competition keywords help you rank #1 in your Kindle categories
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Paperback Keywords */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>📖 Paperback Keywords</CardTitle>
+                  <CardDescription>
+                    AI-generated low-competition keywords for Paperback edition (7 keywords max)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {paperbackKeywords.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Button
+                        size="lg"
+                        onClick={() => {
+                          if (!aiAnalysis || !bookId || selectedPaperbackCategories.length === 0) {
+                            toast.error("Please select Paperback categories first");
+                            return;
+                          }
+                          generatePaperbackKeywords.mutate({
+                            bookId: bookId?.toString(),
+                            format: 'paperback',
+                            categories: selectedPaperbackCategories,
+                          });
+                        }}
+                        disabled={!aiAnalysis || !bookId || selectedPaperbackCategories.length === 0 || generatePaperbackKeywords.isPending}
+                      >
+                        {generatePaperbackKeywords.isPending ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Generating Paperback Keywords...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-2" />
+                            Generate Paperback Keywords
+                          </>
+                        )}
+                      </Button>
+                      {selectedPaperbackCategories.length === 0 && (
+                        <p className="text-sm text-muted-foreground mt-4">
+                          Select Paperback categories first to generate keywords
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        {paperbackKeywords.map((keyword: string, idx: number) => (
+                          <Badge key={idx} variant="secondary" className="px-3 py-1">
+                            {keyword}
+                          </Badge>
+                        ))}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-4">
+                        💡 These low-competition keywords help you rank #1 in your Paperback categories
                       </p>
                     </div>
                   )}
