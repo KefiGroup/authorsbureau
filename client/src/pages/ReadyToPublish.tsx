@@ -735,7 +735,7 @@ export default function ReadyToPublish() {
         </Card>
 
         {/* Save Progress Button */}
-        {currentStep !== "upload" && currentStep !== "analyzing" && bookId && (
+        {bookId && (
           <div className="flex justify-center">
             <Button
               variant="outline"

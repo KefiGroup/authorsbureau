@@ -415,3 +415,9 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Test: Upload new manuscript → Should create NEW book in database
 - [ ] Verify existing book remains intact in My Books list
 - [ ] Test complete new book creation workflow end-to-end
+
+### Save Progress Button Visibility
+- [x] Update Save Progress button to appear on all workflow steps (shows whenever bookId exists)
+- [x] Show Save Progress button on Step 1 (Upload) after book is created
+- [x] Show Save Progress button on Step 2 (AI Analysis) 
+- [x] Ensure Save Progress button is visible on all steps 3-8
