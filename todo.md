@@ -430,3 +430,7 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Fix: Frontend captures bookId from response and sets it in state
 - [ ] Test: Upload manuscript and verify Save Progress button appears after analysis (manual test required)
 - [ ] Test: Verify button works on all workflow steps (manual test required)
+
+### Bug: Toast Notifications Blocking Buttons
+- [x] Move toast notification position from bottom-right to top-center
+- [x] Ensure toasts don't block any action buttons in the workflow
