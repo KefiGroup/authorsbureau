@@ -544,3 +544,13 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Update label text in ReadyToPublish.tsx to "Book Title (Draft)"
 - [x] Update placeholder text to "Enter a working title for your book"
 - [x] Update helper text to clarify it's a draft
+
+
+### Fix Workflow Navigation Bug - Cover to Amazon - COMPLETED ✅
+**User Report:** At Step 5 (Cover Design), the "Continue to Book Wrap Designer" button is wrong. It should say "Continue to Amazon Setup" since Amazon (Step 6) comes before Wrap (Step 7).
+
+**Tasks:**
+- [x] Find the workflow step navigation logic in ReadyToPublish.tsx (line 1372)
+- [x] Fix the next step after Cover to be Amazon, not Wrap
+- [x] Verify correct order: Upload → Analysis → Review → Profile → Cover → Amazon → Wrap → Export → Author Central
+- [x] Button now says "Continue to Amazon Setup" at Cover step

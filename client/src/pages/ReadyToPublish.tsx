@@ -1369,9 +1369,9 @@ export default function ReadyToPublish() {
                     <div className="flex justify-end">
                       <Button
                         size="lg"
-                        onClick={() => setCurrentStep("wrap")}
+                        onClick={() => setCurrentStep("amazon")}
                       >
-                        Continue to Book Wrap Designer
+                        Continue to Amazon Setup
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     </div>
