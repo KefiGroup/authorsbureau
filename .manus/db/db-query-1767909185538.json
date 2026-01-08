@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, title, status FROM books ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, title, status FROM books ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "180002",
+      "title": "The AI-Powered Author: Write, Publish, and Profit with ChatGPT",
+      "status": "drafting"
+    },
+    {
+      "id": "180001",
+      "title": "Test Book Title",
+      "status": "drafting"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tstatus\n180002\tThe AI-Powered Author: Write, Publish, and Profit with ChatGPT\tdrafting\n180001\tTest Book Title\tdrafting\n",
+  "stderr": "",
+  "execution_time_ms": 96
+}

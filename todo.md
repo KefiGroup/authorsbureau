@@ -443,3 +443,12 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Show success message after deletion
 - [x] Refresh book list after deletion
 - [x] Redirect to My Books page after deleting from workflow
+
+### Bug: Delete Button Not Showing on My Books Page
+- [x] Investigate why delete button is not visible despite code being added
+- [x] Verified code is correct in repository (commit e4027054)
+- [x] Published checkpoint e4027054 to production
+- [x] CDN cache issue - published site not reflecting latest code
+- [x] Remove debug console.log statements
+- [ ] Create new checkpoint for user to publish
+- [ ] User to publish new checkpoint and verify delete button appears
