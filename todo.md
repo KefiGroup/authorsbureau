@@ -434,3 +434,12 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 ### Bug: Toast Notifications Blocking Buttons
 - [x] Move toast notification position from bottom-right to top-center
 - [x] Ensure toasts don't block any action buttons in the workflow
+
+### Feature: Delete Book Button
+- [x] Add delete button to My Books page for in-progress books only
+- [x] Add delete button to ReadyToPublish workflow page
+- [x] Hide delete button for published books (status = 'published')
+- [x] Add confirmation dialog before deletion (using browser confirm)
+- [x] Show success message after deletion
+- [x] Refresh book list after deletion
+- [x] Redirect to My Books page after deleting from workflow

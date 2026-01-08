@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Upload, FileText, Sparkles, Loader2, BookOpen, CheckCircle2,
   Lightbulb, TrendingUp, Edit3, RefreshCw, Download, Image as ImageIcon,
-  Check, ArrowRight, ArrowLeft, Save, Clock, AlertCircle, User, Palette
+  Check, ArrowRight, ArrowLeft, Save, Clock, AlertCircle, User, Palette, Trash2
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -49,7 +49,7 @@ interface AIAnalysis {
 }
 
 export default function ReadyToPublish() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const bookIdFromUrl = new URLSearchParams(window.location.search).get('bookId');
   const [bookId, setBookId] = useState<number | null>(bookIdFromUrl ? parseInt(bookIdFromUrl) : null);
   const [currentStep, setCurrentStep] = useState<WorkflowStep>("upload");
@@ -319,6 +319,26 @@ export default function ReadyToPublish() {
     });
   };
 
+  const deleteBookMutation = trpc.book.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Book deleted successfully");
+      setLocation("/books");
+    },
+    onError: () => {
+      toast.error("Failed to delete book");
+    },
+  });
+
+  const handleDeleteCurrentBook = () => {
+    if (!bookId || !existingBook) return;
+    
+    if (!confirm(`Are you sure you want to delete "${existingBook.title}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    deleteBookMutation.mutate({ bookId });
+  };
+
   const analyzeManuscript = trpc.manuscriptAnalysis.analyze.useMutation({
     onSuccess: (data) => {
       setAIAnalysis(data);
@@ -561,6 +581,17 @@ export default function ReadyToPublish() {
               Upload your manuscript and let our AI publisher optimize everything for Amazon KDP success
             </p>
           </div>
+          {bookId && existingBook && existingBook.status !== 'published' && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleDeleteCurrentBook()}
+              className="text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Book
+            </Button>
+          )}
         </div>
 
         {/* Progress Indicator */}
