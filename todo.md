@@ -487,3 +487,29 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Allow users to change title later in workflow (Step 3 Review already has this)
 - [x] Move Save Progress button to top of page for better visibility (now inside step indicator card)
 - [x] Test complete workflow with custom title
+
+
+### Move Amazon Author Central to Step 9 (After Export) - COMPLETED ✅
+**User Request:** Amazon Author Central setup should be Step 9 in the workflow (after Export) because it requires a published book on Amazon first.
+
+**Tasks:**
+- [x] Update WorkflowStep type to include "author-central" step
+- [x] Update step indicator to show 9 steps instead of 8
+- [x] Create Author Central setup page component with warning notice
+- [x] Add prominent notice that Author Central requires published book first
+- [x] Replace "You're Ready to Publish" card with "Next: Author Central" button
+- [x] Add Step 9 indicator icon in step progress bar
+- [x] Show author profile information on Author Central page
+
+
+### Update Category Competitiveness Display - COMPLETED ✅
+**User Request:** Show estimated sales in 24 hours needed to become top seller. Focus on finding categories where 30 sales or fewer in 24 hours can hit #1.
+
+**Example:**
+- To hit top seller: ~15-30 sales in 24hr
+
+**Tasks:**
+- [x] Update category suggestion display to show "To hit top seller: ~X sales in 24hr"
+- [x] Update AI prompt to target ultra-low-competition categories (30 sales or less in 24hr)
+- [x] Remove competitiveness score and search volume from display
+- [x] Make it clear and actionable for authors

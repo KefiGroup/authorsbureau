@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Upload, FileText, Sparkles, Loader2, BookOpen, CheckCircle2,
   Lightbulb, TrendingUp, Edit3, RefreshCw, Download, Image as ImageIcon,
-  Check, ArrowRight, ArrowLeft, Save, Clock, AlertCircle, User, Palette, Trash2
+  Check, ArrowRight, ArrowLeft, Save, Clock, AlertCircle, User, Palette, Trash2, ExternalLink
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -34,7 +34,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-type WorkflowStep = "upload" | "analyzing" | "review" | "profile-check" | "cover" | "amazon" | "wrap" | "export";
+type WorkflowStep = "upload" | "analyzing" | "review" | "profile-check" | "cover" | "amazon" | "wrap" | "export" | "author-central";
 
 interface AIAnalysis {
   suggestedTitles: string[];
@@ -602,7 +602,7 @@ export default function ReadyToPublish() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-muted-foreground">
-                  Step {currentStep === "upload" ? "1" : currentStep === "analyzing" ? "2" : currentStep === "review" ? "3" : currentStep === "profile-check" ? "4" : currentStep === "cover" ? "5" : currentStep === "amazon" ? "6" : currentStep === "wrap" ? "7" : "8"} of 8
+                  Step {currentStep === "upload" ? "1" : currentStep === "analyzing" ? "2" : currentStep === "review" ? "3" : currentStep === "profile-check" ? "4" : currentStep === "cover" ? "5" : currentStep === "amazon" ? "6" : currentStep === "wrap" ? "7" : currentStep === "export" ? "8" : "9"} of 9
                 </span>
               </div>
               <Badge variant="outline" className="text-xs">
@@ -613,7 +613,8 @@ export default function ReadyToPublish() {
                  currentStep === "cover" ? "Cover Design" : 
                  currentStep === "amazon" ? "Amazon KDP" : 
                  currentStep === "wrap" ? "Book Wrap (Optional)" : 
-                 "Export"}
+                 currentStep === "export" ? "Export" :
+                 "Author Central"}
               </Badge>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -760,11 +761,31 @@ export default function ReadyToPublish() {
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   currentStep === "export"
                     ? "bg-primary text-primary-foreground"
+                    : currentStep === "author-central"
+                    ? "bg-primary/20 text-primary"
                     : "bg-muted text-muted-foreground"
                 }`}>
-                  <Download className="w-5 h-5" />
+                  {currentStep === "author-central" ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    <Download className="w-5 h-5" />
+                  )}
                 </div>
                 <span className="text-xs font-medium text-center">Export</span>
+              </div>
+
+              <div className="h-0.5 flex-1 bg-border" />
+
+              {/* Step 9: Author Central */}
+              <div className="flex flex-col items-center gap-2 flex-1">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  currentStep === "author-central"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  <User className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-medium text-center">Author Central</span>
               </div>
             </div>
 
@@ -1411,8 +1432,7 @@ export default function ReadyToPublish() {
                               <p className="font-medium">{cat.category}</p>
                               <p className="text-sm text-muted-foreground mt-1">{cat.reasoning}</p>
                               <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                                <span>Competitiveness: {cat.competitivenessScore}/10</span>
-                                <span>Searches: {cat.estimatedMonthlySearches}/mo</span>
+                                <span>To hit top seller: {cat.topSellerRequirement}</span>
                               </div>
                             </div>
                             {selectedKindleCategories.includes(cat.category) && (
@@ -1491,8 +1511,7 @@ export default function ReadyToPublish() {
                               <p className="font-medium">{cat.category}</p>
                               <p className="text-sm text-muted-foreground mt-1">{cat.reasoning}</p>
                               <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                                <span>Competitiveness: {cat.competitivenessScore}/10</span>
-                                <span>Searches: {cat.estimatedMonthlySearches}/mo</span>
+                                <span>To hit top seller: {cat.topSellerRequirement}</span>
                               </div>
                             </div>
                             {selectedPaperbackCategories.includes(cat.category) && (
@@ -2067,6 +2086,129 @@ export default function ReadyToPublish() {
                 </CardContent>
               </Card>
 
+              <Card className="border-blue-500/50 bg-blue-50">
+                <CardContent className="py-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-blue-900 mb-2">Next: Set Up Amazon Author Central</h3>
+                      <p className="text-blue-800 mb-4">
+                        After publishing your book on Amazon KDP, set up your Author Central profile to connect with readers and track sales.
+                      </p>
+                      <Button 
+                        size="lg" 
+                        onClick={() => setCurrentStep("author-central")}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Continue to Author Central Setup →
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Step 9: Author Central Setup */}
+          {currentStep === "author-central" && (
+            <div className="space-y-6">
+              {/* Back Button */}
+              <Button
+                variant="ghost"
+                onClick={handleBackNavigation}
+                className="mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Export
+              </Button>
+
+              {/* Important Notice */}
+              <Card className="border-amber-500/50 bg-amber-50">
+                <CardContent className="py-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0">
+                      <AlertCircle className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-amber-900 mb-2">⚠️ Important: Complete This AFTER Publishing</h3>
+                      <p className="text-amber-800 mb-3">
+                        Amazon Author Central can only be set up AFTER your book is published and live on Amazon. 
+                        Complete Steps 1-8, publish your book on Amazon KDP, then return here to set up your author profile.
+                      </p>
+                      <p className="text-sm text-amber-700">
+                        Bookmark this page or save your progress to return after publishing.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Main Content */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="w-5 h-5 text-primary" />
+                    Set Up Amazon Author Central
+                  </CardTitle>
+                  <CardDescription>
+                    Create your professional author profile to connect with readers and track book sales
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-muted-foreground">
+                      Amazon Author Central lets you manage your author page, connect with readers, and track book sales. 
+                      Use the profile information you've created here to set up your account.
+                    </p>
+                  </div>
+
+                  {/* Profile Summary */}
+                  {authorProfile && (
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">Your Author Profile Information:</h3>
+                      <div className="grid gap-4 p-4 bg-muted rounded-lg">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">Pen Name</p>
+                          <p className="font-medium">{authorProfile.penName}</p>
+                        </div>
+                        {authorProfile.bio && (
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Biography</p>
+                            <p className="text-sm">{authorProfile.bio}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Instructions */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold">How to Set Up Author Central:</h3>
+                    <ol className="list-decimal list-inside space-y-3 text-sm text-muted-foreground">
+                      <li>Publish your book on Amazon KDP first (complete Steps 1-8)</li>
+                      <li>Wait 24-48 hours for your book to appear on Amazon</li>
+                      <li>Visit Amazon Author Central and create your account</li>
+                      <li>Claim your author page by verifying your published books</li>
+                      <li>Add your biography, photo, and social media links</li>
+                      <li>Track your book sales and reader reviews</li>
+                    </ol>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className="flex gap-3 pt-4">
+                    <Button size="lg" variant="outline" asChild>
+                      <a href="https://authorcentral.amazon.com" target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Go to Amazon Author Central
+                      </a>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Completion Card */}
               <Card className="border-green-500/50 bg-green-50">
                 <CardContent className="py-6">
                   <div className="flex items-start gap-4">
@@ -2074,17 +2216,17 @@ export default function ReadyToPublish() {
                       <Check className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-green-900 mb-2">You're Ready to Publish!</h3>
+                      <h3 className="text-lg font-bold text-green-900 mb-2">🎉 Congratulations! You're All Set!</h3>
                       <p className="text-green-800 mb-4">
-                        Your book has been optimized by AI with bestseller-level intelligence. Download your package and upload to Amazon KDP to start selling.
+                        You've completed the entire AI-powered publishing workflow. Your book is ready to become a bestseller!
                       </p>
                       <div className="flex gap-3">
                         <Button variant="outline" onClick={() => setCurrentStep("upload")}>
                           Start New Book
                         </Button>
                         <Button variant="outline" asChild>
-                          <a href="https://kdp.amazon.com" target="_blank" rel="noopener noreferrer">
-                            Go to Amazon KDP →
+                          <a href="/books">
+                            View My Books
                           </a>
                         </Button>
                       </div>
