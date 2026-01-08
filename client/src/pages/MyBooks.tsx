@@ -5,11 +5,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
-import { BookOpen, Plus, Clock, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
+import { BookOpen, Plus, Clock, CheckCircle2, Loader2, ArrowRight, Trash2 } from "lucide-react";
 
 export default function MyBooks() {
   const [, setLocation] = useLocation();
   const { data: books, isLoading } = trpc.book.getMyBooks.useQuery();
+  const deleteBookMutation = trpc.book.delete.useMutation();
+  const utils = trpc.useUtils();
+
+  const handleDeleteBook = async (bookId: number, bookTitle: string) => {
+    if (!confirm(`Are you sure you want to delete "${bookTitle}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await deleteBookMutation.mutateAsync({ bookId });
+      await utils.book.getMyBooks.invalidate();
+      // Toast notification will be shown by the mutation
+    } catch (error) {
+      console.error('Failed to delete book:', error);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -100,18 +116,34 @@ export default function MyBooks() {
                       </p>
                     </div>
 
-                    {/* Action Button */}
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-between group-hover:bg-primary/10 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLocation(`/ready-to-publish?bookId=${book.id}`);
-                      }}
-                    >
-                      <span>Continue Workflow</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        className="flex-1 justify-between group-hover:bg-primary/10 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLocation(`/ready-to-publish?bookId=${book.id}`);
+                        }}
+                      >
+                        <span>Continue Workflow</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Button>
+                      {book.status !== 'published' && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteBook(book.id, book.title || 'Untitled Book');
+                          }}
+                          disabled={deleteBookMutation.isPending}
+                          title="Delete book"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

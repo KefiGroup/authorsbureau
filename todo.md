@@ -450,5 +450,27 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Published checkpoint e4027054 to production
 - [x] CDN cache issue - published site not reflecting latest code
 - [x] Remove debug console.log statements
-- [ ] Create new checkpoint for user to publish
+- [x] Create new checkpoint for user to publish (94404c51)
 - [ ] User to publish new checkpoint and verify delete button appears
+
+### Critical Bug: Delete Button Not Appearing After Multiple Publishes
+- [ ] Test delete button on dev server (https://3000-i1py4mbr593i9shov1qip-06f57ef6.us2.manus.computer/books)
+- [ ] Verify button code exists in Books.tsx lines 266-276
+- [ ] Check if published site is using a different Books component
+- [ ] Investigate CDN/deployment caching issue
+- [ ] Find solution to force cache clear on published site
+
+
+### Critical Bug: Delete Button Not Appearing - RESOLVED ✅
+**Issue:** Delete button code was in Books.tsx but not showing on /books page even after multiple publishes
+
+**Root Cause:** Route `/books` was pointing to MyBooks.tsx component, not Books.tsx. We were editing the wrong file.
+
+**Solution:** 
+- [x] Identified App.tsx line 37 routes to `MyBooks` component
+- [x] Added delete button functionality to MyBooks.tsx (correct file)
+- [x] Added Trash2 icon import
+- [x] Added deleteBookMutation and handleDeleteBook function
+- [x] Added delete button UI (only shows for non-published books)
+- [x] Tested on dev server - delete button now visible and functional
+- [x] Ready for checkpoint and publish to production
