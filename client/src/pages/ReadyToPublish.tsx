@@ -19,6 +19,7 @@ import { useLocation } from "wouter";
 import { BookWrapSpecifications } from '@/components/BookWrapSpecifications';
 import { PublisherChat } from "@/components/PublisherChat";
 import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
+import { KDPPublishingAssistant } from "@/components/KDPPublishingAssistant";
 import { CoverUpload } from "@/components/CoverUpload";
 import { InteriorPreview } from "@/components/InteriorPreview";
 import { CoverCustomizer } from "@/components/CoverCustomizer";
@@ -2157,6 +2158,38 @@ export default function ReadyToPublish() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* KDP Publishing Assistant */}
+              <KDPPublishingAssistant
+                bookData={{
+                  title: selectedTitle || customTitle || aiAnalysis.suggestedTitles[0] || "",
+                  subtitle: selectedSubtitle || customSubtitle,
+                  author: authorProfile?.penName || "",
+                  description: editedDescription || aiAnalysis.bookDescription,
+                  keywords: kindleKeywords.length > 0 ? kindleKeywords : [],
+                  categories: selectedKindleCategories.length > 0 ? selectedKindleCategories : [],
+                  language: "English",
+                  publishingRights: "i-own-rights",
+                  manuscriptUrl: undefined, // TODO: Add manuscript download URL
+                  coverUrl: selectedCover,
+                  drm: false,
+                  aiGenerated: true,
+                  isbn: isbnNumber,
+                  kdpSelect: true,
+                  territories: "worldwide",
+                  primaryMarketplace: "Amazon.com",
+                  pricing: {
+                    "Amazon.com": { price: 4.99, royaltyRate: 70 },
+                    "Amazon.co.uk": { price: 3.99, royaltyRate: 70 },
+                    "Amazon.de": { price: 4.49, royaltyRate: 70 },
+                    "Amazon.fr": { price: 4.49, royaltyRate: 70 },
+                    "Amazon.es": { price: 4.49, royaltyRate: 70 },
+                    "Amazon.it": { price: 4.49, royaltyRate: 70 },
+                    "Amazon.ca": { price: 5.99, royaltyRate: 70 },
+                    "Amazon.com.au": { price: 6.99, royaltyRate: 70 },
+                  },
+                }}
+              />
 
               <Card className="border-blue-500/50 bg-blue-50">
                 <CardContent className="py-6">
