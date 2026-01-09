@@ -588,9 +588,10 @@ Generate the author bio now:`;
         try {
           if (input.fileType === 'application/pdf' || input.fileName.endsWith('.pdf')) {
             // Extract text from PDF
-            const pdfParse = require('pdf-parse');
-            const pdfData = await pdfParse(buffer);
-            extractedText = pdfData.text;
+            const { PDFParse } = await import('pdf-parse');
+            const parser = new PDFParse({ data: buffer });
+            const result = await parser.getText();
+            extractedText = result.text;
           } else if (input.fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || input.fileName.endsWith('.docx')) {
             // Extract text from DOCX
             const mammoth = await import('mammoth');
