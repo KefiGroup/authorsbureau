@@ -841,3 +841,38 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Update UI to show loading states during analysis
 - [ ] Test with actual manuscript to verify retry mechanism works
 - [ ] Monitor server logs when user reports next failure to identify root cause
+
+
+## Bug Report: 500 Internal Server Error in Manuscript Analysis
+**Reported:** User console shows "Failed to load resource: server responded with status 500" when clicking "Analyze with AI Publisher"
+
+**Error Details:**
+- Frontend: TRPCClientError: Failed to analyze manuscript
+- Backend: 500 Internal Server Error from `/api/trpc/manuscriptAnalysis.analyze`
+- Impact: Users cannot complete Step 1 → Step 2 transition
+
+**Tasks:**
+- [ ] Check server console logs for detailed error stack trace
+- [ ] Identify which part of analyzeManuscript function is throwing the error
+- [ ] Fix the root cause (likely LLM API call or response parsing)
+- [ ] Test with actual manuscript to verify fix works
+- [ ] Ensure retry button appears correctly on error
+
+
+## Bug Report: PDF Text Extraction Encoding Issues
+**Reported:** User uploaded PDF manuscript, analysis fails with garbled characters (�����) in database insert query
+
+**Error Details:**
+- Frontend: "Analysis Failed" alert with SQL insert error
+- Backend: Database rejects insert due to invalid UTF-8 characters
+- Root cause: PDF text extraction producing corrupted/binary data instead of clean text
+- Impact: Users cannot analyze PDF manuscripts
+
+**Tasks:**
+- [x] Found PDF upload handler in ReadyToPublish.tsx handleFileUpload function
+- [x] Installed pdf-parse and mammoth libraries for PDF/DOCX extraction
+- [x] Created extractTextFromFile backend mutation with proper encoding
+- [x] Added text sanitization to remove control characters and normalize whitespace
+- [x] Updated frontend to use backend extraction for PDF/DOCX files
+- [x] Added error handling with user-friendly messages
+- [ ] Test with user's actual PDF file to verify fix works

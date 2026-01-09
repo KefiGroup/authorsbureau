@@ -629,26 +629,58 @@ export default function ReadyToPublish() {
     },
   });
 
+  const extractText = trpc.manuscriptAnalysis.extractTextFromFile.useMutation();
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setIsUploading(true);
     try {
-      const text = await file.text();
-      const count = text.trim().split(/\s+/).length;
-      
-      setManuscript(text);
-      setWordCount(count);
+      // For PDF and DOCX files, use backend extraction
+      if (file.type === 'application/pdf' || file.name.endsWith('.pdf') ||
+          file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx')) {
+        
+        // Read file as base64
+        const reader = new FileReader();
+        const fileData = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => {
+            const base64 = (reader.result as string).split(',')[1]; // Remove data:...;base64, prefix
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        
+        // Extract text using backend
+        const result = await extractText.mutateAsync({
+          fileName: file.name,
+          fileType: file.type,
+          fileData,
+        });
+        
+        setManuscript(result.text);
+        setWordCount(result.wordCount);
+        
+        toast.success(`Manuscript uploaded! ${result.wordCount.toLocaleString()} words detected.`);
+      } else {
+        // For TXT files, read directly
+        const text = await file.text();
+        const count = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+        
+        setManuscript(text);
+        setWordCount(count);
+        
+        toast.success(`Manuscript uploaded! ${count.toLocaleString()} words detected.`);
+      }
       
       // Reset startingFresh flag when user uploads new content
       if (startingFresh) {
         setStartingFresh(false);
       }
-      
-      toast.success(`Manuscript uploaded! ${count.toLocaleString()} words detected.`);
-    } catch (error) {
-      toast.error("Failed to read file. Please try again.");
+    } catch (error: any) {
+      console.error('[handleFileUpload] Error:', error);
+      toast.error(error.message || "Failed to read file. Please try again.");
     } finally {
       setIsUploading(false);
     }

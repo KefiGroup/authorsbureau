@@ -574,6 +574,56 @@ Generate the author bio now:`;
 
   // Manuscript Analysis (AI-Agentic Publishing)
   manuscriptAnalysis: router({
+    // Extract text from uploaded file (PDF, DOCX, TXT)
+    extractTextFromFile: protectedProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileType: z.string(),
+        fileData: z.string(), // base64 encoded
+      }))
+      .mutation(async ({ input }) => {
+        const buffer = Buffer.from(input.fileData, 'base64');
+        let extractedText = '';
+        
+        try {
+          if (input.fileType === 'application/pdf' || input.fileName.endsWith('.pdf')) {
+            // Extract text from PDF
+            const pdfParse = require('pdf-parse');
+            const pdfData = await pdfParse(buffer);
+            extractedText = pdfData.text;
+          } else if (input.fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || input.fileName.endsWith('.docx')) {
+            // Extract text from DOCX
+            const mammoth = await import('mammoth');
+            const result = await mammoth.extractRawText({ buffer });
+            extractedText = result.value;
+          } else {
+            // Plain text file
+            extractedText = buffer.toString('utf-8');
+          }
+          
+          // Clean up the text: remove excessive whitespace, invalid characters
+          extractedText = extractedText
+            .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '') // Remove control characters
+            .replace(/\r\n/g, '\n') // Normalize line endings
+            .replace(/\n{3,}/g, '\n\n') // Collapse multiple newlines
+            .trim();
+          
+          // Count words
+          const wordCount = extractedText.trim().split(/\s+/).filter(w => w.length > 0).length;
+          
+          return {
+            text: extractedText,
+            wordCount,
+          };
+        } catch (error) {
+          console.error('[extractTextFromFile] Error:', error);
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to extract text from ${input.fileType}: ${(error as Error).message}`,
+          });
+        }
+      }),
+
     analyze: protectedProcedure
       .input(z.object({
         manuscript: z.string().min(100),
@@ -581,31 +631,78 @@ Generate the author bio now:`;
         initialTitle: z.string().optional(),
       }))
       .mutation(async ({ input, ctx }) => {
-        // Analyze the manuscript
-        const analysis = await analyzeManuscript(input);
-        
-        // Create a book in the database
-        // Use initialTitle if provided, otherwise use first AI-suggested title
-        const bookTitle = input.initialTitle || analysis.suggestedTitles[0];
-        const insertResult = await db.createBook({
-          authorId: ctx.user.id,
-          title: bookTitle,
-          subtitle: analysis.suggestedSubtitles[0],
-          genre: analysis.detectedGenre,
-          targetWordCount: input.wordCount,
-          content: input.manuscript,
-          wordCount: input.wordCount,
-          status: "drafting", // Valid status from schema
-        });
-        
-        // Get the newly created book ID (cast to any to access insertId)
-        const bookId = Number((insertResult as any).insertId);
-        
-        // Return both analysis and bookId
-        return {
-          ...analysis,
-          bookId,
-        };
+        try {
+          console.log('[manuscriptAnalysis.analyze] Starting analysis...');
+          console.log('[manuscriptAnalysis.analyze] User ID:', ctx.user.id);
+          console.log('[manuscriptAnalysis.analyze] Manuscript length:', input.manuscript.length);
+          console.log('[manuscriptAnalysis.analyze] Word count:', input.wordCount);
+          
+          // Analyze the manuscript
+          console.log('[manuscriptAnalysis.analyze] Calling analyzeManuscript...');
+          const analysis = await analyzeManuscript(input);
+          console.log('[manuscriptAnalysis.analyze] Analysis complete:', {
+            titlesCount: analysis.suggestedTitles?.length,
+            subtitlesCount: analysis.suggestedSubtitles?.length,
+            genre: analysis.detectedGenre,
+          });
+          
+          // Get or create author profile for this user
+          console.log('[manuscriptAnalysis.analyze] Looking up author profile for user:', ctx.user.id);
+          let author = await db.getAuthorByUserId(ctx.user.id);
+          
+          if (!author) {
+            console.log('[manuscriptAnalysis.analyze] No author profile found, creating one...');
+            await db.createAuthorProfile({
+              userId: ctx.user.id,
+              penName: ctx.user.name || 'Anonymous Author',
+            });
+            author = await db.getAuthorByUserId(ctx.user.id);
+            console.log('[manuscriptAnalysis.analyze] Author profile created:', author?.id);
+          } else {
+            console.log('[manuscriptAnalysis.analyze] Found existing author profile:', author.id);
+          }
+          
+          if (!author) {
+            throw new Error('Failed to create or retrieve author profile');
+          }
+          
+          // Create a book in the database
+          // Use initialTitle if provided, otherwise use first AI-suggested title
+          const bookTitle = input.initialTitle || analysis.suggestedTitles[0];
+          console.log('[manuscriptAnalysis.analyze] Creating book with title:', bookTitle);
+          
+          const insertResult = await db.createBook({
+            authorId: author.id,
+            title: bookTitle,
+            subtitle: analysis.suggestedSubtitles[0],
+            genre: analysis.detectedGenre,
+            targetWordCount: input.wordCount,
+            content: input.manuscript,
+            wordCount: input.wordCount,
+            status: "drafting", // Valid status from schema
+          });
+          
+          console.log('[manuscriptAnalysis.analyze] Book created, insertResult:', insertResult);
+          
+          // Get the newly created book ID (cast to any to access insertId)
+          const bookId = Number((insertResult as any).insertId);
+          console.log('[manuscriptAnalysis.analyze] Book ID:', bookId);
+          
+          // Return both analysis and bookId
+          return {
+            ...analysis,
+            bookId,
+          };
+        } catch (error) {
+          console.error('[manuscriptAnalysis.analyze] ERROR:', error);
+          console.error('[manuscriptAnalysis.analyze] Error stack:', (error as Error).stack);
+          console.error('[manuscriptAnalysis.analyze] Error message:', (error as Error).message);
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to analyze manuscript: ${(error as Error).message}`,
+            cause: error,
+          });
+        }
       }),
 
     generateMoreTitles: protectedProcedure
