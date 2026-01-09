@@ -200,12 +200,24 @@ export default function ReadyToPublish() {
 
   // Auto-save workflow progress when step changes (after book is created)
   useEffect(() => {
-    if (!bookId || currentStep === "upload" || currentStep === "analyzing") return;
+    if (!bookId || currentStep === "upload" || currentStep === "analyzing") {
+      console.log('[Auto-save] Skipping auto-save - bookId:', bookId, 'currentStep:', currentStep);
+      return;
+    }
     
-    console.log('[Auto-save] Saving progress for step:', currentStep);
+    console.log('[Auto-save] Preparing to save progress for step:', currentStep, 'bookId:', bookId);
     
     // Auto-save progress whenever step changes
     const timeoutId = setTimeout(() => {
+      console.log('[Auto-save] Calling saveProgressMutation with:', {
+        bookId,
+        workflowStep: currentStep,
+        hasAiAnalysis: !!aiAnalysis,
+        hasSelectedTitle: !!selectedTitle,
+        hasSelectedCover: !!(selectedCover || uploadedCoverUrl),
+        coversCount: generatedCovers.length
+      });
+      
       saveProgressMutation.mutate({
         bookId,
         workflowStep: currentStep,
@@ -404,10 +416,11 @@ export default function ReadyToPublish() {
   // Save progress mutation
   const saveProgressMutation = trpc.book.saveWorkflowProgress.useMutation({
     onSuccess: () => {
-      toast.success("Progress saved! You can resume anytime.");
+      console.log('[Auto-save] Progress saved successfully');
+      // Don't show toast for auto-save to avoid spam
     },
     onError: (error) => {
-      console.error('Save progress error:', error);
+      console.error('[Auto-save] Save progress error:', error);
       toast.error("Failed to save progress. Please try again.");
     },
   });

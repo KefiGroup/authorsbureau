@@ -903,3 +903,13 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Call regenerateCover.mutate() with proper parameters
 - [x] Update generated covers state with new regenerated cover
 - [ ] Test regeneration with user's modification request (ready for user testing)
+
+## Bug Report: Workflow State Not Restoring After Clear
+**Reported:** User cleared AI analysis and navigated to cover generation, but upon returning to page, workflow resets to Step 1 instead of resuming at Cover step
+**Expected:** Should show "Resume Where You Left Off?" dialog with option to continue from Cover step
+**Actual:** Auto-loads manuscript but stays at Step 1 (Upload) instead of restoring to saved workflowStep
+**Tasks:**
+- [x] Added detailed console logging to track auto-save behavior
+- [ ] Verify auto-load logic properly restores currentStep (logging added for debugging)
+- [ ] Ensure "Resume Progress" dialog appears when workflowStep exists in database
+- [ ] Test complete workflow: Upload → Analysis → Review → Cover → Clear → Return → Should resume at Cover
