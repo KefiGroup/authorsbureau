@@ -64,7 +64,7 @@ export default function ReadyToPublish() {
 
   // Back navigation helper
   const handleBackNavigation = () => {
-    const stepOrder: WorkflowStep[] = ["upload", "analyzing", "review", "profile-check", "cover", "amazon", "wrap", "export", "author-central"];
+    const stepOrder: WorkflowStep[] = ["upload", "analyzing", "review", "profile-check", "cover", "wrap", "amazon", "export", "author-central"];
     const currentIndex = stepOrder.indexOf(currentStep);
     if (currentIndex > 0) {
       // Skip analyzing step when going back
@@ -664,7 +664,7 @@ export default function ReadyToPublish() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-muted-foreground">
-                  Step {currentStep === "upload" ? "1" : currentStep === "analyzing" ? "2" : currentStep === "review" ? "3" : currentStep === "profile-check" ? "4" : currentStep === "cover" ? "5" : currentStep === "amazon" ? "6" : currentStep === "wrap" ? "7" : currentStep === "export" ? "8" : "9"} of 9
+                  Step {currentStep === "upload" ? "1" : currentStep === "analyzing" ? "2" : currentStep === "review" ? "3" : currentStep === "profile-check" ? "4" : currentStep === "cover" ? "5" : currentStep === "wrap" ? "6" : currentStep === "amazon" ? "7" : currentStep === "export" ? "8" : "9"} of 9
                 </span>
               </div>
               <Badge variant="outline" className="text-xs">
@@ -673,8 +673,8 @@ export default function ReadyToPublish() {
                  currentStep === "review" ? "Review & Edit" : 
                  currentStep === "profile-check" ? "Author Profile" : 
                  currentStep === "cover" ? "Cover Design" : 
-                 currentStep === "amazon" ? "Amazon KDP" : 
                  currentStep === "wrap" ? "Book Wrap (Optional)" : 
+                 currentStep === "amazon" ? "Amazon KDP" : 
                  currentStep === "export" ? "Export" :
                  "Author Central"}
               </Badge>
@@ -780,30 +780,30 @@ export default function ReadyToPublish() {
 
               <div className="h-0.5 flex-1 bg-border" />
 
-              {/* Step 6: Amazon KDP */}
+              {/* Step 6: Book Wrap */}
               <div className="flex flex-col items-center gap-2 flex-1">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                currentStep === "amazon"
+                currentStep === "wrap"
                   ? "bg-blue-600 text-white"
-                  : ["wrap", "export", "author-central"].includes(currentStep)
+                  : ["amazon", "export", "author-central"].includes(currentStep)
                   ? "bg-green-600 text-white"
                   : "bg-muted text-muted-foreground"
               }`}>
-                {["wrap", "export", "author-central"].includes(currentStep) ? (
+                {["amazon", "export", "author-central"].includes(currentStep) ? (
                   <CheckCircle2 className="w-5 h-5" />
                 ) : (
-                  <TrendingUp className="w-5 h-5" />
+                  <BookOpen className="w-5 h-5" />
                 )}
               </div>
-                <span className="text-xs font-medium text-center">Amazon</span>
+                <span className="text-xs font-medium text-center">Wrap</span>
               </div>
 
               <div className="h-0.5 flex-1 bg-border" />
 
-              {/* Step 7: Book Wrap */}
+              {/* Step 7: Amazon KDP */}
               <div className="flex flex-col items-center gap-2 flex-1">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                currentStep === "wrap"
+                currentStep === "amazon"
                   ? "bg-blue-600 text-white"
                   : ["export", "author-central"].includes(currentStep)
                   ? "bg-green-600 text-white"
@@ -812,10 +812,10 @@ export default function ReadyToPublish() {
                 {["export", "author-central"].includes(currentStep) ? (
                   <CheckCircle2 className="w-5 h-5" />
                 ) : (
-                  <BookOpen className="w-5 h-5" />
+                  <TrendingUp className="w-5 h-5" />
                 )}
               </div>
-                <span className="text-xs font-medium text-center">Wrap</span>
+                <span className="text-xs font-medium text-center">Amazon</span>
               </div>
 
               <div className="h-0.5 flex-1 bg-border" />
@@ -898,8 +898,8 @@ export default function ReadyToPublish() {
                 <strong>
                   {existingBook?.workflowStep === "review" && "Review & Edit"}
                   {existingBook?.workflowStep === "cover" && "Cover Design"}
-                  {existingBook?.workflowStep === "amazon" && "Amazon Optimization"}
                   {existingBook?.workflowStep === "wrap" && "Book Wrap Design"}
+                  {existingBook?.workflowStep === "amazon" && "Amazon Optimization"}
                   {existingBook?.workflowStep === "export" && "Export & Download"}
                 </strong>{" "}
                 step.
@@ -1382,10 +1382,10 @@ export default function ReadyToPublish() {
                     <div className="flex justify-end">
                       <Button
                         size="lg"
-                        onClick={() => setCurrentStep("amazon")}
+                        onClick={() => setCurrentStep("wrap")}
                         disabled={!selectedCover && !uploadedCoverUrl}
                       >
-                        Continue to Amazon Optimization
+                        Continue to Book Wrap Designer
                         <Sparkles className="w-4 h-4 ml-2" />
                       </Button>
                     </div>
@@ -1407,9 +1407,9 @@ export default function ReadyToPublish() {
                     <div className="flex justify-end">
                       <Button
                         size="lg"
-                        onClick={() => setCurrentStep("amazon")}
+                        onClick={() => setCurrentStep("wrap")}
                       >
-                        Continue to Amazon Setup
+                        Continue to Book Wrap Designer
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     </div>
@@ -1429,7 +1429,7 @@ export default function ReadyToPublish() {
                 className="mb-4"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Cover Design
+                Back to Book Wrap
               </Button>
               <Card className="border-primary/50 bg-primary/5">
                 <CardHeader>
@@ -1784,9 +1784,9 @@ export default function ReadyToPublish() {
                 </Button>
                 <Button
                   size="lg"
-                  onClick={() => setCurrentStep("wrap")}
+                  onClick={() => setCurrentStep("export")}
                 >
-                  Continue to Book Wrap Designer
+                  Continue to Export & Download
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
@@ -1928,7 +1928,7 @@ export default function ReadyToPublish() {
                 className="mb-4"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Amazon KDP
+                Back to Cover Design
               </Button>
               {/* Author Profile Check */}
               {(!authorProfile?.avatarUrl || !authorProfile?.bio) ? (
@@ -1955,7 +1955,7 @@ export default function ReadyToPublish() {
                           </Button>
                           <Button
                             variant="outline"
-                            onClick={() => setCurrentStep("amazon")}
+                            onClick={() => setCurrentStep("cover")}
                           >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Go Back
@@ -1978,8 +1978,8 @@ export default function ReadyToPublish() {
                       <div className="flex gap-3">
                         <Button
                           onClick={() => {
-                            toast.info("Skipping book wrap. You can design it externally and upload to KDP directly.");
-                            setCurrentStep("export");
+                            toast.info("Skipping book wrap. Moving to Amazon KDP setup.");
+                            setCurrentStep("amazon");
                           }}
                           variant="outline"
                           className="flex-1"
@@ -2010,8 +2010,8 @@ export default function ReadyToPublish() {
                       isbn={isbnNumber || undefined}
                       pageCount={Math.ceil(wordCount / 250)}
                       onUploadComplete={(wrapUrl) => {
-                        toast.success("Book wrap uploaded! Ready to export.");
-                        setCurrentStep("export");
+                        toast.success("Book wrap uploaded! Moving to Amazon KDP setup.");
+                        setCurrentStep("amazon");
                       }}
                     />
                   </div>

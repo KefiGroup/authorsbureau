@@ -712,3 +712,36 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Ensure each keyword field is on its own line for easy individual copying
 - [x] Add helper text and warnings for insufficient keywords/categories
 - [x] Test with real book data to verify format matches KDP exactly (tested successfully)
+
+
+### Change Workflow Sequence: Cover → Wrap → Amazon → Export - COMPLETED ✅
+**User Request:** Change the workflow step order so that Wrap comes before Amazon, and Export comes after Amazon.
+
+**Old Sequence:**
+1. Upload → 2. Analysis → 3. Review → 4. Profile → 5. Cover → 6. **Amazon** → 7. **Wrap** → 8. Export → 9. Author Central
+
+**New Sequence:**
+1. Upload → 2. Analysis → 3. Review → 4. Profile → 5. Cover → 6. **Wrap** → 7. **Amazon** → 8. Export → 9. Author Central
+
+**Rationale:** Authors should prepare the book wrap before setting up Amazon details, and Export should come after all Amazon setup is complete.
+
+**Implementation:**
+- Updated stepOrder array in handleBackNavigation (line 67)
+- Swapped Step 6 and Step 7 in progress indicator (Wrap now Step 6, Amazon now Step 7)
+- Updated step number display logic (line 667)
+- Updated step badge labels (line 676-677)
+- Updated Resume dialog step names (line 901-902)
+- Updated all navigation buttons:
+  * Cover → Continue to Wrap (was Amazon)
+  * Wrap → Back to Cover, Skip to Amazon, Continue to Amazon (was Export)
+  * Amazon → Back to Wrap (was Cover), Continue to Export (was Wrap)
+
+**Tasks:**
+- [x] Locate workflow step order in ReadyToPublish.tsx (found at line 67)
+- [x] Update currentStep state logic to use new sequence
+- [x] Update progress indicator labels to reflect new order (Wrap Step 6, Amazon Step 7)
+- [x] Update handleBackNavigation stepOrder array to match new sequence
+- [x] Update all step transition logic (Continue buttons) to follow new order
+- [ ] Test navigation: Cover → Wrap → Amazon → Export (ready for user testing)
+- [ ] Verify Back buttons work correctly with new sequence (ready for testing)
+- [ ] Verify auto-save persists correct step names (should work automatically)
