@@ -90,6 +90,7 @@ export default function ReadyToPublish() {
   const [customTitle, setCustomTitle] = useState("");
   const [customSubtitle, setCustomSubtitle] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   // Cover generation state
   const [generatedCovers, setGeneratedCovers] = useState<any[]>([]);
@@ -479,11 +480,14 @@ export default function ReadyToPublish() {
       if (data.bookId) {
         setBookId(data.bookId);
       }
+      setAnalysisError(null); // Clear any previous errors
       setCurrentStep("review");
       toast.success("AI analysis complete! Review the suggestions below.");
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to analyze manuscript");
+      const errorMessage = error.message || "Failed to analyze manuscript";
+      setAnalysisError(errorMessage);
+      toast.error(errorMessage);
       setCurrentStep("upload");
     },
   });
@@ -697,6 +701,7 @@ export default function ReadyToPublish() {
       return;
     }
     
+    setAnalysisError(null); // Clear previous errors
     setCurrentStep("analyzing");
     analyzeManuscript.mutate({ manuscript, wordCount, initialTitle: initialTitle.trim() || undefined });
   };
@@ -1174,28 +1179,72 @@ export default function ReadyToPublish() {
                   </TabsContent>
                 </Tabs>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <Lightbulb className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-blue-900">
-                      <p className="font-medium mb-1">What happens next?</p>
-                      <p>
-                        Our AI will analyze your manuscript with the expertise of a senior New York Times publisher, 
-                        suggesting bestseller-worthy titles, optimized descriptions, and market positioning strategies.
-                      </p>
+                {/* Error Alert with Retry */}
+                {analysisError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="font-medium text-red-900 mb-1">Analysis Failed</p>
+                        <p className="text-sm text-red-800 mb-3">{analysisError}</p>
+                        <Button
+                          onClick={handleAnalyzeManuscript}
+                          disabled={analyzeManuscript.isPending}
+                          variant="outline"
+                          size="sm"
+                          className="gap-2 border-red-300 text-red-700 hover:bg-red-100"
+                        >
+                          {analyzeManuscript.isPending ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Retrying...
+                            </>
+                          ) : (
+                            <>
+                              <RefreshCw className="w-4 h-4" />
+                              Retry Analysis
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {/* Info Box */}
+                {!analysisError && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <Lightbulb className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div className="text-sm text-blue-900">
+                        <p className="font-medium mb-1">What happens next?</p>
+                        <p>
+                          Our AI will analyze your manuscript with the expertise of a senior New York Times publisher, 
+                          suggesting bestseller-worthy titles, optimized descriptions, and market positioning strategies.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex justify-end">
                   <Button
                     onClick={handleAnalyzeManuscript}
-                    disabled={!manuscript || manuscript.length < 100}
+                    disabled={!manuscript || manuscript.length < 100 || analyzeManuscript.isPending}
                     size="lg"
                     className="gap-2"
                   >
-                    <Sparkles className="w-5 h-5" />
-                    Analyze with AI Publisher
+                    {analyzeManuscript.isPending ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5" />
+                        Analyze with AI Publisher
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>

@@ -815,3 +815,29 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Identify root cause: Auto-load manuscript useEffect was resetting currentStep to "upload" on book refetch
 - [x] Fix: Removed else block that was interfering with natural workflow progression
 - [x] Test fix: Upload → Analyze → Successfully progresses to Step 2 (Review) ✅
+
+
+## Bug Report: Manuscript Analysis Failure
+
+**Bug:** AI manuscript analysis fails with error "Failed to analyze manuscript. Please try again."
+
+**Current Behavior:**
+- User uploads manuscript and clicks "Analyze with AI Publisher"
+- Analysis fails
+- Error toast appears but no retry mechanism
+- User stuck at Step 1
+
+**Expected Behavior:**
+- Analysis should complete successfully
+- If analysis fails, show clear error message with retry button
+- Provide helpful troubleshooting guidance
+
+**Tasks:**
+- [x] Check server logs for analysis error details
+- [x] Add detailed logging to backend analyzer (console.log statements)
+- [x] Add specific error messages for different failure types (JSON parse, timeout, rate limit)
+- [x] Add retry button in error state (red alert box with Retry Analysis button)
+- [x] Add error state tracking (analysisError state variable)
+- [x] Update UI to show loading states during analysis
+- [ ] Test with actual manuscript to verify retry mechanism works
+- [ ] Monitor server logs when user reports next failure to identify root cause

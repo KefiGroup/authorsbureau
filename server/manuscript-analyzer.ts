@@ -68,6 +68,8 @@ Analyze the manuscript and provide:
 \`\`\``;
 
   try {
+    console.log("[Manuscript Analyzer] Starting analysis for", params.wordCount, "words");
+    
     const response = await invokeLLM({
       messages: [
         { role: "system", content: "You are an expert book publishing analyst with deep knowledge of Amazon KDP optimization." },
@@ -75,20 +77,51 @@ Analyze the manuscript and provide:
       ]
     });
 
+    console.log("[Manuscript Analyzer] LLM response received");
+
     const messageContent = response.choices[0]?.message?.content;
+    if (!messageContent) {
+      console.error("[Manuscript Analyzer] No content in LLM response:", JSON.stringify(response));
+      throw new Error("LLM returned empty response");
+    }
+
     const content = typeof messageContent === 'string' ? messageContent : '';
+    console.log("[Manuscript Analyzer] Parsing JSON from response, content length:", content.length);
+    
     const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || content.match(/```\n([\s\S]*?)\n```/);
     const jsonContent = jsonMatch ? jsonMatch[1] : content;
     
+    console.log("[Manuscript Analyzer] JSON content extracted, length:", jsonContent.length);
+    
     const analysis = JSON.parse(jsonContent);
+    
+    // Validate required fields
+    if (!analysis.suggestedTitles || !Array.isArray(analysis.suggestedTitles) || analysis.suggestedTitles.length === 0) {
+      console.error("[Manuscript Analyzer] Invalid analysis structure:", JSON.stringify(analysis));
+      throw new Error("Analysis missing required fields");
+    }
+    
+    console.log("[Manuscript Analyzer] Analysis complete, titles:", analysis.suggestedTitles.length);
     
     return {
       ...analysis,
       wordCount: params.wordCount,
     };
   } catch (error) {
-    console.error("[Manuscript Analyzer] Failed to analyze manuscript:", error);
-    throw new Error("Failed to analyze manuscript. Please try again.");
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[Manuscript Analyzer] Failed to analyze manuscript:", errorMessage);
+    console.error("[Manuscript Analyzer] Full error:", error);
+    
+    // Provide more specific error messages
+    if (errorMessage.includes("JSON") || errorMessage.includes("parse")) {
+      throw new Error("Failed to parse AI response. The manuscript might be too complex. Please try again or contact support.");
+    } else if (errorMessage.includes("timeout") || errorMessage.includes("ETIMEDOUT")) {
+      throw new Error("Analysis timed out. Your manuscript might be very long. Please try again.");
+    } else if (errorMessage.includes("rate limit")) {
+      throw new Error("Too many requests. Please wait a moment and try again.");
+    } else {
+      throw new Error("Failed to analyze manuscript. Please try again or contact support if the problem persists.");
+    }
   }
 }
 
