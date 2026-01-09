@@ -913,3 +913,15 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Verify auto-load logic properly restores currentStep (logging added for debugging)
 - [ ] Ensure "Resume Progress" dialog appears when workflowStep exists in database
 - [ ] Test complete workflow: Upload → Analysis → Review → Cover → Clear → Return → Should resume at Cover
+
+## Bug Report: Author Profile Mandatory Fields Not Saving
+**Reported:** User fills in mandatory profile fields (Profile Photo, Pen Name, Books Authored, Accomplishments, Education) but data does not persist after save
+**Expected:** All profile fields should save to database and reload when user returns to profile page
+**Actual:** Fields appear empty after page reload, indicating save is not working
+**Tasks:**
+- [x] Added comprehensive console logging to profile save and photo upload
+- [x] Logging added to track mutation calls and data flow
+- [ ] Verify backend mutation receives and saves all fields correctly
+- [ ] Check database schema has all required columns for profile fields
+- [ ] Add error handling to show user if save fails
+- [ ] Test profile save and reload to verify persistence

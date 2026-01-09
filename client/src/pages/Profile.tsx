@@ -64,17 +64,27 @@ export default function Profile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('[Profile Save] Form submitted');
+    console.log('[Profile Save] Current formData:', formData);
+    console.log('[Profile Save] Author profile exists:', !!authorProfile);
 
     try {
       if (authorProfile) {
-        await updateProfileMutation.mutateAsync(formData);
+        console.log('[Profile Save] Calling updateProfile mutation');
+        const result = await updateProfileMutation.mutateAsync(formData);
+        console.log('[Profile Save] Update successful:', result);
         toast.success("Profile updated successfully!");
       } else {
-        await createProfileMutation.mutateAsync(formData);
+        console.log('[Profile Save] Calling createProfile mutation');
+        const result = await createProfileMutation.mutateAsync(formData);
+        console.log('[Profile Save] Create successful:', result);
         toast.success("Profile created successfully!");
       }
+      console.log('[Profile Save] Invalidating profile query');
       utils.author.getProfile.invalidate();
     } catch (error) {
+      console.error('[Profile Save] Error:', error);
       toast.error("Failed to save profile. Please try again.");
     }
   };
@@ -103,6 +113,7 @@ export default function Profile() {
   };
 
   const handleCropComplete = async (croppedBlob: Blob) => {
+    console.log('[Photo Upload] Starting upload, blob size:', croppedBlob.size);
     setIsUploading(true);
     try {
       // Convert blob to base64
@@ -110,19 +121,22 @@ export default function Profile() {
       reader.readAsDataURL(croppedBlob);
       await new Promise((resolve) => { reader.onloadend = resolve; });
       const base64Data = reader.result as string;
+      console.log('[Photo Upload] Base64 data length:', base64Data.length);
       
       // Upload to S3 via tRPC
+      console.log('[Photo Upload] Calling uploadPhotoMutation');
       const { url } = await uploadPhotoMutation.mutateAsync({
         imageData: base64Data,
         mimeType: "image/jpeg",
       });
+      console.log('[Photo Upload] Upload successful, URL:', url);
       
       setFormData({ ...formData, avatarUrl: url });
       setImageToCrop(null);
       
       toast.success("Photo uploaded successfully");
     } catch (error) {
-      console.error("Photo upload error:", error);
+      console.error('[Photo Upload] Error:', error);
       toast.error("Failed to upload photo. Please try again.");
     } finally {
       setIsUploading(false);
