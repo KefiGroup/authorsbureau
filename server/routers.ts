@@ -1063,10 +1063,10 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
       }))
       .mutation(async ({ input, ctx }) => {
         // Validate file type
-        if (!['image/png', 'image/jpeg', 'image/jpg'].includes(input.fileType)) {
+        if (!['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'].includes(input.fileType)) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Invalid file type. Only PNG and JPG are supported.",
+            message: "Invalid file type. Only PNG, JPG, and PDF are supported.",
           });
         }
 

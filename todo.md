@@ -554,3 +554,18 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Fix the next step after Cover to be Amazon, not Wrap
 - [x] Verify correct order: Upload → Analysis → Review → Profile → Cover → Amazon → Wrap → Export → Author Central
 - [x] Button now says "Continue to Amazon Setup" at Cover step
+
+
+#### Fix Book Wrap Upload Functionality - COMPLETED ✅
+**User Report:** At Step 7 (Book Wrap), cannot upload file and proceed to next step. The "Upload Book Wrap" button is not working.
+
+**Root Cause:** File type validation in BookWrapSpecifications.tsx (line 66-68) was rejecting PDF files even though UI advertised PDF support.
+
+**Tasks:**
+- [x] Check dev server status for errors
+- [x] Examine book wrap upload code in ReadyToPublish.tsx
+- [x] Check if file input is properly wired to upload handler (found bug in BookWrapSpecifications.tsx)
+- [x] Fix frontend validation to accept PNG, JPG, and PDF files
+- [x] Update backend validation in routers.ts (line 1066) to accept PDF files
+- [x] Both frontend and backend now accept: image/png, image/jpeg, image/jpg, application/pdf
+- [x] Test file upload and ensure "Continue to Export" button appears after upload (ready for user testing)

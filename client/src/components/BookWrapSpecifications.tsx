@@ -63,8 +63,9 @@ export function BookWrapSpecifications({
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload an image file (PNG, JPG, or PDF)");
+      const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
+      if (!validTypes.includes(file.type)) {
+        toast.error("Please upload an image file (PNG, JPG) or PDF");
         return;
       }
       
