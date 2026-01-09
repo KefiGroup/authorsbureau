@@ -745,3 +745,49 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Test navigation: Cover → Wrap → Amazon → Export (ready for user testing)
 - [ ] Verify Back buttons work correctly with new sequence (ready for testing)
 - [ ] Verify auto-save persists correct step names (should work automatically)
+
+
+### Redesign Amazon KDP Step for Seamless Copy-Paste Workflow - OPTION 2 SELECTED
+**User Request:** Redesign the Amazon KDP step (Step 7) to create an intuitive "KDP-Ready Copy & Paste" interface that matches Amazon KDP's exact field order and requirements, making it effortless for authors to copy each field and paste directly into KDP.
+
+**Current Problems:**
+- Too many manual "Analyze" buttons (5 separate clicks required)
+- Sequential dependencies (can't generate keywords until categories done)
+- No clear copy-paste interface after generating results
+- Separate Kindle/Paperback sections double the work
+- KDP Publishing Assistant in Export step has empty Keywords and Categories sections
+
+**Selected Approach: Option 2**
+- **Amazon step (Step 7)**: AI Analysis & Review - Auto-generate categories/keywords/pricing, show results for user review
+- **Export step (Step 8)**: KDP-Ready Copy & Paste - Complete interface with all fields matching KDP's 3-page structure
+
+**Why Option 2 has best UX:**
+- Clear separation: Optimize (Amazon) → Export (KDP upload)
+- Natural workflow: Review AI recommendations → Get final package → Upload to KDP
+- Less cognitive load: Each step has ONE focused task
+- Matches user mental model: "Optimization" = prepare, "Export" = get ready to publish
+
+**Implementation Tasks:**
+
+**Phase 1: Fix Amazon Step (Step 7)** ✅
+- [x] Auto-generate Kindle categories on page load (removed "Analyze Kindle Categories" button)
+- [x] Auto-generate Kindle keywords after categories selected (removed manual button)
+- [x] Auto-generate Paperback categories on page load (removed "Analyze Paperback Categories" button)
+- [x] Auto-generate Paperback keywords after categories selected (removed manual button)
+- [x] Auto-select top 3 categories (sorted by competitivenessScore)
+- [x] Redesigned UI to show loading states during auto-generation
+- [x] All generated data auto-saves to database via existing auto-save system
+
+**Phase 2: Enhance Export Step (Step 8)** ✅
+- [x] Populated Keywords section with both Kindle AND Paperback keywords (merged arrays)
+- [x] Populated Categories section with both Kindle AND Paperback categories (merged arrays)
+- [x] Added manuscript download button - auto-generates DOCX file when Export step loads
+- [x] Created generateManuscriptFile backend mutation with chapter parsing
+- [x] Copy buttons already working (pre-existing in KDPPublishingAssistant component)
+- [x] Helper text already exists in KDP Publishing Assistant
+
+**Phase 3: Test Complete Flow**
+- [ ] Test Amazon step: Page loads → AI auto-generates → User reviews results
+- [ ] Test Export step: All fields populated → Copy buttons work → Files downloadable
+- [ ] Test complete workflow: Amazon (review) → Export (copy to KDP) → Verify no missing fields
+- [ ] Cross-reference with actual KDP form to ensure 100% field coverage

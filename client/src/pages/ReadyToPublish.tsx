@@ -108,6 +108,7 @@ export default function ReadyToPublish() {
   const [paperbackKeywords, setPaperbackKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
   const [isbnNumber, setIsbnNumber] = useState<string>("");
+  const [manuscriptUrl, setManuscriptUrl] = useState<string>("");
 
   // Load author profile
   const { data: authorProfile } = trpc.author.getProfile.useQuery();
@@ -229,6 +230,69 @@ export default function ReadyToPublish() {
 
     return () => clearTimeout(timeoutId);
   }, [initialTitle, bookId]);
+
+  // Auto-generate Amazon KDP data when entering Amazon step
+  useEffect(() => {
+    if (currentStep !== "amazon" || !aiAnalysis || !bookId) return;
+    
+    // Auto-generate Kindle categories if not already generated
+    if (recommendedKindleCategories.length === 0 && !researchKindleCategories.isPending) {
+      console.log('[Auto-generate] Triggering Kindle category research');
+      researchKindleCategories.mutate({
+        bookId: bookId,
+        format: 'kindle',
+      });
+    }
+    
+    // Auto-generate Paperback categories if not already generated
+    if (recommendedPaperbackCategories.length === 0 && !researchPaperbackCategories.isPending) {
+      console.log('[Auto-generate] Triggering Paperback category research');
+      researchPaperbackCategories.mutate({
+        bookId: bookId,
+        format: 'paperback',
+      });
+    }
+  }, [currentStep, aiAnalysis, bookId, recommendedKindleCategories.length, recommendedPaperbackCategories.length]);
+
+  // Auto-generate keywords after categories are selected
+  useEffect(() => {
+    if (currentStep !== "amazon" || !aiAnalysis || !bookId) return;
+    
+    // Auto-generate Kindle keywords if categories selected but keywords not generated
+    if (selectedKindleCategories.length > 0 && kindleKeywords.length === 0 && !generateKindleKeywords.isPending) {
+      console.log('[Auto-generate] Triggering Kindle keyword generation');
+      generateKindleKeywords.mutate({
+        bookId: bookId.toString(),
+        format: 'kindle',
+        categories: selectedKindleCategories,
+      });
+    }
+    
+    // Auto-generate Paperback keywords if categories selected but keywords not generated
+    if (selectedPaperbackCategories.length > 0 && paperbackKeywords.length === 0 && !generatePaperbackKeywords.isPending) {
+      console.log('[Auto-generate] Triggering Paperback keyword generation');
+      generatePaperbackKeywords.mutate({
+        bookId: bookId.toString(),
+        format: 'paperback',
+        categories: selectedPaperbackCategories,
+      });
+    }
+  }, [currentStep, aiAnalysis, bookId, selectedKindleCategories, selectedPaperbackCategories, kindleKeywords.length, paperbackKeywords.length]);
+
+  // Auto-generate manuscript file when reaching Export step
+  useEffect(() => {
+    if (currentStep !== "export" || !manuscript || !aiAnalysis || manuscriptUrl) return;
+    
+    const finalTitle = selectedTitle || customTitle || aiAnalysis.suggestedTitles[0] || "Untitled";
+    const finalAuthor = authorProfile?.penName || "Author";
+    
+    console.log('[Auto-generate] Triggering manuscript file generation');
+    generateManuscriptFile.mutate({
+      bookTitle: finalTitle,
+      authorName: finalAuthor,
+      manuscriptContent: manuscript,
+    });
+  }, [currentStep, manuscript, aiAnalysis, manuscriptUrl, selectedTitle, customTitle, authorProfile]);
 
   // Resume detection: Check if user has saved workflow progress
   useEffect(() => {
@@ -469,6 +533,15 @@ export default function ReadyToPublish() {
     },
   });
 
+  const generateManuscriptFile = trpc.export.generateManuscriptFile.useMutation({
+    onSuccess: (result) => {
+      setManuscriptUrl(result.url);
+    },
+    onError: (error) => {
+      console.error("Failed to generate manuscript file:", error);
+    },
+  });
+
   const generateKeywords = trpc.amazon.optimizeKeywords.useMutation({
     onSuccess: (data: any) => {
       setGeneratedKeywords(data.keywords);
@@ -502,17 +575,15 @@ export default function ReadyToPublish() {
   const researchKindleCategories = trpc.amazon.researchCategories.useMutation({
     onSuccess: (data: any) => {
       setRecommendedKindleCategories(data.categories);
-      toast.success("Kindle category analysis complete! Select up to 3 low-competition categories.");
       
-      // Auto-generate keywords after categories
-      if (aiAnalysis) {
-        generateKeywords.mutate({
-          title: finalTitle || aiAnalysis.suggestedTitles[0],
-          genre: aiAnalysis.detectedGenre,
-          targetAudience: aiAnalysis.targetAudience,
-          mainTopics: aiAnalysis.themes,
-        });
-      }
+      // Auto-select top 3 categories (sorted by competitivenessScore, higher = easier to rank)
+      const top3 = data.categories
+        .sort((a: any, b: any) => b.competitivenessScore - a.competitivenessScore)
+        .slice(0, 3)
+        .map((cat: any) => cat.category);
+      setSelectedKindleCategories(top3);
+      
+      toast.success("Kindle categories analyzed! Top 3 low-competition categories auto-selected.");
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to analyze Kindle categories");
@@ -522,7 +593,15 @@ export default function ReadyToPublish() {
   const researchPaperbackCategories = trpc.amazon.researchCategories.useMutation({
     onSuccess: (data: any) => {
       setRecommendedPaperbackCategories(data.categories);
-      toast.success("Paperback category analysis complete! Select up to 3 low-competition categories.");
+      
+      // Auto-select top 3 categories (sorted by competitivenessScore, higher = easier to rank)
+      const top3 = data.categories
+        .sort((a: any, b: any) => b.competitivenessScore - a.competitivenessScore)
+        .slice(0, 3)
+        .map((cat: any) => cat.category);
+      setSelectedPaperbackCategories(top3);
+      
+      toast.success("Paperback categories analyzed! Top 3 low-competition categories auto-selected.");
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to analyze Paperback categories");
@@ -1452,33 +1531,11 @@ export default function ReadyToPublish() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {recommendedKindleCategories.length === 0 ? (
+                  {researchKindleCategories.isPending || recommendedKindleCategories.length === 0 ? (
                     <div className="text-center py-8">
-                      <Button
-                        size="lg"
-                        onClick={() => {
-                          if (!aiAnalysis || !bookId) return;
-                          
-                          // Call real AI category research with Kindle format
-                          researchKindleCategories.mutate({
-                            bookId: bookId,
-                            format: 'kindle',
-                          });
-                        }}
-                        disabled={!aiAnalysis || !bookId || researchKindleCategories.isPending}
-                      >
-                        {researchKindleCategories.isPending ? (
-                          <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            Analyzing Kindle Categories...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5 mr-2" />
-                            Analyze Kindle Categories
-                          </>
-                        )}
-                      </Button>
+                      <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
+                      <p className="text-muted-foreground">Analyzing Kindle categories...</p>
+                      <p className="text-sm text-muted-foreground mt-2">Finding low-competition categories where you can rank #1</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -1531,33 +1588,11 @@ export default function ReadyToPublish() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {recommendedPaperbackCategories.length === 0 ? (
+                  {researchPaperbackCategories.isPending || recommendedPaperbackCategories.length === 0 ? (
                     <div className="text-center py-8">
-                      <Button
-                        size="lg"
-                        onClick={() => {
-                          if (!aiAnalysis || !bookId) return;
-                          
-                          // Call real AI category research with Paperback format
-                          researchPaperbackCategories.mutate({
-                            bookId: bookId,
-                            format: 'paperback',
-                          });
-                        }}
-                        disabled={!aiAnalysis || !bookId || researchPaperbackCategories.isPending}
-                      >
-                        {researchPaperbackCategories.isPending ? (
-                          <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            Analyzing Paperback Categories...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5 mr-2" />
-                            Analyze Paperback Categories
-                          </>
-                        )}
-                      </Button>
+                      <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
+                      <p className="text-muted-foreground">Analyzing Paperback categories...</p>
+                      <p className="text-sm text-muted-foreground mt-2">Finding low-competition categories where you can rank #1</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -1610,40 +1645,11 @@ export default function ReadyToPublish() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {kindleKeywords.length === 0 ? (
+                  {generateKindleKeywords.isPending || kindleKeywords.length === 0 ? (
                     <div className="text-center py-8">
-                      <Button
-                        size="lg"
-                        onClick={() => {
-                          if (!aiAnalysis || !bookId || selectedKindleCategories.length === 0) {
-                            toast.error("Please select Kindle categories first");
-                            return;
-                          }
-                          generateKindleKeywords.mutate({
-                            bookId: bookId?.toString(),
-                            format: 'kindle',
-                            categories: selectedKindleCategories,
-                          });
-                        }}
-                        disabled={!aiAnalysis || !bookId || selectedKindleCategories.length === 0 || generateKindleKeywords.isPending}
-                      >
-                        {generateKindleKeywords.isPending ? (
-                          <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            Generating Kindle Keywords...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5 mr-2" />
-                            Generate Kindle Keywords
-                          </>
-                        )}
-                      </Button>
-                      {selectedKindleCategories.length === 0 && (
-                        <p className="text-sm text-muted-foreground mt-4">
-                          Select Kindle categories first to generate keywords
-                        </p>
-                      )}
+                      <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
+                      <p className="text-muted-foreground">Generating Kindle keywords...</p>
+                      <p className="text-sm text-muted-foreground mt-2">Creating ultra-targeted keywords based on your selected categories</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -1671,40 +1677,11 @@ export default function ReadyToPublish() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {paperbackKeywords.length === 0 ? (
+                  {generatePaperbackKeywords.isPending || paperbackKeywords.length === 0 ? (
                     <div className="text-center py-8">
-                      <Button
-                        size="lg"
-                        onClick={() => {
-                          if (!aiAnalysis || !bookId || selectedPaperbackCategories.length === 0) {
-                            toast.error("Please select Paperback categories first");
-                            return;
-                          }
-                          generatePaperbackKeywords.mutate({
-                            bookId: bookId?.toString(),
-                            format: 'paperback',
-                            categories: selectedPaperbackCategories,
-                          });
-                        }}
-                        disabled={!aiAnalysis || !bookId || selectedPaperbackCategories.length === 0 || generatePaperbackKeywords.isPending}
-                      >
-                        {generatePaperbackKeywords.isPending ? (
-                          <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            Generating Paperback Keywords...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5 mr-2" />
-                            Generate Paperback Keywords
-                          </>
-                        )}
-                      </Button>
-                      {selectedPaperbackCategories.length === 0 && (
-                        <p className="text-sm text-muted-foreground mt-4">
-                          Select Paperback categories first to generate keywords
-                        </p>
-                      )}
+                      <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
+                      <p className="text-muted-foreground">Generating Paperback keywords...</p>
+                      <p className="text-sm text-muted-foreground mt-2">Creating ultra-targeted keywords based on your selected categories</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -2166,11 +2143,11 @@ export default function ReadyToPublish() {
                   subtitle: selectedSubtitle || customSubtitle,
                   author: authorProfile?.penName || "",
                   description: editedDescription || aiAnalysis.bookDescription,
-                  keywords: kindleKeywords.length > 0 ? kindleKeywords : [],
-                  categories: selectedKindleCategories.length > 0 ? selectedKindleCategories : [],
+                  keywords: [...kindleKeywords, ...paperbackKeywords],
+                  categories: [...selectedKindleCategories, ...selectedPaperbackCategories],
                   language: "English",
                   publishingRights: "i-own-rights",
-                  manuscriptUrl: undefined, // TODO: Add manuscript download URL
+                  manuscriptUrl: manuscriptUrl || undefined,
                   coverUrl: selectedCover,
                   drm: false,
                   aiGenerated: true,

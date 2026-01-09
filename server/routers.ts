@@ -758,6 +758,58 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
       .mutation(async ({ input }) => {
         return await generateExportBundle(input);
       }),
+
+    // Generate standalone manuscript file (DOCX) for KDP upload
+    generateManuscriptFile: protectedProcedure
+      .input(z.object({
+        bookTitle: z.string(),
+        authorName: z.string(),
+        manuscriptContent: z.string(),
+        copyrightPage: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { bookTitle, authorName, manuscriptContent, copyrightPage } = input;
+        
+        // Parse manuscript into chapters (same logic as export-bundle)
+        const parseManuscriptIntoChapters = (content: string) => {
+          const chapters: { number: number; title: string; content: string }[] = [];
+          const chapterRegex = /(?:^|\n)(?:Chapter|CHAPTER)\s+(?:(\d+)|([A-Za-z]+))(?::|\s*[-–—]\s*|\s+)([^\n]+)?/g;
+          const matches: RegExpExecArray[] = [];
+          let match;
+          while ((match = chapterRegex.exec(content)) !== null) {
+            matches.push(match);
+          }
+          if (matches.length === 0) {
+            return [{ number: 1, title: "Full Text", content: content.trim() }];
+          }
+          for (let i = 0; i < matches.length; i++) {
+            const currentMatch = matches[i];
+            const nextMatch = matches[i + 1];
+            const startIndex = currentMatch.index;
+            const endIndex = nextMatch ? nextMatch.index : content.length;
+            const chapterContent = content.substring(startIndex, endIndex).trim();
+            const chapterNumber = currentMatch[1] ? parseInt(currentMatch[1], 10) : i + 1;
+            const chapterTitle = currentMatch[3] || `Chapter ${chapterNumber}`;
+            chapters.push({ number: chapterNumber, title: chapterTitle, content: chapterContent });
+          }
+          return chapters;
+        };
+        
+        const chapters = parseManuscriptIntoChapters(manuscriptContent);
+        
+        // Generate DOCX file
+        const docxBuffer = await generateDOCX({
+          bookTitle,
+          authorName,
+          chapters,
+        });
+        
+        // Upload to S3
+        const fileKey = `manuscripts/${bookTitle.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.docx`;
+        const { url } = await storagePut(fileKey, docxBuffer, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        
+        return { url, fileKey };
+      }),
   }),
 
   // Amazon KDP Integration
