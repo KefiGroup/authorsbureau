@@ -1514,13 +1514,31 @@ export default function ReadyToPublish() {
                                 return;
                               }
                               
+                              if (!bookId) {
+                                toast.error("Please save your book first before regenerating covers");
+                                return;
+                              }
+                              
+                              // Find the selected cover's prompt
+                              const selectedCoverData = generatedCovers.find(c => c.imageUrl === selectedCover);
+                              if (!selectedCoverData) {
+                                toast.error("Could not find cover data");
+                                return;
+                              }
+                              
                               toast.info("Regenerating cover with your feedback...");
                               
-                              // Since we don't have bookId in this workflow, we'll regenerate directly
-                              // For now, show a message that this requires saving the book first
-                              toast.info("Cover regeneration requires saving your book first. For now, you can upload a custom cover or continue with the selected design.");
+                              // Call the regenerate mutation
+                              regenerateCover.mutate({
+                                bookId,
+                                bookTitle: selectedTitle || aiAnalysis.suggestedTitles[0] || "Untitled",
+                                authorName: "Author", // Will be fetched from user profile in backend
+                                genre: aiAnalysis.detectedGenre || "General",
+                                basePrompt: selectedCoverData.prompt,
+                                modifications: coverFeedback,
+                              });
                             }}
-                            disabled={!selectedCover || !coverFeedback.trim() || regenerateCover.isPending}
+                            disabled={!selectedCover || !coverFeedback.trim() || regenerateCover.isPending || !bookId}
                           >
                             {regenerateCover.isPending ? (
                               <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Regenerating...</>

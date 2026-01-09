@@ -894,3 +894,12 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Updated to use correct API: new PDFParse({ data: buffer }) and getText()
 - [ ] Test PDF upload to verify text extraction completes
 - [ ] Verify wordCount state is set and Analyze button becomes enabled
+
+## Bug Report: Cover Regenerate Button Not Working
+**Reported:** User clicks Regenerate button after entering cover modifications (e.g., 'phoenix rising from ashes, more warm'), but nothing happens
+**Root Cause:** Line 1521 in ReadyToPublish.tsx shows toast message instead of calling regenerateCover.mutate()
+**Tasks:**
+- [x] Implement actual regeneration (requires bookId from auto-save)
+- [x] Call regenerateCover.mutate() with proper parameters
+- [x] Update generated covers state with new regenerated cover
+- [ ] Test regeneration with user's modification request (ready for user testing)
