@@ -135,6 +135,8 @@ export default function ReadyToPublish() {
   // Auto-load existing manuscript and workflow data
   useEffect(() => {
     if (existingBook && existingBook.content && !existingManuscriptLoaded) {
+      console.log('[Workflow Restore] Loading book:', existingBook.id, 'workflowStep:', existingBook.workflowStep);
+      
       setManuscript(existingBook.content);
       setWordCount(existingBook.wordCount || 0);
       // Load existing title if available
@@ -174,16 +176,43 @@ export default function ReadyToPublish() {
         setSelectedCover(existingBook.selectedCoverUrl);
       }
       
-      // Set current step to saved workflow step or 'review' if data exists
+      // CRITICAL: Restore workflow step from database
+      // This ensures users resume at their saved step, not back at upload
       if (existingBook.workflowStep && existingBook.workflowStep !== "upload" && existingBook.workflowStep !== "analyzing") {
+        console.log('[Workflow Restore] Restoring to step:', existingBook.workflowStep);
         setCurrentStep(existingBook.workflowStep as WorkflowStep);
       } else if (existingBook.aiAnalysis) {
+        console.log('[Workflow Restore] No saved step, but has AI analysis - defaulting to review');
         setCurrentStep("review");
+      } else {
+        console.log('[Workflow Restore] No saved progress, staying at upload');
       }
       
       toast.success(`Loaded existing manuscript: ${existingBook.title} (${existingBook.wordCount} words)`);
     }
   }, [existingBook, existingManuscriptLoaded]);
+
+  // Auto-save workflow progress when step changes (after book is created)
+  useEffect(() => {
+    if (!bookId || currentStep === "upload" || currentStep === "analyzing") return;
+    
+    console.log('[Auto-save] Saving progress for step:', currentStep);
+    
+    // Auto-save progress whenever step changes
+    const timeoutId = setTimeout(() => {
+      saveProgressMutation.mutate({
+        bookId,
+        workflowStep: currentStep,
+        aiAnalysis: aiAnalysis ? JSON.stringify(aiAnalysis) : undefined,
+        selectedTitle: selectedTitle || undefined,
+        selectedSubtitle: selectedSubtitle || undefined,
+        selectedCoverUrl: selectedCover || uploadedCoverUrl || undefined,
+        generatedCovers: generatedCovers.length > 0 ? JSON.stringify(generatedCovers) : undefined,
+      });
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [currentStep, bookId]); // Auto-save when step changes
 
   // Auto-save title with debounce
   useEffect(() => {
@@ -652,17 +681,19 @@ export default function ReadyToPublish() {
             <div className="flex items-center justify-between gap-2">
               {/* Step 1: Upload */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "upload" || currentStep === "analyzing"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-primary/20 text-primary"
-                }`}>
-                  {["review", "profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep) ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    <Upload className="w-5 h-5" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "upload" || currentStep === "analyzing"
+                  ? "bg-blue-600 text-white"
+                  : ["review", "profile-check", "cover", "amazon", "wrap", "export", "author-central"].includes(currentStep)
+                  ? "bg-green-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {["review", "profile-check", "cover", "amazon", "wrap", "export", "author-central"].includes(currentStep) ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <Upload className="w-5 h-5" />
+                )}
+              </div>
                 <span className="text-xs font-medium text-center">Upload</span>
               </div>
 
@@ -670,19 +701,19 @@ export default function ReadyToPublish() {
 
               {/* Step 2: AI Analysis */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "analyzing"
-                    ? "bg-primary text-primary-foreground animate-pulse"
-                    : ["review", "profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep)
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {["review", "profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep) ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    <Sparkles className="w-5 h-5" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "analyzing"
+                  ? "bg-blue-600 text-white animate-pulse"
+                  : ["review", "profile-check", "cover", "amazon", "wrap", "export", "author-central"].includes(currentStep)
+                  ? "bg-green-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {["review", "profile-check", "cover", "amazon", "wrap", "export", "author-central"].includes(currentStep) ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <Sparkles className="w-5 h-5" />
+                )}
+              </div>
                 <span className="text-xs font-medium text-center">Analysis</span>
               </div>
 
@@ -690,19 +721,19 @@ export default function ReadyToPublish() {
 
               {/* Step 3: Review */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "review"
-                    ? "bg-primary text-primary-foreground"
-                    : ["profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep)
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {["profile-check", "cover", "amazon", "wrap", "export"].includes(currentStep) ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    <Edit3 className="w-5 h-5" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "review"
+                  ? "bg-blue-600 text-white"
+                  : ["profile-check", "cover", "amazon", "wrap", "export", "author-central"].includes(currentStep)
+                  ? "bg-green-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {["profile-check", "cover", "amazon", "wrap", "export", "author-central"].includes(currentStep) ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <Edit3 className="w-5 h-5" />
+                )}
+              </div>
                 <span className="text-xs font-medium text-center">Review</span>
               </div>
 
@@ -710,19 +741,19 @@ export default function ReadyToPublish() {
 
               {/* Step 4: Profile */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "profile-check"
-                    ? "bg-primary text-primary-foreground"
-                    : ["cover", "amazon", "wrap", "export"].includes(currentStep)
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {["cover", "amazon", "wrap", "export"].includes(currentStep) ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    <User className="w-5 h-5" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "profile-check"
+                  ? "bg-blue-600 text-white"
+                  : ["cover", "amazon", "wrap", "export", "author-central"].includes(currentStep)
+                  ? "bg-green-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {["cover", "amazon", "wrap", "export", "author-central"].includes(currentStep) ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <User className="w-5 h-5" />
+                )}
+              </div>
                 <span className="text-xs font-medium text-center">Profile</span>
               </div>
 
@@ -730,19 +761,19 @@ export default function ReadyToPublish() {
 
               {/* Step 5: Cover */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "cover"
-                    ? "bg-primary text-primary-foreground"
-                    : ["amazon", "wrap", "export"].includes(currentStep)
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {["amazon", "wrap", "export"].includes(currentStep) ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    <ImageIcon className="w-5 h-5" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "cover"
+                  ? "bg-blue-600 text-white"
+                  : ["amazon", "wrap", "export", "author-central"].includes(currentStep)
+                  ? "bg-green-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {["amazon", "wrap", "export", "author-central"].includes(currentStep) ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <ImageIcon className="w-5 h-5" />
+                )}
+              </div>
                 <span className="text-xs font-medium text-center">Cover</span>
               </div>
 
@@ -750,19 +781,19 @@ export default function ReadyToPublish() {
 
               {/* Step 6: Amazon KDP */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "amazon"
-                    ? "bg-primary text-primary-foreground"
-                    : ["wrap", "export"].includes(currentStep)
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {["wrap", "export"].includes(currentStep) ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    <TrendingUp className="w-5 h-5" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "amazon"
+                  ? "bg-blue-600 text-white"
+                  : ["wrap", "export", "author-central"].includes(currentStep)
+                  ? "bg-green-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {["wrap", "export", "author-central"].includes(currentStep) ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <TrendingUp className="w-5 h-5" />
+                )}
+              </div>
                 <span className="text-xs font-medium text-center">Amazon</span>
               </div>
 
@@ -770,19 +801,19 @@ export default function ReadyToPublish() {
 
               {/* Step 7: Book Wrap */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "wrap"
-                    ? "bg-primary text-primary-foreground"
-                    : currentStep === "export"
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {currentStep === "export" ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    <BookOpen className="w-5 h-5" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "wrap"
+                  ? "bg-blue-600 text-white"
+                  : ["export", "author-central"].includes(currentStep)
+                  ? "bg-green-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {["export", "author-central"].includes(currentStep) ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <BookOpen className="w-5 h-5" />
+                )}
+              </div>
                 <span className="text-xs font-medium text-center">Wrap</span>
               </div>
 
@@ -790,19 +821,19 @@ export default function ReadyToPublish() {
 
               {/* Step 8: Export */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "export"
-                    ? "bg-primary text-primary-foreground"
-                    : currentStep === "author-central"
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {currentStep === "author-central" ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    <Download className="w-5 h-5" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "export"
+                  ? "bg-blue-600 text-white"
+                  : currentStep === "author-central"
+                  ? "bg-green-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {currentStep === "author-central" ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <Download className="w-5 h-5" />
+                )}
+              </div>
                 <span className="text-xs font-medium text-center">Export</span>
               </div>
 
@@ -810,13 +841,13 @@ export default function ReadyToPublish() {
 
               {/* Step 9: Author Central */}
               <div className="flex flex-col items-center gap-2 flex-1">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep === "author-central"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  <User className="w-5 h-5" />
-                </div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === "author-central"
+                  ? "bg-blue-600 text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                <User className="w-5 h-5" />
+              </div>
                 <span className="text-xs font-medium text-center">Author Central</span>
               </div>
             </div>
@@ -824,24 +855,30 @@ export default function ReadyToPublish() {
             {/* Save Progress Button - Moved inside card for visibility */}
             {bookId && (
               <div className="flex justify-center pt-4 border-t">
-                <Button
-                  variant="outline"
-                  onClick={handleSaveProgress}
-                  disabled={saveProgressMutation.isPending}
-                  size="lg"
-                >
-                  {saveProgressMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Progress
-                    </>
-                  )}
-                </Button>
+                <div className="flex flex-col items-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleSaveProgress}
+                    disabled={saveProgressMutation.isPending}
+                    size="lg"
+                  >
+                    {saveProgressMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Progress Now
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    <CheckCircle2 className="w-3 h-3 inline mr-1" />
+                    Auto-saves when you move to next step
+                  </p>
+                </div>
               </div>
             )}
           </CardContent>

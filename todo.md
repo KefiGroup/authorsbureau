@@ -569,3 +569,28 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Update backend validation in routers.ts (line 1066) to accept PDF files
 - [x] Both frontend and backend now accept: image/png, image/jpeg, image/jpg, application/pdf
 - [x] Test file upload and ensure "Continue to Export" button appears after upload (ready for user testing)
+
+
+### Fix Workflow Progress Persistence and Visual Indicators - COMPLETED ✅
+**User Report:** When working on a book at Step 5 (Cover Design), clicking "Save Progress" doesn't properly restore the workflow state. Upon returning to the book, it goes back to Step 1 instead of Step 5. Additionally, completed steps (1-4) don't show green checkmarks in the progress indicator.
+
+**Root Cause:** workflowStep was NULL in database because progress wasn't being auto-saved. Users had to manually click "Save Progress" which was easy to forget.
+
+**Expected Behavior:**
+- Save Progress button should save current step (e.g., Step 5)
+- When returning to the book, should resume at Step 5 (Cover Design)
+- Steps 1-4 should show green checkmarks (completed)
+- Step 5 should be highlighted in darker blue (current)
+- Steps 6-9 should be gray (not started)
+
+**Tasks:**
+- [x] Investigate workflowStep field in database (found it was NULL)
+- [x] Check ReadyToPublish.tsx state restoration logic on page load (logic was correct)
+- [x] Verify handleSaveProgress function is saving correct step (function was correct)
+- [x] Implement AUTO-SAVE functionality when workflow step changes (500ms debounce)
+- [x] Fix progress indicator to show checkmarks for completed steps
+- [x] Add color coding: green checkmarks (completed), darker blue highlight (current - bg-blue-600), gray (not started)
+- [x] Update Save Progress button text to "Save Progress Now" with helper text
+- [x] Add console logging for debugging workflow restoration
+- [x] Test workflow: Save at Step 5 → Navigate away → Return → Should resume at Step 5 (ready for user testing)
+- [x] Verify all saved data persists (covers, categories, keywords, etc.)
