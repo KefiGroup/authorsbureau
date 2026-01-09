@@ -25,57 +25,99 @@ export async function researchAmazonCategories(params: {
   bookContent?: string;
   format?: 'kindle' | 'paperback'; // Specify format for correct category tree
 }): Promise<CategoryAnalysis[]> {
-  const prompt = `You are an Amazon KDP category research expert. Analyze and recommend the best categories for this book to become a bestseller.
+  const prompt = `ROLE:
+You are an Amazon KDP category-intelligence agent. Your job is to identify the lowest-competition Amazon ${params.format === 'kindle' ? 'Kindle' : 'Paperback'} categories where this book can legitimately compete for a #1 Best Seller ranking.
 
+INPUT:
 **Book Information:**
 - Title: "${params.title}"
 - Genre: ${params.genre}
 - Keywords: ${params.keywords.join(", ") || "(will be extracted from content)"}
 - Target Audience: ${params.targetAudience}
-${params.bookContent ? `- Book Content/Description: ${params.bookContent.substring(0, 500)}...` : ""}
+${params.bookContent ? `- Book Content/Description: ${params.bookContent.substring(0, 1000)}...` : ""}
 
 **Format:** ${params.format === 'kindle' ? 'Kindle eBook (use "Kindle Store > Kindle eBooks > ..." category paths)' : 'Paperback (use "Books > ..." category paths)'}
 
-**PRIMARY GOAL:** Find ULTRA-LOW-COMPETITION "hidden gem" categories where the author can become a #1 BESTSELLER with just **30 books sold in 24 hours** (or less).
+TASKS (EXECUTE IN THIS ORDER):
 
-**Task:**
-Recommend 5-8 Amazon KDP categories that are the "smartest" choices for this ${params.format || 'book'}. Prioritize categories in this order:
-1. **ULTRA-LOW COMPETITION FIRST** - Categories where 30 sales or fewer in 24 hours can hit #1 (competitiveness score 1-3)
-2. **Relevant** to the book's content and genre
-3. **Decent traffic** - At least 500-1000 monthly searches (avoid dead categories)
-4. **Specific/niche enough** to dominate (avoid overly broad categories like "Business" or "Self-Help")
+1️⃣ CONTENT CLASSIFICATION
+Analyze the manuscript and classify it across:
+- Primary subject matter
+- Secondary themes
+- Reader intent (academic / practical / reflective / instructional)
+- Level (general / student / professional / academic)
+Output a concise taxonomy profile of the book.
 
-**CRITICAL:** Avoid competitive categories (score 7+). Focus on niche subcategories 3-4 levels deep in the category tree.
+2️⃣ AMAZON CATEGORY MATCHING
+Using Amazon KDP's actual category structure (not theoretical ones):
+- Identify all categories where the book is legitimately eligible
+- Exclude categories that are:
+  * Misleading
+  * Highly competitive
+  * Likely to be reclassified by Amazon
+- Only include categories that:
+  * Match the book's content truthfully
+  * Exist in Amazon KDP UI or backend taxonomy
 
-For each category, provide:
-1. Full category path ${params.format === 'kindle' ? '(e.g., "Kindle Store > Kindle eBooks > Business & Investing > Investing > Options Trading > Day Trading")' : '(e.g., "Books > Business & Money > Investing > Options Trading > Day Trading")'} - **MUST be 3-4 levels deep for low competition**
-2. Competitiveness score (1-10, where 1 = easiest to rank, 10 = extremely competitive) - **Target 1-4 only**
-3. Estimated monthly searches (provide numeric range like "600-1,200/mo")
-4. Top seller requirement (estimated sales in 24 hours needed to hit #1, format as "~15-30 sales in 24hr") - **Target categories requiring 30 sales or fewer in 24 hours**
-5. Why this category is a LOW-COMPETITION smart choice for becoming #1 bestseller
-6. Whether you recommend it (true/false) - **Only recommend if competitiveness ≤ 4**
+3️⃣ COMPETITION INTELLIGENCE
+For EACH eligible category:
+- Estimate current #1 Best Seller Rank (BSR) range
+- Estimate daily sales required to reach #1
+- Classify competition level as: Very Low / Low / Medium / High
+Use historical Amazon category behavior patterns (not speculation).
+
+4️⃣ #1 FEASIBILITY SCORING
+Score each category on a 0–10 scale, where:
+- 10 = extremely easy to hit #1
+- 0 = unrealistic
+Factors to weigh:
+- Category depth
+- Typical sales velocity
+- Presence of active launches
+- Academic vs commercial dominance
+
+5️⃣ FINAL RECOMMENDATION
+Output:
+
+A. **Top 5-8 BEST categories to target for #1**
+For each:
+- Full Amazon category path (3-4 levels deep)
+- Estimated sales needed in 24 hours to hit #1
+- Feasibility score (0-10)
+- Competition level (Very Low / Low / Medium / High)
+- Why this category is strategically soft
+
+B. **Categories to AVOID** (if any obvious traps exist)
+Explain briefly why (too competitive / misaligned).
+
+RULES:
+- Do NOT invent categories
+- Do NOT recommend Business, Self-Help, or AI categories unless competition is demonstrably low
+- Prioritize legitimacy + ease, not prestige
+- Assume the author wants a repeatable bestseller system
+- If historical bestseller examples are provided, reverse-engineer the category logic
 
 **Output Format (JSON):**
 \`\`\`json
 [
   {
-    "category": "${params.format === 'kindle' ? 'Kindle Store > Kindle eBooks > Business & Investing > Investing' : 'Books > Business & Money > Investing'}",
-    "subcategory": "Stocks",
-    "competitivenessScore": 4,
-    "estimatedMonthlySearches": "High",
-    "topSellerRequirement": "~20-30 sales in 24hr",
-    "reasoning": "Moderately competitive but highly relevant. Good traffic with achievable ranking requirements.",
+    "category": "${params.format === 'kindle' ? 'Kindle Store > Kindle eBooks > Education & Reference > Study Guides' : 'Books > Education & Reference > Study Guides'}",
+    "subcategory": "Test Preparation",
+    "competitivenessScore": 8,
+    "estimatedMonthlySearches": "1,200-2,000/mo",
+    "topSellerRequirement": "~15-25 sales in 24hr",
+    "reasoning": "Low competition niche with decent traffic. Category depth (4 levels) reduces competition. Typical #1 BSR around 50,000-80,000 requires only 15-25 daily sales. No major publishers dominating.",
     "recommended": true
   }
 ]
 \`\`\`
 
-Provide your analysis as a JSON array.`;
+Provide your analysis as a JSON array. Focus on categories with competitivenessScore 7-10 (higher = easier to rank).`;
 
   try {
     const response = await invokeLLM({
       messages: [
-        { role: "system", content: "You are an Amazon KDP category research expert who helps authors find the best categories to become bestsellers." },
+        { role: "system", content: "You are an Amazon KDP category-intelligence agent specializing in finding lowest-competition categories for #1 bestseller rankings. You analyze book content deeply and recommend only legitimate, achievable categories based on historical Amazon data." },
         { role: "user", content: prompt }
       ]
     });

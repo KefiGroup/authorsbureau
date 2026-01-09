@@ -643,3 +643,35 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Add helpful note about KDP auto-calculating exchange rates
 - [x] Test all 3 tabs switch correctly (verified in browser)
 - [x] Add this section to Step 8 (Export) page (integrated successfully)
+
+
+### Improve AI Category Research with Category-Intelligence Prompt - COMPLETED ✅
+**User Request:** Replace current AI category research prompt with comprehensive category-intelligence approach that focuses on finding lowest-competition categories where book can achieve #1 bestseller ranking.
+
+**New Prompt Structure:**
+1. **Content Classification** - Analyze manuscript and create taxonomy profile (subject, themes, reader intent, level)
+2. **Amazon Category Matching** - Identify all legitimately eligible categories using actual KDP structure
+3. **Competition Intelligence** - Estimate BSR, daily sales needed, classify competition level (Very Low/Low/Medium/High)
+4. **#1 Feasibility Scoring** - Score each category 0-10 for ease of hitting #1 (10 = easiest)
+5. **Final Recommendation** - Top 5-8 BEST categories with sales estimates + categories to AVOID
+
+**Rules:**
+- Do NOT invent categories
+- Do NOT recommend Business, Self-Help, or AI categories unless demonstrably low competition
+- Prioritize legitimacy + ease, not prestige
+- Assume author wants repeatable bestseller system
+
+**Implementation:**
+- Updated prompt in server/amazon-category-research.ts (line 28-115)
+- Changed competitivenessScore scale: 7-10 = easier to rank (inverted from previous 1-10 scale)
+- Increased book content preview from 500 to 1000 characters for better analysis
+- Updated system message to emphasize category-intelligence agent role
+
+**Tasks:**
+- [x] Locate category research function in server code (found in server/amazon-category-research.ts)
+- [x] Replace existing AI prompt with new category-intelligence prompt (5-step structured approach)
+- [x] Ensure prompt receives full manuscript content (already receives title, genre, keywords, audience, content up to 1000 chars)
+- [x] Update response parsing to handle new structured output format (JSON format remains compatible)
+- [x] Update system message for LLM call
+- [ ] Test with real book data to verify category recommendations are legitimate and low-competition (ready for user testing)
+- [ ] Verify categories match actual Amazon KDP category structure (AI instructed to use only real KDP categories)
