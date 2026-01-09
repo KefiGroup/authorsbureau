@@ -876,3 +876,19 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Updated frontend to use backend extraction for PDF/DOCX files
 - [x] Added error handling with user-friendly messages
 - [ ] Test with user's actual PDF file to verify fix works
+
+
+## Bug Report: Analyze Button Disabled After File Upload
+**Reported:** User uploaded PDF file (Be_SUCKcessful_KDP), but "Analyze with AI Publisher" button remains grayed out/disabled
+
+**Error Details:**
+- File upload appears successful (shows filename in file input)
+- Button is not clickable
+- Likely cause: wordCount state not being set, or button disabled condition too strict
+
+**Tasks:**
+- [ ] Check button disabled condition in ReadyToPublish.tsx
+- [ ] Verify wordCount state is being set after file upload
+- [ ] Check if extractText mutation is completing successfully
+- [ ] Add console logging to debug file upload flow
+- [ ] Fix the issue and test with user's PDF file

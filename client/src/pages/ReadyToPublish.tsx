@@ -635,11 +635,13 @@ export default function ReadyToPublish() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    console.log('[handleFileUpload] Starting upload:', { name: file.name, type: file.type, size: file.size });
     setIsUploading(true);
     try {
       // For PDF and DOCX files, use backend extraction
       if (file.type === 'application/pdf' || file.name.endsWith('.pdf') ||
           file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx')) {
+        console.log('[handleFileUpload] Detected PDF/DOCX file, using backend extraction');
         
         // Read file as base64
         const reader = new FileReader();
@@ -653,14 +655,17 @@ export default function ReadyToPublish() {
         });
         
         // Extract text using backend
+        console.log('[handleFileUpload] Calling extractText mutation...');
         const result = await extractText.mutateAsync({
           fileName: file.name,
           fileType: file.type,
           fileData,
         });
+        console.log('[handleFileUpload] Extraction complete:', { textLength: result.text.length, wordCount: result.wordCount });
         
         setManuscript(result.text);
         setWordCount(result.wordCount);
+        console.log('[handleFileUpload] State updated, manuscript length:', result.text.length);
         
         toast.success(`Manuscript uploaded! ${result.wordCount.toLocaleString()} words detected.`);
       } else {
