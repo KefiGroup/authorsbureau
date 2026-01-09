@@ -925,3 +925,21 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Check database schema has all required columns for profile fields
 - [ ] Add error handling to show user if save fails
 - [ ] Test profile save and reload to verify persistence
+
+## Feature Request: BSR Calculator for Category Selection
+**Requested:** Add BSR (Best Seller Rank) to sales conversion calculator to help authors understand how many sales needed to hit #1 in each category
+**Requirements:**
+- [x] Added BSR to daily sales conversion table (BSR 1-100 → 500-5000/day, etc.) (BSR 1-100 → 500-5000/day, etc.)
+- [ ] For each suggested category, fetch top 5 books' BSR from Amazon
+- [ ] Calculate minimum and safer sales targets (current leader + 30% and + 100%)
+- [x] Display detailed BSR breakdown: Current #1 BSR, Minimum target, Safer target
+- [ ] Show which book is current #1 and its BSR
+- [x] Added 5-step BSR calculation methodology to AI prompt
+
+## Bug: Duplicate Categories in Selection
+**Reported:** Category selection shows duplicate "Self-Help > Emotions" category instead of 3 unique categories
+**Expected:** Should show 3 different, relevant categories
+**Tasks:**
+- [x] Updated prompt to go 5-6 levels deep and added deduplication logic
+- [x] Added deduplication by full category path
+- [ ] Verify category paths are complete and accurate

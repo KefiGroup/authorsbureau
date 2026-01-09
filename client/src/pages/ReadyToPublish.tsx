@@ -1679,10 +1679,27 @@ export default function ReadyToPublish() {
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
-                              <p className="font-medium">{cat.category}</p>
+                              <p className="font-medium text-sm">{cat.category}</p>
                               <p className="text-sm text-muted-foreground mt-1">{cat.reasoning}</p>
-                              <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                                <span>To hit top seller: {cat.topSellerRequirement}</span>
+                              <div className="mt-3 space-y-1">
+                                {cat.currentLeaderBSR && (
+                                  <div className="text-xs text-muted-foreground">
+                                    <span className="font-medium">Current #1 BSR:</span> {cat.currentLeaderBSR}
+                                  </div>
+                                )}
+                                {cat.minimumSalesTarget && (
+                                  <div className="text-xs text-emerald-600 dark:text-emerald-400">
+                                    <span className="font-medium">Minimum target:</span> {cat.minimumSalesTarget}
+                                  </div>
+                                )}
+                                {cat.saferSalesTarget && (
+                                  <div className="text-xs text-blue-600 dark:text-blue-400">
+                                    <span className="font-medium">Safer target:</span> {cat.saferSalesTarget}
+                                  </div>
+                                )}
+                                <div className="text-xs font-medium text-primary">
+                                  To hit #1: {cat.topSellerRequirement}
+                                </div>
                               </div>
                             </div>
                             {selectedKindleCategories.includes(cat.category) && (
@@ -1736,10 +1753,27 @@ export default function ReadyToPublish() {
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
-                              <p className="font-medium">{cat.category}</p>
+                              <p className="font-medium text-sm">{cat.category}</p>
                               <p className="text-sm text-muted-foreground mt-1">{cat.reasoning}</p>
-                              <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                                <span>To hit top seller: {cat.topSellerRequirement}</span>
+                              <div className="mt-3 space-y-1">
+                                {cat.currentLeaderBSR && (
+                                  <div className="text-xs text-muted-foreground">
+                                    <span className="font-medium">Current #1 BSR:</span> {cat.currentLeaderBSR}
+                                  </div>
+                                )}
+                                {cat.minimumSalesTarget && (
+                                  <div className="text-xs text-emerald-600 dark:text-emerald-400">
+                                    <span className="font-medium">Minimum target:</span> {cat.minimumSalesTarget}
+                                  </div>
+                                )}
+                                {cat.saferSalesTarget && (
+                                  <div className="text-xs text-blue-600 dark:text-blue-400">
+                                    <span className="font-medium">Safer target:</span> {cat.saferSalesTarget}
+                                  </div>
+                                )}
+                                <div className="text-xs font-medium text-primary">
+                                  To hit #1: {cat.topSellerRequirement}
+                                </div>
                               </div>
                             </div>
                             {selectedPaperbackCategories.includes(cat.category) && (
