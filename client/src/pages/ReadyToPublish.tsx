@@ -178,17 +178,20 @@ export default function ReadyToPublish() {
         setSelectedCover(existingBook.selectedCoverUrl);
       }
       
-      // CRITICAL: Restore workflow step from database
+      // CRITICAL: Restore workflow step from database ONLY on initial load
       // This ensures users resume at their saved step, not back at upload
+      // DO NOT reset currentStep if user is already progressing through workflow
       if (existingBook.workflowStep && existingBook.workflowStep !== "upload" && existingBook.workflowStep !== "analyzing") {
         console.log('[Workflow Restore] Restoring to step:', existingBook.workflowStep);
         setCurrentStep(existingBook.workflowStep as WorkflowStep);
       } else if (existingBook.aiAnalysis) {
         console.log('[Workflow Restore] No saved step, but has AI analysis - defaulting to review');
         setCurrentStep("review");
-      } else {
-        console.log('[Workflow Restore] No saved progress, staying at upload');
       }
+      // Removed: else { setCurrentStep("upload"); }
+      // This was causing the bug: after AI analysis completes and book refetches,
+      // this would reset currentStep to "upload" instead of letting the mutation's
+      // onSuccess handler set it to "review"
       
       toast.success(`Loaded existing manuscript: ${existingBook.title} (${existingBook.wordCount} words)`);
     }

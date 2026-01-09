@@ -791,3 +791,27 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Test Export step: All fields populated → Copy buttons work → Files downloadable
 - [ ] Test complete workflow: Amazon (review) → Export (copy to KDP) → Verify no missing fields
 - [ ] Cross-reference with actual KDP form to ensure 100% field coverage
+
+
+## Bug Report: Navigation Issue After AI Analysis
+
+**Bug:** After clicking "Analyze with AI Publisher" in Step 1, user is redirected back to Step 1 instead of progressing to Step 2 (AI Analysis Results)
+
+**Expected Behavior:** 
+- User uploads manuscript in Step 1
+- User clicks "Analyze with AI Publisher"
+- AI analyzes manuscript
+- User is automatically taken to Step 2 to review AI-generated titles, subtitles, and description
+
+**Actual Behavior:**
+- User uploads manuscript in Step 1
+- User clicks "Analyze with AI Publisher"
+- AI analyzes manuscript
+- User is sent back to Step 1 (Upload page) instead of Step 2
+
+**Tasks:**
+- [x] Investigate analyzeManuscript mutation onSuccess handler
+- [x] Check if setCurrentStep is being called correctly after analysis
+- [x] Identify root cause: Auto-load manuscript useEffect was resetting currentStep to "upload" on book refetch
+- [x] Fix: Removed else block that was interfering with natural workflow progression
+- [x] Test fix: Upload → Analyze → Successfully progresses to Step 2 (Review) ✅
