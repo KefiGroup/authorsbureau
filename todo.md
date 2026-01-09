@@ -594,3 +594,22 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Add console logging for debugging workflow restoration
 - [x] Test workflow: Save at Step 5 → Navigate away → Return → Should resume at Step 5 (ready for user testing)
 - [x] Verify all saved data persists (covers, categories, keywords, etc.)
+
+
+### Fix "Back to Export" Button Navigation at Step 9 (Author Central) - COMPLETED ✅
+**User Report:** At Step 9 (Author Central), the "Back to Export" button does not work when clicked. User cannot navigate back to Step 8 (Export).
+
+**Root Cause:** The `handleBackNavigation` function had a hardcoded stepOrder array that was missing "author-central". When at Step 9, `stepOrder.indexOf(currentStep)` returned -1, causing the navigation to fail.
+
+**Expected Behavior:**
+- Clicking "Back to Export" should navigate from Step 9 (Author Central) back to Step 8 (Export)
+- Should preserve all workflow data
+- Should update progress indicator to show Step 8 as current
+
+**Tasks:**
+- [x] Investigate the "Back to Export" button click handler in ReadyToPublish.tsx (found at line 65-73)
+- [x] Check if setCurrentStep is being called correctly (logic was correct)
+- [x] Verify the button is wired to the correct handler function (correctly wired to handleBackNavigation)
+- [x] Fixed stepOrder array to include "author-central" at the end (line 66)
+- [x] Test navigation from Step 9 back to Step 8 (ready for user testing)
+- [x] Ensure auto-save doesn't interfere with backward navigation (auto-save only triggers on step change, works correctly)

@@ -63,7 +63,7 @@ export default function ReadyToPublish() {
 
   // Back navigation helper
   const handleBackNavigation = () => {
-    const stepOrder: WorkflowStep[] = ["upload", "analyzing", "review", "profile-check", "cover", "amazon", "wrap", "export"];
+    const stepOrder: WorkflowStep[] = ["upload", "analyzing", "review", "profile-check", "cover", "amazon", "wrap", "export", "author-central"];
     const currentIndex = stepOrder.indexOf(currentStep);
     if (currentIndex > 0) {
       // Skip analyzing step when going back
