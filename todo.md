@@ -675,3 +675,40 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Update system message for LLM call
 - [ ] Test with real book data to verify category recommendations are legitimate and low-competition (ready for user testing)
 - [ ] Verify categories match actual Amazon KDP category structure (AI instructed to use only real KDP categories)
+
+
+### Update KDP Publishing Assistant Format to Match Amazon KDP Exactly - COMPLETED ✅
+**User Request:** Change the categories and keywords display format in KDP Publishing Assistant to match exactly how Amazon KDP shows them, so authors can copy-paste directly.
+
+**Current Format Issues:**
+- Categories: Currently showing as "Kindle Store > Kindle eBooks > Business & Investing > Investing" with `>` separators
+- Keywords: Currently showing in a list or grouped format
+
+**Required Format (from Amazon KDP screenshot):**
+- **Categories**: Use ` › ` (space-arrow-space) separator instead of ` > `
+  - Example: `Kindle Books › Politics & Social Sciences › Philosophy › Epistemology`
+  - Show full breadcrumb path exactly as Amazon displays
+- **Keywords**: Display as 7 separate individual fields (numbered 1-7), one per line
+  - Example:
+    1. Epistemology of Artificial Intelligence
+    2. Philosophy of Intelligence
+    3. How Humans make Decisions
+    (etc.)
+  - Each keyword should have its own Copy button
+
+**Implementation:**
+- Updated KDPPublishingAssistant.tsx to match Amazon KDP's exact format
+- Keywords now show as numbered list (1. 2. 3. etc.) with individual Copy buttons
+- Categories now use ` › ` separator and "Kindle Books" prefix
+- Added helper text for both sections explaining how to use them
+- Added warnings when keywords < 7 or categories < 2
+- Categories changed from "2 maximum" to "up to 3" (matching KDP's actual limit)
+- Category paths now use monospace font for clarity
+
+**Tasks:**
+- [x] Update KDPPublishingAssistant.tsx categories section to use ` › ` separator
+- [x] Change categories from "Kindle Store > Kindle eBooks" to "Kindle Books" prefix
+- [x] Update keywords section to display as numbered list (1-7) with individual Copy buttons
+- [x] Ensure each keyword field is on its own line for easy individual copying
+- [x] Add helper text and warnings for insufficient keywords/categories
+- [x] Test with real book data to verify format matches KDP exactly (tested successfully)

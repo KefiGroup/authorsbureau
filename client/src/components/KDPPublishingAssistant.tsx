@@ -149,68 +149,50 @@ export function KDPPublishingAssistant({ bookData }: KDPPublishingAssistantProps
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-muted-foreground">Keywords (7 maximum)</label>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyToClipboard(bookData.keywords.slice(0, 7).join("\n"), "keywords")}
-                    className="ml-auto"
-                  >
-                    {copiedField === "keywords" ? (
-                      <>
-                        <Check className="w-4 h-4 mr-1 text-green-600" />
-                        Copied All!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4 mr-1" />
-                        Copy All
-                      </>
-                    )}
-                  </Button>
                 </div>
+                <p className="text-xs text-muted-foreground">Copy each keyword individually and paste into KDP's 7 keyword fields</p>
                 <div className="space-y-2">
                   {bookData.keywords.slice(0, 7).map((keyword, index) => (
                     <div key={index} className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-muted-foreground w-6">{index + 1}.</span>
                       <div className="flex-1 p-3 bg-muted rounded-md border">
                         <p className="text-sm">{keyword}</p>
                       </div>
-                      <CopyButton text={keyword} fieldName={`keyword-${index}`} />
+                      <CopyButton text={keyword} fieldName={`keyword-${index + 1}`} />
                     </div>
                   ))}
+                  {bookData.keywords.length < 7 && (
+                    <p className="text-xs text-amber-600 mt-2">⚠️ You have {bookData.keywords.length} keywords. Amazon allows up to 7 keywords for maximum discoverability.</p>
+                  )}
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-muted-foreground">Categories (2 maximum)</label>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyToClipboard(bookData.categories.slice(0, 2).join("\n"), "categories")}
-                    className="ml-auto"
-                  >
-                    {copiedField === "categories" ? (
-                      <>
-                        <Check className="w-4 h-4 mr-1 text-green-600" />
-                        Copied All!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4 mr-1" />
-                        Copy All
-                      </>
-                    )}
-                  </Button>
+                  <label className="text-sm font-medium text-muted-foreground">Categories (up to 3)</label>
                 </div>
+                <p className="text-xs text-muted-foreground">Navigate through KDP's category tree to select these exact paths</p>
                 <div className="space-y-2">
-                  {bookData.categories.slice(0, 2).map((category, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="flex-1 p-3 bg-muted rounded-md border">
-                        <p className="text-sm">{category}</p>
+                  {bookData.categories.slice(0, 3).map((category, index) => {
+                    // Convert "Kindle Store > Kindle eBooks > ..." to "Kindle Books › ..."
+                    const formattedCategory = category
+                      .replace(/Kindle Store\s*>\s*Kindle eBooks/gi, 'Kindle Books')
+                      .replace(/Books\s*>/gi, 'Books ›')
+                      .replace(/\s*>\s*/g, ' › ');
+                    
+                    return (
+                      <div key={index} className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-muted-foreground w-6">{index + 1}.</span>
+                        <div className="flex-1 p-3 bg-muted rounded-md border">
+                          <p className="text-sm font-mono">{formattedCategory}</p>
+                        </div>
+                        <CopyButton text={formattedCategory} fieldName={`category-${index + 1}`} />
                       </div>
-                      <CopyButton text={category} fieldName={`category-${index}`} />
-                    </div>
-                  ))}
+                    );
+                  })}
+                  {bookData.categories.length < 2 && (
+                    <p className="text-xs text-amber-600 mt-2">⚠️ You have {bookData.categories.length} category. Amazon recommends selecting at least 2 categories for better discoverability.</p>
+                  )}
                 </div>
               </div>
 
