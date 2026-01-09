@@ -943,3 +943,11 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Updated prompt to go 5-6 levels deep and added deduplication logic
 - [x] Added deduplication by full category path
 - [ ] Verify category paths are complete and accurate
+
+## Bug: "To hit #1" text incomplete
+**Reported:** Category cards show "To hit #1:" but the actual requirement text is missing
+**Expected:** Should show complete text like "To hit #1: 8-16 sales in 24hr to beat current #1"
+**Tasks:**
+- [x] Added console logging to track AI response
+- [x] Added fallback to show saferSalesTarget if topSellerRequirement is empty
+- [x] Frontend now shows fallback value instead of blank

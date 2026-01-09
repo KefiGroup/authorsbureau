@@ -1698,7 +1698,7 @@ export default function ReadyToPublish() {
                                   </div>
                                 )}
                                 <div className="text-xs font-medium text-primary">
-                                  To hit #1: {cat.topSellerRequirement}
+                                  To hit #1: {cat.topSellerRequirement || cat.saferSalesTarget || 'See targets above'}
                                 </div>
                               </div>
                             </div>
@@ -1772,7 +1772,7 @@ export default function ReadyToPublish() {
                                   </div>
                                 )}
                                 <div className="text-xs font-medium text-primary">
-                                  To hit #1: {cat.topSellerRequirement}
+                                  To hit #1: {cat.topSellerRequirement || cat.saferSalesTarget || 'See targets above'}
                                 </div>
                               </div>
                             </div>

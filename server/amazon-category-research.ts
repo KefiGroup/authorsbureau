@@ -166,6 +166,9 @@ Provide your analysis as a JSON array. Focus on categories with competitivenessS
     
     const categories: CategoryAnalysis[] = JSON.parse(jsonContent);
     
+    // Debug: Log the raw categories to see what AI returned
+    console.log('[Category Research] Raw AI response:', JSON.stringify(categories, null, 2));
+    
     // Deduplicate categories by full path (category + subcategory)
     const uniqueCategories = categories.reduce((acc, current) => {
       const fullPath = current.subcategory 
