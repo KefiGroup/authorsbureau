@@ -574,21 +574,29 @@ export default function ReadyToPublish() {
 
   const generateKindleKeywords = trpc.amazon.optimizeKeywords.useMutation({
     onSuccess: (data: any) => {
+      console.log('[Kindle Keywords] Generated successfully:', data);
       setKindleKeywords(data.keywords);
       toast.success("💡 Kindle keywords generated! Low-competition keywords ready.");
     },
     onError: (error: any) => {
+      console.error('[Kindle Keywords] Generation failed:', error);
       toast.error(error.message || "Failed to generate Kindle keywords");
+      // Set empty array to stop infinite loading
+      setKindleKeywords([]);
     },
   });
 
   const generatePaperbackKeywords = trpc.amazon.optimizeKeywords.useMutation({
     onSuccess: (data: any) => {
+      console.log('[Paperback Keywords] Generated successfully:', data);
       setPaperbackKeywords(data.keywords);
       toast.success("💡 Paperback keywords generated! Low-competition keywords ready.");
     },
     onError: (error: any) => {
+      console.error('[Paperback Keywords] Generation failed:', error);
       toast.error(error.message || "Failed to generate Paperback keywords");
+      // Set empty array to stop infinite loading
+      setPaperbackKeywords([]);
     },
   });
 
@@ -1655,7 +1663,7 @@ export default function ReadyToPublish() {
                     <div className="text-center py-8">
                       <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
                       <p className="text-muted-foreground">Analyzing Kindle categories...</p>
-                      <p className="text-sm text-muted-foreground mt-2">Finding low-competition categories where you can rank #1</p>
+                      <p className="text-sm text-muted-foreground mt-2">Finding low-competition categories with higher chance of becoming bestseller</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -1684,7 +1692,7 @@ export default function ReadyToPublish() {
                               <div className="mt-3 space-y-1">
                                 {cat.currentLeaderBSR && (
                                   <div className="text-xs text-muted-foreground">
-                                    <span className="font-medium">Current #1 BSR:</span> {cat.currentLeaderBSR}
+                                    <span className="font-medium">Current leader BSR:</span> {cat.currentLeaderBSR}
                                   </div>
                                 )}
                                 {cat.minimumSalesTarget && (
@@ -1698,7 +1706,7 @@ export default function ReadyToPublish() {
                                   </div>
                                 )}
                                 <div className="text-xs font-medium text-primary">
-                                  To hit #1: {cat.topSellerRequirement || cat.saferSalesTarget || 'See targets above'}
+                                  To become bestseller: {cat.topSellerRequirement || cat.saferSalesTarget || 'See targets above'}
                                 </div>
                               </div>
                             </div>
@@ -1729,7 +1737,7 @@ export default function ReadyToPublish() {
                     <div className="text-center py-8">
                       <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
                       <p className="text-muted-foreground">Analyzing Paperback categories...</p>
-                      <p className="text-sm text-muted-foreground mt-2">Finding low-competition categories where you can rank #1</p>
+                      <p className="text-sm text-muted-foreground mt-2">Finding low-competition categories with higher chance of becoming bestseller</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -1758,7 +1766,7 @@ export default function ReadyToPublish() {
                               <div className="mt-3 space-y-1">
                                 {cat.currentLeaderBSR && (
                                   <div className="text-xs text-muted-foreground">
-                                    <span className="font-medium">Current #1 BSR:</span> {cat.currentLeaderBSR}
+                                    <span className="font-medium">Current leader BSR:</span> {cat.currentLeaderBSR}
                                   </div>
                                 )}
                                 {cat.minimumSalesTarget && (
@@ -1772,7 +1780,7 @@ export default function ReadyToPublish() {
                                   </div>
                                 )}
                                 <div className="text-xs font-medium text-primary">
-                                  To hit #1: {cat.topSellerRequirement || cat.saferSalesTarget || 'See targets above'}
+                                  To become bestseller: {cat.topSellerRequirement || cat.saferSalesTarget || 'See targets above'}
                                 </div>
                               </div>
                             </div>
@@ -1815,7 +1823,7 @@ export default function ReadyToPublish() {
                         ))}
                       </div>
                       <p className="text-sm text-muted-foreground mt-4">
-                        💡 These low-competition keywords help you rank #1 in your Kindle categories
+                        💡 These low-competition keywords increase your chance of becoming a bestseller in your Kindle categories
                       </p>
                     </div>
                   )}
@@ -1847,7 +1855,7 @@ export default function ReadyToPublish() {
                         ))}
                       </div>
                       <p className="text-sm text-muted-foreground mt-4">
-                        💡 These low-competition keywords help you rank #1 in your Paperback categories
+                        💡 These low-competition keywords increase your chance of becoming a bestseller in your Paperback categories
                       </p>
                     </div>
                   )}
@@ -1895,7 +1903,7 @@ export default function ReadyToPublish() {
                       <div className="bg-muted rounded-lg p-4">
                         <p className="text-sm font-medium mb-2">Launch Strategy</p>
                         <p className="text-sm text-muted-foreground">
-                          Start with $0.99 Kindle to maximize sales velocity and rank #1 in your low-competition categories quickly. Once you achieve Amazon Bestseller status, increase the Kindle price to $9.99-$14.99. The bestseller badge becomes your marketing asset. Paperback at $8.99 covers printing costs and provides reasonable margin.
+                          Start with $0.99 Kindle to maximize sales velocity and increase your chances of becoming a bestseller in your low-competition categories quickly. Once you achieve Amazon Bestseller status, increase the Kindle price to $9.99-$14.99. The bestseller badge becomes your marketing asset. Paperback at $8.99 covers printing costs and provides reasonable margin.
                         </p>
                       </div>
                     </div>

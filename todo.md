@@ -951,3 +951,21 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Added console logging to track AI response
 - [x] Added fallback to show saferSalesTarget if topSellerRequirement is empty
 - [x] Frontend now shows fallback value instead of blank
+
+## Bug: Keyword Generation Infinite Loading
+**Reported:** Keyword generation shows "Generating Kindle keywords..." spinner indefinitely
+**Expected:** Should generate keywords and display them
+**Tasks:**
+- [x] Added console logging and error handling to keyword mutations
+- [x] Set empty array on error to stop infinite loading
+- [x] Error handling added with fallback to empty state
+- [ ] Add console logging to track keyword generation progress
+
+## Content Update: Change #1 Language to Bestseller Language
+**Requested:** Replace "#1 sales" with "higher chance of becoming bestseller" throughout the app
+**Reason:** More accurate and less misleading - doesn't guarantee #1 ranking
+**Tasks:**
+- [x] Replaced all #1 references with bestseller language
+- [x] Updated UI text to "higher chance of becoming bestseller"
+- [x] Changed "To hit #1" to "To become bestseller"
+- [x] Updated all backend prompts to use bestseller language

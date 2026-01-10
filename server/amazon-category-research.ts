@@ -29,7 +29,7 @@ export async function researchAmazonCategories(params: {
   format?: 'kindle' | 'paperback'; // Specify format for correct category tree
 }): Promise<CategoryAnalysis[]> {
   const prompt = `ROLE:
-You are an Amazon KDP category-intelligence agent. Your job is to identify the lowest-competition Amazon ${params.format === 'kindle' ? 'Kindle' : 'Paperback'} categories where this book can legitimately compete for a #1 Best Seller ranking.
+You are an Amazon KDP category-intelligence agent. Your job is to identify the lowest-competition Amazon ${params.format === 'kindle' ? 'Kindle' : 'Paperback'} categories where this book has the highest chance of becoming a bestseller.
 
 INPUT:
 **Book Information:**
@@ -55,7 +55,7 @@ Output a concise taxonomy profile of the book.
 Using Amazon KDP's actual category structure (not theoretical ones):
 - Identify all categories where the book is legitimately eligible
 - **GO AS DEEP AS POSSIBLE** - prefer 5-6 level categories (e.g., "Books > Politics & Social Sciences > Philosophy > History & Schools of Thought > Western > Modern")
-- Deeper categories = less competition = easier #1 ranking
+- Deeper categories = less competition = higher chance of bestseller status
 - Exclude categories that are:
   * Misleading
   * Highly competitive
@@ -68,7 +68,7 @@ Using Amazon KDP's actual category structure (not theoretical ones):
 3️⃣ COMPETITION INTELLIGENCE & BSR CALCULATION
 For EACH eligible category, calculate sales needed using this methodology:
 
-**Step 1:** Identify the current #1 book's overall Kindle Store BSR (not subcategory rank)
+**Step 1:** Identify the current bestselling book's overall Kindle Store BSR (not subcategory rank)
 
 **Step 2:** Convert BSR to daily sales using this table:
 - BSR 1-100 → 500-5,000 sales/day
@@ -82,10 +82,10 @@ For EACH eligible category, calculate sales needed using this methodology:
 - BSR 200,000+ → 0-2 sales/day
 
 **Step 3:** Calculate "beat the leader" targets:
-- Minimum plan: current #1's daily sales + 30%
-- Safer plan: current #1's daily sales + 100% (double)
+- Minimum plan: current bestseller's daily sales + 30%
+- Safer plan: current bestseller's daily sales + 100% (double)
 
-**Step 4:** Check top 5 books (not just #1) - the lowest BSR among top 5 is the real target
+**Step 4:** Check top 5 books (not just the bestseller) - the lowest BSR among top 5 is the real target
 
 **Step 5:** Classify competition level:
 - Very Low: <10 sales/day needed
@@ -95,9 +95,9 @@ For EACH eligible category, calculate sales needed using this methodology:
 
 Use historical Amazon category behavior patterns (not speculation).
 
-4️⃣ #1 FEASIBILITY SCORING
+4️⃣ BESTSELLER FEASIBILITY SCORING
 Score each category on a 0–10 scale, where:
-- 10 = extremely easy to hit #1
+- 10 = extremely high chance of becoming bestseller
 - 0 = unrealistic
 Factors to weigh:
 - Category depth
@@ -108,10 +108,10 @@ Factors to weigh:
 5️⃣ FINAL RECOMMENDATION
 Output:
 
-A. **Top 5-8 BEST categories to target for #1**
+A. **Top 5-8 BEST categories to target for bestseller status**
 For each:
 - Full Amazon category path (5-6 levels deep - GO DEEP!)
-- Current #1 book's estimated BSR
+- Current bestselling book's estimated BSR
 - Minimum sales target (24h): X-Y sales (current leader + 30%)
 - Safer sales target (24h): X-Y sales (current leader + 100%)
 - Feasibility score (0-10)
@@ -140,7 +140,7 @@ RULES:
     "currentLeaderBSR": "50,000-80,000",
     "minimumSalesTarget": "20-33 sales in 24hr (leader + 30%)",
     "saferSalesTarget": "30-50 sales in 24hr (leader + 100%)",
-    "topSellerRequirement": "20-50 sales in 24hr to beat current #1",
+    "topSellerRequirement": "20-50 sales in 24hr for bestseller chance",
     "reasoning": "Low competition niche with decent traffic. Category depth (4 levels) reduces competition. Typical #1 BSR around 50,000-80,000 requires only 15-25 daily sales. No major publishers dominating.",
     "recommended": true
   }
@@ -152,7 +152,7 @@ Provide your analysis as a JSON array. Focus on categories with competitivenessS
   try {
     const response = await invokeLLM({
       messages: [
-        { role: "system", content: "You are an Amazon KDP category-intelligence agent specializing in finding lowest-competition categories for #1 bestseller rankings. You analyze book content deeply and recommend only legitimate, achievable categories based on historical Amazon data." },
+        { role: "system", content: "You are an Amazon KDP category-intelligence agent specializing in finding lowest-competition categories with highest chance of bestseller status. You analyze book content deeply and recommend only legitimate, achievable categories based on historical Amazon data." },
         { role: "user", content: prompt }
       ]
     });
@@ -164,7 +164,14 @@ Provide your analysis as a JSON array. Focus on categories with competitivenessS
     const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || content.match(/```\n([\s\S]*?)\n```/);
     const jsonContent = jsonMatch ? jsonMatch[1] : content;
     
-    const categories: CategoryAnalysis[] = JSON.parse(jsonContent);
+    let categories: CategoryAnalysis[];
+    try {
+      categories = JSON.parse(jsonContent);
+    } catch (parseError) {
+      console.error('[Category Research] Failed to parse JSON:', parseError);
+      console.error('[Category Research] Raw content:', content.substring(0, 500));
+      throw new Error("AI returned invalid format. Please try again.");
+    }
     
     // Debug: Log the raw categories to see what AI returned
     console.log('[Category Research] Raw AI response:', JSON.stringify(categories, null, 2));
