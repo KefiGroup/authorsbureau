@@ -29,7 +29,7 @@ export async function researchAmazonCategories(params: {
   format?: 'kindle' | 'paperback'; // Specify format for correct category tree
 }): Promise<CategoryAnalysis[]> {
   const prompt = `ROLE:
-You are an Amazon KDP category-intelligence agent. Your job is to identify the lowest-competition Amazon ${params.format === 'kindle' ? 'Kindle' : 'Paperback'} categories where this book has the highest chance of becoming a bestseller.
+You are an Amazon KDP category-intelligence agent. Your job is to identify the lowest-competition Amazon ${params.format === 'kindle' ? 'Kindle' : 'Paperback'} categories where this book can legitimately compete for a bestseller ranking. Be Creative, yet legitimate fitting into the bestseller BSR with the MOST confidence.
 
 INPUT:
 **Book Information:**
@@ -37,7 +37,7 @@ INPUT:
 - Genre: ${params.genre}
 - Keywords: ${params.keywords.join(", ") || "(will be extracted from content)"}
 - Target Audience: ${params.targetAudience}
-${params.bookContent ? `- Book Content/Description: ${params.bookContent.substring(0, 1000)}...` : ""}
+${params.bookContent ? `- Full Book Manuscript: ${params.bookContent.substring(0, 1000)}...` : ""}
 
 **Format:** ${params.format === 'kindle' ? 'Kindle eBook (use "Kindle Store > Kindle eBooks > ..." category paths)' : 'Paperback (use "Books > ..." category paths)'}
 
@@ -53,17 +53,16 @@ Output a concise taxonomy profile of the book.
 
 2️⃣ AMAZON CATEGORY MATCHING
 Using Amazon KDP's actual category structure (not theoretical ones):
-- Identify all categories where the book is legitimately eligible
+- Identify all categories where the book is eligible
 - **GO AS DEEP AS POSSIBLE** - prefer 5-6 level categories (e.g., "Books > Politics & Social Sciences > Philosophy > History & Schools of Thought > Western > Modern")
-- Deeper categories = less competition = higher chance of bestseller status
+- Be CREATIVE about category matching while staying legitimate
 - Exclude categories that are:
   * Misleading
-  * Highly competitive
+  * Competitive
   * Likely to be reclassified by Amazon
 - Only include categories that:
-  * Match the book's content truthfully
+  * Match the book's content (be creative about it)
   * Exist in Amazon KDP UI or backend taxonomy
-  * Are at least 4-6 levels deep (not shallow 2-3 level categories)
 
 3️⃣ COMPETITION INTELLIGENCE & BSR CALCULATION
 For EACH eligible category, calculate sales needed using this methodology:
@@ -87,17 +86,14 @@ For EACH eligible category, calculate sales needed using this methodology:
 
 **Step 4:** Check top 5 books (not just the bestseller) - the lowest BSR among top 5 is the real target
 
-**Step 5:** Classify competition level:
+**Step 5:** Only showcase competition level as:
 - Very Low: <10 sales/day needed
-- Low: 10-20 sales/day
-- Medium: 20-50 sales/day
-- High: >50 sales/day
 
 Use historical Amazon category behavior patterns (not speculation).
 
 4️⃣ BESTSELLER FEASIBILITY SCORING
-Score each category on a 0–10 scale, where:
-- 10 = extremely high chance of becoming bestseller
+Score each category on a 0–100 scale, where:
+- 100 = extremely easy to become bestseller
 - 0 = unrealistic
 Factors to weigh:
 - Category depth
@@ -108,21 +104,23 @@ Factors to weigh:
 5️⃣ FINAL RECOMMENDATION
 Output:
 
-A. **Top 5-8 BEST categories to target for bestseller status**
+A. **Top 6 BEST categories to target for bestseller status** (user will select 3)
 For each:
 - Full Amazon category path (5-6 levels deep - GO DEEP!)
-- Current bestselling book's estimated BSR
-- Minimum sales target (24h): X-Y sales (current leader + 30%)
-- Safer sales target (24h): X-Y sales (current leader + 100%)
-- Feasibility score (0-10)
-- Competition level (Very Low / Low / Medium / High)
+- Estimated sales needed in 24 hours (use BSR calculation)
+- Feasibility score (0-100)
 - Why this category is strategically soft
-- Note if category is 5-6 levels deep (preferred)
 
 B. **Categories to AVOID** (if any obvious traps exist)
-Explain briefly why (too competitive / misaligned).
+Explain briefly why (competitive / misaligned).
 
 RULES:
+- Do NOT invent categories
+- Do NOT recommend Business, Self-Help, or AI categories unless competition is demonstrably low
+- Use tables + bullet points format
+- Be precise. No marketing language.
+
+OUTPUT FORMAT:
 - Do NOT invent categories
 - Do NOT recommend Business, Self-Help, or AI categories unless competition is demonstrably low
 - Prioritize legitimacy + ease, not prestige
@@ -135,13 +133,13 @@ RULES:
   {
     "category": "${params.format === 'kindle' ? 'Kindle Store > Kindle eBooks > Education & Reference > Study Guides' : 'Books > Education & Reference > Study Guides'}",
     "subcategory": "Test Preparation",
-    "competitivenessScore": 8,
+    "competitivenessScore": 85,
     "estimatedMonthlySearches": "1,200-2,000/mo",
     "currentLeaderBSR": "50,000-80,000",
     "minimumSalesTarget": "20-33 sales in 24hr (leader + 30%)",
     "saferSalesTarget": "30-50 sales in 24hr (leader + 100%)",
     "topSellerRequirement": "20-50 sales in 24hr for bestseller chance",
-    "reasoning": "Low competition niche with decent traffic. Category depth (4 levels) reduces competition. Typical #1 BSR around 50,000-80,000 requires only 15-25 daily sales. No major publishers dominating.",
+    "reasoning": "Low competition niche with decent traffic. Category depth (4 levels) reduces competition. Strategically soft due to minimal active launches.",
     "recommended": true
   }
 ]

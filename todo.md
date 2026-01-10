@@ -969,3 +969,14 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Updated UI text to "higher chance of becoming bestseller"
 - [x] Changed "To hit #1" to "To become bestseller"
 - [x] Updated all backend prompts to use bestseller language
+
+## Update: Refine Kindle Category Optimization Prompt
+**Requested:** Update category research prompt with more creative yet legitimate approach
+**Key Changes:**
+- [x] Updated to show top 6 categories
+- [x] Only showcase "Very Low" competition level
+- [x] Changed scoring to 0-100 scale
+- [x] Added "Be CREATIVE" instruction to prompt
+- [x] Added explicit rule to avoid these categories
+- [x] Specified format in OUTPUT FORMAT section
+- [x] Added "Be precise. No marketing language" rule
