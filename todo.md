@@ -980,3 +980,24 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Added explicit rule to avoid these categories
 - [x] Specified format in OUTPUT FORMAT section
 - [x] Added "Be precise. No marketing language" rule
+
+## Bug: Category Depth Not Deep Enough
+**Reported:** Categories only go 3 levels deep instead of 5-6 levels
+**Example:** "Books > Business & Money > Management & Leadership" (3 levels)
+**Expected:** "Books > Business & Money > Management & Leadership > Motivation > Self-Improvement" (5 levels)
+**Tasks:**
+- [x] Added CRITICAL instruction to only return 5-6 level deep categories
+- [x] Added 3 examples of correct 5-6 level depth
+- [x] Explicitly stated DO NOT return shallow categories
+
+## Issue: "Avoid" Categories Showing
+**Reported:** AI is showing "Categories to AVOID" which wastes space
+**Tasks:**
+- [x] Removed avoid section, only return usable categories
+- [x] Updated output format to exclude avoid section
+
+## Issue: Business/Self-Help Categories Still Appearing
+**Reported:** AI still recommending "Books > Business & Money" despite rule
+**Tasks:**
+- [x] Added ABSOLUTE RULE with explicit blacklist
+- [x] Listed specific categories to never recommend

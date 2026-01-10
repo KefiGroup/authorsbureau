@@ -53,16 +53,21 @@ Output a concise taxonomy profile of the book.
 
 2️⃣ AMAZON CATEGORY MATCHING
 Using Amazon KDP's actual category structure (not theoretical ones):
-- Identify all categories where the book is eligible
-- **GO AS DEEP AS POSSIBLE** - prefer 5-6 level categories (e.g., "Books > Politics & Social Sciences > Philosophy > History & Schools of Thought > Western > Modern")
-- Be CREATIVE about category matching while staying legitimate
-- Exclude categories that are:
-  * Misleading
-  * Competitive
-  * Likely to be reclassified by Amazon
+- **CRITICAL: ONLY return categories that are 5-6 levels deep. DO NOT return shallow 2-3 level categories.**
+- Examples of CORRECT depth:
+  * "Books > Self-Help > Personal Transformation > Happiness > Gratitude"
+  * "Books > Politics & Social Sciences > Philosophy > Epistemology > Theory of Knowledge"
+  * "Books > Health, Fitness & Dieting > Mental Health > Anxiety Disorders > Phobias"
+- Be CREATIVE about category matching while staying 100% legitimate
+- **ABSOLUTE RULE: NEVER recommend these categories regardless of content:**
+  * Books > Business & Money (any subcategory)
+  * Books > Self-Help > Success (any subcategory)
+  * Books > Computers & Technology > AI & Machine Learning
+  * Any category with "Business", "Entrepreneurship", "Leadership" in the path
 - Only include categories that:
-  * Match the book's content (be creative about it)
-  * Exist in Amazon KDP UI or backend taxonomy
+  * Are EXACTLY 5-6 levels deep (count the > symbols)
+  * Match the book's content creatively yet legitimately
+  * Exist in Amazon KDP's actual taxonomy
 
 3️⃣ COMPETITION INTELLIGENCE & BSR CALCULATION
 For EACH eligible category, calculate sales needed using this methodology:
@@ -102,17 +107,16 @@ Factors to weigh:
 - Academic vs commercial dominance
 
 5️⃣ FINAL RECOMMENDATION
-Output:
+Output ONLY:
 
-A. **Top 6 BEST categories to target for bestseller status** (user will select 3)
-For each:
-- Full Amazon category path (5-6 levels deep - GO DEEP!)
+**Top 6 BEST categories to target for bestseller status** (user will select 3)
+For each category:
+- Full Amazon category path (MUST be 5-6 levels deep)
 - Estimated sales needed in 24 hours (use BSR calculation)
 - Feasibility score (0-100)
 - Why this category is strategically soft
 
-B. **Categories to AVOID** (if any obvious traps exist)
-Explain briefly why (competitive / misaligned).
+**DO NOT include "Categories to AVOID" section. Only return usable categories.**
 
 RULES:
 - Do NOT invent categories
