@@ -110,13 +110,17 @@ Factors to weigh:
 Output ONLY:
 
 **Top 6 BEST categories to target for bestseller status** (user will select 3)
-For each category:
+For each category, you MUST include ALL of these fields:
 - Full Amazon category path (MUST be 5-6 levels deep)
-- Estimated sales needed in 24 hours (use BSR calculation)
+- Current leader BSR (e.g., "50,000-80,000")
+- Minimum sales target in 24hr (leader + 30%, e.g., "20-33 sales in 24hr")
+- Safer sales target in 24hr (leader + 100%, e.g., "30-50 sales in 24hr")
+- Top seller requirement (e.g., "20-50 sales in 24hr for bestseller chance")
 - Feasibility score (0-100)
 - Why this category is strategically soft
 
 **DO NOT include "Categories to AVOID" section. Only return usable categories.**
+**DO NOT skip any fields. All BSR calculation fields are REQUIRED.**
 
 RULES:
 - Do NOT invent categories

@@ -1001,3 +1001,11 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 **Tasks:**
 - [x] Added ABSOLUTE RULE with explicit blacklist
 - [x] Listed specific categories to never recommend
+
+## Bug: BSR Calculation Data Missing
+**Reported:** Categories showing "See targets above" instead of BSR data
+**Root Cause:** AI not returning currentLeaderBSR, minimumSalesTarget, saferSalesTarget, topSellerRequirement fields
+**Tasks:**
+- [x] JSON example includes all fields, but instruction list was incomplete
+- [x] Added explicit list of REQUIRED fields with examples
+- [x] Added "DO NOT skip any fields" warning
