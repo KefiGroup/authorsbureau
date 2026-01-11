@@ -106,6 +106,7 @@ export default function ReadyToPublish() {
   const [selectedPaperbackCategories, setSelectedPaperbackCategories] = useState<string[]>([]);
   const [generatedKeywords, setGeneratedKeywords] = useState<string[]>([]);
   const [kindleKeywords, setKindleKeywords] = useState<string[]>([]);
+  const [bufferPercentage, setBufferPercentage] = useState<number>(50); // Default to Moderate (50%)
   const [paperbackKeywords, setPaperbackKeywords] = useState<string[]>([]);
   const [suggestedPrice, setSuggestedPrice] = useState<string>("");
   const [isbnNumber, setIsbnNumber] = useState<string>("");
@@ -1649,6 +1650,68 @@ export default function ReadyToPublish() {
                   </CardDescription>
                 </CardHeader>
               </Card>
+
+              {/* Sales Target Calculator */}
+              {(recommendedKindleCategories.length > 0 || recommendedPaperbackCategories.length > 0) && (
+                <Card className="border-2 border-primary/20">
+                  <CardHeader>
+                    <CardTitle>🎯 Sales Target Calculator</CardTitle>
+                    <CardDescription>
+                      Adjust your launch confidence level to see different sales targets
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium">Launch Confidence Buffer</label>
+                          <span className="text-sm text-primary font-medium">
+                            {bufferPercentage === 30 && "Minimum (30%)"}
+                            {bufferPercentage === 50 && "Moderate (50%)"}
+                            {bufferPercentage === 100 && "Safer (100%)"}
+                            {bufferPercentage !== 30 && bufferPercentage !== 50 && bufferPercentage !== 100 && `Custom (${bufferPercentage}%)`}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <input
+                            type="range"
+                            min="20"
+                            max="150"
+                            step="10"
+                            value={bufferPercentage}
+                            onChange={(e) => setBufferPercentage(Number(e.target.value))}
+                            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                          />
+                          <input
+                            type="number"
+                            min="20"
+                            max="150"
+                            value={bufferPercentage}
+                            onChange={(e) => setBufferPercentage(Math.min(150, Math.max(20, Number(e.target.value))))}
+                            className="w-20 px-3 py-1 text-sm border rounded-md"
+                          />
+                          <span className="text-sm text-muted-foreground">%</span>
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                          <span>Minimum</span>
+                          <span>Moderate</span>
+                          <span>Safer</span>
+                          <span>Aggressive</span>
+                        </div>
+                      </div>
+                      <div className="bg-muted rounded-lg p-4">
+                        <p className="text-sm font-medium mb-2">What does this mean?</p>
+                        <p className="text-sm text-muted-foreground">
+                          The buffer percentage determines how many more sales you need beyond the current leader to secure bestseller status. 
+                          <span className="font-medium"> 30% = Minimum</span> (riskier, requires precise timing), 
+                          <span className="font-medium"> 50% = Moderate</span> (balanced approach), 
+                          <span className="font-medium"> 100% = Safer</span> (double the leader's sales for higher confidence).
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Kindle eBook Categories */}
               <Card>

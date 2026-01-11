@@ -182,6 +182,21 @@ Provide your analysis as a JSON array. Focus on categories with competitivenessS
     // Debug: Log the raw categories to see what AI returned
     console.log('[Category Research] Raw AI response:', JSON.stringify(categories, null, 2));
     
+    // Validate BSR data fields
+    const requiredFields = ['currentLeaderBSR', 'minimumSalesTarget', 'saferSalesTarget', 'topSellerRequirement'];
+    const invalidCategories = categories.filter(cat => {
+      return requiredFields.some(field => !cat[field as keyof CategoryAnalysis]);
+    });
+    
+    if (invalidCategories.length > 0) {
+      console.error('[Category Research] Missing BSR fields in categories:', invalidCategories.map(c => c.category));
+      console.error('[Category Research] Missing fields:', invalidCategories.map(cat => {
+        const missing = requiredFields.filter(field => !cat[field as keyof CategoryAnalysis]);
+        return { category: cat.category, missing };
+      }));
+      throw new Error(`AI response missing required BSR data fields. Please regenerate categories.`);
+    }
+    
     // Deduplicate categories by full path (category + subcategory)
     const uniqueCategories = categories.reduce((acc, current) => {
       const fullPath = current.subcategory 
