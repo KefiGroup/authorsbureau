@@ -1009,3 +1009,18 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] JSON example includes all fields, but instruction list was incomplete
 - [x] Added explicit list of REQUIRED fields with examples
 - [x] Added "DO NOT skip any fields" warning
+
+## Marketing Campaign Builder (MVP P1 Feature - Under Marketing Panel)
+- [ ] Create Marketing.tsx page component
+- [ ] Design campaign builder UI (wizard-style with steps)
+- [ ] Add book selection dropdown (select which book to market)
+- [ ] Implement campaign types: Launch, Promotion, Re-launch
+- [ ] Create email sequence templates (pre-launch, launch day, post-launch)
+- [ ] Add social media post generator (Twitter, Facebook, Instagram)
+- [ ] Implement Amazon Ads campaign setup assistant
+- [ ] Add book promotion site submission tool (BookBub, Freebooksy, Bargain Booksy)
+- [ ] Create campaign timeline/calendar view
+- [ ] Add budget allocation calculator
+- [ ] Implement campaign analytics dashboard (placeholder for future)
+- [ ] Add campaign templates (genre-specific strategies)
+- [ ] Test complete marketing workflow end-to-end

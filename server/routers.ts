@@ -1264,6 +1264,83 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
         return { wrapUrl };
       }),
   }),
+
+  // Marketing Campaign Builder
+  marketing: router({
+    // Generate email sequence for book marketing
+    generateEmailSequence: protectedProcedure
+      .input(z.object({
+        bookId: z.string(),
+        emailType: z.enum(["prelaunch", "launch", "postlaunch"]),
+        campaignType: z.enum(["launch", "promotion", "relaunch"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const book = await db.getBookById(parseInt(input.bookId));
+        if (!book || book.authorId !== ctx.user.id) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Book not found" });
+        }
+
+        const emailPrompts = {
+          prelaunch: `Write a pre-launch teaser email for "${book.title}". Create excitement and anticipation. Include a call-to-action to add to wishlist. Keep it under 200 words.`,
+          launch: `Write a launch announcement email for "${book.title}". Celebrate the release, highlight key benefits, include Amazon link placeholder [AMAZON_LINK]. Keep it under 250 words.`,
+          postlaunch: `Write a thank you email to readers who supported the launch of "${book.title}". Express gratitude, ask for honest reviews, mention future books. Keep it under 200 words.`,
+        };
+
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert book marketing copywriter. Write compelling, personable emails that convert readers into buyers. Use a warm, authentic tone.",
+            },
+            {
+              role: "user",
+              content: `${emailPrompts[input.emailType]}\n\nBook details:\nTitle: ${book.title}\nSubtitle: ${book.subtitle || "N/A"}\nGenre: ${book.genre || "N/A"}\nDescription: ${book.description || "N/A"}`,
+            },
+          ],
+        });
+
+        const content = response.choices[0]?.message?.content;
+        const emailContent = typeof content === 'string' ? content : "Failed to generate email";
+        return { emailContent };
+      }),
+
+    // Generate social media post
+    generateSocialPost: protectedProcedure
+      .input(z.object({
+        bookId: z.string(),
+        platform: z.enum(["twitter", "facebook", "instagram"]),
+        campaignType: z.enum(["launch", "promotion", "relaunch"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const book = await db.getBookById(parseInt(input.bookId));
+        if (!book || book.authorId !== ctx.user.id) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Book not found" });
+        }
+
+        const platformSpecs = {
+          twitter: "280 characters max, use 1-2 hashtags, conversational tone",
+          facebook: "Longer format (300-500 words), storytelling approach, emotional hook",
+          instagram: "Caption with line breaks, 5-10 relevant hashtags at the end, visual description",
+        };
+
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: "You are a social media marketing expert specializing in book promotion. Create engaging, shareable posts that drive book sales.",
+            },
+            {
+              role: "user",
+              content: `Write a ${input.platform} post for "${book.title}" (${input.campaignType} campaign).\n\nPlatform requirements: ${platformSpecs[input.platform]}\n\nBook details:\nTitle: ${book.title}\nGenre: ${book.genre || "N/A"}\nDescription: ${book.description || "N/A"}`,
+            },
+          ],
+        });
+
+        const content = response.choices[0]?.message?.content;
+        const postContent = typeof content === 'string' ? content : "Failed to generate post";
+        return { postContent };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
