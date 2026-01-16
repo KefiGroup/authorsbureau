@@ -359,6 +359,40 @@ Generate the author bio now:`;
         return { success: true };
       }),
 
+    // Update Book Wrap content (editable fields)
+    updateBookWrapContent: protectedProcedure
+      .input(z.object({
+        bookId: z.number(),
+        selectedTitle: z.string().optional(),
+        selectedSubtitle: z.string().optional(),
+        authorName: z.string().optional(),
+        bookDescription: z.string().optional(),
+        authorBio: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { bookId, ...updateData } = input;
+
+        // Verify ownership
+        const book = await db.getBookById(bookId);
+        if (!book) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Book not found",
+          });
+        }
+
+        const author = await db.getAuthorByUserId(ctx.user.id);
+        if (!author || book.authorId !== author.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        await db.updateBook(bookId, updateData);
+        return { success: true };
+      }),
+
     // Get workflow progress (Resume workflow)
     getWorkflowProgress: protectedProcedure
       .input(z.object({ bookId: z.number() }))

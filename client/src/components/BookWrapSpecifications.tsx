@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Copy, Check, Upload, ExternalLink } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Copy, Check, Upload, ExternalLink, Pencil, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 
@@ -32,7 +34,16 @@ export function BookWrapSpecifications({
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Editable state for each field
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editedTitle, setEditedTitle] = useState(bookTitle);
+  const [editedSubtitle, setEditedSubtitle] = useState(bookSubtitle || "");
+  const [editedAuthorName, setEditedAuthorName] = useState(authorName);
+  const [editedDescription, setEditedDescription] = useState(bookDescription);
+  const [editedBio, setEditedBio] = useState(authorBio);
+
   const uploadWrapMutation = trpc.covers.uploadCustomCover.useMutation();
+  const updateContentMutation = trpc.book.updateBookWrapContent.useMutation();
 
   // Calculate spine width based on page count (cream paper formula)
   const spineWidth = (pageCount * 0.002252).toFixed(3);
@@ -57,6 +68,40 @@ export function BookWrapSpecifications({
     } catch (error) {
       toast.error("Failed to copy to clipboard");
     }
+  };
+
+  const handleEdit = (fieldName: string) => {
+    setEditingField(fieldName);
+  };
+
+  const handleSave = async (fieldName: string) => {
+    try {
+      const updateData: Record<string, string | number> = {
+        bookId: bookId,
+      };
+
+      if (fieldName === "Title") updateData.selectedTitle = editedTitle;
+      if (fieldName === "Subtitle") updateData.selectedSubtitle = editedSubtitle;
+      if (fieldName === "Author") updateData.authorName = editedAuthorName;
+      if (fieldName === "Description") updateData.bookDescription = editedDescription;
+      if (fieldName === "Bio") updateData.authorBio = editedBio;
+
+      await updateContentMutation.mutateAsync(updateData as any);
+      setEditingField(null);
+      toast.success(`${fieldName} saved successfully!`);
+    } catch (error) {
+      toast.error(`Failed to save ${fieldName}`);
+    }
+  };
+
+  const handleCancel = (fieldName: string) => {
+    // Reset to original values
+    if (fieldName === "Title") setEditedTitle(bookTitle);
+    if (fieldName === "Subtitle") setEditedSubtitle(bookSubtitle || "");
+    if (fieldName === "Author") setEditedAuthorName(authorName);
+    if (fieldName === "Description") setEditedDescription(bookDescription);
+    if (fieldName === "Bio") setEditedBio(authorBio);
+    setEditingField(null);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +166,7 @@ export function BookWrapSpecifications({
           <div className="flex-1">
             <h3 className="text-lg font-bold text-purple-900 mb-2">Design Your Book Wrap in Canva</h3>
             <p className="text-sm text-gray-700 mb-3">
-              Use the specifications below to create your complete book wrap in Canva. Copy the text content, 
+              Use the specifications below to create your complete book wrap in Canva. Edit and copy the text content, 
               design your wrap, then upload the finished file here.
             </p>
             <a 
@@ -197,7 +242,7 @@ export function BookWrapSpecifications({
       <Card className="p-6">
         <h3 className="text-lg font-bold mb-4">📝 Content for Your Design</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Copy these texts to paste into your Canva design:
+          Edit and copy these texts to paste into your Canva design:
         </p>
 
         <div className="space-y-4">
@@ -205,39 +250,117 @@ export function BookWrapSpecifications({
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-semibold">Book Title</label>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => copyToClipboard(bookTitle, "Title")}
-              >
-                {copiedField === "Title" ? (
-                  <Check className="w-4 h-4 text-green-600" />
+              <div className="flex gap-1">
+                {editingField === "Title" ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleSave("Title")}
+                    >
+                      <Save className="w-4 h-4 text-green-600" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleCancel("Title")}
+                    >
+                      <X className="w-4 h-4 text-red-600" />
+                    </Button>
+                  </>
                 ) : (
-                  <Copy className="w-4 h-4" />
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEdit("Title")}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(editedTitle, "Title")}
+                    >
+                      {copiedField === "Title" ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </>
                 )}
-              </Button>
+              </div>
             </div>
-            <div className="bg-muted p-3 rounded text-sm">{bookTitle}</div>
+            {editingField === "Title" ? (
+              <Input
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                className="text-sm"
+                autoFocus
+              />
+            ) : (
+              <div className="bg-muted p-3 rounded text-sm">{editedTitle}</div>
+            )}
           </div>
 
           {/* Subtitle */}
-          {bookSubtitle && (
+          {(bookSubtitle || editingField === "Subtitle") && (
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-sm font-semibold">Subtitle</label>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => copyToClipboard(bookSubtitle, "Subtitle")}
-                >
-                  {copiedField === "Subtitle" ? (
-                    <Check className="w-4 h-4 text-green-600" />
+                <div className="flex gap-1">
+                  {editingField === "Subtitle" ? (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleSave("Subtitle")}
+                      >
+                        <Save className="w-4 h-4 text-green-600" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleCancel("Subtitle")}
+                      >
+                        <X className="w-4 h-4 text-red-600" />
+                      </Button>
+                    </>
                   ) : (
-                    <Copy className="w-4 h-4" />
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleEdit("Subtitle")}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => copyToClipboard(editedSubtitle, "Subtitle")}
+                      >
+                        {copiedField === "Subtitle" ? (
+                          <Check className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </>
                   )}
-                </Button>
+                </div>
               </div>
-              <div className="bg-muted p-3 rounded text-sm">{bookSubtitle}</div>
+              {editingField === "Subtitle" ? (
+                <Input
+                  value={editedSubtitle}
+                  onChange={(e) => setEditedSubtitle(e.target.value)}
+                  className="text-sm"
+                  autoFocus
+                />
+              ) : (
+                <div className="bg-muted p-3 rounded text-sm">{editedSubtitle}</div>
+              )}
             </div>
           )}
 
@@ -245,61 +368,178 @@ export function BookWrapSpecifications({
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-semibold">Author Name</label>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => copyToClipboard(authorName, "Author")}
-              >
-                {copiedField === "Author" ? (
-                  <Check className="w-4 h-4 text-green-600" />
+              <div className="flex gap-1">
+                {editingField === "Author" ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleSave("Author")}
+                    >
+                      <Save className="w-4 h-4 text-green-600" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleCancel("Author")}
+                    >
+                      <X className="w-4 h-4 text-red-600" />
+                    </Button>
+                  </>
                 ) : (
-                  <Copy className="w-4 h-4" />
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEdit("Author")}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(editedAuthorName, "Author")}
+                    >
+                      {copiedField === "Author" ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </>
                 )}
-              </Button>
+              </div>
             </div>
-            <div className="bg-muted p-3 rounded text-sm">{authorName}</div>
+            {editingField === "Author" ? (
+              <Input
+                value={editedAuthorName}
+                onChange={(e) => setEditedAuthorName(e.target.value)}
+                className="text-sm"
+                autoFocus
+              />
+            ) : (
+              <div className="bg-muted p-3 rounded text-sm">{editedAuthorName}</div>
+            )}
           </div>
 
           {/* Book Description (for back cover) */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-semibold">Book Description (for back cover)</label>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => copyToClipboard(bookDescription, "Description")}
-              >
-                {copiedField === "Description" ? (
-                  <Check className="w-4 h-4 text-green-600" />
+              <div className="flex gap-1">
+                {editingField === "Description" ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleSave("Description")}
+                    >
+                      <Save className="w-4 h-4 text-green-600" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleCancel("Description")}
+                    >
+                      <X className="w-4 h-4 text-red-600" />
+                    </Button>
+                  </>
                 ) : (
-                  <Copy className="w-4 h-4" />
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEdit("Description")}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(editedDescription, "Description")}
+                    >
+                      {copiedField === "Description" ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </>
                 )}
-              </Button>
+              </div>
             </div>
-            <div className="bg-muted p-3 rounded text-sm max-h-32 overflow-y-auto">
-              {bookDescription}
-            </div>
+            {editingField === "Description" ? (
+              <Textarea
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
+                className="text-sm min-h-32"
+                autoFocus
+              />
+            ) : (
+              <div className="bg-muted p-3 rounded text-sm max-h-32 overflow-y-auto">
+                {editedDescription}
+              </div>
+            )}
           </div>
 
           {/* Author Bio */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-semibold">Author Bio (for back cover)</label>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => copyToClipboard(authorBio, "Bio")}
-              >
-                {copiedField === "Bio" ? (
-                  <Check className="w-4 h-4 text-green-600" />
+              <div className="flex gap-1">
+                {editingField === "Bio" ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleSave("Bio")}
+                    >
+                      <Save className="w-4 h-4 text-green-600" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleCancel("Bio")}
+                    >
+                      <X className="w-4 h-4 text-red-600" />
+                    </Button>
+                  </>
                 ) : (
-                  <Copy className="w-4 h-4" />
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEdit("Bio")}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(editedBio, "Bio")}
+                    >
+                      {copiedField === "Bio" ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </>
                 )}
-              </Button>
+              </div>
             </div>
-            <div className="bg-muted p-3 rounded text-sm max-h-32 overflow-y-auto">
-              {authorBio}
-            </div>
+            {editingField === "Bio" ? (
+              <Textarea
+                value={editedBio}
+                onChange={(e) => setEditedBio(e.target.value)}
+                className="text-sm min-h-32"
+                autoFocus
+              />
+            ) : (
+              <div className="bg-muted p-3 rounded text-sm max-h-32 overflow-y-auto">
+                {editedBio}
+              </div>
+            )}
           </div>
 
           {/* ISBN */}
@@ -320,9 +560,6 @@ export function BookWrapSpecifications({
                 </Button>
               </div>
               <div className="bg-muted p-3 rounded text-sm font-mono">{isbn}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Place barcode in bottom-right corner of back cover
-              </p>
             </div>
           )}
         </div>
@@ -332,34 +569,37 @@ export function BookWrapSpecifications({
       <Card className="p-6">
         <h3 className="text-lg font-bold mb-4">📤 Upload Your Finished Book Wrap</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Once you've designed your book wrap in Canva, download it as PNG (highest quality) and upload it here.
+          Once you've designed your book wrap in Canva, export it as PNG or PDF and upload it here.
         </p>
 
         <div className="space-y-4">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <div className="flex items-center gap-4">
             <input
               type="file"
-              accept="image/*,.pdf"
+              accept="image/png,image/jpeg,image/jpg,application/pdf"
               onChange={handleFileSelect}
               className="hidden"
               id="wrap-upload"
             />
-            <label htmlFor="wrap-upload" className="cursor-pointer">
-              <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-              <p className="text-sm font-semibold mb-1">
-                {uploadedFile ? uploadedFile.name : "Click to select file"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                PNG, JPG, or PDF • Max 50MB • {widthPixels}×{heightPixels}px recommended
-              </p>
+            <label htmlFor="wrap-upload">
+              <Button variant="outline" asChild>
+                <span>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Choose File
+                </span>
+              </Button>
             </label>
+            {uploadedFile && (
+              <span className="text-sm text-muted-foreground">
+                {uploadedFile.name}
+              </span>
+            )}
           </div>
 
           <Button
             onClick={handleUpload}
             disabled={!uploadedFile || isUploading}
             className="w-full"
-            size="lg"
           >
             {isUploading ? "Uploading..." : "Upload Book Wrap"}
           </Button>
