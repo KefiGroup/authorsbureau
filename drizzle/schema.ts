@@ -306,3 +306,74 @@ export const publishingDrafts = mysqlTable("publishingDrafts", {
 
 export type PublishingDraft = typeof publishingDrafts.$inferSelect;
 export type InsertPublishingDraft = typeof publishingDrafts.$inferInsert;
+
+
+/**
+ * AI Recommendation Feedback - Track user feedback on AI accuracy
+ */
+export const aiRecommendationFeedback = mysqlTable("ai_recommendation_feedback", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  bookId: int("bookId").references(() => books.id, { onDelete: "cascade" }),
+  recommendationType: varchar("recommendationType", { length: 50 }).notNull(), // "category", "title", "description", "keyword", "cover"
+  recommendationData: json("recommendationData"), // Store the actual recommendation
+  confidenceScore: decimal("confidenceScore", { precision: 3, scale: 2 }), // 0.00 to 1.00
+  userRating: int("userRating"), // 1-5 stars
+  userFeedback: text("userFeedback"), // Optional text feedback
+  wasUsed: boolean("wasUsed").default(false), // Did user actually use this recommendation?
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AIRecommendationFeedback = typeof aiRecommendationFeedback.$inferSelect;
+export type InsertAIRecommendationFeedback = typeof aiRecommendationFeedback.$inferInsert;
+
+/**
+ * Book Success Metrics - Track actual performance data
+ */
+export const bookSuccessMetrics = mysqlTable("book_success_metrics", {
+  id: int("id").autoincrement().primaryKey(),
+  bookId: int("bookId").notNull().references(() => books.id, { onDelete: "cascade" }),
+  // Amazon Performance
+  amazonBSR: int("amazonBSR"), // Best Sellers Rank
+  kindleBSR: int("kindleBSR"), // Kindle Store Rank
+  categoryRanks: json("categoryRanks").$type<Array<{ category: string; rank: number }>>(),
+  reviewCount: int("reviewCount").default(0),
+  averageRating: decimal("averageRating", { precision: 2, scale: 1 }), // 0.0 to 5.0
+  estimatedSales: int("estimatedSales"), // Estimated daily sales
+  // Pricing
+  currentPrice: decimal("currentPrice", { precision: 5, scale: 2 }),
+  // Categories & Keywords used
+  publishedCategories: json("publishedCategories").$type<string[]>(),
+  publishedKeywords: json("publishedKeywords").$type<string[]>(),
+  // Metadata snapshot
+  publishedTitle: varchar("publishedTitle", { length: 500 }),
+  publishedGenre: varchar("publishedGenre", { length: 100 }),
+  publishedCoverStyle: varchar("publishedCoverStyle", { length: 50 }),
+  // Tracking
+  snapshotDate: timestamp("snapshotDate").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type BookSuccessMetrics = typeof bookSuccessMetrics.$inferSelect;
+export type InsertBookSuccessMetrics = typeof bookSuccessMetrics.$inferInsert;
+
+/**
+ * Success Patterns - Aggregated insights from successful books
+ */
+export const successPatterns = mysqlTable("success_patterns", {
+  id: int("id").autoincrement().primaryKey(),
+  patternType: varchar("patternType", { length: 50 }).notNull(), // "category", "keyword", "cover_style", "title_format", "pricing"
+  patternValue: varchar("patternValue", { length: 500 }).notNull(), // The specific pattern (e.g., "Books > Self-Help > Emotions")
+  genre: varchar("genre", { length: 100 }), // Genre this pattern applies to
+  successCount: int("successCount").default(0), // Number of successful books using this pattern
+  averageBSR: int("averageBSR"), // Average BSR of books using this pattern
+  averageRating: decimal("averageRating", { precision: 2, scale: 1 }),
+  averageSales: int("averageSales"), // Average estimated daily sales
+  confidenceLevel: decimal("confidenceLevel", { precision: 3, scale: 2 }), // Statistical confidence (0.00 to 1.00)
+  sampleSize: int("sampleSize").default(0), // Number of data points
+  lastUpdated: timestamp("lastUpdated").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SuccessPattern = typeof successPatterns.$inferSelect;
+export type InsertSuccessPattern = typeof successPatterns.$inferInsert;

@@ -1341,6 +1341,137 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
         return { postContent };
       }),
   }),
+
+  // Analytics & Feedback Router
+  analytics: router({
+    // Submit feedback on AI recommendation
+    submitFeedback: protectedProcedure
+      .input(z.object({
+        bookId: z.number().optional(),
+        recommendationType: z.enum(["category", "title", "description", "keyword", "cover"]),
+        recommendationData: z.any(),
+        confidenceScore: z.number().min(0).max(1).optional(),
+        userRating: z.number().min(1).max(5),
+        userFeedback: z.string().optional(),
+        wasUsed: z.boolean(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { aiRecommendationFeedback } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+        await db.insert(aiRecommendationFeedback).values({
+          userId: ctx.user.id,
+          bookId: input.bookId,
+          recommendationType: input.recommendationType,
+          recommendationData: input.recommendationData,
+          confidenceScore: input.confidenceScore?.toString(),
+          userRating: input.userRating,
+          userFeedback: input.userFeedback,
+          wasUsed: input.wasUsed,
+        });
+
+        return { success: true };
+      }),
+
+    // Record book success metrics
+    recordSuccessMetrics: protectedProcedure
+      .input(z.object({
+        bookId: z.number(),
+        amazonBSR: z.number().optional(),
+        kindleBSR: z.number().optional(),
+        categoryRanks: z.array(z.object({ category: z.string(), rank: z.number() })).optional(),
+        reviewCount: z.number().optional(),
+        averageRating: z.number().optional(),
+        estimatedSales: z.number().optional(),
+        currentPrice: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { bookSuccessMetrics, books } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        // Get book details
+        const book = await db.select().from(books).where(eq(books.id, input.bookId)).limit(1);
+        if (!book[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Book not found" });
+
+        // Parse stored data
+        const categories = book[0].amazonCategories ? JSON.parse(book[0].amazonCategories) : [];
+        const keywords = book[0].amazonKeywords ? JSON.parse(book[0].amazonKeywords) : [];
+
+        await db.insert(bookSuccessMetrics).values({
+          bookId: input.bookId,
+          amazonBSR: input.amazonBSR,
+          kindleBSR: input.kindleBSR,
+          categoryRanks: input.categoryRanks,
+          reviewCount: input.reviewCount,
+          averageRating: input.averageRating?.toString(),
+          estimatedSales: input.estimatedSales,
+          currentPrice: input.currentPrice?.toString(),
+          publishedCategories: categories,
+          publishedKeywords: keywords,
+          publishedTitle: book[0].selectedTitle || book[0].title,
+          publishedGenre: book[0].genre,
+          publishedCoverStyle: book[0].coverUrl ? "ai-generated" : "custom",
+        });
+
+        return { success: true };
+      }),
+
+    // Get success patterns for recommendations
+    getSuccessPatterns: protectedProcedure
+      .input(z.object({
+        genre: z.string().optional(),
+        patternType: z.enum(["category", "keyword", "cover_style", "title_format", "pricing"]).optional(),
+      }))
+      .query(async ({ input }) => {
+        const { successPatterns } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq, and, desc } = await import("drizzle-orm");
+
+        let query = db.select().from(successPatterns);
+
+        const conditions = [];
+        if (input.genre) conditions.push(eq(successPatterns.genre, input.genre));
+        if (input.patternType) conditions.push(eq(successPatterns.patternType, input.patternType));
+
+        if (conditions.length > 0) {
+          query = query.where(and(...conditions)) as any;
+        }
+
+        const patterns = await query.orderBy(desc(successPatterns.confidenceLevel)).limit(20);
+        return patterns;
+      }),
+
+    // Get algorithm accuracy dashboard data
+    getAccuracyMetrics: protectedProcedure
+      .query(async ({ ctx }) => {
+        const { aiRecommendationFeedback } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq, sql } = await import("drizzle-orm");
+
+        // Get feedback stats by recommendation type
+        const feedbackStats = await db
+          .select({
+            recommendationType: aiRecommendationFeedback.recommendationType,
+            avgRating: sql<number>`AVG(${aiRecommendationFeedback.userRating})`,
+            totalFeedback: sql<number>`COUNT(*)`,
+            usageRate: sql<number>`SUM(CASE WHEN ${aiRecommendationFeedback.wasUsed} THEN 1 ELSE 0 END) / COUNT(*) * 100`,
+          })
+          .from(aiRecommendationFeedback)
+          .where(eq(aiRecommendationFeedback.userId, ctx.user.id))
+          .groupBy(aiRecommendationFeedback.recommendationType);
+
+        return feedbackStats;
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
