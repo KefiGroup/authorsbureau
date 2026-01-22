@@ -262,7 +262,7 @@ export default function Profile() {
 
                 {/* Pen Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="penName">Pen Name</Label>
+                  <Label htmlFor="penName">Pen Name *</Label>
                   <Input
                     id="penName"
                     placeholder="Your author name"
@@ -409,7 +409,10 @@ export default function Profile() {
 
                 {/* Submit Button */}
                 <div className="flex justify-end">
-                  <Button type="submit" disabled={isSaving}>
+                  <Button 
+                    type="submit" 
+                    disabled={isSaving || !bioWithinLimit || !formData.penName || !formData.bio}
+                  >
                     {isSaving ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

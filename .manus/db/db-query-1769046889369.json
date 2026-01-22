@@ -1,0 +1,17 @@
+{
+  "query": "SELECT \n  title,\n  authorId,\n  COUNT(*) as duplicate_count,\n  MIN(id) as first_id,\n  MAX(id) as last_id\nFROM books\nGROUP BY title, authorId\nHAVING COUNT(*) > 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT \n  title,\n  authorId,\n  COUNT(*) as duplicate_count,\n  MIN(id) as first_id,\n  MAX(id) as last_id\nFROM books\nGROUP BY title, authorId\nHAVING COUNT(*) > 1;",
+  "rows": [
+    {
+      "title": "The SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power",
+      "authorId": "180001",
+      "duplicate_count": "2",
+      "first_id": "360002",
+      "last_id": "390001"
+    }
+  ],
+  "messages": [],
+  "stdout": "title\tauthorId\tduplicate_count\tfirst_id\tlast_id\nThe SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power\t180001\t2\t360002\t390001\n",
+  "stderr": "",
+  "execution_time_ms": 358
+}

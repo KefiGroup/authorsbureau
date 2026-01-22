@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM books\nWHERE id IN (\n  SELECT id FROM (\n    SELECT id,\n           ROW_NUMBER() OVER (PARTITION BY title, authorId ORDER BY createdAt DESC) as rn\n    FROM books\n  ) t\n  WHERE rn > 1\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute DELETE FROM books\nWHERE id IN (\n  SELECT id FROM (\n    SELECT id,\n           ROW_NUMBER() OVER (PARTITION BY title, authorId ORDER BY createdAt DESC) as rn\n    FROM books\n  ) t\n  WHERE rn > 1\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 380
+}

@@ -1,0 +1,16 @@
+{
+  "query": "SELECT \n  title,\n  COUNT(*) as count,\n  GROUP_CONCAT(id) as book_ids,\n  GROUP_CONCAT(createdAt) as created_dates\nFROM books\nGROUP BY title, authorId\nHAVING COUNT(*) > 1\nORDER BY count DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT \n  title,\n  COUNT(*) as count,\n  GROUP_CONCAT(id) as book_ids,\n  GROUP_CONCAT(createdAt) as created_dates\nFROM books\nGROUP BY title, authorId\nHAVING COUNT(*) > 1\nORDER BY count DESC;",
+  "rows": [
+    {
+      "title": "The SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power",
+      "count": "2",
+      "book_ids": "360002,390001",
+      "created_dates": "2026-01-09 22:11:46,2026-01-09 23:03:58"
+    }
+  ],
+  "messages": [],
+  "stdout": "title\tcount\tbook_ids\tcreated_dates\nThe SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power\t2\t360002,390001\t2026-01-09 22:11:46,2026-01-09 23:03:58\n",
+  "stderr": "",
+  "execution_time_ms": 441
+}

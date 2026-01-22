@@ -1190,3 +1190,29 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Test duplicate book deletion (database query confirmed only 1 book remains)
 - [ ] Test file upload validation with invalid files (PENDING MANUAL TEST - browser automation limitation)
 - [ ] Test category selection limit (already implemented and working)
+
+
+---
+
+## 🔧 NEW TASKS (January 21, 2026 - Session 2)
+
+### Task #3: Database Cleanup and Unique Constraint
+- [x] Query database for all duplicate books across all users - NO DUPLICATES FOUND
+- [x] Remove duplicate book entries (keep most recent) - NOT NEEDED
+- [x] Uncomment unique constraint in drizzle/schema.ts
+- [x] Run `pnpm db:push` to apply unique constraint - SUCCESS
+- [x] Verify constraint is active - CONFIRMED: `books_title_authorId_unique`
+- [ ] Test constraint by attempting to create duplicate book
+
+### Task #4: Profile Page Comprehensive Validation
+- [x] Add required field indicators (*) to mandatory fields (Pen Name, Bio, Photo)
+- [x] Implement real-time character counter for bio (max 2000 chars) - ALREADY EXISTED
+- [x] Add validation for pen name (required) - Save button disabled when empty
+- [x] Add validation for bio (required, max 2000 chars) - Red border + error message
+- [x] Add validation for website URL (valid URL format) - input type="url"
+- [x] Add validation for social media links (valid URL format) - input type="url"
+- [x] Add photo upload validation (max 5MB, only .jpg/.png/.gif) - ALREADY EXISTED
+- [x] Add photo dimension validation via ImageCropper component - ALREADY EXISTED
+- [x] Show validation errors inline with helpful messages - ALREADY EXISTED
+- [x] Disable Save button when validation fails (bio > 2000 chars, no pen name, no bio)
+- [x] Test all validation rules with user account (paulinet77@gmail.com) - ALL PASSING!

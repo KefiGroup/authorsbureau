@@ -57,6 +57,13 @@
       "when": 1768583169666,
       "tag": "0007_tearful_harrier",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1769046862565,
+      "tag": "0008_flippant_christian_walker",
+      "breakpoints": true
     }
   ]
 }

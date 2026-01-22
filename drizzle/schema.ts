@@ -80,11 +80,9 @@ export const books = mysqlTable("books", {
   suggestedPrice: varchar("suggestedPrice", { length: 20 }), // AI-suggested pricing
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-// TODO: Add unique constraint after cleaning up existing duplicates
-// }, (table) => ({
-//   uniqueTitlePerAuthor: unique().on(table.title, table.authorId),
-// }));
+}, (table) => ({
+  uniqueTitlePerAuthor: unique().on(table.title, table.authorId),
+}));
 
 export type Book = typeof books.$inferSelect;
 export type InsertBook = typeof books.$inferInsert;

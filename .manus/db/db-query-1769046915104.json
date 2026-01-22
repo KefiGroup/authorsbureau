@@ -1,0 +1,9 @@
+{
+  "query": "SELECT \n  b1.id as duplicate_id,\n  b1.title,\n  b1.authorId,\n  b1.createdAt as duplicate_created,\n  b2.id as keep_id,\n  b2.createdAt as keep_created\nFROM books b1\nJOIN books b2 ON b1.title = b2.title AND b1.authorId = b2.authorId\nWHERE b1.id < b2.id\nORDER BY b1.title, b1.authorId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT \n  b1.id as duplicate_id,\n  b1.title,\n  b1.authorId,\n  b1.createdAt as duplicate_created,\n  b2.id as keep_id,\n  b2.createdAt as keep_created\nFROM books b1\nJOIN books b2 ON b1.title = b2.title AND b1.authorId = b2.authorId\nWHERE b1.id < b2.id\nORDER BY b1.title, b1.authorId;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 371
+}

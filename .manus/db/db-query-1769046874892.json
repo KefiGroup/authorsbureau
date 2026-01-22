@@ -1,0 +1,38 @@
+{
+  "query": "SELECT \n  id,\n  title,\n  authorId,\n  createdAt,\n  workflowStep\nFROM books\nORDER BY title, authorId, createdAt;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT \n  id,\n  title,\n  authorId,\n  createdAt,\n  workflowStep\nFROM books\nORDER BY title, authorId, createdAt;",
+  "rows": [
+    {
+      "id": "330003",
+      "title": "Be SUCKcessful",
+      "authorId": "1",
+      "createdAt": "2026-01-09 17:22:28",
+      "workflowStep": "NULL"
+    },
+    {
+      "id": "360003",
+      "title": "The SUCKCESS Theory",
+      "authorId": "180001",
+      "createdAt": "2026-01-09 22:12:30",
+      "workflowStep": "NULL"
+    },
+    {
+      "id": "360002",
+      "title": "The SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power",
+      "authorId": "180001",
+      "createdAt": "2026-01-09 22:11:46",
+      "workflowStep": "wrap"
+    },
+    {
+      "id": "390001",
+      "title": "The SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power",
+      "authorId": "180001",
+      "createdAt": "2026-01-09 23:03:58",
+      "workflowStep": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tauthorId\tcreatedAt\tworkflowStep\n330003\tBe SUCKcessful\t1\t2026-01-09 17:22:28\tNULL\n360003\tThe SUCKCESS Theory\t180001\t2026-01-09 22:12:30\tNULL\n360002\tThe SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power\t180001\t2026-01-09 22:11:46\twrap\n390001\tThe SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power\t180001\t2026-01-09 23:03:58\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 376
+}
