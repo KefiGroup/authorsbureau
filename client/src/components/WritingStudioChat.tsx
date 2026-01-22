@@ -91,7 +91,7 @@ export function WritingStudioChat({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 pb-6 space-y-4">
         {messages.map((message, index) => (
           <div
             key={index}
@@ -196,13 +196,13 @@ export function WritingStudioChat({
             onKeyDown={handleKeyDown}
             placeholder="Type your response... (Shift+Enter for new line)"
             disabled={isLoading}
-            className="min-h-[120px] max-h-[300px] resize-y"
+            className="min-h-[100px] max-h-[250px] resize-y"
           />
           <Button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
             size="icon"
-            className="h-[120px] w-[60px]"
+            className="h-[100px] w-[60px]"
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

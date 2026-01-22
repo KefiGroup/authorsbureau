@@ -2001,3 +2001,23 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Make input box more prominent and comfortable
 - [x] Enable manual resize (resize-y)
 - [x] Ensure good visibility and usability
+
+
+---
+
+## 🐛 CRITICAL BUG: Text Input Box Cut Off at Bottom
+
+**Issue:** Text input box at bottom of Writing Studio is cut off below viewport - bottom portion not visible
+
+**Impact:** Users cannot see the full text box, making it difficult to type and see what they're writing
+
+**Root Cause:** Chat container height calculation issue - input area extends below visible screen area
+
+**Fix Applied:**
+- [x] Adjusted chat container with h-full and overflow-hidden
+- [x] Reduced textarea height to 100px (from 120px) to fit viewport
+- [x] Added proper flexbox constraints
+- [x] Tested - input box now fully visible
+- [x] No scrolling required to see input box
+
+**Final Size:** 100px min-height, 250px max-height, resizable

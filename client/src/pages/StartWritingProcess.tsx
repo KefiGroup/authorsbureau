@@ -380,7 +380,7 @@ export default function StartWritingProcess() {
       {/* Main Content: Split View */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden">
         {/* Left: Chat Interface */}
-        <div className="border-r">
+        <div className="border-r h-full overflow-hidden">
           <WritingStudioChat
             messages={messages}
             onSendMessage={handleSendMessage}
