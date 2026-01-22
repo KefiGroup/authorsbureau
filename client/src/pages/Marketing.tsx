@@ -21,7 +21,10 @@ import {
   ExternalLink,
   Sparkles,
   Target,
-  Megaphone
+  Megaphone,
+  Pencil,
+  Save,
+  X
 } from "lucide-react";
 
 export default function Marketing() {
@@ -358,10 +361,16 @@ function EmailSequenceBuilder({ campaignType, book }: { campaignType: "launch" |
   const [generatingEmail, setGeneratingEmail] = useState(false);
   const [emailType, setEmailType] = useState<"prelaunch" | "launch" | "postlaunch">("launch");
   const [generatedEmail, setGeneratedEmail] = useState("");
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [editedEmail, setEditedEmail] = useState("");
+  const [originalEmail, setOriginalEmail] = useState("");
 
   const generateEmail = trpc.marketing.generateEmailSequence.useMutation({
     onSuccess: (data: { emailContent: string }) => {
       setGeneratedEmail(data.emailContent);
+      setOriginalEmail(data.emailContent);
+      setEditedEmail(data.emailContent);
+      setIsEditingEmail(false);
       toast.success("Email generated successfully!");
       setGeneratingEmail(false);
     },
@@ -381,8 +390,25 @@ function EmailSequenceBuilder({ campaignType, book }: { campaignType: "launch" |
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedEmail);
+    const contentToCopy = isEditingEmail ? editedEmail : generatedEmail;
+    navigator.clipboard.writeText(contentToCopy);
     toast.success("Email copied to clipboard!");
+  };
+
+  const handleStartEdit = () => {
+    setEditedEmail(generatedEmail);
+    setIsEditingEmail(true);
+  };
+
+  const handleSaveEdit = () => {
+    setGeneratedEmail(editedEmail);
+    setIsEditingEmail(false);
+    toast.success("Email saved successfully!");
+  };
+
+  const handleCancelEdit = () => {
+    setEditedEmail(generatedEmail);
+    setIsEditingEmail(false);
   };
 
   return (
@@ -424,19 +450,45 @@ function EmailSequenceBuilder({ campaignType, book }: { campaignType: "launch" |
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <Label>Generated Email</Label>
-                <Button variant="outline" size="sm" onClick={copyToClipboard}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy
-                </Button>
+                <div className="flex gap-2">
+                  {!isEditingEmail ? (
+                    <>
+                      <Button variant="outline" size="sm" onClick={handleStartEdit}>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Edit
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={copyToClipboard}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="default" size="sm" onClick={handleSaveEdit}>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
               <Textarea
-                value={generatedEmail}
-                onChange={(e) => setGeneratedEmail(e.target.value)}
+                value={isEditingEmail ? editedEmail : generatedEmail}
+                onChange={(e) => isEditingEmail && setEditedEmail(e.target.value)}
+                readOnly={!isEditingEmail}
                 rows={15}
-                className="font-mono text-sm"
+                className={`font-mono text-sm ${
+                  isEditingEmail ? 'border-blue-500 ring-2 ring-blue-200' : ''
+                }`}
               />
               <p className="text-xs text-muted-foreground">
-                You can edit this email before sending it to your subscribers
+                {isEditingEmail
+                  ? 'Editing mode: Make your changes and click Save'
+                  : 'Click Edit to modify the email content'}
               </p>
             </div>
           )}
@@ -481,10 +533,16 @@ function SocialMediaGenerator({ campaignType, book }: { campaignType: "launch" |
   const [generatingPost, setGeneratingPost] = useState(false);
   const [platform, setPlatform] = useState<"twitter" | "facebook" | "instagram">("twitter");
   const [generatedPost, setGeneratedPost] = useState("");
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [editedPost, setEditedPost] = useState("");
+  const [originalPost, setOriginalPost] = useState("");
 
   const generatePost = trpc.marketing.generateSocialPost.useMutation({
     onSuccess: (data: { postContent: string }) => {
       setGeneratedPost(data.postContent);
+      setOriginalPost(data.postContent);
+      setEditedPost(data.postContent);
+      setIsEditingPost(false);
       toast.success("Social media post generated!");
       setGeneratingPost(false);
     },
@@ -504,8 +562,25 @@ function SocialMediaGenerator({ campaignType, book }: { campaignType: "launch" |
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedPost);
+    const contentToCopy = isEditingPost ? editedPost : generatedPost;
+    navigator.clipboard.writeText(contentToCopy);
     toast.success("Post copied to clipboard!");
+  };
+
+  const handleStartEdit = () => {
+    setEditedPost(generatedPost);
+    setIsEditingPost(true);
+  };
+
+  const handleSaveEdit = () => {
+    setGeneratedPost(editedPost);
+    setIsEditingPost(false);
+    toast.success("Post saved successfully!");
+  };
+
+  const handleCancelEdit = () => {
+    setEditedPost(generatedPost);
+    setIsEditingPost(false);
   };
 
   return (
@@ -547,23 +622,52 @@ function SocialMediaGenerator({ campaignType, book }: { campaignType: "launch" |
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <Label>Generated Post</Label>
-                <Button variant="outline" size="sm" onClick={copyToClipboard}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy
-                </Button>
+                <div className="flex gap-2">
+                  {!isEditingPost ? (
+                    <>
+                      <Button variant="outline" size="sm" onClick={handleStartEdit}>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Edit
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={copyToClipboard}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="default" size="sm" onClick={handleSaveEdit}>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
               <Textarea
-                value={generatedPost}
-                onChange={(e) => setGeneratedPost(e.target.value)}
+                value={isEditingPost ? editedPost : generatedPost}
+                onChange={(e) => isEditingPost && setEditedPost(e.target.value)}
+                readOnly={!isEditingPost}
                 rows={8}
-                className="font-sans text-sm"
+                className={`font-sans text-sm ${
+                  isEditingPost ? 'border-blue-500 ring-2 ring-blue-200' : ''
+                }`}
               />
               <div className="flex justify-between items-center text-xs text-muted-foreground">
-                <span>Character count: {generatedPost.length}</span>
-                {platform === "twitter" && generatedPost.length > 280 && (
+                <span>Character count: {(isEditingPost ? editedPost : generatedPost).length}</span>
+                {platform === "twitter" && (isEditingPost ? editedPost : generatedPost).length > 280 && (
                   <span className="text-destructive">Exceeds Twitter limit!</span>
                 )}
               </div>
+              <p className="text-xs text-muted-foreground">
+                {isEditingPost
+                  ? 'Editing mode: Make your changes and click Save'
+                  : 'Click Edit to modify the post content'}
+              </p>
             </div>
           )}
         </CardContent>

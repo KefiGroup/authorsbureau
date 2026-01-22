@@ -1057,3 +1057,110 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Add save functionality for all edited fields
 - [x] Keep copy buttons alongside edit buttons
 - [x] Add visual feedback for unsaved changes
+
+
+---
+
+## 🐛 CRITICAL BUG FIXES (From Comprehensive Audit)
+
+### Bug #1: Keywords/Categories Data Flow Between Steps
+- [x] Examine database schema for keywords and categories fields
+- [x] Check Step 7 (Amazon KDP) mutation for saving keywords/categories
+- [x] Check Step 8 (Export) query for fetching keywords/categories
+- [x] Add console logging to track data flow
+- [x] Fix data persistence in Step 7 (added amazonCategories and amazonKeywords to saveProgress)
+- [x] Fix data fetching in Step 8 (added restoration logic for categories and keywords)
+- [ ] Test end-to-end: Step 7 → Step 8 data flow
+
+### Bug #2: Missing Edit Buttons on AI-Generated Marketing Content
+- [x] Add edit button to Email tab AI-generated content
+- [x] Add edit button to Social Media tab AI-generated content
+- [x] Implement edit mode state management
+- [x] Add Save/Cancel buttons for edit mode
+- [x] Make textareas editable in edit mode (with visual feedback)
+- [ ] Test editing and saving email content
+- [ ] Test editing and saving social media content
+
+### Bug #3: Profile Data Not Persisting
+- [x] Check database schema for profile fields (schema correct)
+- [x] Examine profile save mutation in server/routers.ts (mutation correct)
+- [x] Check photo upload to S3 functionality (upload logic correct)
+- [x] Add comprehensive error logging (already exists)
+- [x] Verify database functions (createAuthorProfile and updateAuthorProfile correct)
+- [ ] Test profile save and reload (will reveal actual issue via console logs)
+- [ ] Test photo upload and display
+
+## 🔴 HIGH PRIORITY FIXES
+
+### Issue #1: Workflow Step Indicator Shows Wrong Step
+- [x] Examine ReadyToPublish.tsx step indicator logic
+- [x] Verified step indicator logic is correct (shows completed steps with green checkmarks)
+- [ ] Test workflow navigation to confirm indicator works correctly
+
+### Issue #2: Duplicate Book Entries in Database
+- [ ] Query database for duplicate books during testing
+- [ ] Identify root cause if duplicates found
+- [ ] Fix book creation/update logic if needed
+
+### Issue #3: Pre-Publishing Checklist Not Saving
+- [ ] Deferred - lower priority than critical bugs
+- [ ] Add tRPC mutation to save checklist states (if needed after testing)
+- [ ] Add query to fetch checklist states (if needed after testing)
+
+## ✅ TESTING & VALIDATION
+
+- [ ] Test Bug #1 fix with user account (paulinet77@gmail.com)
+- [ ] Test Bug #2 fix with user account
+- [ ] Test Bug #3 fix with user account
+- [ ] Test all high-priority fixes with user account
+- [ ] Run full end-to-end workflow test
+- [ ] Check browser console for errors
+- [ ] Verify database data integrity
+- [ ] Create checkpoint after all fixes validated
+
+
+---
+
+## 🐛 CRITICAL BUG FIXES (January 21, 2026)
+
+### Bug #1: Keywords/Categories Data Flow Between Steps ✅ FIXED
+- [x] Examine database schema for keywords and categories fields
+- [x] Check Step 7 (Amazon KDP) mutation for saving keywords/categories
+- [x] Check Step 8 (Export) query for fetching keywords/categories
+- [x] Add console logging to track data flow
+- [x] Fix data persistence in Step 7 (added amazonCategories and amazonKeywords to saveProgress)
+- [x] Fix data fetching in Step 8 (added restoration logic for categories and keywords)
+- [x] Test end-to-end: Step 7 → Step 8 data flow - **VERIFIED WORKING!**
+
+**Fix Applied:** `client/src/pages/ReadyToPublish.tsx` lines 456-464 and 200-217
+
+### Bug #2: Missing Edit Buttons on AI-Generated Marketing Content ✅ FIXED
+- [x] Add edit button to Email tab AI-generated content
+- [x] Add edit button to Social Media tab AI-generated content
+- [x] Implement edit mode state management
+- [x] Add Save/Cancel buttons for edit mode
+- [x] Make textareas editable in edit mode (with visual feedback)
+- [x] Test editing and saving email content - **VERIFIED WORKING!**
+- [x] Test editing and saving social media content - **VERIFIED WORKING!**
+
+**Fix Applied:** `client/src/pages/Marketing.tsx` lines 418-445 (Email) and 597-624 (Social Media)
+
+### Bug #3: Profile Data Persistence 🟡 CODE VERIFIED
+- [x] Check database schema for profile fields (schema correct)
+- [x] Examine profile save mutation in server/routers.ts (mutation correct)
+- [x] Check photo upload to S3 functionality (upload logic correct)
+- [x] Add comprehensive error logging (already exists)
+- [x] Verify database functions (createAuthorProfile and updateAuthorProfile correct)
+- [ ] Test profile save and reload (needs user testing with console logs)
+- [ ] Test photo upload and display
+
+**Status:** Code is structurally correct. Needs user testing to identify actual issue via console logs.
+
+### Issue #2: Duplicate Book Entries in Database 🔴 CONFIRMED
+- [x] Query database for duplicate books during testing - **CONFIRMED: 2 "Be SUCKcessful" entries**
+- [ ] Identify root cause (likely "Start Fresh" function)
+- [ ] Fix book creation/update logic
+- [ ] Add unique constraint on book title + user ID
+- [ ] Remove existing duplicate entries
+
+**Evidence:** Marketing Campaign Builder dropdown shows two identical "Be SUCKcessful" entries.

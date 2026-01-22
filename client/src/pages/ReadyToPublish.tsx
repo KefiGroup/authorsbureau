@@ -180,6 +180,33 @@ export default function ReadyToPublish() {
         setSelectedCover(existingBook.selectedCoverUrl);
       }
       
+      // Restore categories and keywords from database
+      if (existingBook.amazonCategories) {
+        try {
+          const parsedCategories = JSON.parse(existingBook.amazonCategories);
+          const kindleCats = parsedCategories.filter((c: any) => c.format === 'kindle').map((c: any) => c.category);
+          const paperbackCats = parsedCategories.filter((c: any) => c.format === 'paperback').map((c: any) => c.category);
+          setSelectedKindleCategories(kindleCats);
+          setSelectedPaperbackCategories(paperbackCats);
+          console.log('[Workflow Restore] Restored categories - Kindle:', kindleCats.length, 'Paperback:', paperbackCats.length);
+        } catch (e) {
+          console.error("Failed to parse Amazon categories:", e);
+        }
+      }
+      
+      if (existingBook.amazonKeywords) {
+        try {
+          const parsedKeywords = JSON.parse(existingBook.amazonKeywords);
+          const kindleKws = parsedKeywords.filter((k: any) => k.format === 'kindle').map((k: any) => k.keyword);
+          const paperbackKws = parsedKeywords.filter((k: any) => k.format === 'paperback').map((k: any) => k.keyword);
+          setKindleKeywords(kindleKws);
+          setPaperbackKeywords(paperbackKws);
+          console.log('[Workflow Restore] Restored keywords - Kindle:', kindleKws.length, 'Paperback:', paperbackKws.length);
+        } catch (e) {
+          console.error("Failed to parse Amazon keywords:", e);
+        }
+      }
+      
       // CRITICAL: Restore workflow step from database ONLY on initial load
       // This ensures users resume at their saved step, not back at upload
       // DO NOT reset currentStep if user is already progressing through workflow
@@ -453,6 +480,16 @@ export default function ReadyToPublish() {
       return;
     }
 
+    // Combine all categories and keywords for storage
+    const allCategories = [
+      ...selectedKindleCategories.map(cat => ({ format: 'kindle', category: cat })),
+      ...selectedPaperbackCategories.map(cat => ({ format: 'paperback', category: cat }))
+    ];
+    const allKeywords = [
+      ...kindleKeywords.map(kw => ({ format: 'kindle', keyword: kw })),
+      ...paperbackKeywords.map(kw => ({ format: 'paperback', keyword: kw }))
+    ];
+
     saveProgressMutation.mutate({
       bookId,
       workflowStep: currentStep,
@@ -461,6 +498,8 @@ export default function ReadyToPublish() {
       selectedSubtitle: selectedSubtitle || undefined,
       selectedCoverUrl: selectedCover || uploadedCoverUrl || undefined,
       generatedCovers: generatedCovers.length > 0 ? JSON.stringify(generatedCovers) : undefined,
+      amazonCategories: allCategories.length > 0 ? JSON.stringify(allCategories) : undefined,
+      amazonKeywords: allKeywords.length > 0 ? JSON.stringify(allKeywords) : undefined,
     });
   };
 
