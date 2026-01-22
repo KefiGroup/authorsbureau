@@ -1791,3 +1791,24 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - ✅ Empty state message displays correctly
 - ✅ After 3 questions: blueprint generates automatically
 - ✅ Success: "9 of 9 sections complete 100%" + "Continue to Publishing" button
+
+
+---
+
+## ✅ Remove Markdown Formatting from AI Responses (COMPLETED)
+
+**Problem:** AI responses showed Markdown syntax like `**bold**` and `##` headings in the chat interface
+
+**Impact:** Users saw raw Markdown formatting instead of clean, natural conversation text
+
+**Solution:**
+- [x] Update writing-studio-agent-v2.ts system prompt to output plain text
+- [x] Remove instructions to use Markdown formatting from all 3 modes (initial_questions, blueprint_generation, refinement)
+- [x] Added explicit instruction: "DO NOT use Markdown formatting (**, ##, etc.) in your responses - use plain, natural text only"
+- [x] Test on dev site - WORKING PERFECTLY
+- [x] Questions display naturally without asterisks or hash symbols
+
+**Test Results:**
+- ✅ Before: "**What type of project are you writing?**"
+- ✅ After: "My first question is simple: What type of project are you writing?"
+- ✅ Clean, natural, professional conversation flow
