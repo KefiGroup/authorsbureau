@@ -1596,3 +1596,18 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 2. Investigate Drizzle ORM configuration
 3. Check TiDB/MySQL compatibility with Drizzle version
 4. Consider simplifying books schema default values
+
+
+---
+
+## ✅ Raw SQL Fix for Manuscript Analysis (COMPLETED)
+
+- [x] Replace Drizzle .insert() in createBook with raw SQL query
+- [x] Test raw SQL INSERT with all required fields
+- [x] Verify book creation returns correct bookId
+- [x] Add getBookByTitleAndAuthor helper to prevent duplicates
+- [x] Implement update logic for existing books
+- [x] Test manuscript analysis end-to-end with user account (paulinet77@gmail.com)
+- [x] Verify AI analysis completes successfully
+- [x] Confirm workflow progression to Step 3 (Review)
+- [x] SQL error bug RESOLVED

@@ -1,5 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import mysql from 'mysql2/promise';
 import { InsertUser, users, authors, InsertAuthor, books, chapters, characters, bookDesigns, marketingCampaigns, emailSequences, salesFunnels, amazonPerformance, amazonListings, storyBlueprints, InsertStoryBlueprint } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -178,33 +179,85 @@ export async function getBookById(bookId: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getBookByTitleAndAuthor(title: string, authorId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(books)
+    .where(and(eq(books.title, title), eq(books.authorId, authorId)))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function createBook(bookData: typeof books.$inferInsert) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  // Only insert fields that are explicitly provided (not undefined)
-  // This prevents Drizzle from generating malformed SQL with default keywords
-  const insertData: Record<string, any> = {};
+  // Use raw SQL to bypass Drizzle ORM bug with default values
+  // Build dynamic SQL based on provided fields
+  const fields: string[] = [];
+  const values: any[] = [];
   
-  if (bookData.authorId !== undefined) insertData.authorId = bookData.authorId;
-  if (bookData.title !== undefined) insertData.title = bookData.title;
-  if (bookData.subtitle !== undefined) insertData.subtitle = bookData.subtitle;
-  if (bookData.description !== undefined) insertData.description = bookData.description;
-  if (bookData.content !== undefined) insertData.content = bookData.content;
-  if (bookData.genre !== undefined) insertData.genre = bookData.genre;
-  if (bookData.status !== undefined) insertData.status = bookData.status;
-  if (bookData.wordCount !== undefined) insertData.wordCount = bookData.wordCount;
-  if (bookData.targetWordCount !== undefined) insertData.targetWordCount = bookData.targetWordCount;
-
-  const result = await db.insert(books).values(insertData as typeof books.$inferInsert);
-  const insertId = (result as any).insertId;
-  
-  // Fetch and return the created book
-  const createdBook = await getBookById(insertId);
-  if (!createdBook) {
-    throw new Error(`Failed to fetch created book with ID ${insertId}`);
+  if (bookData.authorId !== undefined) {
+    fields.push('authorId');
+    values.push(bookData.authorId);
   }
-  return createdBook;
+  if (bookData.title !== undefined) {
+    fields.push('title');
+    values.push(bookData.title);
+  }
+  if (bookData.subtitle !== undefined) {
+    fields.push('subtitle');
+    values.push(bookData.subtitle);
+  }
+  if (bookData.description !== undefined) {
+    fields.push('description');
+    values.push(bookData.description);
+  }
+  if (bookData.content !== undefined) {
+    fields.push('content');
+    values.push(bookData.content);
+  }
+  if (bookData.genre !== undefined) {
+    fields.push('genre');
+    values.push(bookData.genre);
+  }
+  if (bookData.status !== undefined) {
+    fields.push('status');
+    values.push(bookData.status);
+  }
+  if (bookData.wordCount !== undefined) {
+    fields.push('wordCount');
+    values.push(bookData.wordCount);
+  }
+  if (bookData.targetWordCount !== undefined) {
+    fields.push('targetWordCount');
+    values.push(bookData.targetWordCount);
+  }
+
+  // Build raw SQL query using mysql2 directly to bypass Drizzle ORM bug
+  const connection = await mysql.createConnection(process.env.DATABASE_URL!);
+  
+  try {
+    const placeholders = values.map(() => '?').join(', ');
+    const fieldNames = fields.join(', ');
+    const query = `INSERT INTO books (${fieldNames}) VALUES (${placeholders})`;
+    
+    const [result] = await connection.execute(query, values);
+    const insertId = (result as any).insertId;
+    
+    await connection.end();
+    
+    // Fetch and return the created book
+    const createdBook = await getBookById(insertId);
+    if (!createdBook) {
+      throw new Error(`Failed to fetch created book with ID ${insertId}`);
+    }
+    return createdBook;
+  } catch (error) {
+    await connection.end();
+    throw error;
+  }
 }
 
 export async function updateBook(bookId: number, bookData: Partial<typeof books.$inferInsert>) {

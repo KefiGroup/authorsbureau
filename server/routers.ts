@@ -1018,40 +1018,71 @@ Generate the author bio now:`;
             throw new Error('Failed to create or retrieve author profile');
           }
           
-          // Create a book in the database
+          // Create or update a book in the database
           // Use initialTitle if provided, otherwise use first AI-suggested title
           const bookTitle = input.initialTitle || analysis.suggestedTitles[0];
-          console.log('[manuscriptAnalysis.analyze] Creating book with title:', bookTitle);
+          console.log('[manuscriptAnalysis.analyze] Book title:', bookTitle);
           
-          // Build book data object with only defined fields
-          const bookData: any = {
-            authorId: author.id,
-            title: bookTitle,
-            wordCount: input.wordCount,
-            status: "drafting" as const,
-          };
+          // Check if a book with this title already exists for this author
+          const existingBook = await db.getBookByTitleAndAuthor(bookTitle, author.id);
           
-          // Only add optional fields if they exist
-          if (analysis.suggestedSubtitles && analysis.suggestedSubtitles[0]) {
-            bookData.subtitle = analysis.suggestedSubtitles[0];
+          let bookId: number;
+          
+          if (existingBook) {
+            console.log('[manuscriptAnalysis.analyze] Found existing book, updating:', existingBook.id);
+            
+            // Build update data object with only defined fields
+            const updateData: any = {
+              wordCount: input.wordCount,
+              status: "drafting" as const,
+            };
+            
+            // Only add optional fields if they exist
+            if (analysis.suggestedSubtitles && analysis.suggestedSubtitles[0]) {
+              updateData.subtitle = analysis.suggestedSubtitles[0];
+            }
+            if (analysis.detectedGenre) {
+              updateData.genre = analysis.detectedGenre;
+            }
+            if (input.wordCount) {
+              updateData.targetWordCount = input.wordCount;
+            }
+            if (input.manuscript) {
+              updateData.content = input.manuscript;
+            }
+            
+            await db.updateBook(existingBook.id, updateData);
+            bookId = existingBook.id;
+            console.log('[manuscriptAnalysis.analyze] Book updated:', bookId);
+          } else {
+            console.log('[manuscriptAnalysis.analyze] Creating new book with title:', bookTitle);
+            
+            // Build book data object with only defined fields
+            const bookData: any = {
+              authorId: author.id,
+              title: bookTitle,
+              wordCount: input.wordCount,
+              status: "drafting" as const,
+            };
+            
+            // Only add optional fields if they exist
+            if (analysis.suggestedSubtitles && analysis.suggestedSubtitles[0]) {
+              bookData.subtitle = analysis.suggestedSubtitles[0];
+            }
+            if (analysis.detectedGenre) {
+              bookData.genre = analysis.detectedGenre;
+            }
+            if (input.wordCount) {
+              bookData.targetWordCount = input.wordCount;
+            }
+            if (input.manuscript) {
+              bookData.content = input.manuscript;
+            }
+            
+            const createdBook = await db.createBook(bookData);
+            bookId = createdBook.id;
+            console.log('[manuscriptAnalysis.analyze] Book created:', bookId);
           }
-          if (analysis.detectedGenre) {
-            bookData.genre = analysis.detectedGenre;
-          }
-          if (input.wordCount) {
-            bookData.targetWordCount = input.wordCount;
-          }
-          if (input.manuscript) {
-            bookData.content = input.manuscript;
-          }
-          
-          const createdBook = await db.createBook(bookData);
-          
-          console.log('[manuscriptAnalysis.analyze] Book created:', createdBook);
-          
-          // Get the newly created book ID from the returned book object
-          const bookId = createdBook.id;
-          console.log('[manuscriptAnalysis.analyze] Book ID:', bookId);
           
           // Return both analysis and bookId
           return {
