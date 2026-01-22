@@ -182,13 +182,28 @@ export async function createBook(bookData: typeof books.$inferInsert) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(books).values(bookData);
+  // Only insert fields that are explicitly provided (not undefined)
+  // This prevents Drizzle from generating malformed SQL with default keywords
+  const insertData: Record<string, any> = {};
+  
+  if (bookData.authorId !== undefined) insertData.authorId = bookData.authorId;
+  if (bookData.title !== undefined) insertData.title = bookData.title;
+  if (bookData.subtitle !== undefined) insertData.subtitle = bookData.subtitle;
+  if (bookData.description !== undefined) insertData.description = bookData.description;
+  if (bookData.content !== undefined) insertData.content = bookData.content;
+  if (bookData.genre !== undefined) insertData.genre = bookData.genre;
+  if (bookData.status !== undefined) insertData.status = bookData.status;
+  if (bookData.wordCount !== undefined) insertData.wordCount = bookData.wordCount;
+  if (bookData.targetWordCount !== undefined) insertData.targetWordCount = bookData.targetWordCount;
+
+  const result = await db.insert(books).values(insertData as typeof books.$inferInsert);
   const insertId = (result as any).insertId;
   
   // Fetch and return the created book
   const createdBook = await getBookById(insertId);
-  if (!createdBook) throw new Error("Failed to retrieve created book");
-  
+  if (!createdBook) {
+    throw new Error(`Failed to fetch created book with ID ${insertId}`);
+  }
   return createdBook;
 }
 

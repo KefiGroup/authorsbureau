@@ -1023,21 +1023,34 @@ Generate the author bio now:`;
           const bookTitle = input.initialTitle || analysis.suggestedTitles[0];
           console.log('[manuscriptAnalysis.analyze] Creating book with title:', bookTitle);
           
-          const insertResult = await db.createBook({
+          // Build book data object with only defined fields
+          const bookData: any = {
             authorId: author.id,
             title: bookTitle,
-            subtitle: analysis.suggestedSubtitles[0],
-            genre: analysis.detectedGenre,
-            targetWordCount: input.wordCount,
-            content: input.manuscript,
             wordCount: input.wordCount,
-            status: "drafting", // Valid status from schema
-          });
+            status: "drafting" as const,
+          };
           
-          console.log('[manuscriptAnalysis.analyze] Book created, insertResult:', insertResult);
+          // Only add optional fields if they exist
+          if (analysis.suggestedSubtitles && analysis.suggestedSubtitles[0]) {
+            bookData.subtitle = analysis.suggestedSubtitles[0];
+          }
+          if (analysis.detectedGenre) {
+            bookData.genre = analysis.detectedGenre;
+          }
+          if (input.wordCount) {
+            bookData.targetWordCount = input.wordCount;
+          }
+          if (input.manuscript) {
+            bookData.content = input.manuscript;
+          }
           
-          // Get the newly created book ID (cast to any to access insertId)
-          const bookId = Number((insertResult as any).insertId);
+          const createdBook = await db.createBook(bookData);
+          
+          console.log('[manuscriptAnalysis.analyze] Book created:', createdBook);
+          
+          // Get the newly created book ID from the returned book object
+          const bookId = createdBook.id;
           console.log('[manuscriptAnalysis.analyze] Book ID:', bookId);
           
           // Return both analysis and bookId

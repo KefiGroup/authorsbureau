@@ -1542,3 +1542,57 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 1. Invalidate blueprint query cache before checking workingTitle
 2. Auto-create author record in book.create mutation if missing
 3. OR complete blueprint through UI conversation (not database updates)
+
+
+---
+
+## 🐛 CRITICAL BUG: Manuscript Analysis SQL Error
+
+### Issue
+- ❌ "Analysis Failed" error when analyzing manuscript in ReadyToPublish workflow
+- ❌ SQL query error: INSERT statement has mismatched columns and values
+- ❌ Error message: "Failed query: insert into `books` ( `id`, `authorId`, `title`, `updatedAt` ) values (default, ?, ?, ?, default, ?, ?, ?, default, ?, ?, default, default, defa..."
+
+### Root Cause
+- [ ] Investigate book creation/update mutation in server/routers.ts
+- [ ] Check if Drizzle schema mismatch with INSERT statement
+- [ ] Verify book.create or book.update mutation is causing the error
+
+### Fix Tasks
+- [ ] Identify the exact mutation causing the SQL error
+- [ ] Fix column/value mismatch in INSERT statement
+- [ ] Test manuscript analysis with user account (bookId=330003)
+- [ ] Verify AI analysis completes successfully
+- [ ] Ensure no SQL errors in console
+
+### Testing
+- [ ] Upload manuscript and trigger analysis
+- [ ] Verify AI analysis generates title, description, genre
+- [ ] Check database for correct book record creation
+
+
+---
+
+## 🐛 CRITICAL BUG: Manuscript Analysis SQL Error
+
+**Error:** Failed query: insert into `books` with mismatched columns/values  
+**Location:** `server/db.ts` createBook function  
+**Root Cause:** Drizzle ORM generating malformed SQL with default keywords  
+**Status:** Multiple fixes attempted, error persists  
+**Priority:** CRITICAL - blocks all manuscript analysis  
+**Recommended Fix:** Use raw SQL instead of Drizzle .insert()  
+**Analysis Document:** `/home/ubuntu/sql-error-final-analysis.md`
+
+### Attempted Fixes
+- [x] Fixed createBook return type to return book object
+- [x] Added undefined value filtering in createBook
+- [x] Explicitly listed only provided fields (authorId, title, subtitle, etc.)
+- [x] Added TypeScript type casting for insertData
+- [x] Restarted server to clear esbuild cache
+- ❌ Error still persists - Drizzle continues generating malformed SQL
+
+### Next Steps
+1. Implement raw SQL approach as workaround
+2. Investigate Drizzle ORM configuration
+3. Check TiDB/MySQL compatibility with Drizzle version
+4. Consider simplifying books schema default values
