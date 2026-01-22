@@ -1000,13 +1000,31 @@ Generate the author bio now:`;
         // Get blueprint to get bookId
         const blueprint = await db.select().from(storyBlueprints).where(eq(storyBlueprints.id, input.blueprintId)).limit(1);
         if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
-        if (!blueprint[0].bookId) throw new TRPCError({ code: "BAD_REQUEST", message: "Blueprint has no associated book" });
+        
+        // Create book if blueprint has no associated book
+        let bookId = blueprint[0].bookId;
+        if (!bookId) {
+          const { books } = await import("../drizzle/schema");
+          const [newBook] = await db.insert(books).values({
+            authorId: ctx.user.id,
+            title: blueprint[0].workingTitle || "Untitled Book",
+            genre: "Fiction",
+            status: "drafting",
+            totalChapters: input.totalChapters,
+          }).$returningId();
+          bookId = newBook.id;
+          
+          // Update blueprint with bookId
+          await db.update(storyBlueprints)
+            .set({ bookId })
+            .where(eq(storyBlueprints.id, input.blueprintId));
+        }
 
         // Create chapters
         const chapterValues = [];
         for (let i = 1; i <= input.totalChapters; i++) {
           chapterValues.push({
-            bookId: blueprint[0].bookId,
+            bookId: bookId,
             chapterNumber: i,
             title: `Chapter ${i}`,
             content: "",
@@ -1028,7 +1046,7 @@ Generate the author bio now:`;
         const { books } = await import("../drizzle/schema");
         await db.update(books)
           .set({ totalChapters: input.totalChapters })
-          .where(eq(books.id, blueprint[0].bookId));
+          .where(eq(books.id, bookId));
 
         return { success: true };
       }),
