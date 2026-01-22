@@ -2091,3 +2091,40 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 
 **Result:** Users now have both auto-save feedback AND manual save button for confidence
 
+
+
+---
+
+## 🚧 Manuscript Writing Phase (80% Complete - NEEDS DEBUGGING)
+
+**User Report:** "no writing is here at writing studio"
+
+**Status:** Feature implemented but chapter initialization not working yet.
+
+**Completed:**
+- [x] Database schema updated (manuscriptStarted, manuscriptCompleted fields added to storyBlueprints)
+- [x] Created WriteManuscript.tsx page component with full UI
+- [x] Added 4 tRPC procedures: manuscript.initialize, manuscript.getChapters, manuscript.saveChapter, manuscript.markComplete
+- [x] Added route /write-manuscript/:blueprintId in App.tsx
+- [x] Changed button from "Continue to Publishing" to "Start Writing Manuscript"
+- [x] UI layout complete (header with title/progress, sidebar for chapter navigation, main editor area)
+- [x] Chapter navigation sidebar structure
+- [x] Progress tracking display (X of Y chapters complete • word count)
+- [x] Word count tracking logic
+- [x] "Back to Blueprint" and "Continue to Publishing" buttons
+
+**Remaining Issues:**
+- [ ] Chapter initialization not triggering on page load (useEffect not firing)
+- [ ] Need to debug why manuscript.initialize mutation isn't being called
+- [ ] Verify blueprint.getById query is working correctly
+- [ ] Test chapter creation (should create 20 chapters automatically)
+- [ ] Test chapter saving functionality
+- [ ] Add AI writing assistance features (continue writing, expand section, add dialogue)
+- [ ] Implement auto-save for chapter content (save every 30 seconds)
+- [ ] Add rich text editor for chapter content (currently plain textarea)
+- [ ] Test complete workflow: Blueprint → Manuscript → Publishing
+
+**Technical Debt:**
+- WriteManuscript page loads but shows "0 of 0 chapters" instead of initializing 20 chapters
+- Need to investigate why useEffect with blueprint/bookId dependencies isn't triggering
+- May need to add explicit "Initialize Manuscript" button if auto-initialization continues to fail

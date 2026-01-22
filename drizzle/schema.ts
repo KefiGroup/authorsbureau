@@ -172,9 +172,13 @@ export const storyBlueprints = mysqlTable("storyBlueprints", {
     workingTitle?: string;
   }>(),
   
-  // Blueprint Generationn
+  // Blueprint Generation
   blueprintGenerated: boolean("blueprintGenerated").default(false),
   blueprintContent: mediumtext("blueprintContent"), // Full generated blueprint in markdown
+  
+  // Manuscript Writing Progress
+  manuscriptStarted: boolean("manuscriptStarted").default(false),
+  manuscriptCompleted: boolean("manuscriptCompleted").default(false),
   
   // Versioning
   version: int("version").default(1),

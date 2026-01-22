@@ -983,6 +983,144 @@ Generate the author bio now:`;
           filename: `${input.bookTitle.replace(/[^a-z0-9]/gi, "_")}.pdf`,
         };
       }),
+
+    // Initialize manuscript chapters for a blueprint
+    initialize: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+        totalChapters: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { chapters, storyBlueprints } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        // Get blueprint to get bookId
+        const blueprint = await db.select().from(storyBlueprints).where(eq(storyBlueprints.id, input.blueprintId)).limit(1);
+        if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
+        if (!blueprint[0].bookId) throw new TRPCError({ code: "BAD_REQUEST", message: "Blueprint has no associated book" });
+
+        // Create chapters
+        const chapterValues = [];
+        for (let i = 1; i <= input.totalChapters; i++) {
+          chapterValues.push({
+            bookId: blueprint[0].bookId,
+            chapterNumber: i,
+            title: `Chapter ${i}`,
+            content: "",
+            wordCount: 0,
+            status: "planned" as const,
+          });
+        }
+
+        await db.insert(chapters).values(chapterValues);
+
+        // Update blueprint
+        await db.update(storyBlueprints)
+          .set({ 
+            manuscriptStarted: true,
+          })
+          .where(eq(storyBlueprints.id, input.blueprintId));
+
+        // Update book with total chapters
+        const { books } = await import("../drizzle/schema");
+        await db.update(books)
+          .set({ totalChapters: input.totalChapters })
+          .where(eq(books.id, blueprint[0].bookId));
+
+        return { success: true };
+      }),
+
+    // Get all chapters for a blueprint
+    getChapters: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const { chapters, storyBlueprints } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq, asc } = await import("drizzle-orm");
+
+        // Get blueprint to get bookId
+        const blueprint = await db.select().from(storyBlueprints).where(eq(storyBlueprints.id, input.blueprintId)).limit(1);
+        if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
+        if (!blueprint[0].bookId) return [];
+
+        // Get chapters
+        const bookChapters = await db.select().from(chapters)
+          .where(eq(chapters.bookId, blueprint[0].bookId))
+          .orderBy(asc(chapters.chapterNumber));
+
+        return bookChapters;
+      }),
+
+    // Save chapter content
+    saveChapter: protectedProcedure
+      .input(z.object({
+        chapterId: z.number(),
+        title: z.string(),
+        content: z.string(),
+        wordCount: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { chapters } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        await db.update(chapters)
+          .set({
+            title: input.title,
+            content: input.content,
+            wordCount: input.wordCount,
+            status: input.content.trim() ? "drafting" : "planned",
+          })
+          .where(eq(chapters.id, input.chapterId));
+
+        return { success: true };
+      }),
+
+    // Mark chapter as complete
+    markComplete: protectedProcedure
+      .input(z.object({
+        chapterId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { chapters, storyBlueprints } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        // Mark chapter complete
+        await db.update(chapters)
+          .set({ status: "completed" })
+          .where(eq(chapters.id, input.chapterId));
+
+        // Check if all chapters are complete
+        const chapter = await db.select().from(chapters).where(eq(chapters.id, input.chapterId)).limit(1);
+        if (!chapter[0]) return { success: true };
+
+        const allChapters = await db.select().from(chapters).where(eq(chapters.bookId, chapter[0].bookId));
+        const allComplete = allChapters.every((c: any) => c.status === "completed");
+
+        if (allComplete) {
+          // Update blueprint
+          const blueprint = await db.select().from(storyBlueprints).where(eq(storyBlueprints.bookId, chapter[0].bookId)).limit(1);
+          if (blueprint[0]) {
+            await db.update(storyBlueprints)
+              .set({ manuscriptCompleted: true })
+              .where(eq(storyBlueprints.id, blueprint[0].id));
+          }
+        }
+
+        return { success: true };
+      }),
   }),
 
   // Manuscript Analysis (AI-Agentic Publishing)

@@ -440,32 +440,20 @@ export default function StartWritingProcess() {
                 Save Blueprint
               </Button>
               
-              {/* Continue to Publishing button */}
+              {/* Start Writing Manuscript button */}
               <Button
                 onClick={() => {
                   if (!blueprint?.workingTitle) {
                     toast.error("Please complete the blueprint first");
                     return;
                   }
-                  createBook.mutate({
-                    title: blueprint.workingTitle,
-                  });
+                  setLocation(`/write-manuscript/${blueprintId}`);
                 }}
-                disabled={createBook.isPending}
                 size="lg"
               >
-                {createBook.isPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    Continue to Publishing
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </>
-                )}
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                Start Writing Manuscript
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>
           )}
