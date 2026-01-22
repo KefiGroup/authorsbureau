@@ -152,9 +152,9 @@ export default function WritingStudio() {
                 )}
               </Button>
               {!isAuthenticated && (
-                <Button size="lg" variant="outline" asChild className="text-lg px-8 py-6">
-                  <a href={getLoginUrl()}>Sign In to Continue</a>
-                </Button>
+                <p className="text-sm text-muted-foreground mt-4">
+                  New here? Clicking "Start Your Writing Process" will let you sign up instantly with Google, Microsoft, or Apple.
+                </p>
               )}
             </div>
           </div>

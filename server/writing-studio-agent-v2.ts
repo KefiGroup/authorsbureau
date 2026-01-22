@@ -64,7 +64,6 @@ Your Goal: Gather 3 essential pieces of information efficiently and warmly:
 Author Profile:
 ${authorProfile ? `- Pen Name: ${authorProfile.penName || "Not provided"}
 - Bio: ${authorProfile.bio || "Not provided"}
-- Previous Works: ${authorProfile.previousWorks || "None listed"}
 - Writing Style: ${authorProfile.writingStyle || "Not specified"}` : "No profile available"}
 
 What We've Collected So Far:
@@ -130,7 +129,6 @@ async function handleBlueprintGeneration(
 Author Profile:
 ${authorProfile ? `- Pen Name: ${authorProfile.penName || "Not provided"}
 - Bio: ${authorProfile.bio || "Not provided"}
-- Previous Works: ${authorProfile.previousWorks || "None listed"}
 - Writing Style: ${authorProfile.writingStyle || "Not specified"}` : "No profile available"}
 
 Essential Information Provided:

@@ -1812,3 +1812,34 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - ✅ Before: "**What type of project are you writing?**"
 - ✅ After: "My first question is simple: What type of project are you writing?"
 - ✅ Clean, natural, professional conversation flow
+
+
+---
+
+## ✅ Improve Sign-Up Flow Clarity (COMPLETED)
+
+**Problem:** Users were confused about how to sign up - unclear that OAuth buttons create new accounts
+
+**Impact:** Users thought they couldn't sign up without existing accounts
+
+**Solution:** Keep Manus OAuth but make sign-up flow clearer
+
+**Tasks:**
+- [x] Add helper text explaining sign-up process
+- [x] Changed "Sign In to Continue" button to explanatory text
+- [x] New message: "New here? Clicking 'Start Your Writing Process' will let you sign up instantly with Google, Microsoft, or Apple."
+- [x] Makes it clear that OAuth buttons work for BOTH sign-up and sign-in
+
+---
+
+## ✅ Stop AI from Referencing Previous Books (COMPLETED)
+
+**Problem:** AI kept mentioning author's previous works when they want to write a NEW book
+
+**Impact:** Users felt the AI wasn't focused on their current project
+
+**Solution:**
+- [x] Removed "Previous Works" field from all 3 AI system prompts (initial_questions, blueprint_generation, refinement)
+- [x] AI now only sees: Pen Name, Bio, Writing Style
+- [x] Focus is 100% on the NEW book they're creating
+- [x] No more references to past publications
