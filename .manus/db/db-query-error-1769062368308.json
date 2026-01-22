@@ -1,0 +1,8 @@
+{
+  "query": "INSERT INTO authors (userId, penName, createdAt, updatedAt)\nVALUES (30001, 'Robert J Battista', NOW(), NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute INSERT INTO authors (userId, penName, createdAt, updatedAt)\nVALUES (30001, 'Robert J Battista', NOW(), NOW());",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1452 (23000) at line 1: Cannot add or update a child row: a foreign key constraint fails (`crun9x42uzpzt82daffxdj`.`authors`, CONSTRAINT `authors_userId_users_id_fk` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION)"
+  ]
+}

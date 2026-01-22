@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, workingTitle, projectType, currentSection, completedSections FROM storyBlueprints WHERE id = 30002;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, workingTitle, projectType, currentSection, completedSections FROM storyBlueprints WHERE id = 30002;",
+  "rows": [
+    {
+      "id": "30002",
+      "workingTitle": "The Intelligence Paradox",
+      "projectType": "novel",
+      "currentSection": "complete",
+      "completedSections": "[\"project_overview\", \"genre\", \"premise\", \"protagonist\", \"characters\", \"setting\", \"plot\", \"audience\", \"themes\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tworkingTitle\tprojectType\tcurrentSection\tcompletedSections\n30002\tThe Intelligence Paradox\tnovel\tcomplete\t[\"project_overview\", \"genre\", \"premise\", \"protagonist\", \"characters\", \"setting\", \"plot\", \"audience\", \"themes\"]\n",
+  "stderr": "",
+  "execution_time_ms": 360
+}

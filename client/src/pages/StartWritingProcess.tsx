@@ -84,11 +84,39 @@ export default function StartWritingProcess() {
     },
   });
 
+  const updateBlueprint = trpc.blueprint.update.useMutation();
+  
+  const createBook = trpc.book.create.useMutation({
+    onSuccess: (data) => {
+      toast.success("Book created! Redirecting to publishing workflow...");
+      // Link blueprint to book (note: bookId field doesn't exist in schema yet, skip for now)
+      // if (blueprintId && data.bookId) {
+      //   updateBlueprint.mutate({
+      //     blueprintId,
+      //     data: { bookId: data.bookId },
+      //   });
+      // }
+      // Redirect to ReadyToPublish with bookId
+      setLocation(`/ready-to-publish?bookId=${data.bookId}`);
+    },
+    onError: (error) => {
+      toast.error("Failed to create book: " + error.message);
+    },
+  });
+
   // Load conversation history on mount
   useEffect(() => {
     if (!blueprint || !blueprintId || loadingBlueprint) return;
     
     const history = blueprint.conversationHistory as any;
+    const completedCount = (blueprint.completedSections as any)?.length || 0;
+    
+    // Check if blueprint is complete (all 9 sections done)
+    if (completedCount >= 9 || blueprint.currentSection === 'complete') {
+      setIsConversationComplete(true);
+      setCompletedSections(9);
+      setTotalSections(9);
+    }
     
     if (history && Array.isArray(history) && history.length > 0) {
       // Load existing conversation
@@ -99,7 +127,7 @@ export default function StartWritingProcess() {
         suggestions: msg.suggestions,
       })));
       setCurrentSection(blueprint.currentSection || "");
-      setCompletedSections((blueprint.completedSections as any)?.length || 0);
+      setCompletedSections(completedCount);
     } else {
       // Start new conversation (no history exists)
       startConversation.mutate({ blueprintId });
@@ -237,24 +265,52 @@ export default function StartWritingProcess() {
           </div>
 
           {isConversationComplete && (
-            <Button
-              onClick={handleGenerateBlueprint}
-              disabled={generateBlueprint.isPending}
-              size="lg"
-            >
-              {generateBlueprint.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <FileText className="h-4 w-4 mr-2" />
-                  Generate Full Blueprint
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </>
-              )}
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={handleGenerateBlueprint}
+                disabled={generateBlueprint.isPending}
+                size="lg"
+                variant="outline"
+              >
+                {generateBlueprint.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Generate Full Blueprint
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!blueprint?.workingTitle) {
+                    toast.error("Please complete the blueprint first");
+                    return;
+                  }
+                  createBook.mutate({
+                    title: blueprint.workingTitle,
+                  });
+                }}
+                disabled={createBook.isPending}
+                size="lg"
+              >
+                {createBook.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                    Continue to Publishing
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            </div>
           )}
         </div>
       </div>

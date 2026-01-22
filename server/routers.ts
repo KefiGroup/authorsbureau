@@ -244,7 +244,7 @@ Generate the author bio now:`;
           });
         }
 
-        await db.createBook({
+        const book = await db.createBook({
           authorId: author.id,
           title: input.title,
           subtitle: input.subtitle,
@@ -253,7 +253,7 @@ Generate the author bio now:`;
           status: "idea",
         });
 
-        return { success: true };
+        return { success: true, bookId: book.id };
       }),
 
     // Update book
@@ -721,6 +721,27 @@ Generate the author bio now:`;
           totalSections: CONVERSATION_SECTIONS.length,
           isComplete: completedSections.length === CONVERSATION_SECTIONS.length,
         };
+      }),
+
+    // Get blueprint transformed as AIAnalysis for ReadyToPublish
+    getAsAIAnalysis: protectedProcedure
+      .input(z.object({ bookId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const blueprint = await db.getStoryBlueprintByBookId(input.bookId);
+        if (!blueprint) {
+          return null;
+        }
+        // Verify ownership
+        if (blueprint.userId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+        
+        // Transform blueprint to AIAnalysis format
+        const { blueprintToAIAnalysis } = await import("./blueprint-transformer");
+        return blueprintToAIAnalysis(blueprint);
       }),
   }),
 

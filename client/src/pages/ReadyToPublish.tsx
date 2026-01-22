@@ -115,6 +115,12 @@ export default function ReadyToPublish() {
   // Load author profile
   const { data: authorProfile } = trpc.author.getProfile.useQuery();
 
+  // Load blueprint data if available (for pre-population)
+  const { data: blueprintAnalysis } = trpc.blueprint.getAsAIAnalysis.useQuery(
+    { bookId: bookId! },
+    { enabled: !!bookId }
+  );
+
   // Load user's books to auto-select if no bookId provided
   const { data: userBooks } = trpc.book.getMyBooks.useQuery(undefined, {
     enabled: !bookId,
@@ -158,6 +164,12 @@ export default function ReadyToPublish() {
         } catch (e) {
           console.error("Failed to parse AI analysis:", e);
         }
+      } else if (blueprintAnalysis && !aiAnalysis) {
+        // Use blueprint data if no AI analysis exists yet
+        console.log('[Blueprint Integration] Using blueprint data for pre-population');
+        setAIAnalysis(blueprintAnalysis);
+        setEditedDescription(blueprintAnalysis.bookDescription || "");
+        setSelectedTitle(blueprintAnalysis.suggestedTitles[0] || "");
       }
       
       if (existingBook.selectedTitle) {

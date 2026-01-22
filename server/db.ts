@@ -183,7 +183,13 @@ export async function createBook(bookData: typeof books.$inferInsert) {
   if (!db) throw new Error("Database not available");
 
   const result = await db.insert(books).values(bookData);
-  return result;
+  const insertId = (result as any).insertId;
+  
+  // Fetch and return the created book
+  const createdBook = await getBookById(insertId);
+  if (!createdBook) throw new Error("Failed to retrieve created book");
+  
+  return createdBook;
 }
 
 export async function updateBook(bookId: number, bookData: Partial<typeof books.$inferInsert>) {
