@@ -31,8 +31,8 @@ import { Button } from "./ui/button";
 const mainMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: PenTool, label: "AI Writing Studio", path: "/writing-studio" },
-  { icon: BookOpen, label: "My Books", path: "/books" },
-  { icon: TrendingUp, label: "Marketing", path: "/marketing" },
+  { icon: BookOpen, label: "AI Publishing Studio", path: "/books" },
+  { icon: TrendingUp, label: "AI Marketing Studio", path: "/marketing" },
 ];
 
 const accountMenuItems = [

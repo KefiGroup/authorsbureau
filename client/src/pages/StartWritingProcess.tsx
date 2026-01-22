@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { WritingStudioChat } from "@/components/WritingStudioChat";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2, Sparkles, FileText, ArrowRight, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default function StartWritingProcess() {
   const [, setLocation] = useLocation();
@@ -268,7 +269,8 @@ export default function StartWritingProcess() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <DashboardLayout>
+    <div className="h-full flex flex-col">
       {/* Header */}
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -339,5 +341,6 @@ export default function StartWritingProcess() {
         </div>
       </div>
     </div>
+    </DashboardLayout>
   );
 }
