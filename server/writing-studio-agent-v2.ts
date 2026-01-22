@@ -61,7 +61,7 @@ Your Goal: Gather 3 essential pieces of information efficiently and warmly:
 2. Brief description (2-3 sentences about what the book is about)
 3. Target audience (who will read this book)
 
-Author Profile:
+Author Profile (for context only - do NOT mention specific book titles):
 ${authorProfile ? `- Pen Name: ${authorProfile.penName || "Not provided"}
 - Bio: ${authorProfile.bio || "Not provided"}
 - Writing Style: ${authorProfile.writingStyle || "Not specified"}` : "No profile available"}
@@ -78,7 +78,9 @@ Instructions:
 - Be warm, encouraging, and conversational
 - Ask ONE question at a time
 - After each answer, acknowledge what they said before asking the next question
-- Incorporate their author profile to personalize your responses
+- You may reference their background/expertise to show understanding, but NEVER mention specific book titles
+- Always frame this as a NEW project they're creating, not continuing previous work
+- Use generic terms like "your book", "your project", "this work" - never specific titles
 - When you have all 3 pieces, tell them you'll generate a complete blueprint
 - Provide suggestion buttons for common answers
 - DO NOT use Markdown formatting (**, ##, etc.) in your responses - use plain, natural text only
@@ -126,7 +128,7 @@ async function handleBlueprintGeneration(
 
   const systemPrompt = `You are an expert story architect. Based on the author's essential information, generate a COMPLETE story blueprint covering all 9 sections.
 
-Author Profile:
+Author Profile (for context only - do NOT mention specific book titles from profile):
 ${authorProfile ? `- Pen Name: ${authorProfile.penName || "Not provided"}
 - Bio: ${authorProfile.bio || "Not provided"}
 - Writing Style: ${authorProfile.writingStyle || "Not specified"}` : "No profile available"}
@@ -153,9 +155,12 @@ Generate a comprehensive story blueprint with these 9 sections:
 Instructions:
 - Be creative and specific - don't just repeat what they said
 - Infer details from their description and author profile
+- NEVER mention specific book titles from the author's profile - this is a NEW project
+- Always frame this as a fresh, new work they're creating
 - Make compelling suggestions they can refine
 - Use storytelling best practices
 - Return structured JSON data
+- DO NOT use Markdown formatting in the message field
 
 Return your response as a JSON object with this structure:
 {
@@ -320,7 +325,7 @@ async function handleRefinement(
 
   const systemPrompt = `You are an expert story development coach helping an author refine their story blueprint.
 
-Author Profile:
+Author Profile (for context only - do NOT mention specific book titles from profile):
 ${authorProfile ? `- Pen Name: ${authorProfile.penName || "Not provided"}
 - Bio: ${authorProfile.bio || "Not provided"}` : "No profile available"}
 
@@ -338,6 +343,8 @@ Instructions:
 - Reference specific parts of the blueprint in your responses
 - Provide concrete suggestions, not vague advice
 - If they ask to change something, explain the implications
+- NEVER mention specific book titles from the author's profile - focus on THIS project
+- Always frame this as a NEW work they're creating
 - DO NOT use Markdown formatting (**, ##, etc.) in your responses - use plain, natural text only
 - Keep responses focused and actionable
 

@@ -1843,3 +1843,43 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] AI now only sees: Pen Name, Bio, Writing Style
 - [x] Focus is 100% on the NEW book they're creating
 - [x] No more references to past publications
+
+
+---
+
+## 🚨 CRITICAL: Layout Bugs in StartWritingProcess (URGENT)
+
+**Problem 1: Empty Right Panel**
+- Blueprint panel on the right side is completely blank/empty
+- Users cannot see their blueprint progress
+- Happens on published site (blueprint 90007)
+
+**Problem 2: Cannot Scroll Chat**
+- Chat conversation is cut off
+- Users cannot scroll up to see previous messages
+- Makes long conversations unusable
+
+**Tasks:**
+- [ ] Investigate why BlueprintPreview is not rendering
+- [ ] Check if blueprint data is being fetched correctly
+- [ ] Fix CSS overflow/height issues preventing scroll
+- [ ] Test on both dev and published sites
+- [ ] Verify blueprint displays correctly after generation
+
+
+---
+
+## ✅ Make AI Focus on NEW Project Only - No Title References (COMPLETED)
+
+**Problem:** AI mentioned book titles and background which confused users into thinking it was referencing previous work
+
+**Impact:** Users thought AI was talking about old books when it was actually the NEW book they're creating
+
+**Solution:** Keep author profile for context but explicitly instruct AI to never mention specific titles
+
+**Tasks:**
+- [x] Updated all 3 AI prompts (initial_questions, blueprint_generation, refinement)
+- [x] Added instruction: "NEVER mention specific book titles from the author's profile - this is a NEW project"
+- [x] Added instruction: "Always frame this as a fresh, new work they're creating"
+- [x] Keep author profile (bio, writing style) for context but not for title references
+- [x] Use generic terms like "your project", "your book", "this work"
