@@ -46,6 +46,13 @@ function formatBlueprintData(data: any, type: 'protagonist' | 'characters' | 'pl
         return `**Target Audience:** ${parsed.targetAudience || parsed.description || 'Not specified'}`;
       
       case 'themes':
+        // Handle complex structure with coreThemes array and emotionalArc
+        if (parsed.coreThemes && Array.isArray(parsed.coreThemes)) {
+          const themes = parsed.coreThemes.map((theme: string, idx: number) => `${idx + 1}. ${theme}`).join('\n');
+          const emotionalArc = parsed.emotionalArc ? `\n\n**Emotional Arc:** ${parsed.emotionalArc}` : '';
+          return `**Core Themes:**\n${themes}${emotionalArc}`;
+        }
+        // Fallback for simple array
         if (Array.isArray(parsed)) {
           return parsed.map((theme, idx) => `${idx + 1}. ${theme}`).join('\n');
         }
@@ -74,6 +81,7 @@ export default function StartWritingProcess() {
   const [conversationMode, setConversationMode] = useState<"initial_questions" | "blueprint_generation" | "refinement">("initial_questions");
   const [blueprintGenerated, setBlueprintGenerated] = useState(false);
   const [generatedBlueprintData, setGeneratedBlueprintData] = useState<any>(null);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
 
   // Queries - ALL HOOKS MUST BE AT TOP BEFORE ANY CONDITIONAL RETURNS
   const { data: blueprint, isLoading: loadingBlueprint, refetch: refetchBlueprint } = trpc.blueprint.get.useQuery(
@@ -106,6 +114,9 @@ export default function StartWritingProcess() {
   });
 
   const sendMessage = trpc.blueprint.sendMessage.useMutation({
+    onMutate: () => {
+      setSaveStatus("saving");
+    },
     onSuccess: (data) => {
       setMessages((prev) => [
         ...prev,
@@ -124,11 +135,25 @@ export default function StartWritingProcess() {
         refetchBlueprint();
         toast.success("🎉 Blueprint generated! Review and refine below.");
       }
+      
+      // Show saved status
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
     },
     onError: (error) => {
       toast.error("Failed to send message: " + error.message);
+      setSaveStatus("idle");
     },
   });
+
+  const handleManualSave = () => {
+    if (!blueprintId || !blueprint) return;
+    // Trigger refetch to ensure latest data is saved
+    refetchBlueprint();
+    toast.success("✅ Blueprint saved successfully!");
+    setSaveStatus("saved");
+    setTimeout(() => setSaveStatus("idle"), 2000);
+  };
 
   const generateBlueprint = trpc.blueprint.generateFromConversation.useMutation({
     onSuccess: () => {
@@ -387,7 +412,35 @@ export default function StartWritingProcess() {
           </div>
 
           {blueprintGenerated && (
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
+              {/* Auto-save indicator */}
+              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                {saveStatus === "saving" && (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                )}
+                {saveStatus === "saved" && (
+                  <>
+                    <CheckCircle2 className="h-3 w-3 text-green-600" />
+                    <span className="text-green-600">Saved</span>
+                  </>
+                )}
+              </div>
+              
+              {/* Save Blueprint button */}
+              <Button
+                onClick={handleManualSave}
+                variant="outline"
+                size="lg"
+                disabled={saveStatus === "saving"}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Save Blueprint
+              </Button>
+              
+              {/* Continue to Publishing button */}
               <Button
                 onClick={() => {
                   if (!blueprint?.workingTitle) {

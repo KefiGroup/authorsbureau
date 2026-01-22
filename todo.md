@@ -2048,3 +2048,46 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Tested - all sections now display readable, professional text
 
 **Result:** Blueprint sections now show clean, formatted markdown instead of raw JSON
+
+
+---
+
+## 🐛 BUG: Thematic Elements Still Showing Raw JSON
+
+**User Report:** Thematic Elements section displays raw JSON with `{ "coreThemes": [...], "emotionalArc": "..." }` instead of formatted text
+
+**Root Cause:** formatBlueprintData() function's 'themes' case only handles simple arrays, not complex objects with coreThemes and emotionalArc properties
+
+**Fix Applied:**
+- [x] Updated formatBlueprintData() 'themes' case to handle complex JSON structure
+- [x] Parsed coreThemes array and emotionalArc separately
+- [x] Formatted as readable markdown with proper headings
+- [x] Tested with real blueprint data - displays correctly
+
+**Result:** Thematic Elements now shows:
+- "Core Themes:" heading with numbered list
+- "Emotional Arc:" heading with descriptive text
+- No more raw JSON
+
+---
+
+## 🐛 CRITICAL UX BUG: No Save Button and No Auto-Save for Blueprint
+
+**User Report:** "there's no save button... how to save? and there's no auto save"
+
+**Issue:** Users complete the blueprint but have no way to explicitly save their work. Only "Continue to Publishing" button exists, which moves to next workflow without clear save confirmation.
+
+**Investigation Complete:**
+- [x] Blueprint DOES auto-save to database after each message (line 773 in routers.ts)
+- [x] Progress persists - conversation history and data saved automatically
+- [x] No visual feedback to users - they don't know work is being saved
+
+**Implementation Complete (Option C - Both):**
+- [x] Added auto-save indicator component ("Saving..." → "Saved ✓")
+- [x] Shows indicator after each message send (onMutate/onSuccess)
+- [x] Added "Save Blueprint" button next to "Continue to Publishing"
+- [x] Button triggers manual save with success toast
+- [x] Tested - button works, toast appears, "Saved" indicator shows
+
+**Result:** Users now have both auto-save feedback AND manual save button for confidence
+
