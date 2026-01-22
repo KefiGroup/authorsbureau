@@ -984,6 +984,130 @@ Generate the author bio now:`;
         };
       }),
 
+    // Generate chapter outline from blueprint
+    generateChapterOutline: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { storyBlueprints, chapterOutlines } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+        const { invokeLLM } = await import("./_core/llm");
+
+        // Get blueprint
+        const blueprint = await db.select().from(storyBlueprints).where(eq(storyBlueprints.id, input.blueprintId)).limit(1);
+        if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
+
+        // Generate chapter outline using AI
+        const prompt = `Based on this book blueprint, generate a detailed chapter-by-chapter outline for a ${blueprint[0].projectType || "novel"}.
+
+Blueprint:
+${JSON.stringify(blueprint[0].essentialData, null, 2)}
+
+Generate 20 chapters. For each chapter, provide:
+1. Chapter title (creative and engaging)
+2. Chapter summary (2-3 sentences describing what happens)
+
+Return ONLY a JSON object with this structure:
+{
+  "chapters": [
+    {"title": "Chapter Title", "summary": "What happens in this chapter..."},
+    ...
+  ]
+}`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are a professional book editor helping authors structure their books." },
+            { role: "user", content: prompt }
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "chapter_outline",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  chapters: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        title: { type: "string" },
+                        summary: { type: "string" }
+                      },
+                      required: ["title", "summary"],
+                      additionalProperties: false
+                    }
+                  }
+                },
+                required: ["chapters"],
+                additionalProperties: false
+              }
+            }
+          }
+        });
+
+        const messageContent = typeof response.choices[0].message.content === 'string' 
+          ? response.choices[0].message.content 
+          : JSON.stringify(response.choices[0].message.content);
+        const outlineData = JSON.parse(messageContent || "{}");
+
+        // Delete existing outline if any
+        await db.delete(chapterOutlines).where(eq(chapterOutlines.blueprintId, input.blueprintId));
+
+        // Save outline to database
+        await db.insert(chapterOutlines).values({
+          blueprintId: input.blueprintId,
+          outline: outlineData,
+          approved: false,
+        });
+
+        return { success: true, outline: outlineData };
+      }),
+
+    // Get chapter outline for a blueprint
+    getChapterOutline: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const { chapterOutlines } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        const outline = await db.select().from(chapterOutlines)
+          .where(eq(chapterOutlines.blueprintId, input.blueprintId))
+          .limit(1);
+
+        return outline[0] || null;
+      }),
+
+    // Approve chapter outline
+    approveChapterOutline: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { chapterOutlines } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        await db.update(chapterOutlines)
+          .set({ approved: true })
+          .where(eq(chapterOutlines.blueprintId, input.blueprintId));
+
+        return { success: true };
+      }),
+
     // Initialize manuscript chapters for a blueprint
     initialize: protectedProcedure
       .input(z.object({

@@ -23,6 +23,7 @@ import Marketing from "@/pages/Marketing";
 import Settings from "@/pages/Settings";
 import StartWritingProcess from "@/pages/StartWritingProcess";
 import WriteManuscript from "@/pages/WriteManuscript";
+import ReviewChapterOutline from "@/pages/ReviewChapterOutline";
 
 
 function Router() {
@@ -38,6 +39,7 @@ function Router() {
       <Route path={"/writing/:id"} component={WritingProject} />
        <Route path={"writing-studio"} component={WritingStudio} />
       <Route path="/start-writing/:blueprintId" component={StartWritingProcess} />
+      <Route path="/review-outline/:blueprintId" component={ReviewChapterOutline} />
       <Route path="/write-manuscript/:blueprintId" component={WriteManuscript} />
       <Route path={"/featured-authors"} component={FeaturedAuthors} />
       <Route path="/amazon-publishing" component={AmazonPublishing} />

@@ -209,6 +209,21 @@ export type Chapter = typeof chapters.$inferSelect;
 export type InsertChapter = typeof chapters.$inferInsert;
 
 /**
+ * Chapter outlines generated from blueprints
+ */
+export const chapterOutlines = mysqlTable("chapterOutlines", {
+  id: int("id").autoincrement().primaryKey(),
+  blueprintId: int("blueprintId").notNull().references(() => storyBlueprints.id, { onDelete: "cascade" }),
+  outline: json("outline").notNull(), // Stores the chapter-by-chapter outline as JSON
+  approved: boolean("approved").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ChapterOutline = typeof chapterOutlines.$inferSelect;
+export type InsertChapterOutline = typeof chapterOutlines.$inferInsert;
+
+/**
  * Characters for fiction books
  */
 export const characters = mysqlTable("characters", {

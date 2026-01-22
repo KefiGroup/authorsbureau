@@ -2146,3 +2146,219 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Tested complete flow: Blueprint → Start Writing → Book created → 20 chapters initialized
 
 **Result:** Manuscript writing page now works perfectly - 20 chapters auto-created, ready for writing
+
+
+---
+
+## 🔬 RESEARCH REQUIRED: Complete Book Structure for Amazon KDP
+
+**User Feedback:** "I do not want to develop something that I can write. That, I could do on my own in word doc."
+
+**Critical Misunderstanding:** Current manuscript writing feature asks users to write chapters manually. This defeats the purpose of AI-powered writing!
+
+**Correct Workflow Should Be:**
+1. Blueprint complete (✅ working)
+2. Book structure selection with checkboxes (❌ missing)
+3. AI generates chapter-by-chapter outline (❌ missing)
+4. AI generates COMPLETE manuscript automatically (❌ missing)
+5. User reviews/edits generated content (not writes from scratch)
+
+**Research Tasks:**
+- [ ] Research complete book structure for Amazon KDP (fiction and non-fiction)
+- [ ] Identify all front matter sections (title page, copyright, dedication, etc.)
+- [ ] Identify all back matter sections (epilogue, acknowledgements, author bio, etc.)
+- [ ] Research legal/copyright pages required for self-published books
+- [ ] Research ISBN placement and requirements
+- [ ] Document standard book section order
+- [ ] Identify which sections are mandatory vs optional
+- [ ] Research differences between ebook and paperback structure
+
+**Implementation Required:**
+- [ ] Build book structure selection interface with checkboxes
+- [ ] Include: Prologue, Acknowledgements, Dedication, Epilogue, Call to Action, Author Bio
+- [ ] Include: Copyright page, Title page, ISBN page, Legal disclaimers
+- [ ] Include: Table of Contents (auto-generated)
+- [ ] Allow custom number of chapters input
+- [ ] Generate chapter-by-chapter outline from blueprint
+- [ ] Build AI manuscript auto-generation feature
+- [ ] Generate all selected book sections automatically
+- [ ] Export complete manuscript to DOCX/PDF/EPUB
+
+**Current Status:** Manuscript writing feature built incorrectly - needs complete redesign
+
+
+---
+
+## 🚀 NEW WORKFLOW: AI-Powered Complete Manuscript Generation
+
+**User Direction:** "I do not want to develop something that I can write. That, I could do on my own in word doc."
+
+**New Workflow After Blueprint:**
+1. AI generates chapter-by-chapter outline → User approves
+2. User selects book structure (mandatory + optional sections with checkboxes)
+3. AI generates COMPLETE manuscript automatically (all sections)
+4. User reviews/edits generated content
+5. Export to DOCX/PDF/EPUB
+
+### Phase 1: Chapter Outline Generation & Approval
+- [ ] Create "Review Chapter Outline" page (replaces manual chapter writing)
+- [ ] AI generates detailed outline for each chapter from blueprint
+- [ ] Display outline with chapter number, title, and summary
+- [ ] Add "Regenerate Outline" button for changes
+- [ ] Add "Approve Outline" button to proceed
+- [ ] Save outline to database
+
+### Phase 2: Book Structure Selection Interface
+- [ ] Create "Book Structure Setup" page
+- [ ] Section 1: Show mandatory sections (auto-included, no checkboxes)
+  * Half Title Page
+  * Title Page
+  * Copyright Page (with legal disclaimers)
+  * Chapters (from approved outline)
+  * Author Bio
+- [ ] Section 2: Optional Front Matter (checkboxes with descriptions)
+  * Dedication
+  * Acknowledgements
+  * Table of Contents
+  * Foreword (user provides separately)
+  * Preface
+  * Epigraph
+- [ ] Section 3: Optional Body (checkboxes)
+  * Prologue
+  * Epilogue
+- [ ] Section 4: Optional Back Matter (checkboxes with descriptions)
+  * Afterword
+  * Appendix
+  * Bibliography
+  * "Also By" Page
+  * "Coming Soon" / Newsletter Signup
+- [ ] Add input fields for user-provided content (dedication text, acknowledgements, etc.)
+- [ ] Add "Generate Manuscript" button
+- [ ] Save selections to database
+
+### Phase 3: AI Complete Manuscript Generation
+- [ ] Create backend procedure to generate all selected sections
+- [ ] Generate Half Title Page
+- [ ] Generate Title Page
+- [ ] Generate Copyright Page (with correct legal disclaimers for book type)
+- [ ] Generate optional front matter sections (if selected)
+- [ ] Generate Prologue (if selected)
+- [ ] Generate ALL chapters from approved outline
+- [ ] Generate Epilogue (if selected)
+- [ ] Generate optional back matter sections (if selected)
+- [ ] Generate Author Bio
+- [ ] Save all generated content to database
+- [ ] Show progress indicator during generation
+
+### Phase 4: Database Schema Updates
+- [ ] Add `chapterOutline` table to store chapter-by-chapter outline
+- [ ] Add `bookStructureSelections` field to storyBlueprints
+- [ ] Add `manuscriptSections` table to store generated content for each section
+- [ ] Add `generationStatus` field to track progress
+- [ ] Push schema changes
+
+### Phase 5: Manuscript Review & Export
+- [ ] Create "Review Manuscript" page
+- [ ] Display all generated sections in order
+- [ ] Allow editing of any section
+- [ ] Add "Regenerate Section" button for each section
+- [ ] Add "Export to DOCX" button
+- [ ] Add "Export to PDF" button
+- [ ] Add "Continue to Publishing" button
+
+### Phase 6: Testing & Delivery
+- [ ] Test complete workflow: Blueprint → Outline → Structure → Generation
+- [ ] Test all checkbox combinations
+- [ ] Test regeneration of individual sections
+- [ ] Test export functionality
+- [ ] Verify legal disclaimers are correct for each book type
+- [ ] Save checkpoint and deliver
+
+**Implementation Order:**
+1. Build chapter outline page first
+2. Build book structure selection page
+3. Implement AI generation backend
+4. Build review/export page
+5. Test end-to-end
+
+
+---
+
+## 🤖 AI-Powered Manuscript Generation Workflow (CURRENT PRIORITY)
+
+### Context
+User correctly identified that the platform should NOT require manual chapter writing - that defeats the purpose of an AI Authors Bureau. The new workflow allows AI to write the ENTIRE book automatically while users guide and edit.
+
+### New Workflow
+1. ✅ Blueprint Creation (3 AI questions → 9-section blueprint) - COMPLETE
+2. ✅ Chapter Outline Review - COMPLETE
+3. ⏭️ Book Structure Selection (checkboxes for optional sections)
+4. ⏭️ AI Manuscript Generation (AI writes ENTIRE book automatically)
+5. ⏭️ Review & Edit (user edits generated content, not writing from scratch)
+6. ⏭️ Publishing
+
+### Implementation Tasks
+
+#### Chapter Outline Review Page (Step 2)
+- [x] Create ReviewChapterOutline.tsx page
+- [x] Add chapterOutlines table to database schema
+- [x] Create chapterOutline.generateOutline backend procedure
+- [x] Create chapterOutline.approveOutline backend procedure
+- [x] Create chapterOutline.regenerateChapter backend procedure
+- [x] Add route /review-outline/:blueprintId to App.tsx
+- [x] Update StartWritingProcess button to navigate to outline review
+- [x] Test outline generation with real blueprint data
+- [ ] Test chapter regeneration functionality
+- [ ] Test approve outline and proceed to next step
+
+#### Book Structure Selection Page (Step 3)
+- [ ] Create BookStructureSelection.tsx page
+- [ ] Add bookStructure table to database schema
+- [ ] Checkboxes for optional sections:
+  * [ ] Prologue (with description)
+  * [ ] Dedication (with description)
+  * [ ] Acknowledgements (with description)
+  * [ ] Epilogue (with description)
+  * [ ] Author Bio (with description)
+  * [ ] "Also By" page (with description)
+  * [ ] Newsletter signup (with description)
+- [ ] Save selected structure to database
+- [ ] Add route /book-structure/:blueprintId to App.tsx
+- [ ] Navigation from ReviewChapterOutline to BookStructureSelection
+
+#### AI Manuscript Generation (Step 4)
+- [ ] Create AIManuscriptGeneration.tsx page
+- [ ] Backend procedure: manuscript.generateFullBook
+- [ ] Generate all chapters based on approved outline
+- [ ] Generate selected optional sections (prologue, dedication, etc.)
+- [ ] Progress indicator showing chapter-by-chapter generation
+- [ ] Streaming UI to show AI writing in real-time
+- [ ] Save all generated content to database
+- [ ] Add route /generate-manuscript/:blueprintId to App.tsx
+
+#### Review & Edit Generated Manuscript (Step 5)
+- [ ] Create ReviewManuscript.tsx page
+- [ ] Chapter-by-chapter editing interface
+- [ ] AI refinement suggestions
+- [ ] Regenerate individual chapters
+- [ ] Edit optional sections (prologue, dedication, etc.)
+- [ ] Word count and progress tracking
+- [ ] Mark manuscript as complete
+- [ ] Add route /review-manuscript/:blueprintId to App.tsx
+
+#### Database Schema Updates
+- [x] chapterOutlines table (blueprintId, outline JSON, approved, createdAt, updatedAt)
+- [x] manuscriptStarted field in storyBlueprints table
+- [x] manuscriptCompleted field in storyBlueprints table
+- [ ] bookStructure table (blueprintId, hasPrologue, hasDedication, hasAcknowledgements, hasEpilogue, hasAuthorBio, hasAlsoBy, hasNewsletter)
+- [ ] generatedSections table (blueprintId, sectionType, content, approved, createdAt, updatedAt)
+
+#### Testing
+- [ ] Test complete workflow: Blueprint → Outline → Structure → Generate → Review → Publish
+- [ ] Test outline regeneration for individual chapters
+- [ ] Test manuscript regeneration for individual chapters
+- [ ] Test all optional sections generation
+- [ ] Test editing and saving generated content
+- [ ] Verify word count accuracy
+- [ ] Verify progress tracking
+

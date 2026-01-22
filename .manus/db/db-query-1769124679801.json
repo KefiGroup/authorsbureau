@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, projectType, essentialData, blueprintGenerated FROM storyBlueprints WHERE id = 90003;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, projectType, essentialData, blueprintGenerated FROM storyBlueprints WHERE id = 90003;",
+  "rows": [
+    {
+      "id": "90003",
+      "projectType": "non_fiction",
+      "essentialData": "{\"briefDescription\": \"AI systems should complement human judgment, not replace it. The book proposes designing AI architectures that preserve human agency and responsibility.\", \"projectType\": \"Business Book\", \"targetAudience\": \"Technology Executives/CTOs\", \"workingTitle\": \"Hemispheric Intelligence\"}",
+      "blueprintGenerated": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tprojectType\tessentialData\tblueprintGenerated\n90003\tnon_fiction\t{\"briefDescription\": \"AI systems should complement human judgment, not replace it. The book proposes designing AI architectures that preserve human agency and responsibility.\", \"projectType\": \"Business Book\", \"targetAudience\": \"Technology Executives/CTOs\", \"workingTitle\": \"Hemispheric Intelligence\"}\t1\n",
+  "stderr": "",
+  "execution_time_ms": 1549
+}

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `chapterOutlines` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `blueprintId` int NOT NULL,\n  `outline` json NOT NULL,\n  `approved` boolean NOT NULL DEFAULT false,\n  `createdAt` timestamp NOT NULL DEFAULT (now()),\n  `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `chapterOutlines_id` PRIMARY KEY(`id`),\n  CONSTRAINT `chapterOutlines_blueprintId_storyBlueprints_id_fk` FOREIGN KEY (`blueprintId`) REFERENCES `storyBlueprints`(`id`) ON DELETE cascade ON UPDATE no action\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute CREATE TABLE IF NOT EXISTS `chapterOutlines` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `blueprintId` int NOT NULL,\n  `outline` json NOT NULL,\n  `approved` boolean NOT NULL DEFAULT false,\n  `createdAt` timestamp NOT NULL DEFAULT (now()),\n  `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `chapterOutlines_id` PRIMARY KEY(`id`),\n  CONSTRAINT `chapterOutlines_blueprintId_storyBlueprints_id_fk` FOREIGN KEY (`blueprintId`) REFERENCES `storyBlueprints`(`id`) ON DELETE cascade ON UPDATE no action\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1731
+}

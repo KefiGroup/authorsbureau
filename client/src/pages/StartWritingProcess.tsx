@@ -440,19 +440,19 @@ export default function StartWritingProcess() {
                 Save Blueprint
               </Button>
               
-              {/* Start Writing Manuscript button */}
+              {/* Review Chapter Outline button */}
               <Button
                 onClick={() => {
                   if (!blueprint?.workingTitle) {
                     toast.error("Please complete the blueprint first");
                     return;
                   }
-                  setLocation(`/write-manuscript/${blueprintId}`);
+                  setLocation(`/review-outline/${blueprintId}`);
                 }}
                 size="lg"
               >
                 <CheckCircle2 className="h-4 w-4 mr-2" />
-                Start Writing Manuscript
+                Review Chapter Outline
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>
