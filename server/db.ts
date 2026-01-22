@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, authors, InsertAuthor, books, chapters, characters, bookDesigns, marketingCampaigns, emailSequences, salesFunnels, amazonPerformance, amazonListings } from "../drizzle/schema";
+import { InsertUser, users, authors, InsertAuthor, books, chapters, characters, bookDesigns, marketingCampaigns, emailSequences, salesFunnels, amazonPerformance, amazonListings, storyBlueprints, InsertStoryBlueprint } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -118,6 +118,45 @@ export async function getAllAuthors() {
   if (!db) return [];
 
   return await db.select().from(authors);
+}
+
+// Story Blueprint functions
+export async function createStoryBlueprint(blueprintData: InsertStoryBlueprint) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(storyBlueprints).values(blueprintData);
+  return result;
+}
+
+export async function getStoryBlueprintByBookId(bookId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(storyBlueprints).where(eq(storyBlueprints.bookId, bookId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getStoryBlueprintById(blueprintId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(storyBlueprints).where(eq(storyBlueprints.id, blueprintId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateStoryBlueprint(blueprintId: number, blueprintData: Partial<InsertStoryBlueprint>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(storyBlueprints).set(blueprintData).where(eq(storyBlueprints.id, blueprintId));
+}
+
+export async function listUserBlueprints(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(storyBlueprints).where(eq(storyBlueprints.userId, userId));
 }
 
 // Book functions

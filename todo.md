@@ -1216,3 +1216,139 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Show validation errors inline with helpful messages - ALREADY EXISTED
 - [x] Disable Save button when validation fails (bio > 2000 chars, no pen name, no bio)
 - [x] Test all validation rules with user account (paulinet77@gmail.com) - ALL PASSING!
+
+
+---
+
+## 🚀 WRITING STUDIO: "Start Your Writing Process" Feature
+**Priority:** HIGH | **Source:** Manus Recommendation PDF | **Target:** AI Writing Studio
+
+### Phase 1: Foundation & Database (Weeks 1-2)
+- [x] Create `storyBlueprints` table in drizzle/schema.ts
+  - [x] Add fields: id, bookId, userId, projectType, workingTitle, targetLength
+  - [x] Add fields: primaryGenre, secondaryGenre, corePremise, protagonistData (JSON)
+  - [x] Add fields: plotStructure (JSON), settingData (JSON), audienceData (JSON)
+  - [x] Add fields: thematicElements (JSON), conversationHistory (JSON), version, createdAt, updatedAt
+  - [x] Run `pnpm db:push` to apply schema changes - SUCCESS (migration 0009_little_maximus.sql)
+
+- [x] Create backend database helpers in server/db.ts
+  - [x] createStoryBlueprint(userId, data)
+  - [x] getStoryBlueprintByBookId(bookId)
+  - [x] getStoryBlueprintById(blueprintId)
+  - [x] updateStoryBlueprint(blueprintId, data)
+  - [x] listUserBlueprints(userId)
+
+- [x] Create tRPC procedures in server/routers.ts
+  - [x] blueprint.create - Create new story blueprint
+  - [x] blueprint.get - Get blueprint by ID
+  - [x] blueprint.getByBookId - Get blueprint by book ID
+  - [x] blueprint.update - Update blueprint data
+  - [x] blueprint.list - List user's blueprints
+  - [x] blueprint.generateFromConversation - AI generates blueprint from collected data
+
+- [x] Create blueprint generator helper (server/blueprint-generator.ts)
+  - [x] generateBlueprintContent() - Uses AI to create comprehensive markdown blueprint
+
+### Phase 2: Conversational AI Interface (Weeks 3-4)
+- [ ] Create WritingStudioChat component (client/src/components/WritingStudioChat.tsx)
+  - [ ] Chat-style message interface with author/AI message bubbles
+  - [ ] Progress indicator showing completion status (e.g., "3/7 sections complete")
+  - [ ] Input field with "Send" button
+  - [ ] Support for AI suggestions (clickable chips/buttons)
+  - [ ] "Skip" and "Back" navigation buttons
+
+- [ ] Implement agentic AI conversation flow
+  - [ ] Phase 1: Profile awareness check (query author profile, greet by name)
+  - [ ] Phase 2: Project type selection (novel, novella, memoir, etc.)
+  - [ ] Phase 3: Dynamic story development (genre-specific question paths)
+  - [ ] Phase 4: AI-assisted ideation (suggestions based on context)
+  - [ ] Phase 5: Blueprint generation (comprehensive story document)
+  - [ ] Phase 6: Seamless handoff to AI Manuscript Assistance
+
+- [ ] Build suggestion engine
+  - [ ] Detect pause (30+ seconds) → offer examples
+  - [ ] Detect "I don't know" → offer possibilities
+  - [ ] Genre-selected → suggest common themes
+  - [ ] Conflict described → suggest stakes
+
+- [ ] Implement adaptive questioning logic
+  - [ ] Skip world-building for memoir
+  - [ ] Reference previous works for returning authors
+  - [ ] Adjust complexity based on experience level
+
+### Phase 3: Blueprint Generation & Preview (Weeks 5-6)
+- [ ] Create BlueprintPreview component (client/src/components/BlueprintPreview.tsx)
+  - [ ] Live preview panel showing blueprint as it develops
+  - [ ] Sections: Cover Page, Premise, Characters, Setting, Plot, Audience, Themes
+  - [ ] Editable fields (click to edit any AI-generated content)
+  - [ ] Export buttons (PDF, JSON, plain text)
+
+- [ ] Implement blueprint generation engine
+  - [ ] Generate premise statement from collected data
+  - [ ] Create character profiles (protagonist + supporting)
+  - [ ] Build plot outline (three-act structure)
+  - [ ] Define target audience and market positioning
+  - [ ] Suggest Amazon categories and keywords
+  - [ ] Create thematic guide
+
+- [ ] Add blueprint export functionality
+  - [ ] Generate PDF with professional formatting
+  - [ ] Export JSON for programmatic access
+  - [ ] Export plain text for writing software (Scrivener, Word)
+
+### Phase 4: Integration with Existing Features
+- [ ] Connect to AI Manuscript Assistance
+  - [ ] Pass blueprint data as context when author starts writing
+  - [ ] Pre-populate characters, setting, plot points in AI assistant
+  - [ ] Reference blueprint in writing suggestions
+
+- [ ] Connect to Cover Design Tool
+  - [ ] Pass character descriptions to cover AI
+  - [ ] Pass setting details for imagery suggestions
+  - [ ] Use genre conventions from blueprint
+
+- [ ] Connect to Category & Keyword Optimizer
+  - [ ] Pre-fill genre selection from blueprint
+  - [ ] Use target audience data for optimization
+  - [ ] Reference comparable titles
+
+- [ ] Connect to Marketing Campaigns
+  - [ ] Use target reader profile for campaign targeting
+  - [ ] Reference unique selling points in marketing copy
+  - [ ] Suggest campaign themes based on story themes
+
+### Phase 5: Testing & Refinement
+- [ ] Test with Elite University Student persona
+  - [ ] First-time author experience
+  - [ ] Guidance complexity appropriate for beginners
+  - [ ] Suggestions helpful and not overwhelming
+
+- [ ] Test with Seasoned Venture Capitalist persona
+  - [ ] Experienced author experience
+  - [ ] Skip redundant questions
+  - [ ] Reference previous works appropriately
+
+- [ ] Test complete workflow end-to-end
+  - [ ] Start Writing Process → Blueprint → AI Manuscript Assistance
+  - [ ] Verify data flows correctly between features
+  - [ ] Ensure all AI-generated content is editable
+
+- [ ] Test blueprint export formats
+  - [ ] PDF renders correctly with all sections
+  - [ ] JSON structure is valid and complete
+  - [ ] Plain text format is readable
+
+### Success Metrics to Achieve
+- [ ] Completion rate >80% (authors who start complete the process)
+- [ ] Time to blueprint <20 minutes average
+- [ ] Integration adoption >70% (proceed to AI Manuscript Assistance)
+- [ ] User satisfaction >4.5/5 rating
+
+---
+
+## 📝 NOTES
+- This feature replaces the current "Start Writing From Scratch" button
+- Must maintain consistency with existing Authors Bureau UX/UI (emulate Yassu design)
+- All AI-generated content MUST be fully editable by author
+- Focus on agentic AI flow (system actively guides) not passive forms
+- Profile-first approach: leverage existing author data for personalization

@@ -9,6 +9,7 @@ import { generateExportBundle } from "./export-bundle";
 import { storagePut } from "./storage";
 import { parseIntoPages, generatePagePreviewHTML, getPreviewSummary } from "./interior-preview";
 import { analyzeManuscript, generateMoreTitles, refineDescription } from "./manuscript-analyzer";
+import { generateBlueprintContent } from "./blueprint-generator";
 import * as dbCovers from "./db-covers";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -425,6 +426,148 @@ Generate the author bio now:`;
           amazonKeywords: book.amazonKeywords ? JSON.parse(book.amazonKeywords) : null,
           suggestedPrice: book.suggestedPrice,
         };
+      }),
+  }),
+
+  // Story Blueprint management for "Start Your Writing Process" feature
+  blueprint: router({    // Create new story blueprint
+    create: protectedProcedure
+      .input(z.object({
+        projectType: z.enum(["novel", "novella", "short_story", "memoir", "non_fiction", "childrens_book"]),
+        workingTitle: z.string().optional(),
+        bookId: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const result = await db.createStoryBlueprint({
+          userId: ctx.user.id,
+          projectType: input.projectType,
+          workingTitle: input.workingTitle,
+          bookId: input.bookId,
+        });
+        // Get the inserted ID from the result
+        const blueprintId = Number((result as any).insertId || 0);
+        return { success: true, blueprintId };
+      }),
+
+    // Get blueprint by ID
+    get: protectedProcedure
+      .input(z.object({ blueprintId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const blueprint = await db.getStoryBlueprintById(input.blueprintId);
+        if (!blueprint) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Blueprint not found",
+          });
+        }
+        // Verify ownership
+        if (blueprint.userId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+        return blueprint;
+      }),
+
+    // Get blueprint by book ID
+    getByBookId: protectedProcedure
+      .input(z.object({ bookId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const blueprint = await db.getStoryBlueprintByBookId(input.bookId);
+        if (!blueprint) {
+          return null;
+        }
+        // Verify ownership
+        if (blueprint.userId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+        return blueprint;
+      }),
+
+    // Update blueprint data
+    update: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+        data: z.object({
+          workingTitle: z.string().optional(),
+          targetLength: z.string().optional(),
+          primaryGenre: z.string().optional(),
+          secondaryGenre: z.string().optional(),
+          corePremise: z.string().optional(),
+          timePeriod: z.string().optional(),
+          location: z.string().optional(),
+          pointOfView: z.string().optional(),
+          protagonistData: z.any().optional(),
+          supportingCharacters: z.any().optional(),
+          plotStructure: z.any().optional(),
+          settingData: z.any().optional(),
+          audienceData: z.any().optional(),
+          thematicElements: z.any().optional(),
+          conversationHistory: z.any().optional(),
+          blueprintGenerated: z.boolean().optional(),
+          blueprintContent: z.string().optional(),
+        }),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify ownership
+        const blueprint = await db.getStoryBlueprintById(input.blueprintId);
+        if (!blueprint) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Blueprint not found",
+          });
+        }
+        if (blueprint.userId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        await db.updateStoryBlueprint(input.blueprintId, input.data);
+        return { success: true };
+      }),
+
+    // List user's blueprints
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.listUserBlueprints(ctx.user.id);
+    }),
+
+    // Generate blueprint from conversation data
+    generateFromConversation: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify ownership
+        const blueprint = await db.getStoryBlueprintById(input.blueprintId);
+        if (!blueprint) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Blueprint not found",
+          });
+        }
+        if (blueprint.userId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        // Generate comprehensive blueprint using AI
+        const blueprintMarkdown = await generateBlueprintContent(blueprint);
+
+        // Update blueprint with generated content
+        await db.updateStoryBlueprint(input.blueprintId, {
+          blueprintContent: blueprintMarkdown,
+          blueprintGenerated: true,
+        });
+
+        return { success: true, content: blueprintMarkdown };
       }),
   }),
 

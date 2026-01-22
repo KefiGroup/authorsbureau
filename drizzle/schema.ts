@@ -88,6 +88,92 @@ export type Book = typeof books.$inferSelect;
 export type InsertBook = typeof books.$inferInsert;
 
 /**
+ * Story blueprints for "Start Your Writing Process" feature
+ * Stores structured story planning data from agentic AI conversation
+ */
+export const storyBlueprints = mysqlTable("storyBlueprints", {
+  id: int("id").autoincrement().primaryKey(),
+  bookId: int("bookId").references(() => books.id, { onDelete: "cascade" }),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  
+  // Project Foundation
+  projectType: mysqlEnum("projectType", ["novel", "novella", "short_story", "memoir", "non_fiction", "childrens_book"]).notNull(),
+  workingTitle: varchar("workingTitle", { length: 500 }),
+  targetLength: varchar("targetLength", { length: 100 }), // e.g., "80,000-100,000 words", "50 pages"
+  primaryGenre: varchar("primaryGenre", { length: 100 }),
+  secondaryGenre: varchar("secondaryGenre", { length: 100 }),
+  
+  // Story Elements
+  corePremise: text("corePremise"), // One-sentence story summary
+  timePeriod: varchar("timePeriod", { length: 255 }),
+  location: varchar("location", { length: 255 }),
+  pointOfView: varchar("pointOfView", { length: 50 }), // first-person, third-person, etc.
+  
+  // Character Development (stored as JSON)
+  protagonistData: json("protagonistData").$type<{
+    name: string;
+    traits: string[];
+    goal: string;
+    obstacle: string;
+  }>(),
+  supportingCharacters: json("supportingCharacters").$type<Array<{
+    name: string;
+    role: string;
+    relationship: string;
+  }>>(),
+  
+  // Plot Structure (stored as JSON)
+  plotStructure: json("plotStructure").$type<{
+    incitingIncident: string;
+    centralConflict: string;
+    stakes: string;
+    intendedEndingTone: string;
+  }>(),
+  
+  // Setting Data (stored as JSON)
+  settingData: json("settingData").$type<{
+    timePeriod: string;
+    locations: string[];
+    worldBuildingNotes?: string;
+  }>(),
+  
+  // Audience & Market (stored as JSON)
+  audienceData: json("audienceData").$type<{
+    targetReader: string;
+    comparableTitles: string[];
+    uniqueAngle: string;
+    contentWarnings?: string[];
+  }>(),
+  
+  // Thematic Elements (stored as JSON)
+  thematicElements: json("thematicElements").$type<{
+    centralTheme: string;
+    recurringSymbols?: string[];
+    emotionalJourney: string;
+  }>(),
+  
+  // AI Conversation History (stored as JSON)
+  conversationHistory: json("conversationHistory").$type<Array<{
+    role: "user" | "assistant";
+    content: string;
+    timestamp: string;
+  }>>(),
+  
+  // Blueprint Generation
+  blueprintGenerated: boolean("blueprintGenerated").default(false),
+  blueprintContent: mediumtext("blueprintContent"), // Full generated blueprint in markdown
+  
+  // Versioning
+  version: int("version").default(1),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StoryBlueprint = typeof storyBlueprints.$inferSelect;
+export type InsertStoryBlueprint = typeof storyBlueprints.$inferInsert;
+
+/**
  * Book chapters for structured content management
  */
 export const chapters = mysqlTable("chapters", {
