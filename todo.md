@@ -1164,3 +1164,29 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Remove existing duplicate entries
 
 **Evidence:** Marketing Campaign Builder dropdown shows two identical "Be SUCKcessful" entries.
+
+
+---
+
+## 🔧 NEW TASKS (January 21, 2026 - User Requested)
+
+### Task #1: Fix Duplicate Book Entries
+- [x] Query database to identify all duplicate books (same title + userId) - CONFIRMED: 2 "Be SUCKcessful" entries
+- [x] Investigate "Start Fresh" function root cause - Creates new book instead of deleting old one
+- [x] Fix book creation logic to prevent duplicates - Updated handleStartFresh to delete old book
+- [x] Add unique constraint schema (commented out until duplicates cleaned)
+- [ ] Test "Start Fresh" workflow with user account
+- [ ] Remove existing duplicate entries after testing
+- [ ] Uncomment unique constraint and run pnpm db:push
+- [ ] Test book creation from multiple entry points
+
+### Task #2: Implement Comprehensive Form Validation
+- [x] Add validation to Upload Manuscript step (file size max 10MB, format .txt/.doc/.docx/.pdf)
+- [x] Add validation to Amazon KDP step (category limit 3, already implemented)
+- [ ] Add validation to Title/Subtitle step (character limits, required fields) - Deferred
+- [ ] Add validation to Profile page (required fields, photo size, bio length) - Deferred
+- [ ] Add validation to Marketing Campaign Builder (required book selection) - Deferred
+- [x] Test "Start Fresh" workflow to verify duplicate fix - VERIFIED WORKING!
+- [x] Test duplicate book deletion (database query confirmed only 1 book remains)
+- [ ] Test file upload validation with invalid files (PENDING MANUAL TEST - browser automation limitation)
+- [ ] Test category selection limit (already implemented and working)

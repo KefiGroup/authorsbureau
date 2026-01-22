@@ -1,0 +1,26 @@
+{
+  "query": "SELECT \n  b.id as book_id,\n  b.title,\n  b.authorId,\n  b.createdAt,\n  b.updatedAt,\n  b.workflowStep\nFROM books b\nJOIN authors a ON b.authorId = a.id\nJOIN users u ON a.userId = u.id\nWHERE u.email = 'paulinet77@gmail.com'\nORDER BY b.title, b.createdAt;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT \n  b.id as book_id,\n  b.title,\n  b.authorId,\n  b.createdAt,\n  b.updatedAt,\n  b.workflowStep\nFROM books b\nJOIN authors a ON b.authorId = a.id\nJOIN users u ON a.userId = u.id\nWHERE u.email = 'paulinet77@gmail.com'\nORDER BY b.title, b.createdAt;",
+  "rows": [
+    {
+      "book_id": "330001",
+      "title": "Be SUCKcessful",
+      "authorId": "1",
+      "createdAt": "2026-01-09 17:15:03",
+      "updatedAt": "2026-01-22 00:55:08",
+      "workflowStep": "export"
+    },
+    {
+      "book_id": "330003",
+      "title": "Be SUCKcessful",
+      "authorId": "1",
+      "createdAt": "2026-01-09 17:22:28",
+      "updatedAt": "2026-01-09 17:22:28",
+      "workflowStep": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "book_id\ttitle\tauthorId\tcreatedAt\tupdatedAt\tworkflowStep\n330001\tBe SUCKcessful\t1\t2026-01-09 17:15:03\t2026-01-22 00:55:08\texport\n330003\tBe SUCKcessful\t1\t2026-01-09 17:22:28\t2026-01-09 17:22:28\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 382
+}

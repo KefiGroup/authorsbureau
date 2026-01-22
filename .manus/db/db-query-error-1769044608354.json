@@ -1,0 +1,8 @@
+{
+  "query": "\nSELECT \n  b.id,\n  b.title,\n  b.userId,\n  b.createdAt,\n  b.updatedAt,\n  b.workflowStep,\n  COUNT(*) OVER (PARTITION BY b.title, b.userId) as duplicate_count\nFROM books b\nWHERE b.userId = (SELECT id FROM user WHERE email = 'paulinet77@gmail.com')\nORDER BY b.title, b.createdAt;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute \nSELECT \n  b.id,\n  b.title,\n  b.userId,\n  b.createdAt,\n  b.updatedAt,\n  b.workflowStep,\n  COUNT(*) OVER (PARTITION BY b.title, b.userId) as duplicate_count\nFROM books b\nWHERE b.userId = (SELECT id FROM user WHERE email = 'paulinet77@gmail.com')\nORDER BY b.title, b.createdAt;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 2: Table 'crun9x42uzpzt82daffxdj.user' doesn't exist"
+  ]
+}

@@ -237,7 +237,7 @@ export default function ReadyToPublish() {
     
     // Auto-save progress whenever step changes
     const timeoutId = setTimeout(() => {
-      console.log('[Auto-save] Calling saveProgressMutation with:', {
+      console.log('[Auto-save] Calling saveProgress with:', {
         bookId,
         workflowStep: currentStep,
         hasAiAnalysis: !!aiAnalysis,
@@ -246,7 +246,7 @@ export default function ReadyToPublish() {
         coversCount: generatedCovers.length
       });
       
-      saveProgressMutation.mutate({
+      saveProgress.mutate({
         bookId,
         workflowStep: currentStep,
         aiAnalysis: aiAnalysis ? JSON.stringify(aiAnalysis) : undefined,
@@ -410,8 +410,23 @@ export default function ReadyToPublish() {
   };
 
   // Handler to start fresh (ignore saved progress)
-  const handleStartFresh = () => {
+  const handleStartFresh = async () => {
     console.log('[Start Fresh] Clearing bookId and setting startingFresh=true');
+    
+    // Delete the existing book from database if it exists
+    if (bookId) {
+      try {
+        console.log(`[Start Fresh] Deleting existing book with ID: ${bookId}`);
+        await deleteBook.mutateAsync({ bookId });
+        console.log('[Start Fresh] Book deleted successfully');
+        toast.success("Previous book deleted. Starting fresh!");
+      } catch (error) {
+        console.error('[Start Fresh] Error deleting book:', error);
+        toast.error("Failed to delete previous book. Please try again.");
+        return; // Don't proceed if deletion fails
+      }
+    }
+    
     setShowResumePrompt(false);
     setCurrentStep("upload");
     // Set flag to prevent auto-select from running
@@ -441,8 +456,10 @@ export default function ReadyToPublish() {
   };
 
   // tRPC mutations
+  const deleteBook = trpc.book.delete.useMutation();
+  
   // Save progress mutation
-  const saveProgressMutation = trpc.book.saveWorkflowProgress.useMutation({
+  const saveProgress = trpc.book.saveWorkflowProgress.useMutation({
     onSuccess: () => {
       console.log('[Auto-save] Progress saved successfully');
       // Don't show toast for auto-save to avoid spam
@@ -490,7 +507,7 @@ export default function ReadyToPublish() {
       ...paperbackKeywords.map(kw => ({ format: 'paperback', keyword: kw }))
     ];
 
-    saveProgressMutation.mutate({
+    saveProgress.mutate({
       bookId,
       workflowStep: currentStep,
       aiAnalysis: aiAnalysis ? JSON.stringify(aiAnalysis) : undefined,
@@ -697,6 +714,25 @@ export default function ReadyToPublish() {
     if (!file) return;
 
     console.log('[handleFileUpload] Starting upload:', { name: file.name, type: file.type, size: file.size });
+    
+    // Validation: File size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      toast.error(`File too large! Maximum size is 10MB. Your file is ${(file.size / 1024 / 1024).toFixed(1)}MB.`);
+      event.target.value = ''; // Reset file input
+      return;
+    }
+    
+    // Validation: File format
+    const validExtensions = ['.txt', '.doc', '.docx', '.pdf'];
+    const fileName = file.name.toLowerCase();
+    const isValidFormat = validExtensions.some(ext => fileName.endsWith(ext));
+    
+    if (!isValidFormat) {
+      toast.error('Invalid file format! Please upload a .txt, .doc, .docx, or .pdf file.');
+      event.target.value = ''; // Reset file input
+      return;
+    }
     setIsUploading(true);
     try {
       // For PDF and DOCX files, use backend extraction
@@ -1045,10 +1081,10 @@ export default function ReadyToPublish() {
                   <Button
                     variant="outline"
                     onClick={handleSaveProgress}
-                    disabled={saveProgressMutation.isPending}
+                    disabled={saveProgress.isPending}
                     size="lg"
                   >
-                    {saveProgressMutation.isPending ? (
+                    {saveProgress.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Saving...

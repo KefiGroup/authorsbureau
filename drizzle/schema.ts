@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, mediumtext, timestamp, varchar, decimal, boolean, json } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, mediumtext, timestamp, varchar, decimal, boolean, json, unique } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -81,6 +81,10 @@ export const books = mysqlTable("books", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
+// TODO: Add unique constraint after cleaning up existing duplicates
+// }, (table) => ({
+//   uniqueTitlePerAuthor: unique().on(table.title, table.authorId),
+// }));
 
 export type Book = typeof books.$inferSelect;
 export type InsertBook = typeof books.$inferInsert;
