@@ -162,7 +162,7 @@ Return your response as a JSON object with this structure:
 {
   "message": "Your encouraging message explaining you've generated the blueprint",
   "blueprint": {
-    "projectType": "...",
+    "projectType": "novel" | "novella" | "short_story" | "memoir" | "non_fiction" | "childrens_book",
     "workingTitle": "...",
     "targetLength": "...",
     "primaryGenre": "...",
@@ -196,7 +196,7 @@ Return your response as a JSON object with this structure:
             blueprint: {
               type: "object",
               properties: {
-                projectType: { type: "string" },
+                projectType: { type: "string", enum: ["novel", "novella", "short_story", "memoir", "non_fiction", "childrens_book"] },
                 workingTitle: { type: "string" },
                 targetLength: { type: "string" },
                 primaryGenre: { type: "string" },

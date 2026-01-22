@@ -705,6 +705,7 @@ Generate the author bio now:`;
         // Extract essential data if in initial_questions mode
         let updatedEssentialData = essentialData;
         let nextMode = mode;
+        let blueprintResponse: any = null;
         
         // Initialize update data object
         const updateData: any = {
@@ -729,7 +730,6 @@ Generate the author bio now:`;
               conversationHistory,
             };
             
-            let blueprintResponse;
             try {
               console.log("[blueprint.sendMessage] Triggering automatic blueprint generation...");
               blueprintResponse = await generateNextMessageV2(blueprintState, null, author);
@@ -770,35 +770,18 @@ Generate the author bio now:`;
         updateData.conversationMode = nextMode;
         updateData.essentialData = updatedEssentialData;
 
-        // If blueprint was generated, save it
-        if (response.blueprintData) {
-          updateData.blueprintGenerated = true;
-          updateData.projectType = response.blueprintData.projectType;
-          updateData.workingTitle = response.blueprintData.workingTitle;
-          updateData.targetLength = response.blueprintData.targetLength;
-          updateData.primaryGenre = response.blueprintData.primaryGenre;
-          updateData.secondaryGenre = response.blueprintData.secondaryGenre;
-          updateData.corePremise = response.blueprintData.corePremise;
-          updateData.protagonistData = response.blueprintData.protagonistData;
-          updateData.supportingCharacters = response.blueprintData.supportingCharacters;
-          updateData.timePeriod = response.blueprintData.timePeriod;
-          updateData.location = response.blueprintData.location;
-          updateData.settingData = response.blueprintData.settingData;
-          updateData.plotStructure = response.blueprintData.plotStructure;
-          updateData.audienceData = response.blueprintData.audienceData;
-          updateData.thematicElements = response.blueprintData.thematicElements;
-          nextMode = "refinement";
-          updateData.conversationMode = nextMode;
-        }
-
         await db.updateStoryBlueprint(input.blueprintId, updateData);
 
+        // Determine which response to return (blueprint generation or regular response)
+        const finalResponse = (mode === "initial_questions" && nextMode === "refinement") 
+          ? blueprintResponse! 
+          : response;
+
         return {
-          message: response.message,
-          suggestions: response.suggestions,
+          message: finalResponse.message,
+          suggestions: finalResponse.suggestions || [],
           conversationMode: nextMode,
-          blueprintGenerated: !!response.blueprintData,
-          blueprintData: response.blueprintData,
+          blueprintGenerated: !!finalResponse.blueprintData,
         };
       }),
 

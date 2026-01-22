@@ -25,7 +25,7 @@ export default function StartWritingProcess() {
   const [generatedBlueprintData, setGeneratedBlueprintData] = useState<any>(null);
 
   // Queries
-  const { data: blueprint, isLoading: loadingBlueprint } = trpc.blueprint.get.useQuery(
+  const { data: blueprint, isLoading: loadingBlueprint, refetch: refetchBlueprint } = trpc.blueprint.get.useQuery(
     { blueprintId: blueprintId! },
     { enabled: !!blueprintId }
   );
@@ -59,9 +59,10 @@ export default function StartWritingProcess() {
       ]);
       setConversationMode(data.conversationMode as "initial_questions" | "blueprint_generation" | "refinement");
       
-      if (data.blueprintGenerated && data.blueprintData) {
+      if (data.blueprintGenerated) {
         setBlueprintGenerated(true);
-        setGeneratedBlueprintData(data.blueprintData);
+        // Refetch blueprint to get generated data
+        refetchBlueprint();
         toast.success("🎉 Blueprint generated! Review and refine below.");
       }
     },
