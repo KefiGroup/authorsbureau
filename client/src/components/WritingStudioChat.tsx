@@ -196,13 +196,13 @@ export function WritingStudioChat({
             onKeyDown={handleKeyDown}
             placeholder="Type your response... (Shift+Enter for new line)"
             disabled={isLoading}
-            className="min-h-[60px] max-h-[200px] resize-none"
+            className="min-h-[120px] max-h-[300px] resize-y"
           />
           <Button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
             size="icon"
-            className="h-[60px] w-[60px]"
+            className="h-[120px] w-[60px]"
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

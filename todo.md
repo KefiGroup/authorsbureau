@@ -1988,3 +1988,16 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Implement anthology conversation flow in v2 agent
 - [ ] Update WritingStudio.tsx to show anthology option
 - [ ] Test complete anthology workflow
+
+
+---
+
+## 🎨 UX Improvement: Larger Text Input Box
+
+**Issue:** Text input box at bottom of Writing Studio is too small and cut off, making it difficult to write longer responses
+
+**Solution:** 
+- [x] Increase textarea height (from 60px to 120px minimum, 300px max)
+- [x] Make input box more prominent and comfortable
+- [x] Enable manual resize (resize-y)
+- [x] Ensure good visibility and usability
