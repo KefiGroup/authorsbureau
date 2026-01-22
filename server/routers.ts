@@ -10,7 +10,8 @@ import { storagePut } from "./storage";
 import { parseIntoPages, generatePagePreviewHTML, getPreviewSummary } from "./interior-preview";
 import { analyzeManuscript, generateMoreTitles, refineDescription } from "./manuscript-analyzer";
 import { generateBlueprintContent } from "./blueprint-generator";
-import { generateNextMessage, extractDataFromResponse, CONVERSATION_SECTIONS, getNextSection } from "./writing-studio-agent";
+import { generateNextMessage as generateNextMessageV1, extractDataFromResponse, CONVERSATION_SECTIONS, getNextSection } from "./writing-studio-agent";
+import { generateNextMessage as generateNextMessageV2, extractEssentialData, ConversationMode } from "./writing-studio-agent-v2";
 import * as dbCovers from "./db-covers";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -444,6 +445,9 @@ Generate the author bio now:`;
           projectType: input.projectType,
           workingTitle: input.workingTitle,
           bookId: input.bookId,
+          conversationMode: "initial_questions" as const,
+          essentialData: {},
+          conversationHistory: [],
         });
         
         if (!blueprint) {
@@ -601,31 +605,30 @@ Generate the author bio now:`;
         // Get author profile for personalization
         const author = await db.getAuthorByUserId(ctx.user.id);
 
-        // Generate first AI message
+        // Generate first AI message using v2 agent
         const state = {
-          currentSection: CONVERSATION_SECTIONS[0],
-          completedSections: [],
-          collectedData: {},
+          mode: "initial_questions" as ConversationMode,
+          essentialData: {},
+          generatedBlueprint: undefined,
           conversationHistory: [],
         };
 
-        const { message, suggestions } = await generateNextMessage(state, null, author);
+        const response = await generateNextMessageV2(state, null, author);
 
         // Save conversation history
         const conversationHistory = [
-          { role: "assistant" as const, content: message, timestamp: new Date().toISOString(), suggestions },
+          { role: "assistant" as const, content: response.message, timestamp: new Date().toISOString() },
         ];
 
         await db.updateStoryBlueprint(input.blueprintId, {
           conversationHistory: conversationHistory as any,
+          conversationMode: "initial_questions",
         });
 
         return {
-          message,
-          suggestions,
-          currentSection: CONVERSATION_SECTIONS[0],
-          completedSections: 0,
-          totalSections: CONVERSATION_SECTIONS.length,
+          message: response.message,
+          suggestions: response.suggestions,
+          conversationMode: "initial_questions",
         };
       }),
 
@@ -652,74 +655,97 @@ Generate the author bio now:`;
         }
 
         // Parse conversation history
-        const conversationHistory: Array<{ role: string; content: string }> = blueprint.conversationHistory
+        const conversationHistory: Array<{ role: "user" | "assistant"; content: string }> = blueprint.conversationHistory
           ? (blueprint.conversationHistory as any).map((msg: any) => ({ role: msg.role, content: msg.content }))
           : [];
 
-        // Add user message
-        conversationHistory.push({
-          role: "user",
-          content: input.message,
-        });
-
-        // Extract data from user response
-        const currentSection = (blueprint.currentSection as any) || CONVERSATION_SECTIONS[0];
-        
-        const extractedData = await extractDataFromResponse(
-          currentSection,
-          input.message,
-          conversationHistory.map((msg) => ({ role: msg.role, content: msg.content }))
-        );
-
-        // Merge extracted data with existing blueprint data
-        const updatedData = { ...extractedData };
-
         // Get author profile
         const author = await db.getAuthorByUserId(ctx.user.id);
+        
+        // Get conversation mode
+        const mode = (blueprint.conversationMode as ConversationMode) || "initial_questions";
+        const essentialData = (blueprint.essentialData as any) || {};
 
-        // Generate AI response
+        // Build state for v2 agent
         const state = {
-          currentSection,
-          completedSections: (blueprint.completedSections as any) || [],
-          collectedData: updatedData,
-          conversationHistory: conversationHistory as Array<{ role: "user" | "assistant"; content: string }>,
+          mode,
+          essentialData,
+          generatedBlueprint: blueprint.blueprintGenerated ? {
+            projectType: blueprint.projectType,
+            workingTitle: blueprint.workingTitle,
+            targetLength: blueprint.targetLength,
+            primaryGenre: blueprint.primaryGenre,
+            secondaryGenre: blueprint.secondaryGenre,
+            corePremise: blueprint.corePremise,
+            protagonistData: blueprint.protagonistData,
+            supportingCharacters: blueprint.supportingCharacters,
+            timePeriod: blueprint.timePeriod,
+            location: blueprint.location,
+            settingData: blueprint.settingData,
+            plotStructure: blueprint.plotStructure,
+            audienceData: blueprint.audienceData,
+            thematicElements: blueprint.thematicElements,
+          } : undefined,
+          conversationHistory,
         };
 
-        const { message: aiMessage, suggestions, isComplete } = await generateNextMessage(state, input.message, author);
+        // Generate AI response using v2 agent
+        const response = await generateNextMessageV2(state, input.message, author);
 
-        // Add AI message
-        conversationHistory.push({
-          role: "assistant",
-          content: aiMessage,
-        });
+        // Add messages to history
+        conversationHistory.push({ role: "user", content: input.message });
+        conversationHistory.push({ role: "assistant", content: response.message });
 
-        // Determine next section if current is complete
-        let nextSection = currentSection;
-        let completedSections = state.completedSections;
+        // Extract essential data if in initial_questions mode
+        let updatedEssentialData = essentialData;
+        let nextMode = mode;
         
-        if (isComplete && !completedSections.includes(currentSection)) {
-          completedSections.push(currentSection);
-          const next = getNextSection(currentSection);
-          if (next) {
-            nextSection = next;
+        if (mode === "initial_questions") {
+          const extracted = await extractEssentialData(input.message, conversationHistory);
+          updatedEssentialData = { ...essentialData, ...extracted };
+          
+          // Check if we have all essential data
+          if (updatedEssentialData.projectType && updatedEssentialData.briefDescription && updatedEssentialData.targetAudience) {
+            nextMode = "blueprint_generation";
           }
         }
 
-        // Update blueprint
-        await db.updateStoryBlueprint(input.blueprintId, {
-          ...updatedData,
+        // Update blueprint with new data
+        const updateData: any = {
           conversationHistory: conversationHistory as any,
-          currentSection: nextSection,
-          completedSections: completedSections as any,
-        });
+          conversationMode: nextMode,
+          essentialData: updatedEssentialData,
+        };
+
+        // If blueprint was generated, save it
+        if (response.blueprintData) {
+          updateData.blueprintGenerated = true;
+          updateData.projectType = response.blueprintData.projectType;
+          updateData.workingTitle = response.blueprintData.workingTitle;
+          updateData.targetLength = response.blueprintData.targetLength;
+          updateData.primaryGenre = response.blueprintData.primaryGenre;
+          updateData.secondaryGenre = response.blueprintData.secondaryGenre;
+          updateData.corePremise = response.blueprintData.corePremise;
+          updateData.protagonistData = response.blueprintData.protagonistData;
+          updateData.supportingCharacters = response.blueprintData.supportingCharacters;
+          updateData.timePeriod = response.blueprintData.timePeriod;
+          updateData.location = response.blueprintData.location;
+          updateData.settingData = response.blueprintData.settingData;
+          updateData.plotStructure = response.blueprintData.plotStructure;
+          updateData.audienceData = response.blueprintData.audienceData;
+          updateData.thematicElements = response.blueprintData.thematicElements;
+          nextMode = "refinement";
+          updateData.conversationMode = nextMode;
+        }
+
+        await db.updateStoryBlueprint(input.blueprintId, updateData);
 
         return {
-          message: aiMessage,
-          suggestions,
-          currentSection: nextSection,
-          completedSections: completedSections.length,
-          totalSections: CONVERSATION_SECTIONS.length,
-          isComplete: completedSections.length === CONVERSATION_SECTIONS.length,
+          message: response.message,
+          suggestions: response.suggestions,
+          conversationMode: nextMode,
+          blueprintGenerated: !!response.blueprintData,
+          blueprintData: response.blueprintData,
         };
       }),
 

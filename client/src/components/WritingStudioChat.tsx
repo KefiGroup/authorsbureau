@@ -17,9 +17,8 @@ interface WritingStudioChatProps {
   onSendMessage: (message: string) => void;
   onSelectSuggestion: (suggestion: string) => void;
   isLoading: boolean;
-  currentSection: string;
-  completedSections: number;
-  totalSections: number;
+  conversationMode: "initial_questions" | "blueprint_generation" | "refinement";
+  blueprintGenerated: boolean;
   onBack?: () => void;
   onSkip?: () => void;
 }
@@ -29,9 +28,8 @@ export function WritingStudioChat({
   onSendMessage,
   onSelectSuggestion,
   isLoading,
-  currentSection,
-  completedSections,
-  totalSections,
+  conversationMode,
+  blueprintGenerated,
   onBack,
   onSkip,
 }: WritingStudioChatProps) {
@@ -65,7 +63,17 @@ export function WritingStudioChat({
     }
   };
 
-  const progress = (completedSections / totalSections) * 100;
+  const getModeLabel = () => {
+    if (blueprintGenerated) return "Blueprint Complete - Refinement Mode";
+    if (conversationMode === "blueprint_generation") return "Generating Your Blueprint...";
+    return "Initial Questions";
+  };
+
+  const getModeDescription = () => {
+    if (blueprintGenerated) return "Chat to refine any section of your blueprint";
+    if (conversationMode === "blueprint_generation") return "AI is creating your complete story blueprint";
+    return "Tell us about your book idea";
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -74,19 +82,11 @@ export function WritingStudioChat({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">{currentSection}</h3>
+            <div>
+              <h3 className="font-semibold">{getModeLabel()}</h3>
+              <p className="text-sm text-muted-foreground">{getModeDescription()}</p>
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            {completedSections} of {totalSections} sections complete
-          </div>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="w-full bg-secondary rounded-full h-2">
-          <div
-            className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
         </div>
       </div>
 

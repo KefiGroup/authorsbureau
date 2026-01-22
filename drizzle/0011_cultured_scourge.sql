@@ -1,0 +1,2 @@
+ALTER TABLE `storyBlueprints` ADD `conversationMode` enum('initial_questions','blueprint_generation','refinement') DEFAULT 'initial_questions';--> statement-breakpoint
+ALTER TABLE `storyBlueprints` ADD `essentialData` json;

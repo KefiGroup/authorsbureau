@@ -163,7 +163,16 @@ export const storyBlueprints = mysqlTable("storyBlueprints", {
   currentSection: text("currentSection"), // Current conversation section
   completedSections: json("completedSections").$type<string[]>(), // Array of completed section names
   
-  // Blueprint Generation
+  // V2 Conversation Mode
+  conversationMode: mysqlEnum("conversationMode", ["initial_questions", "blueprint_generation", "refinement"]).default("initial_questions"),
+  essentialData: json("essentialData").$type<{
+    projectType?: string;
+    briefDescription?: string;
+    targetAudience?: string;
+    workingTitle?: string;
+  }>(),
+  
+  // Blueprint Generationn
   blueprintGenerated: boolean("blueprintGenerated").default(false),
   blueprintContent: mediumtext("blueprintContent"), // Full generated blueprint in markdown
   

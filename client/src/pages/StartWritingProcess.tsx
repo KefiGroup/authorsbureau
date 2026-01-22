@@ -20,10 +20,9 @@ export default function StartWritingProcess() {
     suggestions?: string[];
   }>>([]);
   
-  const [currentSection, setCurrentSection] = useState("");
-  const [completedSections, setCompletedSections] = useState(0);
-  const [totalSections, setTotalSections] = useState(10);
-  const [isConversationComplete, setIsConversationComplete] = useState(false);
+  const [conversationMode, setConversationMode] = useState<"initial_questions" | "blueprint_generation" | "refinement">("initial_questions");
+  const [blueprintGenerated, setBlueprintGenerated] = useState(false);
+  const [generatedBlueprintData, setGeneratedBlueprintData] = useState<any>(null);
 
   // Queries
   const { data: blueprint, isLoading: loadingBlueprint } = trpc.blueprint.get.useQuery(
@@ -40,9 +39,7 @@ export default function StartWritingProcess() {
         timestamp: new Date().toISOString(),
         suggestions: data.suggestions,
       }]);
-      setCurrentSection(data.currentSection);
-      setCompletedSections(data.completedSections);
-      setTotalSections(data.totalSections);
+      setConversationMode(data.conversationMode as "initial_questions" | "blueprint_generation" | "refinement");
     },
     onError: (error) => {
       toast.error("Failed to start conversation: " + error.message);
@@ -60,12 +57,12 @@ export default function StartWritingProcess() {
           suggestions: data.suggestions,
         },
       ]);
-      setCurrentSection(data.currentSection);
-      setCompletedSections(data.completedSections);
-      setIsConversationComplete(data.isComplete || false);
+      setConversationMode(data.conversationMode as "initial_questions" | "blueprint_generation" | "refinement");
       
-      if (data.isComplete) {
-        toast.success("🎉 Conversation complete! Ready to generate your blueprint.");
+      if (data.blueprintGenerated && data.blueprintData) {
+        setBlueprintGenerated(true);
+        setGeneratedBlueprintData(data.blueprintData);
+        toast.success("🎉 Blueprint generated! Review and refine below.");
       }
     },
     onError: (error) => {
@@ -109,13 +106,31 @@ export default function StartWritingProcess() {
     if (!blueprint || !blueprintId || loadingBlueprint) return;
     
     const history = blueprint.conversationHistory as any;
-    const completedCount = (blueprint.completedSections as any)?.length || 0;
+    const mode = (blueprint.conversationMode as any) || "initial_questions";
+    const isGenerated = blueprint.blueprintGenerated || false;
     
-    // Check if blueprint is complete (all 9 sections done)
-    if (completedCount >= 9 || blueprint.currentSection === 'complete') {
-      setIsConversationComplete(true);
-      setCompletedSections(9);
-      setTotalSections(9);
+    // Set conversation mode and blueprint state
+    setConversationMode(mode);
+    setBlueprintGenerated(isGenerated);
+    
+    if (isGenerated) {
+      // Load generated blueprint data
+      setGeneratedBlueprintData({
+        projectType: blueprint.projectType,
+        workingTitle: blueprint.workingTitle,
+        targetLength: blueprint.targetLength,
+        primaryGenre: blueprint.primaryGenre,
+        secondaryGenre: blueprint.secondaryGenre,
+        corePremise: blueprint.corePremise,
+        protagonistData: blueprint.protagonistData,
+        supportingCharacters: blueprint.supportingCharacters,
+        timePeriod: blueprint.timePeriod,
+        location: blueprint.location,
+        settingData: blueprint.settingData,
+        plotStructure: blueprint.plotStructure,
+        audienceData: blueprint.audienceData,
+        thematicElements: blueprint.thematicElements,
+      });
     }
     
     if (history && Array.isArray(history) && history.length > 0) {
@@ -126,8 +141,6 @@ export default function StartWritingProcess() {
         timestamp: msg.timestamp || new Date().toISOString(),
         suggestions: msg.suggestions,
       })));
-      setCurrentSection(blueprint.currentSection || "");
-      setCompletedSections(completedCount);
     } else {
       // Start new conversation (no history exists)
       startConversation.mutate({ blueprintId });
@@ -264,26 +277,8 @@ export default function StartWritingProcess() {
             </div>
           </div>
 
-          {isConversationComplete && (
+          {blueprintGenerated && (
             <div className="flex gap-3">
-              <Button
-                onClick={handleGenerateBlueprint}
-                disabled={generateBlueprint.isPending}
-                size="lg"
-                variant="outline"
-              >
-                {generateBlueprint.isPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <FileText className="h-4 w-4 mr-2" />
-                    Generate Full Blueprint
-                  </>
-                )}
-              </Button>
               <Button
                 onClick={() => {
                   if (!blueprint?.workingTitle) {
@@ -324,9 +319,8 @@ export default function StartWritingProcess() {
             onSendMessage={handleSendMessage}
             onSelectSuggestion={handleSelectSuggestion}
             isLoading={sendMessage.isPending || startConversation.isPending}
-            currentSection={currentSection.replace(/_/g, " ").toUpperCase()}
-            completedSections={completedSections}
-            totalSections={totalSections}
+            conversationMode={conversationMode}
+            blueprintGenerated={blueprintGenerated}
           />
         </div>
 
