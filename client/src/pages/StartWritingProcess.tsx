@@ -33,11 +33,19 @@ export default function StartWritingProcess() {
   const [blueprintGenerated, setBlueprintGenerated] = useState(false);
   const [generatedBlueprintData, setGeneratedBlueprintData] = useState<any>(null);
 
-  // Queries
+  // Queries - ALL HOOKS MUST BE AT TOP BEFORE ANY CONDITIONAL RETURNS
   const { data: blueprint, isLoading: loadingBlueprint, refetch: refetchBlueprint } = trpc.blueprint.get.useQuery(
     { blueprintId: blueprintId! },
     { enabled: !!blueprintId }
   );
+  
+  // Auth hooks for navigation header
+  const { data: user } = trpc.auth.me.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      window.location.href = "/";
+    },
+  });
 
   // Mutations
   const startConversation = trpc.blueprint.startConversation.useMutation({
@@ -275,13 +283,6 @@ export default function StartWritingProcess() {
       </div>
     );
   }
-
-  const { data: user } = trpc.auth.me.useQuery();
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      window.location.href = "/";
-    },
-  });
 
   return (
     <div className="h-screen flex flex-col">

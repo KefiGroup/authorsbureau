@@ -1954,3 +1954,37 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
   * Profile dropdown with logout option
 - [x] Restored full-screen split view (chat left, blueprint right)
 - [x] Chat input field now visible and accessible
+
+
+---
+
+## 🚨 CRITICAL: React Hooks Error in StartWritingProcess
+
+**Problem:** "Minified React error #310" on published site - useQuery called after conditional returns
+
+**Impact:** StartWritingProcess page crashes, users cannot access Writing Studio
+
+**Root Cause:** `trpc.auth.me.useQuery()` called after early returns, violating Rules of Hooks
+
+**Tasks:**
+- [x] Move all hooks (useQuery, useMutation) to top of component before any returns
+- [x] Test on published site to confirm fix
+
+---
+
+## 🎯 Add Anthology Piece Writing Workflow
+
+**Feature:** New category "AI Writing Studio - Anthology" for authors contributing one piece to an anthology
+
+**Workflow Design:**
+- Phase 1: Anthology Context (theme, piece type, word count)
+- Phase 2: Piece Concept (angle, message, description)
+- Phase 3: Auto-generate mini-blueprint (5 sections vs 9 for full book)
+- Phase 4: Refinement & publishing
+
+**Tasks:**
+- [ ] Add "Anthology" option to Writing Studio landing page
+- [ ] Create anthology-specific blueprint schema
+- [ ] Implement anthology conversation flow in v2 agent
+- [ ] Update WritingStudio.tsx to show anthology option
+- [ ] Test complete anthology workflow
