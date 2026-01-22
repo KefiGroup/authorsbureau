@@ -17,6 +17,48 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 
+// Helper function to format JSON data into readable markdown
+function formatBlueprintData(data: any, type: 'protagonist' | 'characters' | 'plot' | 'audience' | 'themes'): string {
+  if (!data) return "";
+  
+  try {
+    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+    
+    switch (type) {
+      case 'protagonist':
+        return `**Age:** ${parsed.age || 'Not specified'}\n**Character Arc:** ${parsed.arc || 'Not specified'}\n**Goal:** ${parsed.goal || 'Not specified'}\n**Internal Conflict:** ${parsed.internalConflict || 'Not specified'}\n**Name:** ${parsed.name || 'Not specified'}\n**Traits:** ${Array.isArray(parsed.traits) ? parsed.traits.join(', ') : parsed.traits || 'Not specified'}`;
+      
+      case 'characters':
+        if (Array.isArray(parsed)) {
+          return parsed.map((char, idx) => 
+            `**${idx + 1}. ${char.name || 'Character ' + (idx + 1)}**\n- Role: ${char.role || 'Not specified'}\n- Relationship: ${char.relationship || 'Not specified'}`
+          ).join('\n\n');
+        }
+        return JSON.stringify(parsed, null, 2);
+      
+      case 'plot':
+        if (parsed.act1 || parsed.act2 || parsed.act3) {
+          return `**Act 1:** ${parsed.act1 || 'Not specified'}\n\n**Act 2:** ${parsed.act2 || 'Not specified'}\n\n**Act 3:** ${parsed.act3 || 'Not specified'}`;
+        }
+        return JSON.stringify(parsed, null, 2);
+      
+      case 'audience':
+        return `**Target Audience:** ${parsed.targetAudience || parsed.description || 'Not specified'}`;
+      
+      case 'themes':
+        if (Array.isArray(parsed)) {
+          return parsed.map((theme, idx) => `${idx + 1}. ${theme}`).join('\n');
+        }
+        return JSON.stringify(parsed, null, 2);
+      
+      default:
+        return JSON.stringify(parsed, null, 2);
+    }
+  } catch (e) {
+    return typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+  }
+}
+
 export default function StartWritingProcess() {
   const [, setLocation] = useLocation();
   const [, params] = useRoute("/start-writing/:blueprintId");
@@ -221,13 +263,13 @@ export default function StartWritingProcess() {
     {
       id: "protagonist",
       title: "Protagonist",
-      content: blueprint?.protagonistData ? JSON.stringify(blueprint.protagonistData, null, 2) : "",
+      content: blueprint?.protagonistData ? formatBlueprintData(blueprint.protagonistData, 'protagonist') : "",
       isComplete: !!blueprint?.protagonistData,
     },
     {
       id: "characters",
       title: "Supporting Characters",
-      content: blueprint?.supportingCharacters ? JSON.stringify(blueprint.supportingCharacters, null, 2) : "",
+      content: blueprint?.supportingCharacters ? formatBlueprintData(blueprint.supportingCharacters, 'characters') : "",
       isComplete: !!blueprint?.supportingCharacters,
     },
     {
@@ -239,19 +281,19 @@ export default function StartWritingProcess() {
     {
       id: "plot",
       title: "Plot Structure",
-      content: blueprint?.plotStructure ? JSON.stringify(blueprint.plotStructure, null, 2) : "",
+      content: blueprint?.plotStructure ? formatBlueprintData(blueprint.plotStructure, 'plot') : "",
       isComplete: !!blueprint?.plotStructure,
     },
     {
       id: "audience",
       title: "Target Audience",
-      content: blueprint?.audienceData ? JSON.stringify(blueprint.audienceData, null, 2) : "",
+      content: blueprint?.audienceData ? formatBlueprintData(blueprint.audienceData, 'audience') : "",
       isComplete: !!blueprint?.audienceData,
     },
     {
       id: "themes",
       title: "Thematic Elements",
-      content: blueprint?.thematicElements ? JSON.stringify(blueprint.thematicElements, null, 2) : "",
+      content: blueprint?.thematicElements ? formatBlueprintData(blueprint.thematicElements, 'themes') : "",
       isComplete: !!blueprint?.thematicElements,
     },
   ] : [];

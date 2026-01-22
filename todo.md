@@ -2021,3 +2021,30 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] No scrolling required to see input box
 
 **Final Size:** 100px min-height, 250px max-height, resizable
+
+
+---
+
+## 🐛 CRITICAL BUG: Blueprint Displaying Raw JSON Instead of Readable Text
+
+**Issue:** Blueprint sections on the right panel show raw JSON strings instead of formatted, human-readable content
+
+**Examples:**
+- Protagonist section shows: `{ "age": 35, "arc": "From Financial Novice..."`
+- Supporting Characters shows: `[ { "name": "The Balance Sheet", "relationship": "Core Tool/Mentor"...`
+
+**Impact:** Users cannot read or understand their blueprint - completely unusable
+
+**Root Cause:** BlueprintPreview component is displaying JSON.stringify() output instead of parsing and formatting the content
+
+**Fix Applied:**
+- [x] Created formatBlueprintData() helper function in StartWritingProcess.tsx
+- [x] Replaced all JSON.stringify() calls with formatted markdown output
+- [x] Protagonist: Shows age, arc, goal, conflict, name, traits in readable format
+- [x] Supporting Characters: Displays numbered list with role and relationship
+- [x] Plot Structure: Shows Act 1, 2, 3 breakdown
+- [x] Target Audience: Clean description
+- [x] Thematic Elements: Numbered list format
+- [x] Tested - all sections now display readable, professional text
+
+**Result:** Blueprint sections now show clean, formatted markdown instead of raw JSON
