@@ -159,6 +159,10 @@ export const storyBlueprints = mysqlTable("storyBlueprints", {
     timestamp: string;
   }>>(),
   
+  // Conversation State
+  currentSection: text("currentSection"), // Current conversation section
+  completedSections: json("completedSections").$type<string[]>(), // Array of completed section names
+  
   // Blueprint Generation
   blueprintGenerated: boolean("blueprintGenerated").default(false),
   blueprintContent: mediumtext("blueprintContent"), // Full generated blueprint in markdown

@@ -3,10 +3,31 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { BookOpen, PenTool, Rocket, TrendingUp, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Create new blueprint mutation
+  const createBlueprint = trpc.blueprint.create.useMutation({
+    onSuccess: (data) => {
+      toast.success("Let's start building your story!");
+      setLocation(`/start-writing/${data.blueprintId}`);
+    },
+    onError: (error) => {
+      toast.error("Failed to start: " + error.message);
+    },
+  });
+
+  const handleStartFromScratch = () => {
+    createBlueprint.mutate({
+      projectType: "novel", // Default, will be updated in conversation
+      workingTitle: "Untitled Project",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -51,11 +72,14 @@ export default function Home() {
                     Upload Existing Manuscript
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/choose-track">
-                    Or Start Writing From Scratch
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  onClick={handleStartFromScratch}
+                  disabled={createBlueprint.isPending}
+                >
+                  {createBlueprint.isPending ? "Starting..." : "Or Start Writing From Scratch"}
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </>
             ) : (

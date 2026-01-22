@@ -126,7 +126,10 @@ export async function createStoryBlueprint(blueprintData: InsertStoryBlueprint) 
   if (!db) throw new Error("Database not available");
 
   const result = await db.insert(storyBlueprints).values(blueprintData);
-  return result;
+  const insertId = Number(result[0].insertId);
+  
+  // Return the created blueprint
+  return await getStoryBlueprintById(insertId);
 }
 
 export async function getStoryBlueprintByBookId(bookId: number) {

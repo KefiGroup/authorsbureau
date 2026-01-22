@@ -23,6 +23,7 @@ import ComingSoon from "@/pages/ComingSoon";
 import MyBooks from "@/pages/MyBooks";
 import Marketing from "@/pages/Marketing";
 import Settings from "@/pages/Settings";
+import StartWritingProcess from "@/pages/StartWritingProcess";
 
 
 function Router() {
@@ -36,7 +37,8 @@ function Router() {
       <Route path={"/profile"} component={Profile} />
       <Route path={"/books"} component={MyBooks} />
       <Route path={"/writing/:id"} component={WritingProject} />
-      <Route path={"/writing-studio"} component={WritingStudio} />
+       <Route path={"writing-studio"} component={WritingStudio} />
+      <Route path="/start-writing/:blueprintId" component={StartWritingProcess} />
       <Route path={"/writing-studio/day-1"} component={WritingStudioDay1} />
       <Route path={"/writing-studio/day-2"} component={WritingStudioDay2} />      <Route path={"/discover-your-story"} component={DiscoverYourStory} />
       <Route path={"/featured-authors"} component={FeaturedAuthors} />

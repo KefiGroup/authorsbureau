@@ -10,6 +10,7 @@ import { storagePut } from "./storage";
 import { parseIntoPages, generatePagePreviewHTML, getPreviewSummary } from "./interior-preview";
 import { analyzeManuscript, generateMoreTitles, refineDescription } from "./manuscript-analyzer";
 import { generateBlueprintContent } from "./blueprint-generator";
+import { generateNextMessage, extractDataFromResponse, CONVERSATION_SECTIONS, getNextSection } from "./writing-studio-agent";
 import * as dbCovers from "./db-covers";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -438,15 +439,21 @@ Generate the author bio now:`;
         bookId: z.number().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const result = await db.createStoryBlueprint({
+        const blueprint = await db.createStoryBlueprint({
           userId: ctx.user.id,
           projectType: input.projectType,
           workingTitle: input.workingTitle,
           bookId: input.bookId,
         });
-        // Get the inserted ID from the result
-        const blueprintId = Number((result as any).insertId || 0);
-        return { success: true, blueprintId };
+        
+        if (!blueprint) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create blueprint",
+          });
+        }
+        
+        return { success: true, blueprintId: blueprint.id };
       }),
 
     // Get blueprint by ID
@@ -568,6 +575,152 @@ Generate the author bio now:`;
         });
 
         return { success: true, content: blueprintMarkdown };
+      }),
+
+    // Start new conversation
+    startConversation: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify ownership
+        const blueprint = await db.getStoryBlueprintById(input.blueprintId);
+        if (!blueprint) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Blueprint not found",
+          });
+        }
+        if (blueprint.userId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        // Get author profile for personalization
+        const author = await db.getAuthorByUserId(ctx.user.id);
+
+        // Generate first AI message
+        const state = {
+          currentSection: CONVERSATION_SECTIONS[0],
+          completedSections: [],
+          collectedData: {},
+          conversationHistory: [],
+        };
+
+        const { message, suggestions } = await generateNextMessage(state, null, author);
+
+        // Save conversation history
+        const conversationHistory = [
+          { role: "assistant" as const, content: message, timestamp: new Date().toISOString(), suggestions },
+        ];
+
+        await db.updateStoryBlueprint(input.blueprintId, {
+          conversationHistory: conversationHistory as any,
+        });
+
+        return {
+          message,
+          suggestions,
+          currentSection: CONVERSATION_SECTIONS[0],
+          completedSections: 0,
+          totalSections: CONVERSATION_SECTIONS.length,
+        };
+      }),
+
+    // Send message in conversation
+    sendMessage: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+        message: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify ownership
+        const blueprint = await db.getStoryBlueprintById(input.blueprintId);
+        if (!blueprint) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Blueprint not found",
+          });
+        }
+        if (blueprint.userId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        // Parse conversation history
+        const conversationHistory: Array<{ role: string; content: string }> = blueprint.conversationHistory
+          ? (blueprint.conversationHistory as any).map((msg: any) => ({ role: msg.role, content: msg.content }))
+          : [];
+
+        // Add user message
+        conversationHistory.push({
+          role: "user",
+          content: input.message,
+        });
+
+        // Extract data from user response
+        const currentSection = (blueprint.currentSection as any) || CONVERSATION_SECTIONS[0];
+        
+        const extractedData = await extractDataFromResponse(
+          currentSection,
+          input.message,
+          conversationHistory.map((msg) => ({ role: msg.role, content: msg.content }))
+        );
+
+        // Merge extracted data with existing blueprint data
+        const updatedData = { ...extractedData };
+
+        // Get author profile
+        const author = await db.getAuthorByUserId(ctx.user.id);
+
+        // Generate AI response
+        const state = {
+          currentSection,
+          completedSections: (blueprint.completedSections as any) || [],
+          collectedData: updatedData,
+          conversationHistory: conversationHistory as Array<{ role: "user" | "assistant"; content: string }>,
+        };
+
+        const { message: aiMessage, suggestions, isComplete } = await generateNextMessage(state, input.message, author);
+
+        // Add AI message
+        conversationHistory.push({
+          role: "assistant",
+          content: aiMessage,
+        });
+
+        // Determine next section if current is complete
+        let nextSection = currentSection;
+        let completedSections = state.completedSections;
+        
+        if (isComplete && !completedSections.includes(currentSection)) {
+          completedSections.push(currentSection);
+          const next = getNextSection(currentSection);
+          if (next) {
+            nextSection = next;
+          }
+        }
+
+        // Update blueprint
+        await db.updateStoryBlueprint(input.blueprintId, {
+          ...updatedData,
+          conversationHistory: conversationHistory as any,
+          currentSection: nextSection,
+          completedSections: completedSections as any,
+        });
+
+        return {
+          message: aiMessage,
+          suggestions,
+          currentSection: nextSection,
+          completedSections: completedSections.length,
+          totalSections: CONVERSATION_SECTIONS.length,
+          isComplete: completedSections.length === CONVERSATION_SECTIONS.length,
+        };
       }),
   }),
 
