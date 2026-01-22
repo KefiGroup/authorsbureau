@@ -155,18 +155,18 @@ export default function Dashboard() {
             </Link>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer opacity-60">
-            <Link href="/writing">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Link href="/writing-studio">
               <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center mb-4">
-                  <PenTool className="h-6 w-6 text-muted-foreground" />
+                <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-purple-600" />
                 </div>
                 <CardTitle className="flex items-center gap-2">
-                  Start Writing
-                  <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">COMING SOON</span>
+                  AI Writing Studio
+                  <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">NEW</span>
                 </CardTitle>
                 <CardDescription>
-                  Write your book from scratch with AI assistance (2-Day Program)
+                  Start your writing process with conversational AI blueprint builder
                 </CardDescription>
               </CardHeader>
             </Link>

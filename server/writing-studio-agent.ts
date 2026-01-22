@@ -50,14 +50,17 @@ export async function generateNextMessage(
   ];
   console.log("[WritingStudio] Total messages before adding user message:", messages.length);
 
-  // Add user message if provided
+  // Add user message (required by API - cannot send system message only)
   if (userMessage) {
     messages.push({ role: "user", content: userMessage });
+  } else {
+    // When starting conversation, add a default user message to prompt the AI
+    messages.push({ role: "user", content: "I'm ready to start developing my story. Let's begin!" });
   }
+  console.log("[WritingStudio] Calling invokeLLM with", messages.length, "messages");
 
-  // Generate AI response
   try {
-    console.log("[WritingStudio] Calling invokeLLM with messages:", JSON.stringify(messages, null, 2));
+    console.log("[WritingStudio] Messages:", JSON.stringify(messages, null, 2));
     const response = await invokeLLM({
       messages,
     });

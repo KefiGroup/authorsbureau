@@ -226,27 +226,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Empowerment Section */}
-      <section className="container py-16 bg-card/30 rounded-3xl">
+      {/* AI Writing Studio CTA Section */}
+      <section className="container py-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl">
         <div className="text-center space-y-6">
           <Badge className="mb-2">
             <Sparkles className="w-4 h-4 mr-2" />
-            Free SUCKcess Story Discovery
+            AI-Powered Writing Studio
           </Badge>
-          <h2 className="text-4xl font-bold text-foreground">What's Your SUCKcess Story?</h2>
+          <h2 className="text-4xl font-bold text-foreground">Ready to Start Your Writing Journey?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Take our free 5-minute quiz to discover your unique transformation journey and get a personalized roadmap to turn your story into a published book.
+            Transform your book idea into a comprehensive story blueprint through conversational AI. Get personalized guidance from concept to completion.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button size="lg" asChild>
-              <Link href="/discover-your-story">
+              <Link href="/writing-studio">
                 <Sparkles className="mr-2 h-5 w-5" />
-                Discover Your Story
+                Start Your Writing Process
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/writing-studio">
-                Go to Writing Studio
+              <Link href="/ready-to-publish">
+                Already Have a Manuscript?
               </Link>
             </Button>
           </div>

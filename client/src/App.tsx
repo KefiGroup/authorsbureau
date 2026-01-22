@@ -11,9 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Books from "./pages/Books";
 import WritingStudio from "./pages/WritingStudio";
-import WritingStudioDay1 from "./pages/WritingStudioDay1";
-import WritingStudioDay2 from "./pages/WritingStudioDay2";
-import DiscoverYourStory from "./pages/DiscoverYourStory";
+
 import FeaturedAuthors from "./pages/FeaturedAuthors";
 import AmazonPublishing from "@/pages/AmazonPublishing";
 import CoverGenerator from "@/pages/CoverGenerator";
@@ -39,8 +37,6 @@ function Router() {
       <Route path={"/writing/:id"} component={WritingProject} />
        <Route path={"writing-studio"} component={WritingStudio} />
       <Route path="/start-writing/:blueprintId" component={StartWritingProcess} />
-      <Route path={"/writing-studio/day-1"} component={WritingStudioDay1} />
-      <Route path={"/writing-studio/day-2"} component={WritingStudioDay2} />      <Route path={"/discover-your-story"} component={DiscoverYourStory} />
       <Route path={"/featured-authors"} component={FeaturedAuthors} />
       <Route path="/amazon-publishing" component={AmazonPublishing} />
         <Route path="/cover-generator" component={CoverGenerator} />

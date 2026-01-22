@@ -148,7 +148,7 @@ export default function ChooseTrack() {
                   </div>
                 </div>
                 <CardDescription className="text-base">
-                  Contribute your SUCKcess story to our bestselling anthology series with Pauline Teo
+                  Contribute your transformation story to our bestselling anthology series with Pauline Teo
                 </CardDescription>
               </CardHeader>
 
@@ -156,7 +156,7 @@ export default function ChooseTrack() {
                 <div className="space-y-3">
                   <div className="flex items-start gap-2">
                     <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Share your transformation story in "Be SUCKcessful" anthology</span>
+                    <span className="text-sm">Share your transformation story in our anthology series</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -198,17 +198,7 @@ export default function ChooseTrack() {
             </Card>
           </div>
 
-          {/* Bottom CTA */}
-          <div className="mt-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              Not sure which path is right for you?
-            </p>
-            <Button variant="outline" asChild>
-              <Link href="/discover-your-story">
-                Take Our SUCKcess Story Quiz
-              </Link>
-            </Button>
-          </div>
+
         </div>
       </div>
     </div>
