@@ -1611,3 +1611,69 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Verify AI analysis completes successfully
 - [x] Confirm workflow progression to Step 3 (Review)
 - [x] SQL error bug RESOLVED
+
+
+---
+
+## 🎨 Writing Studio Prompt Redesign (CURRENT PRIORITY)
+
+**Problem:** Current 9-step conversational process is too cumbersome for users
+
+**Goal:** Research competition and design optimal AI writing prompt that balances comprehensiveness with efficiency
+
+- [ ] Research competing AI writing tools (Sudowrite, Jasper, Claude, ChatGPT for book writing)
+- [ ] Research book planning platforms (Plottr, Scrivener, Reedsy Book Editor, Atticus)
+- [ ] Analyze best practices for AI-assisted book planning prompts
+- [ ] Document key findings and patterns from competition
+- [ ] Design new streamlined prompt structure
+- [ ] Implement improved Writing Studio prompt
+- [ ] Test new prompt with user account
+- [ ] Verify blueprint data quality remains comprehensive
+- [ ] Update todo.md with results
+
+
+---
+
+## 🎨 Writing Studio Prompt Optimization
+
+**User Feedback:** "The process of writing studio with 9 steps is too cumbersome"
+
+### Research Completed ✅
+- [x] Research competing AI writing tools (Sudowrite, Novelcrafter, ChatGPT)
+- [x] Analyze effective prompt structures and conversation flows
+- [x] Identify pain points in current 9-section flow
+- [x] Design optimized prompt recommendations
+- [x] Create v2 agent with generate-refine pattern (writing-studio-agent-v2.ts)
+- [x] Create simplified 3-stage consolidation option
+
+### Key Findings
+- **Current:** 9 sections, 18-27 messages, 15-30 minutes
+- **Best Practice:** 2-3 questions → AI generates complete blueprint → iterative refinement
+- **Recommended:** Consolidate to 3 stages (67% time reduction)
+- **Alternative:** Full rewrite with generate-refine pattern (best UX, more implementation time)
+
+### Implementation Options
+**Option A: Simple Update (Recommended for Speed)**
+- Consolidate 9 sections to 3 stages
+- Ask multiple questions per stage
+- 67% time reduction
+- Can be implemented and tested in 30-60 minutes
+
+**Option B: Full Rewrite (Better UX, More Time)**
+- Implement v2 agent (already created)
+- 2-3 essential questions → AI generates complete blueprint → refinement
+- Best user experience
+- 2-3 hours to implement and test
+
+### Next Steps
+- [ ] User chooses implementation approach (A or B)
+- [ ] Implement chosen approach
+- [ ] Test with user account (paulinet77@gmail.com)
+- [ ] Measure completion rates and time
+- [ ] Deploy to production
+
+### Documentation
+- Research findings: `/home/ubuntu/ai-writing-research.md`
+- Optimal design: `/home/ubuntu/optimal-writing-prompt-design.md`
+- Recommendations: `/home/ubuntu/optimal-prompt-recommendation.md`
+- V2 agent code: `/home/ubuntu/authors-bureau-v2/server/writing-studio-agent-v2.ts`
