@@ -178,7 +178,11 @@ export default function StartWritingProcess() {
   };
 
   // Build blueprint preview sections from collected data
-  const blueprintSections = [
+  // For V2 blueprints (conversationMode exists), hide sections until blueprint is fully generated
+  const isV2Blueprint = blueprint?.conversationMode !== undefined;
+  const showSections = !isV2Blueprint || blueprint?.blueprintGenerated;
+  
+  const blueprintSections = showSections ? [
     {
       id: "project_type",
       title: "Project Overview",
@@ -233,7 +237,7 @@ export default function StartWritingProcess() {
       content: blueprint?.thematicElements ? JSON.stringify(blueprint.thematicElements, null, 2) : "",
       isComplete: !!blueprint?.thematicElements,
     },
-  ];
+  ] : [];
 
   if (loadingBlueprint) {
     return (
