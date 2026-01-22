@@ -2292,7 +2292,7 @@ User correctly identified that the platform should NOT require manual chapter wr
 ### New Workflow
 1. ✅ Blueprint Creation (3 AI questions → 9-section blueprint) - COMPLETE
 2. ✅ Chapter Outline Review - COMPLETE
-3. ⏭️ Book Structure Selection (checkboxes for optional sections)
+3. ✅ Book Structure Selection (checkboxes for optional sections) - COMPLETE
 4. ⏭️ AI Manuscript Generation (AI writes ENTIRE book automatically)
 5. ⏭️ Review & Edit (user edits generated content, not writing from scratch)
 6. ⏭️ Publishing
@@ -2361,4 +2361,24 @@ User correctly identified that the platform should NOT require manual chapter wr
 - [ ] Test editing and saving generated content
 - [ ] Verify word count accuracy
 - [ ] Verify progress tracking
+
+
+
+---
+
+## 📖 Book Structure Selection Page (Step 3) - ✅ COMPLETE
+
+### User Request
+Build the Book Structure Selection page where users can choose optional sections for their book before AI generates the full manuscript.
+
+### Implementation Tasks
+- [x] Add bookStructures table to drizzle/schema.ts
+- [x] Create backend procedure: bookStructure.save (save user selections)
+- [x] Create backend procedure: bookStructure.get (retrieve saved selections)
+- [x] Create BookStructureSelection.tsx page with checkboxes
+- [x] Add descriptions for each optional section
+- [x] Add route /book-structure/:blueprintId to App.tsx
+- [x] Update ReviewChapterOutline "Approve Outline" button to navigate to book structure page
+- [x] Test saving and retrieving structure selections
+- [x] Test navigation flow: Blueprint → Outline → Structure Selection
 

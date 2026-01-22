@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "4612f9ca-eaa5-44e8-9f48-261be10c5039",
-  "prevId": "433680dc-a905-4117-9bf2-4592c72bb3a2",
+  "id": "e8c10004-06bf-4266-95fa-88e340d7affb",
+  "prevId": "4612f9ca-eaa5-44e8-9f48-261be10c5039",
   "tables": {
     "ai_recommendation_feedback": {
       "name": "ai_recommendation_feedback",
@@ -576,6 +576,124 @@
       "compositePrimaryKeys": {
         "bookDesigns_id": {
           "name": "bookDesigns_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "bookStructures": {
+      "name": "bookStructures",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "blueprintId": {
+          "name": "blueprintId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "hasPrologue": {
+          "name": "hasPrologue",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "hasDedication": {
+          "name": "hasDedication",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "hasAcknowledgements": {
+          "name": "hasAcknowledgements",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "hasEpilogue": {
+          "name": "hasEpilogue",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "hasAuthorBio": {
+          "name": "hasAuthorBio",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "hasAlsoBy": {
+          "name": "hasAlsoBy",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "hasNewsletter": {
+          "name": "hasNewsletter",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bookStructures_blueprintId_storyBlueprints_id_fk": {
+          "name": "bookStructures_blueprintId_storyBlueprints_id_fk",
+          "tableFrom": "bookStructures",
+          "tableTo": "storyBlueprints",
+          "columnsFrom": [
+            "blueprintId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "bookStructures_id": {
+          "name": "bookStructures_id",
           "columns": [
             "id"
           ]

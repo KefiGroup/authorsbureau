@@ -224,6 +224,26 @@ export type ChapterOutline = typeof chapterOutlines.$inferSelect;
 export type InsertChapterOutline = typeof chapterOutlines.$inferInsert;
 
 /**
+ * Book structure selections (optional sections)
+ */
+export const bookStructures = mysqlTable("bookStructures", {
+  id: int("id").autoincrement().primaryKey(),
+  blueprintId: int("blueprintId").notNull().references(() => storyBlueprints.id, { onDelete: "cascade" }),
+  hasPrologue: boolean("hasPrologue").default(false).notNull(),
+  hasDedication: boolean("hasDedication").default(false).notNull(),
+  hasAcknowledgements: boolean("hasAcknowledgements").default(false).notNull(),
+  hasEpilogue: boolean("hasEpilogue").default(false).notNull(),
+  hasAuthorBio: boolean("hasAuthorBio").default(true).notNull(), // Default true - most books have this
+  hasAlsoBy: boolean("hasAlsoBy").default(false).notNull(),
+  hasNewsletter: boolean("hasNewsletter").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BookStructure = typeof bookStructures.$inferSelect;
+export type InsertBookStructure = typeof bookStructures.$inferInsert;
+
+/**
  * Characters for fiction books
  */
 export const characters = mysqlTable("characters", {

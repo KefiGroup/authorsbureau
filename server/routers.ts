@@ -1108,6 +1108,79 @@ Return ONLY a JSON object with this structure:
         return { success: true };
       }),
 
+    // Save book structure selections
+    saveBookStructure: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+        hasPrologue: z.boolean(),
+        hasDedication: z.boolean(),
+        hasAcknowledgements: z.boolean(),
+        hasEpilogue: z.boolean(),
+        hasAuthorBio: z.boolean(),
+        hasAlsoBy: z.boolean(),
+        hasNewsletter: z.boolean(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { bookStructures } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        // Check if structure already exists
+        const existing = await db.select().from(bookStructures)
+          .where(eq(bookStructures.blueprintId, input.blueprintId))
+          .limit(1);
+
+        if (existing[0]) {
+          // Update existing
+          await db.update(bookStructures)
+            .set({
+              hasPrologue: input.hasPrologue,
+              hasDedication: input.hasDedication,
+              hasAcknowledgements: input.hasAcknowledgements,
+              hasEpilogue: input.hasEpilogue,
+              hasAuthorBio: input.hasAuthorBio,
+              hasAlsoBy: input.hasAlsoBy,
+              hasNewsletter: input.hasNewsletter,
+            })
+            .where(eq(bookStructures.blueprintId, input.blueprintId));
+        } else {
+          // Create new
+          await db.insert(bookStructures).values({
+            blueprintId: input.blueprintId,
+            hasPrologue: input.hasPrologue,
+            hasDedication: input.hasDedication,
+            hasAcknowledgements: input.hasAcknowledgements,
+            hasEpilogue: input.hasEpilogue,
+            hasAuthorBio: input.hasAuthorBio,
+            hasAlsoBy: input.hasAlsoBy,
+            hasNewsletter: input.hasNewsletter,
+          });
+        }
+
+        return { success: true };
+      }),
+
+    // Get book structure selections
+    getBookStructure: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const { bookStructures } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        const structure = await db.select().from(bookStructures)
+          .where(eq(bookStructures.blueprintId, input.blueprintId))
+          .limit(1);
+
+        return structure[0] || null;
+      }),
+
     // Initialize manuscript chapters for a blueprint
     initialize: protectedProcedure
       .input(z.object({
