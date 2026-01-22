@@ -690,7 +690,13 @@ Generate the author bio now:`;
         };
 
         // Generate AI response using v2 agent
-        const response = await generateNextMessageV2(state, input.message, author);
+        let response;
+        try {
+          response = await generateNextMessageV2(state, input.message, author);
+        } catch (error) {
+          console.error("[blueprint.sendMessage] Error generating AI response:", error);
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to generate AI response: " + (error as Error).message });
+        }
 
         // Add messages to history
         conversationHistory.push({ role: "user", content: input.message });
@@ -700,6 +706,13 @@ Generate the author bio now:`;
         let updatedEssentialData = essentialData;
         let nextMode = mode;
         
+        // Initialize update data object
+        const updateData: any = {
+          conversationHistory: conversationHistory as any,
+          conversationMode: nextMode,
+          essentialData: updatedEssentialData,
+        };
+        
         if (mode === "initial_questions") {
           const extracted = await extractEssentialData(input.message, conversationHistory);
           updatedEssentialData = { ...essentialData, ...extracted };
@@ -707,15 +720,55 @@ Generate the author bio now:`;
           // Check if we have all essential data
           if (updatedEssentialData.projectType && updatedEssentialData.briefDescription && updatedEssentialData.targetAudience) {
             nextMode = "blueprint_generation";
+            
+            // Automatically generate blueprint
+            const blueprintState = {
+              mode: "blueprint_generation" as ConversationMode,
+              essentialData: updatedEssentialData,
+              generatedBlueprint: undefined,
+              conversationHistory,
+            };
+            
+            let blueprintResponse;
+            try {
+              console.log("[blueprint.sendMessage] Triggering automatic blueprint generation...");
+              blueprintResponse = await generateNextMessageV2(blueprintState, null, author);
+              console.log("[blueprint.sendMessage] Blueprint generated successfully:", blueprintResponse.blueprintData ? "YES" : "NO");
+            } catch (error) {
+              console.error("[blueprint.sendMessage] Error generating blueprint:", error);
+              throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to generate blueprint: " + (error as Error).message });
+            }
+            
+            // Save generated blueprint
+            if (blueprintResponse.blueprintData) {
+              updateData.blueprintGenerated = true;
+              updateData.projectType = blueprintResponse.blueprintData.projectType;
+              updateData.workingTitle = blueprintResponse.blueprintData.workingTitle;
+              updateData.targetLength = blueprintResponse.blueprintData.targetLength;
+              updateData.primaryGenre = blueprintResponse.blueprintData.primaryGenre;
+              updateData.secondaryGenre = blueprintResponse.blueprintData.secondaryGenre;
+              updateData.corePremise = blueprintResponse.blueprintData.corePremise;
+              updateData.protagonistData = blueprintResponse.blueprintData.protagonistData;
+              updateData.supportingCharacters = blueprintResponse.blueprintData.supportingCharacters;
+              updateData.timePeriod = blueprintResponse.blueprintData.timePeriod;
+              updateData.location = blueprintResponse.blueprintData.location;
+              updateData.settingData = blueprintResponse.blueprintData.settingData;
+              updateData.plotStructure = blueprintResponse.blueprintData.plotStructure;
+              updateData.audienceData = blueprintResponse.blueprintData.audienceData;
+              updateData.thematicElements = blueprintResponse.blueprintData.thematicElements;
+              nextMode = "refinement";
+              updateData.conversationMode = nextMode;
+              
+              // Add blueprint generation message to history
+              conversationHistory.push({ role: "assistant", content: blueprintResponse.message });
+            }
           }
         }
 
-        // Update blueprint with new data
-        const updateData: any = {
-          conversationHistory: conversationHistory as any,
-          conversationMode: nextMode,
-          essentialData: updatedEssentialData,
-        };
+        // Update final values before saving
+        updateData.conversationHistory = conversationHistory as any;
+        updateData.conversationMode = nextMode;
+        updateData.essentialData = updatedEssentialData;
 
         // If blueprint was generated, save it
         if (response.blueprintData) {

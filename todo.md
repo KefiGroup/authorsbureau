@@ -1721,3 +1721,32 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Verify error handling
 - [ ] Verify loading states
 - [ ] Performance check (generation time < 30 seconds)
+
+
+---
+
+## 🔧 Writing Studio V2 Completion (CURRENT PRIORITY)
+
+### Blueprint Generation Trigger Fix
+- [x] Update v2 agent to detect when all 3 essential questions are answered
+- [x] Implement automatic mode switch from `initial_questions` to `blueprint_generation`
+- [x] Generate complete JSON blueprint covering all 9 sections automatically
+- [x] Update conversationMode in database when switching modes
+- [x] Save generated blueprint data to all 9 sections
+- [ ] Update frontend to display generated blueprint in right panel
+- [ ] Test blueprint generation with user account (paulinet77@gmail.com)
+
+### Refinement Mode Implementation
+- [ ] Add click-to-edit functionality for each blueprint section
+- [ ] Create section edit UI (modal or inline editing)
+- [ ] Implement conversational refinement (user clicks section → AI asks how to improve it)
+- [ ] Update v2 agent refinement mode prompts
+- [ ] Save refined sections back to blueprint
+- [ ] Test refinement flow end-to-end
+
+### Final Testing
+- [ ] Test complete generate-refine cycle (3 questions → blueprint → refinement)
+- [ ] Verify "Continue to Publishing" button appears after blueprint complete
+- [ ] Test blueprint data flows to ReadyToPublish correctly
+- [ ] Verify all book types work (Novel, Memoir, Non-Fiction, Children's Book)
+- [ ] Document final workflow for user showcase
