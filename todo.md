@@ -1916,3 +1916,41 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [x] Change "Marketing" to "AI Marketing Studio"
 - [x] Keep "Dashboard" as first item
 - [x] Paths and icons remain the same
+
+
+---
+
+## ✅ AI Showing Raw JSON in Chat (FIXED)
+
+**Problem:** AI was displaying raw blueprint JSON structure in chat messages instead of natural conversation
+
+**Example:** "CURRENT BLUEPRINT: { "projectType": "non_fiction", "workingTitle": ... }"
+
+**Impact:** Completely unprofessional, confused users, exposed internal data structure
+
+**Root Cause:** Refinement mode system prompt included entire blueprint JSON which AI echoed back
+
+**Solution:**
+- [x] Removed JSON.stringify from refinement system prompt
+- [x] Added CRITICAL instruction: "NEVER show raw JSON or technical data structures to the user"
+- [x] Instructed AI to paraphrase blueprint content naturally in conversation
+- [x] AI now has access to data internally but presents it professionally
+
+---
+
+## ✅ Layout Broken - Sidebar Overlapping Content (FIXED)
+
+**Problem:** DashboardLayout sidebar was covering the chat interface, no input field visible
+
+**Impact:** Users could not use the Writing Studio at all
+
+**Root Cause:** StartWritingProcess full-screen layout incompatible with DashboardLayout
+
+**Solution:**
+- [x] Removed DashboardLayout wrapper from StartWritingProcess
+- [x] Added custom top navigation header with:
+  * Back to Dashboard button
+  * Authors Bureau logo
+  * Profile dropdown with logout option
+- [x] Restored full-screen split view (chat left, blueprint right)
+- [x] Chat input field now visible and accessible
