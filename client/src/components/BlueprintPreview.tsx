@@ -4,6 +4,24 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText, Download, Edit, CheckCircle2, Circle } from "lucide-react";
 import { Streamdown } from "streamdown";
 
+// Function to strip markdown formatting symbols
+function stripMarkdown(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/^#{1,6}\s+/gm, '') // Remove headers (##, ###, etc.)
+    .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold (**text**)
+    .replace(/\*(.+?)\*/g, '$1') // Remove italic (*text*)
+    .replace(/__(.+?)__/g, '$1') // Remove bold (__text__)
+    .replace(/_(.+?)_/g, '$1') // Remove italic (_text_)
+    .replace(/~~(.+?)~~/g, '$1') // Remove strikethrough (~~text~~)
+    .replace(/`(.+?)`/g, '$1') // Remove inline code (`text`)
+    .replace(/^[-*+]\s+/gm, '') // Remove list markers
+    .replace(/^\d+\.\s+/gm, '') // Remove numbered list markers
+    .replace(/^>\s+/gm, '') // Remove blockquote markers
+    .replace(/\[(.+?)\]\(.+?\)/g, '$1') // Remove links [text](url)
+    .trim();
+}
+
 interface BlueprintSection {
   id: string;
   title: string;
@@ -118,8 +136,8 @@ export function BlueprintPreview({
 
               {/* Section Content */}
               {section.content && (
-                <div className="prose prose-sm max-w-none dark:prose-invert">
-                  <Streamdown>{section.content}</Streamdown>
+                <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                  {stripMarkdown(section.content)}
                 </div>
               )}
 

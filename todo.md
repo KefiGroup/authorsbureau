@@ -2672,3 +2672,21 @@ Even though AI prompts now include table syntax instructions, existing chapters 
 - [x] Apply function to content before rendering in GenerateManuscript.tsx
 - [ ] Test with existing chapters to verify tables render correctly
 - [ ] Consider adding to backend as well for consistent storage
+
+## 🚨 CRITICAL: Remove Markdown Symbols from Blueprint Display (5th Request)
+
+### Issue
+Blueprint display in AI Writing Studio shows raw markdown symbols:
+- `### Book Blueprint:`
+- `**Target Audience:**`
+- `**Core Promise:**`
+- `#### Part 1:`
+- `**Chapter 1:`
+
+User wants CLEAN TEXT without any markdown formatting symbols in the blueprint panel.
+
+### Solution
+- [x] Find the component that displays blueprint content (BlueprintPreview.tsx)
+- [x] Add markdown stripping function before displaying blueprint text
+- [x] Strip ALL markdown: ##, ###, ####, **, *, _, etc.
+- [ ] Test with blueprint 180002 to verify clean display
