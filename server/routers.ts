@@ -1181,6 +1181,328 @@ Return ONLY a JSON object with this structure:
         return structure[0] || null;
       }),
 
+    // Get manuscript progress (which chapters/sections are complete)
+    getProgress: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const { manuscripts } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        const allManuscripts = await db.select().from(manuscripts)
+          .where(eq(manuscripts.blueprintId, input.blueprintId));
+
+        return allManuscripts;
+      }),
+
+    // Generate a single chapter
+    generateChapter: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+        sectionType: z.enum(["prologue", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]),
+        sectionNumber: z.number().optional(),
+        sectionTitle: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { manuscripts, storyBlueprints, chapterOutlines } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq, and, isNull } = await import("drizzle-orm");
+        const { invokeLLM } = await import("./_core/llm");
+
+        // Get blueprint data
+        const blueprint = await db.select().from(storyBlueprints)
+          .where(eq(storyBlueprints.id, input.blueprintId))
+          .limit(1);
+        
+        if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
+
+        // Get chapter outline if it's a chapter
+        let chapterOutline = null;
+        if (input.sectionType === "chapter" && input.sectionNumber) {
+          const outlines = await db.select().from(chapterOutlines)
+            .where(eq(chapterOutlines.blueprintId, input.blueprintId))
+            .limit(1);
+          
+          if (outlines[0] && outlines[0].outline) {
+            const outlineData = outlines[0].outline as { chapters: any[] };
+            // sectionNumber is 1-indexed, array is 0-indexed
+            chapterOutline = outlineData.chapters[input.sectionNumber - 1];
+          }
+        }
+
+        // Check if manuscript already exists
+        const conditions = [
+          eq(manuscripts.blueprintId, input.blueprintId),
+          eq(manuscripts.sectionType, input.sectionType),
+        ];
+        if (input.sectionNumber !== undefined) {
+          conditions.push(eq(manuscripts.sectionNumber, input.sectionNumber));
+        } else {
+          conditions.push(isNull(manuscripts.sectionNumber));
+        }
+        const existing = await db.select().from(manuscripts)
+          .where(and(...conditions))
+          .limit(1);
+
+        let manuscriptId: number;
+
+        if (existing[0]) {
+          // Update status to generating
+          await db.update(manuscripts)
+            .set({ status: "generating" })
+            .where(eq(manuscripts.id, existing[0].id));
+          manuscriptId = existing[0].id;
+        } else {
+          // Create new manuscript entry
+          const [result] = await db.insert(manuscripts).values({
+            blueprintId: input.blueprintId,
+            sectionType: input.sectionType,
+            sectionNumber: input.sectionNumber || null,
+            sectionTitle: input.sectionTitle,
+            status: "generating",
+          }).$returningId();
+          manuscriptId = result.id;
+        }
+
+        // Build AI prompt based on section type
+        let prompt = "";
+        const blueprintData = blueprint[0];
+
+        if (input.sectionType === "chapter") {
+          prompt = `You are a professional author writing a book chapter. Generate the FULL CONTENT for this chapter based on the blueprint and outline below.
+
+**Book Blueprint:**
+${blueprintData.blueprintContent || ""}
+
+**Chapter to Write:**
+Chapter ${input.sectionNumber}: ${input.sectionTitle}
+${chapterOutline ? `Summary: ${chapterOutline.summary}` : ""}
+
+**Instructions:**
+- Write the COMPLETE chapter content (not just an outline)
+- Target 2,500-3,500 words for this chapter
+- Use engaging, professional prose appropriate for the book's genre and audience
+- Include vivid descriptions, dialogue (if appropriate), and smooth transitions
+- Maintain consistency with the book's overall theme and tone
+- Do NOT include "Chapter X" heading - just write the content
+- Write in a narrative style, not bullet points
+
+Generate the full chapter content now:`;
+        } else if (input.sectionType === "prologue") {
+          prompt = `You are a professional author. Write a compelling PROLOGUE for this book based on the blueprint below.
+
+**Book Blueprint:**
+${blueprintData.blueprintContent || ""}
+
+**Instructions:**
+- Write a complete prologue (800-1,200 words)
+- Set the stage for the main story
+- Create intrigue and hook the reader
+- Use engaging, professional prose
+- Do NOT include "Prologue" heading - just write the content`;
+        } else if (input.sectionType === "epilogue") {
+          prompt = `You are a professional author. Write a satisfying EPILOGUE for this book based on the blueprint below.
+
+**Book Blueprint:**
+${blueprintData.blueprintContent || ""}
+
+**Instructions:**
+- Write a complete epilogue (800-1,200 words)
+- Provide closure and resolution
+- Show what happens after the main story
+- Use engaging, professional prose
+- Do NOT include "Epilogue" heading - just write the content`;
+        } else if (input.sectionType === "dedication") {
+          prompt = `Write a heartfelt book DEDICATION (1-3 sentences) for this book:
+
+**Book Title:** ${blueprintData.workingTitle}
+**Book Theme:** ${blueprintData.blueprintContent?.substring(0, 200)}
+
+Create a professional, touching dedication. Just write the dedication text, no heading.`;
+        } else if (input.sectionType === "acknowledgements") {
+          prompt = `Write professional ACKNOWLEDGEMENTS (2-3 paragraphs) for this book:
+
+**Book Title:** ${blueprintData.workingTitle}
+
+Thank the people who typically help authors: editors, beta readers, family, supporters, etc. Make it warm and professional. Just write the acknowledgements text, no heading.`;
+        } else if (input.sectionType === "authorBio") {
+          prompt = `Write a professional AUTHOR BIO (150-200 words) for the author of this book:
+
+**Book Title:** ${blueprintData.workingTitle}
+**Book Theme:** ${blueprintData.blueprintContent?.substring(0, 300)}
+
+Create a compelling third-person bio that establishes credibility and connects with readers. Just write the bio text, no heading.`;
+        } else if (input.sectionType === "alsoBy") {
+          prompt = `Create an "ALSO BY THIS AUTHOR" page for this book:
+
+**Current Book:** ${blueprintData.workingTitle}
+
+Generate a professional list of 3-5 fictional previous books by the same author in a similar genre. Format as a simple list. Just write the list, no heading.`;
+        } else if (input.sectionType === "newsletter") {
+          prompt = `Write a NEWSLETTER SIGNUP invitation (100-150 words) for the end of this book:
+
+**Book Title:** ${blueprintData.workingTitle}
+
+Create a warm, engaging invitation for readers to join the author's email list. Mention benefits like updates on new releases, exclusive content, etc. Just write the invitation text, no heading.`;
+        }
+
+        // Generate content with AI
+        const response = await invokeLLM({
+          messages: [
+            { role: "user", content: prompt }
+          ],
+        });
+
+        const generatedContent = typeof response.choices[0].message.content === 'string' 
+          ? response.choices[0].message.content 
+          : JSON.stringify(response.choices[0].message.content);
+        const wordCount = generatedContent.split(/\s+/).length;
+
+        // Update manuscript with generated content
+        await db.update(manuscripts)
+          .set({
+            content: generatedContent,
+            wordCount,
+            status: "draft",
+          })
+          .where(eq(manuscripts.id, manuscriptId));
+
+        return {
+          manuscriptId,
+          content: generatedContent,
+          wordCount,
+        };
+      }),
+
+    // Get a specific chapter/section
+    getChapter: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+        sectionType: z.enum(["prologue", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]),
+        sectionNumber: z.number().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const { manuscripts } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq, and, isNull } = await import("drizzle-orm");
+
+        const conditions = [
+          eq(manuscripts.blueprintId, input.blueprintId),
+          eq(manuscripts.sectionType, input.sectionType),
+        ];
+
+        if (input.sectionNumber !== undefined) {
+          conditions.push(eq(manuscripts.sectionNumber, input.sectionNumber));
+        } else {
+          conditions.push(isNull(manuscripts.sectionNumber));
+        }
+
+        const manuscript = await db.select().from(manuscripts)
+          .where(and(...conditions))
+          .limit(1);
+
+        return manuscript[0] || null;
+      }),
+
+    // Approve a chapter
+    approveChapter: protectedProcedure
+      .input(z.object({
+        manuscriptId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { manuscripts } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        await db.update(manuscripts)
+          .set({ status: "approved" })
+          .where(eq(manuscripts.id, input.manuscriptId));
+
+        return { success: true };
+      }),
+
+    // Request edit via AI chat
+    requestEdit: protectedProcedure
+      .input(z.object({
+        manuscriptId: z.number(),
+        userMessage: z.string(),
+        currentContent: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { manuscripts, chapterEdits } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+        const { invokeLLM } = await import("./_core/llm");
+
+        // Get manuscript details
+        const manuscript = await db.select().from(manuscripts)
+          .where(eq(manuscripts.id, input.manuscriptId))
+          .limit(1);
+
+        if (!manuscript[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Manuscript not found" });
+
+        // Generate AI response with edit
+        const prompt = `You are a professional editor helping an author refine their book chapter. The author has requested an edit.
+
+**Current Chapter Content:**
+${input.currentContent}
+
+**Author's Edit Request:**
+${input.userMessage}
+
+**Instructions:**
+- Provide the COMPLETE REVISED chapter content incorporating the requested changes
+- Maintain the same word count (±10%)
+- Keep the same tone and style
+- Make ONLY the changes requested, don't rewrite unnecessarily
+- Return the full revised chapter content
+
+Provide the revised chapter content now:`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "user", content: prompt }
+          ],
+        });
+
+        const revisedContent = typeof response.choices[0].message.content === 'string' 
+          ? response.choices[0].message.content 
+          : JSON.stringify(response.choices[0].message.content);
+        const wordCount = revisedContent.split(/\s+/).length;
+
+        // Save the edit to history
+        await db.insert(chapterEdits).values({
+          manuscriptId: input.manuscriptId,
+          userMessage: input.userMessage,
+          aiResponse: revisedContent,
+        });
+
+        // Update manuscript with revised content
+        await db.update(manuscripts)
+          .set({
+            content: revisedContent,
+            wordCount,
+          })
+          .where(eq(manuscripts.id, input.manuscriptId));
+
+        return {
+          revisedContent,
+          wordCount,
+        };
+      }),
+
     // Initialize manuscript chapters for a blueprint
     initialize: protectedProcedure
       .input(z.object({
@@ -2285,3 +2607,4 @@ Be conversational, encouraging, and specific. Reference the manuscript analysis 
 });
 
 export type AppRouter = typeof appRouter;
+

@@ -244,6 +244,39 @@ export type BookStructure = typeof bookStructures.$inferSelect;
 export type InsertBookStructure = typeof bookStructures.$inferInsert;
 
 /**
+ * Manuscripts - stores generated chapter content
+ */
+export const manuscripts = mysqlTable("manuscripts", {
+  id: int("id").autoincrement().primaryKey(),
+  blueprintId: int("blueprintId").notNull().references(() => storyBlueprints.id, { onDelete: "cascade" }),
+  sectionType: mysqlEnum("sectionType", ["prologue", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]).notNull(),
+  sectionNumber: int("sectionNumber"), // Chapter number (null for non-chapter sections)
+  sectionTitle: varchar("sectionTitle", { length: 500 }),
+  content: mediumtext("content"), // Generated chapter/section content
+  status: mysqlEnum("status", ["pending", "generating", "draft", "approved"]).default("pending").notNull(),
+  wordCount: int("wordCount").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Manuscript = typeof manuscripts.$inferSelect;
+export type InsertManuscript = typeof manuscripts.$inferInsert;
+
+/**
+ * Chapter edits - stores AI chat history for editing chapters
+ */
+export const chapterEdits = mysqlTable("chapterEdits", {
+  id: int("id").autoincrement().primaryKey(),
+  manuscriptId: int("manuscriptId").notNull().references(() => manuscripts.id, { onDelete: "cascade" }),
+  userMessage: text("userMessage").notNull(),
+  aiResponse: mediumtext("aiResponse").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+export type ChapterEdit = typeof chapterEdits.$inferSelect;
+export type InsertChapterEdit = typeof chapterEdits.$inferInsert;
+
+/**
  * Characters for fiction books
  */
 export const characters = mysqlTable("characters", {

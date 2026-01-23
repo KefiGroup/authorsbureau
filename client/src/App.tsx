@@ -23,6 +23,7 @@ import Marketing from "@/pages/Marketing";
 import Settings from "@/pages/Settings";
 import StartWritingProcess from "@/pages/StartWritingProcess";
 import WriteManuscript from "@/pages/WriteManuscript";
+import GenerateManuscript from "@/pages/GenerateManuscript";
 import ReviewChapterOutline from "@/pages/ReviewChapterOutline";
 import BookStructureSelection from "@/pages/BookStructureSelection";
 
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/start-writing/:blueprintId" component={StartWritingProcess} />
       <Route path="/review-outline/:blueprintId" component={ReviewChapterOutline} />
       <Route path="/book-structure/:blueprintId" component={BookStructureSelection} />
+      <Route path="/generate-manuscript/:blueprintId" component={GenerateManuscript} />
       <Route path="/write-manuscript/:blueprintId" component={WriteManuscript} />
       <Route path={"/featured-authors"} component={FeaturedAuthors} />
       <Route path="/amazon-publishing" component={AmazonPublishing} />

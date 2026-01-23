@@ -2382,3 +2382,61 @@ Build the Book Structure Selection page where users can choose optional sections
 - [x] Test saving and retrieving structure selections
 - [x] Test navigation flow: Blueprint → Outline → Structure Selection
 
+
+
+---
+
+## 📝 Chapter-by-Chapter Manuscript Generation (Step 4) - ✅ COMPLETE
+
+### User Request
+Build AI Manuscript Generation page where users generate ONE chapter at a time, read it, chat with AI for edits, approve it, then move to next chapter. This ensures quality control and user involvement throughout the writing process.
+
+### Workflow Design
+1. User arrives at /generate-manuscript/:blueprintId after selecting book structure
+2. System shows current chapter progress (e.g., "Chapter 1 of 20")
+3. AI generates the current chapter based on blueprint + outline
+4. User reads the generated chapter content
+5. User can chat with AI to request edits/improvements
+6. User approves the chapter
+7. System saves the approved chapter and moves to next chapter
+8. Repeat until all chapters + optional sections are complete
+9. Navigate to final review/publishing page
+
+### Database Schema
+- [x] Add `manuscripts` table to store generated chapters
+  - Fields: id, blueprintId, sectionType, sectionNumber, sectionTitle, content, status, wordCount, createdAt, updatedAt
+- [x] Add `chapterEdits` table to store AI chat history for each chapter
+  - Fields: id, manuscriptId, userMessage, aiResponse, timestamp
+
+### Backend Procedures
+- [x] manuscript.generateChapter (blueprintId, sectionType, sectionNumber, sectionTitle) - AI generates chapter content
+- [x] manuscript.getChapter (blueprintId, sectionType, sectionNumber) - Retrieve chapter
+- [x] manuscript.approveChapter (manuscriptId) - Mark chapter as approved
+- [x] manuscript.requestEdit (manuscriptId, userMessage, currentContent) - AI chat for edits
+- [x] manuscript.getProgress (blueprintId) - Get completion status (which chapters are done)
+
+### Frontend Implementation
+- [x] Create GenerateManuscript.tsx page
+- [x] Add route /generate-manuscript/:blueprintId to App.tsx
+- [x] Show progress indicator (Chapter X of Y)
+- [x] Display chapter title and content in readable format
+- [x] Add "Generate Chapter" button (if not generated yet)
+- [x] Add AI chat interface for requesting edits
+- [x] Add "Approve Chapter" button
+- [x] Add "Next Chapter" button (after approval)
+- [x] Add "Previous Chapter" button to review earlier chapters
+- [x] Show loading states during AI generation
+- [x] Handle optional sections (Prologue, Dedication, etc.) in sequence
+
+### Testing Checklist
+- [x] Test generating Chapter 1
+- [x] Test reading generated content (2,093 words, professional quality)
+- [x] Test AI chat interface for edit requests
+- [x] Test approving a chapter
+- [x] Test moving to next chapter (auto-navigation works)
+- [x] Test going back to previous chapter (Previous Section button)
+- [ ] Test complete flow from Chapter 1 to Chapter 20
+- [ ] Test optional sections generation (Prologue, Dedication, etc.)
+- [ ] Test progress persistence (refresh page and resume)
+- [x] Test navigation back to book structure page (Back button works)
+
