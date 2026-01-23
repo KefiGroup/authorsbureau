@@ -3002,3 +3002,13 @@ Complete the 3-studio architecture:
 - [x] Added loading state ("Creating...") while blueprint is being created
 - [x] Added error handling with toast notifications
 - [x] All "Start New Book" flows now work correctly
+
+---
+
+## 🔗 Link Start New Book Button to AI Writing Studio ✅
+
+### Completed
+- [x] Changed "Start New Book" button on Dashboard to link directly to `/ai-writing-studio`
+- [x] Removed complex blueprint creation logic
+- [x] Using simple Link component instead of onClick handler
+- [x] Test the button navigates correctly - Successfully navigates to AI Writing Studio

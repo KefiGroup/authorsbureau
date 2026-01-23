@@ -4,26 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight, Sparkles, AlertCircle, Clock } from "lucide-react";
-import { Link, useLocation } from "wouter";
-import { toast } from "sonner";
+import { Link } from "wouter";
 
 export default function Dashboard() {
   const { data: books, isLoading: booksLoading } = trpc.book.getMyBooks.useQuery();
   const { data: authorProfile } = trpc.author.getProfile.useQuery();
-  const [, setLocation] = useLocation();
-  
-  const createBlueprint = trpc.blueprint.create.useMutation({
-    onSuccess: (data) => {
-      setLocation(`/start-writing/${data.blueprintId}`);
-    },
-    onError: (error) => {
-      toast.error("Failed to create blueprint: " + error.message);
-    },
-  });
-  
-  const handleStartNewBook = () => {
-    createBlueprint.mutate({ projectType: "novel" });
-  };
+
 
   const stats = [
     {
@@ -95,14 +81,11 @@ export default function Dashboard() {
               Here's your author dashboard overview
             </p>
           </div>
-          <Button 
-            size="lg" 
-            className="shadow-md"
-            onClick={handleStartNewBook}
-            disabled={createBlueprint.isPending}
-          >
-            <Plus className="mr-2 h-5 w-5" />
-            {createBlueprint.isPending ? "Creating..." : "Start New Book"}
+          <Button asChild size="lg" className="shadow-md">
+            <Link href="/ai-writing-studio">
+              <Plus className="mr-2 h-5 w-5" />
+              Start New Book
+            </Link>
           </Button>
         </div>
 
