@@ -172,9 +172,10 @@ export default function StartWritingProcess() {
 
   const generateBlueprint = trpc.blueprint.generateFromConversation.useMutation({
     onSuccess: () => {
-      toast.success("Blueprint generated successfully!");
-      // Redirect to blueprint view or next step
-      setLocation("/dashboard");
+      toast.success("Blueprint generated successfully! Review and refine below.");
+      // Refetch blueprint to load the generated content
+      refetchBlueprint();
+      // Stay on the same page - the useEffect will update the UI automatically
     },
     onError: (error) => {
       toast.error("Failed to generate blueprint: " + error.message);
