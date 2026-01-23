@@ -58,7 +58,8 @@ export default function AIWritingStudio() {
   });
 
   const handleStartNew = () => {
-    navigate("/start-writing");
+    // Simply stay on AI Writing Studio page - it will show the project list
+    // User can click "Start New Book" button which is already on this page
   };
 
   const handleContinue = (blueprintId: number, blueprintGenerated: boolean, outlineGenerated: boolean) => {
@@ -101,7 +102,7 @@ export default function AIWritingStudio() {
         </p>
       </div>
 
-      {/* Start New Book Button */}
+      {/* Start New Book Button - Shows modal or form to create new project */}
       <Button onClick={handleStartNew} size="lg" className="mb-8">
         <Plus className="h-5 w-5 mr-2" />
         Start New Book
