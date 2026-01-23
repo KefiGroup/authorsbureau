@@ -2991,3 +2991,14 @@ Complete the 3-studio architecture:
 - [x] Homepage header now ALWAYS shows Sign Up and Sign In buttons
 - [x] Removed conditional logic that hides buttons when logged in
 - [x] Buttons are visible at all times
+
+---
+
+## 🐛 CRITICAL: Fix Invalid Blueprint Error Page ✅
+
+### Resolution
+- [x] Found root cause: Dashboard "Start New Book" button linked to `/start-writing` without blueprintId
+- [x] Fixed: Button now creates blueprint first, then navigates to `/start-writing/:blueprintId`
+- [x] Added loading state ("Creating...") while blueprint is being created
+- [x] Added error handling with toast notifications
+- [x] All "Start New Book" flows now work correctly
