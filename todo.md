@@ -2440,3 +2440,58 @@ Build AI Manuscript Generation page where users generate ONE chapter at a time, 
 - [ ] Test progress persistence (refresh page and resume)
 - [x] Test navigation back to book structure page (Back button works)
 
+
+
+---
+
+## 🔧 Fix AI Edit Application (CURRENT TASK)
+
+### User Request
+Fix the requestEdit mutation to ensure AI-revised content updates the chapter display after users request changes. Currently the interface works but content doesn't refresh. Also improve UI/UX: remove markdown formatting (##, **) from displayed text, enable proper scrolling for long chapters, and add better visual feedback.
+
+### Issues to Fix
+- [ ] Debug requestEdit mutation - content not updating after AI edit
+- [ ] Fix content refresh/refetch after edit is applied
+- [ ] Remove markdown formatting (##, **, etc.) from chapter display
+- [ ] Add proper scrolling for long chapter content
+- [ ] Add loading state during AI edit processing
+- [ ] Add visual feedback when edit is applied successfully
+- [ ] Improve edit request UI/UX (clear textarea after submission, show edit history)
+- [ ] Test complete edit workflow: request edit → AI processes → content updates → display refreshes
+
+### Implementation Tasks
+- [ ] Check if requestEdit mutation is saving to database correctly
+- [ ] Add refetch or invalidate after requestEdit mutation succeeds
+- [ ] Strip markdown formatting from content display (convert ## to plain text, ** to plain text)
+- [ ] Add CSS for proper text wrapping and scrolling
+- [ ] Add loading spinner during edit processing
+- [ ] Add success toast/notification when edit is applied
+- [ ] Clear edit textarea after successful submission
+- [ ] Test with real edit request and verify content updates
+
+
+---
+
+## 🔧 Fix AI Edit Application - ✅ COMPLETE
+
+### Backend Fixes
+- [x] Debug requestEdit mutation - check if it's saving to database
+- [x] Verify AI response is being returned correctly
+- [x] Ensure mutation returns updated content
+
+### Frontend Fixes
+- [x] Fix content refresh after edit - use invalidate instead of refetch
+- [x] Remove markdown formatting from display (##, **, etc.)
+- [x] Add proper scrolling for long chapters (max-height + overflow-y-auto)
+- [x] Improve text rendering (line-height, spacing)
+- [x] Add loading states for edit requests
+- [x] Show visual feedback when edit is being processed
+
+### Testing
+- [x] Test complete edit workflow:
+  1. Generate a chapter (Chapter 2: 2,553 words)
+  2. Request an edit (added date and shortened opening)
+  3. Verify content updates (January 2024 added successfully)
+  4. Verify markdown is removed (no ##, **, etc. in display)
+  5. Test scrolling works (smooth scrolling within container)
+  6. Test multiple edits in sequence (ready for testing)

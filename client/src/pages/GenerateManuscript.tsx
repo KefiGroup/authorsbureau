@@ -10,7 +10,7 @@ import { toast } from "sonner";
 export default function GenerateManuscript() {
   const { blueprintId } = useParams<{ blueprintId: string }>();
   const [, navigate] = useLocation();
-
+  const utils = trpc.useUtils();
 
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [editMessage, setEditMessage] = useState("");
@@ -106,8 +106,9 @@ export default function GenerateManuscript() {
 
   // Request edit mutation
   const requestEdit = trpc.manuscript.requestEdit.useMutation({
-    onSuccess: () => {
-      refetchManuscript();
+    onSuccess: async () => {
+      // Invalidate to force refetch
+      await utils.manuscript.getChapter.invalidate();
       setEditMessage("");
       setShowChat(false);
       toast.success("Edit applied! Your chapter has been updated.");
@@ -241,8 +242,17 @@ export default function GenerateManuscript() {
           ) : (
             <div>
               {/* Content Display */}
-              <div className="prose prose-slate max-w-none mb-6 p-6 bg-muted/30 rounded-lg">
-                <div className="whitespace-pre-wrap">{currentManuscript.content}</div>
+              <div className="mb-6 p-6 bg-muted/30 rounded-lg max-h-[600px] overflow-y-auto">
+                <div className="prose prose-slate max-w-none">
+                  <div className="whitespace-pre-wrap text-base leading-relaxed">
+                    {currentManuscript.content
+                      ?.replace(/^#{1,6}\s+/gm, '') // Remove markdown headers
+                      ?.replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold
+                      ?.replace(/\*(.+?)\*/g, '$1') // Remove italic
+                      ?.replace(/^[-*]\s+/gm, '• ') // Convert list markers
+                    }
+                  </div>
+                </div>
               </div>
 
               {/* Word Count */}
