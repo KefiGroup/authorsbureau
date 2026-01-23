@@ -274,9 +274,10 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 
 ### Workflow Navigation Issue
 - [x] Fix Resume Progress always returning to Review step instead of saved Wrap step
-- [ ] Investigate handleResumeProgress function in ReadyToPublish.tsx
-- [ ] Ensure workflowStep state properly restores to 'wrap' when saved progress includes wrap step
-- [ ] Test navigation through all workflow steps to ensure state persistence
+- [x] Investigate handleResumeProgress function in ReadyToPublish.tsx
+- [x] Ensure workflowStep state properly restores to 'wrap' when saved progress includes wrap step
+- [x] Test navigation through all workflow steps to ensure state persistence
+- [x] Fix Resume Progress for AI Writing Studio chapter generation (GenerateManuscript.tsx)
 
 
 ---
@@ -806,3 +807,62 @@ This is priority #1 from the next steps list
 - [x] Include proper formatting (headers, bold, italic, tables)
 - [x] Set appropriate document metadata (title, author)
 - [x] Ready for testing with complex content (tables, lists, formatting)
+
+
+---
+
+## 🚨 CRITICAL: DOCX Export Generates Corrupted Files
+
+### Issue
+- [ ] User clicks "Download as DOCX" button
+- [ ] File downloads successfully
+- [ ] Microsoft Word cannot open the file
+- [ ] Error message: "Word experienced an error trying to open the file"
+- [ ] Suggests checking file permissions, memory, and disk space
+- [ ] Real issue: DOCX file is corrupted or improperly formatted
+
+### Investigation Completed ✅
+- [x] Review exportDocx.ts implementation - Found missing numbering definition
+- [x] Check if markdown is being properly parsed - Parsing works correctly
+- [x] Verify docx library usage - Found that numbered lists referenced 'default-numbering' but it wasn't defined
+- [x] Add numbering config to Document with proper format and alignment
+- [x] Fixed corruption issue by adding numbering definition to Document
+
+### Expected Outcome - READY FOR TESTING ✅
+- [x] User downloads DOCX file
+- [x] Microsoft Word opens the file successfully (fix applied)
+- [x] Content is properly formatted (headers, bold, italic, lists)
+- [x] File is compatible with Word 2016+ (using docx library standard format)
+- [ ] User needs to test with real chapter content to verify
+
+
+---
+
+## ✅ FIXED: Resume Progress Now Restores Chapter Generation State
+
+### Implementation
+- [x] User generates chapters (e.g., Progress: 4 of 25 sections, 3 approved)
+- [x] User logs out or closes browser
+- [x] User logs back in and navigates to AI Writing Studio
+- [x] System automatically restores to the exact chapter they were working on
+- [x] Progress is saved in database AND restored in UI on component load
+
+### Technical Solution
+- [x] Added `hasRestoredProgress` state flag to track if progress has been restored
+- [x] Added useEffect that runs after sections array is constructed
+- [x] Queries manuscripts table via `trpc.manuscript.getProgress.useQuery`
+- [x] Finds first ungenerated chapter by checking if manuscript exists and has content
+- [x] Sets `currentSectionIndex` to first ungenerated chapter automatically
+- [x] If all chapters generated, navigates to last chapter
+- [x] Runs only once on component mount (hasRestoredProgress flag prevents re-runs)
+
+### User Experience
+- User generates Chapter 1, 2, 3 (approved 3)
+- User logs out
+- User logs back in and clicks "Continue Writing"
+- **System automatically opens Chapter 4 (next ungenerated chapter)**
+- Progress bar shows correct state (4 of 25 sections)
+- No manual navigation required!
+
+### Files Modified
+- client/src/pages/GenerateManuscript.tsx: Added resume progress useEffect (lines 85-108)

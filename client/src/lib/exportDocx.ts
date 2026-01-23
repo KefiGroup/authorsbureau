@@ -35,6 +35,21 @@ export async function exportToDocx(options: ExportOptions): Promise<void> {
     ],
     creator: author,
     title: title,
+    numbering: {
+      config: [
+        {
+          reference: 'default-numbering',
+          levels: [
+            {
+              level: 0,
+              format: 'decimal',
+              text: '%1.',
+              alignment: AlignmentType.START,
+            },
+          ],
+        },
+      ],
+    },
   });
 
   // Generate and download

@@ -26,6 +26,7 @@ export default function GenerateManuscript() {
   const utils = trpc.useUtils();
 
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [hasRestoredProgress, setHasRestoredProgress] = useState(false);
   const [editMessage, setEditMessage] = useState("");
   const [showChat, setShowChat] = useState(false);
   const [isManualEditing, setIsManualEditing] = useState(false);
@@ -80,6 +81,31 @@ export default function GenerateManuscript() {
   }
 
   const currentSection = sections[currentSectionIndex];
+
+  // Resume progress: Restore to first ungenerated chapter
+  useEffect(() => {
+    if (!hasRestoredProgress && progress && sections.length > 0) {
+      // Find the first section that hasn't been generated yet
+      const firstUngeneratedIndex = sections.findIndex((section) => {
+        // Check if this section exists in the manuscripts array
+        const manuscript = progress.find(
+          (m) => m.sectionType === section.type && 
+                 (section.number === undefined || m.sectionNumber === section.number)
+        );
+        // Section is ungenerated if no manuscript exists or content is null
+        return !manuscript || manuscript.content === null;
+      });
+
+      if (firstUngeneratedIndex !== -1) {
+        // Found an ungenerated chapter, restore to that position
+        setCurrentSectionIndex(firstUngeneratedIndex);
+      } else {
+        // All chapters generated, go to last one
+        setCurrentSectionIndex(sections.length - 1);
+      }
+      setHasRestoredProgress(true);
+    }
+  }, [progress, sections, hasRestoredProgress]);
 
   // Get current chapter/section
   const { data: currentManuscript, refetch: refetchManuscript } = trpc.manuscript.getChapter.useQuery(
