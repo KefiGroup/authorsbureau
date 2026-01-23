@@ -2956,3 +2956,19 @@ Complete the 3-studio architecture:
 - [x] Sign Up button: primary style, links to login URL (Manus OAuth handles both)
 - [x] When logged in, shows "Go to Dashboard" button instead
 - [x] Responsive design maintained for mobile
+
+---
+
+## 🎨 Homepage Redesign - 3 Studios & Featured Authors ✅
+
+### Completed
+- [x] Clean Sign Up and Sign In buttons in header (kept existing implementation)
+- [x] Hero section: Focus on 3-studio value proposition
+- [x] Why Authors Bureau section: Clear benefits for each studio
+- [x] Featured Authors showcase: Pauline Teo, Robert J. Battista, + placeholder
+- [x] Author cards with: Photo, name, book title, achievement badge, quote
+- [x] Social proof section: Stats (500+ authors, 1000+ books, 2M+ copies sold)
+- [x] How It Works: Simple 3-step flow (Write → Publish → Market)
+- [x] Modern, clean design with author photos prominently featured
+- [x] Responsive design for mobile
+- [x] Footer with navigation links
