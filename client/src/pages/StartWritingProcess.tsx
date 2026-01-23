@@ -69,9 +69,10 @@ function formatBlueprintData(data: any, type: 'protagonist' | 'characters' | 'pl
 }
 
 export default function StartWritingProcess() {
-  const [, setLocation] = useLocation();
-  const [, params] = useRoute("/start-writing/:blueprintId");
-  const blueprintId = params?.blueprintId ? parseInt(params.blueprintId) : null;
+  const [location, setLocation] = useLocation();
+  // Read blueprintId from query parameter (?blueprintId=123)
+  const searchParams = new URLSearchParams(location.split('?')[1] || '');
+  const blueprintId = searchParams.get('blueprintId') ? parseInt(searchParams.get('blueprintId')!) : null;
 
   const [messages, setMessages] = useState<Array<{
     role: "user" | "assistant";
