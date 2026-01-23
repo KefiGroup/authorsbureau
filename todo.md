@@ -488,3 +488,22 @@ Raw canvas approach has complex event handling issues. Fabric.js provides built-
 - [ ] Implement AI Marketing Studio features (email campaigns, social media, ads)
 - [ ] Add analytics dashboard for published books
 - [ ] Implement collaboration tools for beta readers
+
+
+---
+
+## 🚨 NEW BUG: Continue Writing Button Not Navigating to AI Conversation
+
+### Issue
+- [ ] Clicking "Continue Writing" on existing project in AI Writing Studio doesn't navigate to `/start-writing?blueprintId={id}`
+- [ ] Instead stays on AI Writing Studio page showing the blueprint creation form
+- [ ] User cannot access the AI conversation interface for existing projects
+- [ ] handleContinue function may not be working correctly
+
+### Expected Behavior
+- Click "Continue Writing" → Navigate to `/start-writing?blueprintId={id}` → Show AI conversation interface
+
+### Investigation Needed
+- [ ] Check handleContinue function in AIWritingStudio.tsx
+- [ ] Verify navigation logic based on blueprint progress
+- [ ] Ensure blueprintId is passed correctly in URL

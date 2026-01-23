@@ -69,9 +69,10 @@ function formatBlueprintData(data: any, type: 'protagonist' | 'characters' | 'pl
 }
 
 export default function StartWritingProcess() {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   // Read blueprintId from query parameter (?blueprintId=123)
-  const searchParams = new URLSearchParams(location.split('?')[1] || '');
+  // Use window.location.search to get query params (wouter's location doesn't include them)
+  const searchParams = new URLSearchParams(window.location.search);
   const blueprintId = searchParams.get('blueprintId') ? parseInt(searchParams.get('blueprintId')!) : null;
 
   const [messages, setMessages] = useState<Array<{

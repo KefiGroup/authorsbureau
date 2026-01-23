@@ -1,0 +1,14 @@
+{
+  "query": "SELECT id, workingTitle FROM storyBlueprints ORDER BY id ASC LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, workingTitle FROM storyBlueprints ORDER BY id ASC LIMIT 1;",
+  "rows": [
+    {
+      "id": "30003",
+      "workingTitle": "Untitled Project"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tworkingTitle\n30003\tUntitled Project\n",
+  "stderr": "",
+  "execution_time_ms": 1534
+}
