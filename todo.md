@@ -2893,3 +2893,30 @@ Complete the 3-studio architecture:
 - [x] Add studio cards to Dashboard
 - [x] Update DashboardLayout sidebar to show all 3 studios
 - [x] Test navigation between all studios
+
+---
+
+## 🎨 Dashboard Cleanup & Redesign ✅
+
+### Issues Fixed
+- [x] Stats cards with better visual hierarchy and spacing
+- [x] Simplified to 3 main studio cards (AI Writing, AI Publishing, AI Marketing)
+- [x] Recent Books section with progress bars
+- [x] Word count progress indicators
+- [x] Better status badges with emoji icons
+- [x] Improved overall spacing and layout
+- [x] Empty state for users with no books
+- [x] Recent Books section more scannable with hover effects
+
+---
+
+## 🔄 Rename Ready to Publish → AI Publishing Studio ✅
+
+### Task
+- [x] Delete placeholder AIPublishingStudio.tsx page
+- [x] Connect ReadyToPublish.tsx component to /ai-publishing-studio route
+- [x] Keep /ready-to-publish route as alias for backwards compatibility
+- [x] Update Dashboard card to link to /ai-publishing-studio
+- [ ] Update AI Writing Studio to show "Continue to Publishing" button linking to AI Publishing Studio
+- [x] Update sidebar navigation (already shows AI Publishing Studio)
+- [x] Test complete flow: AI Writing Studio → AI Publishing Studio (8-step workflow)
