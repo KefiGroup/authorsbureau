@@ -10,6 +10,7 @@ import { Loader2, Sparkles, FileText, ArrowRight, CheckCircle2, BookOpen, LogOut
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import DashboardLayout from "@/components/DashboardLayout";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -276,12 +277,13 @@ export default function StartWritingProcess() {
   const handleFinalCheckpointComplete = (data: FinalCheckpointData) => {
     // Store the checkpoint data in the blueprint
     if (blueprintId) {
-      updateBlueprint.mutate({
-        blueprintId,
-        data: {
-          finalCheckpointData: JSON.stringify(data),
-        },
-      });
+      // TODO: Re-add finalCheckpointData after schema sync
+      // updateBlueprint.mutate({
+      //   blueprintId,
+      //   data: {
+      //     finalCheckpointData: JSON.stringify(data),
+      //   },
+      // });
     }
     
     // Close modal and trigger blueprint generation
@@ -385,6 +387,7 @@ export default function StartWritingProcess() {
   }
 
   return (
+    <DashboardLayout>
     <div className="h-screen flex flex-col">
       {/* Top Navigation Header */}
       <div className="border-b bg-background px-6 py-3">
@@ -523,5 +526,6 @@ export default function StartWritingProcess() {
         onComplete={handleFinalCheckpointComplete}
       />
     </div>
+    </DashboardLayout>
   );
 }

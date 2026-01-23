@@ -17,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default function AIWritingStudio() {
   const [, navigate] = useLocation();
@@ -85,6 +86,7 @@ export default function AIWritingStudio() {
   }
 
   return (
+    <DashboardLayout>
     <div className="container mx-auto py-12">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">AI Writing Studio</h1>
@@ -192,5 +194,6 @@ export default function AIWritingStudio() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </DashboardLayout>
   );
 }

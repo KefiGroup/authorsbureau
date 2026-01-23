@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { marked } from "marked";
+import DashboardLayout from "@/components/DashboardLayout";
 import { gfmHeadingId } from "marked-gfm-heading-id";
 import { fixMarkdownTables } from "@/lib/markdown-utils";
 
@@ -213,6 +214,7 @@ export default function GenerateManuscript() {
   const isDraft = currentManuscript?.status === "draft";
 
   return (
+    <DashboardLayout>
     <div className="container py-8 max-w-5xl">
       {/* Header */}
       <div className="mb-8">
@@ -430,5 +432,6 @@ export default function GenerateManuscript() {
         </Button>
       </div>
     </div>
+    </DashboardLayout>
   );
 }

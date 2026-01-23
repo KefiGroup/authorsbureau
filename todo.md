@@ -2809,3 +2809,53 @@ Simplify homepage flow and add proper authentication buttons:
 - [x] Add authentication check in AIWritingStudio component
 - [x] Redirect to login if user not authenticated
 - [ ] Test complete flow: Homepage → Login → AI Writing Studio
+
+## 🚨 CRITICAL: Complete Flow Walkthrough and Fixes
+
+### User Feedback
+"The flow is disastrous" - need to walk through entire user journey and fix all navigation/UX issues
+
+### Issues Found from Walkthrough
+- [✓] Homepage → Get Started flow - WORKS
+- [ ] Login → Dashboard navigation - NOT TESTED YET
+- [✓] Dashboard → AI Writing Studio navigation - WORKS (Get Started button)
+- [x] **CRITICAL:** AI Writing Studio has NO sidebar navigation
+- [x] **CRITICAL:** Review Outline page has NO sidebar navigation
+- [x] **CRITICAL:** All writing pages missing DashboardLayout wrapper
+- [✓] AI Writing Studio → Continue existing book flow - WORKS
+- [ ] AI Writing Studio → Start new book flow - NOT TESTED YET
+- [ ] Book writing → Return to project list - PARTIAL (only Back buttons)
+
+### Implementation
+- [x] Open browser and test complete flow as user
+- [x] Document all broken navigation points (see FLOW_WALKTHROUGH.md)
+- [ ] Fix AIWritingStudio.tsx - wrap in DashboardLayout
+- [ ] Fix StartWritingProcess.tsx - wrap in DashboardLayout
+- [ ] Fix ReviewOutline.tsx - wrap in DashboardLayout
+- [ ] Fix GenerateManuscript.tsx - wrap in DashboardLayout
+- [ ] Fix broken @/hooks/use-auth import in AIWritingStudio
+- [ ] Fix finalCheckpointData TypeScript error in StartWritingProcess
+- [ ] Update sidebar navigation links to match actual routes
+- [ ] Test complete flow again after fixes
+
+## 🎯 CRITICAL: Fix Homepage Flow to Dashboard → Studios
+
+### User Requirement
+Homepage → Sign Up/Log In → **Dashboard** → Choose from 3 Studios:
+1. AI Writing Studio
+2. AI Publishing Studio  
+3. AI Marketing Studio
+
+### Current Problem
+Homepage "Get Started" button goes directly to AI Writing Studio, bypassing Dashboard
+
+### Implementation
+- [x] Update Home.tsx "Get Started" button to navigate to /dashboard (not /ai-writing-studio)
+- [x] Update Dashboard AI Writing Studio card link to /ai-writing-studio
+- [x] Verify Dashboard has clear cards (Ready to Publish, My Books, AI Writing Studio)
+- [x] Add DashboardLayout to AIWritingStudio page
+- [x] Add DashboardLayout to StartWritingProcess page
+- [x] Add DashboardLayout to ReviewChapterOutline page
+- [x] Add DashboardLayout to GenerateManuscript page
+- [ ] Ensure sidebar navigation shows: Dashboard, AI Writing Studio, AI Publishing Studio, AI Marketing Studio
+- [ ] Test flow: Homepage → Login → Dashboard → Click studio card → Studio page with sidebar

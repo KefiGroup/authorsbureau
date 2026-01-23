@@ -4,6 +4,7 @@ import { trpc } from "../lib/trpc";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Loader2, BookOpen, CheckCircle, RefreshCw } from "lucide-react";
+import DashboardLayout from "../components/DashboardLayout";
 
 
 export default function ReviewChapterOutline() {
@@ -73,6 +74,7 @@ export default function ReviewChapterOutline() {
 
   if (blueprintLoading || outlineLoading || isGenerating) {
     return (
+      <DashboardLayout>
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
@@ -81,11 +83,13 @@ export default function ReviewChapterOutline() {
           </p>
         </div>
       </div>
+      </DashboardLayout>
     );
   }
 
   if (!blueprint) {
     return (
+      <DashboardLayout>
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Card className="p-8 max-w-md">
           <p className="text-red-600 text-center">Blueprint not found</p>
@@ -94,10 +98,12 @@ export default function ReviewChapterOutline() {
           </Button>
         </Card>
       </div>
+      </DashboardLayout>
     );
   }
 
   return (
+    <DashboardLayout>
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b">
@@ -203,5 +209,6 @@ export default function ReviewChapterOutline() {
         </div>
       </div>
     </div>
+    </DashboardLayout>
   );
 }

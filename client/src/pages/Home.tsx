@@ -24,7 +24,7 @@ export default function Home() {
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
-      setLocation("/ai-writing-studio");
+      setLocation("/dashboard");
     } else {
       window.location.href = getLoginUrl();
     }

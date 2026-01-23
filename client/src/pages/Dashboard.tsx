@@ -156,7 +156,7 @@ export default function Dashboard() {
           </Card>
 
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/writing-studio">
+            <Link href="/ai-writing-studio">
               <CardHeader>
                 <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
                   <Sparkles className="h-6 w-6 text-purple-600" />
