@@ -25,6 +25,17 @@ export async function generateBlueprintContent(blueprint: StoryBlueprint): Promi
 **Audience Data:** ${JSON.stringify(blueprint.audienceData, null, 2)}
 **Thematic Elements:** ${JSON.stringify(blueprint.thematicElements, null, 2)}
 
+${blueprint.finalCheckpointData ? `**Author Preferences:**
+${JSON.stringify(JSON.parse(blueprint.finalCheckpointData), null, 2)}
+
+IMPORTANT: Incorporate the author's preferences throughout the blueprint:
+- Use the specified tone and voice
+- Follow the preferred writing style
+- Plan for the requested chapter length
+- Include the special elements (case studies, exercises, charts, etc.)
+- Integrate the call-to-action strategy
+` : ''}
+
 Generate a professional, comprehensive story blueprint with the following sections:
 
 # Story Blueprint

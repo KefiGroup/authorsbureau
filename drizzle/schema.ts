@@ -175,6 +175,7 @@ export const storyBlueprints = mysqlTable("storyBlueprints", {
   // Blueprint Generation
   blueprintGenerated: boolean("blueprintGenerated").default(false),
   blueprintContent: mediumtext("blueprintContent"), // Full generated blueprint in markdown
+  finalCheckpointData: text("finalCheckpointData"), // JSON: Final checkpoint preferences (tone, style, elements, etc.)
   
   // Manuscript Writing Progress
   manuscriptStarted: boolean("manuscriptStarted").default(false),

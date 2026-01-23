@@ -2690,3 +2690,24 @@ User wants CLEAN TEXT without any markdown formatting symbols in the blueprint p
 - [x] Add markdown stripping function before displaying blueprint text
 - [x] Strip ALL markdown: ##, ###, ####, **, *, _, etc.
 - [ ] Test with blueprint 180002 to verify clean display
+
+## 🎯 Final Checkpoint Modal - Comprehensive Book Details
+
+### User Request
+After 3 AI conversational questions, show a pop-up modal with comprehensive checklist to capture:
+- Tone & Voice (multiple choice + Other)
+- Writing Style (multiple choice + Other)
+- Chapter Length preferences
+- Special Elements (case studies, exercises, charts, etc.)
+- Call-to-Action preferences
+
+### Implementation
+- [x] Create FinalCheckpointModal component with shadcn Dialog
+- [x] Add checkbox groups for each category (allow multiple selections)
+- [x] Add "Other (specify)" option with text input for each category
+- [x] Style modal with clean, organized layout
+- [x] Add "Complete Blueprint" button
+- [x] Update AI flow to show modal after 3rd question response
+- [x] Add finalCheckpointData field to database schema
+- [x] Pass modal data to blueprint generation
+- [ ] Test complete flow: 3 questions → modal → blueprint generation

@@ -3,6 +3,7 @@ import { useLocation, useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { WritingStudioChat } from "@/components/WritingStudioChat";
 import { BlueprintPreview } from "@/components/BlueprintPreview";
+import { FinalCheckpointModal, FinalCheckpointData } from "@/components/FinalCheckpointModal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2, Sparkles, FileText, ArrowRight, CheckCircle2, BookOpen, LogOut, User, ChevronLeft } from "lucide-react";
@@ -82,6 +83,8 @@ export default function StartWritingProcess() {
   const [blueprintGenerated, setBlueprintGenerated] = useState(false);
   const [generatedBlueprintData, setGeneratedBlueprintData] = useState<any>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const [showFinalCheckpoint, setShowFinalCheckpoint] = useState(false);
+  const [questionCount, setQuestionCount] = useState(0);
 
   // Queries - ALL HOOKS MUST BE AT TOP BEFORE ANY CONDITIONAL RETURNS
   const { data: blueprint, isLoading: loadingBlueprint, refetch: refetchBlueprint } = trpc.blueprint.get.useQuery(
@@ -128,6 +131,15 @@ export default function StartWritingProcess() {
         },
       ]);
       setConversationMode(data.conversationMode as "initial_questions" | "blueprint_generation" | "refinement");
+      
+      // Count user questions (only count user messages)
+      const userMessageCount = messages.filter(m => m.role === "user").length + 1;
+      setQuestionCount(userMessageCount);
+      
+      // Show final checkpoint modal after 3 questions
+      if (userMessageCount >= 3 && conversationMode === "initial_questions") {
+        setShowFinalCheckpoint(true);
+      }
       
       if (data.blueprintGenerated) {
         setBlueprintGenerated(true);
@@ -259,6 +271,27 @@ export default function StartWritingProcess() {
   const handleGenerateBlueprint = () => {
     if (!blueprintId) return;
     generateBlueprint.mutate({ blueprintId });
+  };
+
+  const handleFinalCheckpointComplete = (data: FinalCheckpointData) => {
+    // Store the checkpoint data in the blueprint
+    if (blueprintId) {
+      updateBlueprint.mutate({
+        blueprintId,
+        data: {
+          finalCheckpointData: JSON.stringify(data),
+        },
+      });
+    }
+    
+    // Close modal and trigger blueprint generation
+    setShowFinalCheckpoint(false);
+    toast.success("Preferences saved! Generating your comprehensive blueprint...");
+    
+    // Trigger blueprint generation
+    if (blueprintId) {
+      generateBlueprint.mutate({ blueprintId });
+    }
   };
 
   // Build blueprint preview sections from collected data
@@ -483,6 +516,12 @@ export default function StartWritingProcess() {
           />
         </div>
       </div>
+
+      {/* Final Checkpoint Modal */}
+      <FinalCheckpointModal
+        open={showFinalCheckpoint}
+        onComplete={handleFinalCheckpointComplete}
+      />
     </div>
   );
 }
