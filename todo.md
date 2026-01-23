@@ -3042,3 +3042,15 @@ Complete the 3-studio architecture:
 - [x] AI Writing Studio "Start New Book" button now navigates to `/start-writing`
 - [x] This starts the 3-step blueprint creation process
 - [x] Restored the navigate("/start-writing") call in handleStartNew()
+
+---
+
+## 🎨 Redesign AI Writing Studio with Inline Blueprint Creation ✅
+
+### Completed
+- [x] Blueprint creation happens INSIDE AI Writing Studio (inline form)
+- [x] Show inline form when user clicks "Start New Book"
+- [x] Support multiple books - show list of existing projects
+- [x] After creating blueprint, navigates to /start-writing for 3-step process
+- [x] Clean, simple UI with show/hide form toggle
+- [x] Form has title and genre fields with validation
