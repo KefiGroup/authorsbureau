@@ -93,11 +93,20 @@ function parseMarkdownToDocx(markdown: string): (Paragraph | Table)[] {
       continue;
     }
 
+    // Horizontal rules (---, ***, ___)
+    if (line.trim().match(/^(\*{3,}|-{3,}|_{3,})$/)) {
+      // Skip horizontal rules - they're just visual separators in markdown
+      // Could also convert to a border or page break if desired
+      elements.push(new Paragraph({ text: '', border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: '000000' } } }));
+      i++;
+      continue;
+    }
+
     // Headers
     if (line.startsWith('####')) {
       elements.push(
         new Paragraph({
-          text: line.replace(/^####\s*/, ''),
+          children: parseInlineFormatting(line.replace(/^####\s*/, '')),
           heading: HeadingLevel.HEADING_4,
           spacing: { before: 240, after: 120 },
         })
@@ -105,7 +114,7 @@ function parseMarkdownToDocx(markdown: string): (Paragraph | Table)[] {
     } else if (line.startsWith('###')) {
       elements.push(
         new Paragraph({
-          text: line.replace(/^###\s*/, ''),
+          children: parseInlineFormatting(line.replace(/^###\s*/, '')),
           heading: HeadingLevel.HEADING_3,
           spacing: { before: 240, after: 120 },
         })
@@ -113,7 +122,7 @@ function parseMarkdownToDocx(markdown: string): (Paragraph | Table)[] {
     } else if (line.startsWith('##')) {
       elements.push(
         new Paragraph({
-          text: line.replace(/^##\s*/, ''),
+          children: parseInlineFormatting(line.replace(/^##\s*/, '')),
           heading: HeadingLevel.HEADING_2,
           spacing: { before: 280, after: 140 },
         })
@@ -121,7 +130,7 @@ function parseMarkdownToDocx(markdown: string): (Paragraph | Table)[] {
     } else if (line.startsWith('#')) {
       elements.push(
         new Paragraph({
-          text: line.replace(/^#\s*/, ''),
+          children: parseInlineFormatting(line.replace(/^#\s*/, '')),
           heading: HeadingLevel.HEADING_1,
           spacing: { before: 320, after: 160 },
         })
@@ -131,7 +140,7 @@ function parseMarkdownToDocx(markdown: string): (Paragraph | Table)[] {
     else if (line.match(/^[\*\-]\s/)) {
       elements.push(
         new Paragraph({
-          text: line.replace(/^[\*\-]\s/, ''),
+          children: parseInlineFormatting(line.replace(/^[\*\-]\s/, '')),
           bullet: {
             level: 0,
           },
@@ -142,7 +151,7 @@ function parseMarkdownToDocx(markdown: string): (Paragraph | Table)[] {
     else if (line.match(/^\d+\.\s/)) {
       elements.push(
         new Paragraph({
-          text: line.replace(/^\d+\.\s/, ''),
+          children: parseInlineFormatting(line.replace(/^\d+\.\s/, '')),
           numbering: {
             reference: 'default-numbering',
             level: 0,

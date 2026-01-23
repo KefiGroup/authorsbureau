@@ -1002,3 +1002,41 @@ This is priority #1 from the next steps list
 - [ ] Log out and back in
 - [ ] Click on the book card from dashboard
 - [ ] Verify system skips "Review Chapter Outline" and goes directly to book structure or manuscript generation
+
+
+---
+
+## ✅ FIXED: DOCX Export Showing *** Markdown Syntax
+
+### Problem (Resolved)
+- [x] Exported DOCX files showed `**bold**` and `***` (markdown syntax) as literal text
+- [x] Made documents look unprofessional in Microsoft Word
+- [x] Affected all paragraphs, headers, lists, and section dividers
+
+### Root Cause (Identified)
+- [x] parseInlineFormatting function existed but was only used for table cells
+- [x] Headers, lists, and some paragraphs used `text:` property instead of `children:` with parsed formatting
+- [x] No handling for standalone `***` horizontal rules
+
+### Solution Implemented
+- [x] Updated all headers (H1-H4) to use `children: parseInlineFormatting(...)` instead of `text:`
+- [x] Updated bullet lists to use `children: parseInlineFormatting(...)`
+- [x] Updated numbered lists to use `children: parseInlineFormatting(...)`
+- [x] Added horizontal rule detection for `***`, `---`, `___` patterns
+- [x] Horizontal rules now convert to paragraph with bottom border (visual separator)
+
+### What Now Works
+- `**bold text**` → **bold text** (no asterisks, proper bold formatting)
+- `*italic text*` → *italic text* (no asterisks, proper italic formatting)
+- `***bold+italic***` → ***bold+italic*** (proper combined formatting)
+- `***` (standalone) → Horizontal line separator
+
+### Files Modified
+- [x] client/src/lib/exportDocx.ts: Applied parseInlineFormatting to all text elements (lines 100, 108, 116, 124, 134, 145) and added horizontal rule handling (lines 96-103)
+
+### User Testing Required
+- [ ] Export a chapter with bold/italic text to DOCX
+- [ ] Open in Microsoft Word
+- [ ] Verify `**bold**` appears as bold text (no asterisks)
+- [ ] Verify `*italic*` appears as italic text (no asterisks)
+- [ ] Verify horizontal rules appear as visual separators
