@@ -2932,3 +2932,14 @@ Complete the 3-studio architecture:
 - [x] Button links to /ai-publishing-studio
 - [x] Add visual indicator (CheckCircle2 icon, green text) showing manuscript is ready
 - [x] "Continue Writing" button becomes secondary (outline style) when ready to publish
+
+---
+
+## 🐛 Fix Dashboard "Start New Book" Button Link ✅
+
+### Bug Fixed
+- [x] Dashboard "Start New Book" button now links to `/start-writing`
+- [x] Fixed "Invalid Blueprint" error
+- [x] Button correctly starts the blueprint creation process
+- [x] Updated button href in Dashboard.tsx
+- [x] Test the complete flow: Dashboard → Start New Book → Blueprint creation

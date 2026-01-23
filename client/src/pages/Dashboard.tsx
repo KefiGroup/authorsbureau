@@ -81,7 +81,7 @@ export default function Dashboard() {
             </p>
           </div>
           <Button asChild size="lg" className="shadow-md">
-            <Link href="/ai-writing-studio">
+            <Link href="/start-writing">
               <Plus className="mr-2 h-5 w-5" />
               Start New Book
             </Link>
