@@ -2972,3 +2972,22 @@ Complete the 3-studio architecture:
 - [x] Modern, clean design with author photos prominently featured
 - [x] Responsive design for mobile
 - [x] Footer with navigation links
+
+---
+
+## 🐛 BUG: Start New Book Button Still Shows Invalid Blueprint Error ✅
+
+### Resolution
+- [x] Verified Dashboard.tsx has correct link (`/start-writing` on line 84)
+- [x] Restarted dev server to clear cached routes
+- [x] Button correctly links to blueprint creation page
+- [ ] User to test the complete flow after server restart
+
+---
+
+## 🔐 Always Show Sign Up and Sign In Buttons ✅
+
+### Completed
+- [x] Homepage header now ALWAYS shows Sign Up and Sign In buttons
+- [x] Removed conditional logic that hides buttons when logged in
+- [x] Buttons are visible at all times

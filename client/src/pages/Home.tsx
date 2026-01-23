@@ -65,20 +65,12 @@ export default function Home() {
             <Button variant="ghost" asChild className="hidden md:inline-flex">
               <Link href="#how-it-works">How It Works</Link>
             </Button>
-            {isAuthenticated ? (
-              <Button size="lg" asChild>
-                <Link href="/dashboard">Go to Dashboard</Link>
-              </Button>
-            ) : (
-              <>
-                <Button variant="outline" size="lg" asChild>
-                  <a href={getLoginUrl()}>Sign In</a>
-                </Button>
-                <Button size="lg" asChild>
-                  <a href={getLoginUrl()}>Sign Up</a>
-                </Button>
-              </>
-            )}
+            <Button variant="outline" size="lg" asChild>
+              <a href={getLoginUrl()}>Sign In</a>
+            </Button>
+            <Button size="lg" asChild>
+              <a href={getLoginUrl()}>Sign Up</a>
+            </Button>
           </div>
         </div>
       </header>
