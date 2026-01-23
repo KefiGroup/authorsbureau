@@ -21,6 +21,33 @@ import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { invokeLLM } from "./_core/llm";
 
+/**
+ * Strip ALL markdown formatting from text
+ * Removes: ##, **, *, _,  __, ~~, `, etc.
+ */
+function stripMarkdownFromText(text: string): string {
+  if (!text) return text;
+  
+  return text
+    // Remove headers (##, ###, etc.)
+    .replace(/^#{1,6}\s+/gm, '')
+    // Remove bold (**text** or __text__)
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/__(.+?)__/g, '$1')
+    // Remove italic (*text* or _text_)
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/_(.+?)_/g, '$1')
+    // Remove strikethrough (~~text~~)
+    .replace(/~~(.+?)~~/g, '$1')
+    // Remove inline code (`text`)
+    .replace(/`(.+?)`/g, '$1')
+    // Remove code blocks (```text```)
+    .replace(/```[\s\S]*?```/g, '')
+    // Clean up any remaining asterisks or underscores
+    .replace(/[*_]/g, '')
+    .trim();
+}
+
 export const appRouter = router({
   system: systemRouter,
   
@@ -572,7 +599,7 @@ Generate the author bio now:`;
         // Generate comprehensive blueprint using AI
         const blueprintMarkdown = await generateBlueprintContent(blueprint);
 
-        // Update blueprint with generated content
+        // Update blueprint with generated content (keep markdown for rich formatting)
         await db.updateStoryBlueprint(input.blueprintId, {
           blueprintContent: blueprintMarkdown,
           blueprintGenerated: true,
@@ -1062,7 +1089,7 @@ Return ONLY a JSON object with this structure:
         // Delete existing outline if any
         await db.delete(chapterOutlines).where(eq(chapterOutlines.blueprintId, input.blueprintId));
 
-        // Save outline to database
+        // Save outline to database (markdown-free)
         await db.insert(chapterOutlines).values({
           blueprintId: input.blueprintId,
           outline: outlineData,
@@ -1276,8 +1303,28 @@ Return ONLY a JSON object with this structure:
         let prompt = "";
         const blueprintData = blueprint[0];
         
+        // DEBUG LOGGING - Start
+        console.log("=== CHAPTER GENERATION DEBUG ===");
+        console.log("Blueprint ID:", blueprintData.id);
+        console.log("Working Title:", blueprintData.workingTitle);
+        console.log("blueprintContent status:", 
+          blueprintData.blueprintContent === null ? "NULL" : 
+          blueprintData.blueprintContent === "" ? "EMPTY" : 
+          `HAS_DATA (${blueprintData.blueprintContent?.length} chars)`);
+        console.log("essentialData status:", 
+          blueprintData.essentialData === null ? "NULL" : 
+          blueprintData.essentialData === undefined ? "UNDEFINED" : 
+          `HAS_DATA (${JSON.stringify(blueprintData.essentialData).length} chars)`);
+        if (blueprintData.essentialData) {
+          console.log("essentialData keys:", Object.keys(blueprintData.essentialData));
+        }
+        
         // Use blueprintContent if available, otherwise use essentialData
         const blueprintInfo = blueprintData.blueprintContent || JSON.stringify(blueprintData.essentialData, null, 2) || "No blueprint data available";
+        
+        console.log("Final blueprintInfo length:", blueprintInfo.length);
+        console.log("First 500 chars of blueprintInfo:", blueprintInfo.substring(0, 500));
+        console.log("=== END DEBUG ===");
 
         if (input.sectionType === "chapter") {
           prompt = `You are a professional author writing a book chapter. Generate the FULL CONTENT for this chapter based on the blueprint and outline below.
@@ -1297,9 +1344,17 @@ ${chapterOutline ? `Summary: ${chapterOutline.summary}` : ""}
 - Maintain consistency with the book's overall theme and tone
 - Do NOT include "Chapter X" heading - just write the content
 - Write in a narrative style, not bullet points
-- IMPORTANT: Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.)
+- Use markdown formatting for rich content (bold, italic, tables, etc.)
+- CRITICAL: If including tables, use PROPER markdown table syntax with header separator:
+  Example:
+  | Column 1 | Column 2 | Column 3 |
+  |----------|----------|----------|
+  | Data 1   | Data 2   | Data 3   |
+  | Data 4   | Data 5   | Data 6   |
+  
+  The header separator row (|---|---|) is REQUIRED for tables to render correctly.
 
-Generate the full chapter content now:`;
+Generate the full chapter content now:`
         } else if (input.sectionType === "prologue") {
           prompt = `You are a professional author. Write a compelling PROLOGUE for this book based on the blueprint below.
 
@@ -1368,9 +1423,10 @@ Create a warm, engaging invitation for readers to join the author's email list. 
         const generatedContent = typeof response.choices[0].message.content === 'string' 
           ? response.choices[0].message.content 
           : JSON.stringify(response.choices[0].message.content);
+        
         const wordCount = generatedContent.split(/\s+/).length;
 
-        // Update manuscript with generated content
+        // Update manuscript with generated content (keep markdown for rich formatting)
         await db.update(manuscripts)
           .set({
             content: generatedContent,
@@ -1474,7 +1530,14 @@ ${input.userMessage}
 - Keep the same tone and style
 - Make ONLY the changes requested, don't rewrite unnecessarily
 - Return the full revised chapter content
-- IMPORTANT: Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.)
+- Use markdown formatting for rich content (bold, italic, tables, etc.)
+- CRITICAL: If including tables, use PROPER markdown table syntax with header separator:
+  Example:
+  | Column 1 | Column 2 | Column 3 |
+  |----------|----------|----------|
+  | Data 1   | Data 2   | Data 3   |
+  
+  The header separator row (|---|---|) is REQUIRED for tables to render correctly.
 
 Provide the revised chapter content now:`;
 

@@ -190,3 +190,185 @@
     pointer-events: none !important;
   }
 }
+/* Professional Book Content Styling */
+.book-content {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: oklch(0.20 0.02 264);
+}
+
+.dark .book-content {
+  color: oklch(0.95 0.01 264);
+}
+
+/* Book content paragraphs */
+.book-content p {
+  margin-bottom: 1.25rem;
+  text-align: justify;
+  text-indent: 1.5em;
+}
+
+.book-content p:first-of-type {
+  text-indent: 0; /* No indent for first paragraph */
+}
+
+/* Book content headings */
+.book-content h1,
+.book-content h2,
+.book-content h3 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.book-content h1 {
+  font-size: 1.875rem; /* 30px */
+}
+
+.book-content h2 {
+  font-size: 1.5rem; /* 24px */
+}
+
+.book-content h3 {
+  font-size: 1.25rem; /* 20px */
+}
+
+/* Book content tables - Professional styling */
+.book-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.book-content thead {
+  background: oklch(0.45 0.15 264);
+  color: oklch(0.98 0.01 264);
+}
+
+.dark .book-content thead {
+  background: oklch(0.65 0.15 264);
+  color: oklch(0.15 0.02 264);
+}
+
+.book-content th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.book-content td {
+  padding: 12px 16px;
+  border-bottom: 1px solid oklch(0.88 0.01 264);
+}
+
+.dark .book-content td {
+  border-bottom: 1px solid oklch(0.30 0.02 264);
+}
+
+.book-content tbody tr:hover {
+  background: oklch(0.96 0.01 264);
+}
+
+.dark .book-content tbody tr:hover {
+  background: oklch(0.22 0.02 264);
+}
+
+.book-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Numeric columns - right align */
+.book-content td:has(> :only-child:is(span, strong):matches(/^\$|[0-9,]+$/)) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Book content lists */
+.book-content ul,
+.book-content ol {
+  margin: 1rem 0 1.5rem 2rem;
+}
+
+.book-content li {
+  margin-bottom: 0.5rem;
+}
+
+/* Book content blockquotes */
+.book-content blockquote {
+  border-left: 4px solid oklch(0.45 0.15 264);
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: oklch(0.40 0.02 264);
+}
+
+.dark .book-content blockquote {
+  border-left-color: oklch(0.65 0.15 264);
+  color: oklch(0.75 0.01 264);
+}
+
+/* Book content code blocks */
+.book-content code {
+  background: oklch(0.94 0.01 264);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.dark .book-content code {
+  background: oklch(0.25 0.02 264);
+}
+
+.book-content pre {
+  background: oklch(0.94 0.01 264);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.dark .book-content pre {
+  background: oklch(0.25 0.02 264);
+}
+
+.book-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Book content emphasis */
+.book-content strong {
+  font-weight: 600;
+}
+
+.book-content em {
+  font-style: italic;
+}
+
+/* Book content links */
+.book-content a {
+  color: oklch(0.45 0.15 264);
+  text-decoration: underline;
+}
+
+.dark .book-content a {
+  color: oklch(0.65 0.15 264);
+}
+
+.book-content a:hover {
+  color: oklch(0.55 0.15 264);
+}
+
+.dark .book-content a:hover {
+  color: oklch(0.75 0.15 264);
+}

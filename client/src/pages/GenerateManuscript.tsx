@@ -6,6 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
+import { marked } from "marked";
+import { gfmHeadingId } from "marked-gfm-heading-id";
+import { fixMarkdownTables } from "@/lib/markdown-utils";
+
+// Configure marked with GFM (GitHub Flavored Markdown) for table support
+marked.use(gfmHeadingId());
+marked.setOptions({
+  gfm: true, // Enable GitHub Flavored Markdown (tables, strikethrough, etc.)
+  breaks: true, // Convert \n to <br>
+});
 
 export default function GenerateManuscript() {
   const { blueprintId } = useParams<{ blueprintId: string }>();
@@ -243,16 +253,12 @@ export default function GenerateManuscript() {
             <div>
               {/* Content Display */}
               <div className="mb-6 p-6 bg-muted/30 rounded-lg max-h-[600px] overflow-y-auto">
-                <div className="prose prose-slate max-w-none">
-                  <div className="whitespace-pre-wrap text-base leading-relaxed">
-                    {currentManuscript.content
-                      ?.replace(/^#{1,6}\s+/gm, '') // Remove markdown headers
-                      ?.replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold
-                      ?.replace(/\*(.+?)\*/g, '$1') // Remove italic
-                      ?.replace(/^[-*]\s+/gm, '• ') // Convert list markers
-                    }
-                  </div>
-                </div>
+                <div 
+                  className="prose prose-slate max-w-none book-content"
+                  dangerouslySetInnerHTML={{ 
+                    __html: marked.parse(fixMarkdownTables(currentManuscript.content || "")) as string 
+                  }}
+                />
               </div>
 
               {/* Word Count */}

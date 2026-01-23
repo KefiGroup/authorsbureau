@@ -2535,3 +2535,140 @@ Fix the requestEdit mutation to ensure AI-revised content updates the chapter di
 - [x] Fix chapter generation to use essentialData as fallback when blueprintContent is empty
 - [x] Add validation to ensure blueprint content exists before generating
 - [ ] Test generation with "The 3R Architecture" book to verify correct content
+
+
+---
+
+## 🔍 Debug Blueprint Data Flow - CURRENT TASK
+
+### Goal
+Add comprehensive logging to identify why chapter generation receives empty/wrong blueprint data
+
+### Debug Logging to Add
+- [ ] Log blueprint retrieval: blueprintData.id, blueprintData.workingTitle
+- [ ] Log blueprintContent status: NULL, EMPTY, or length
+- [ ] Log essentialData status: NULL, EMPTY, or length  
+- [ ] Log final blueprintInfo value that gets passed to AI
+- [ ] Log first 500 characters of blueprintInfo to verify content
+- [ ] Log AI prompt (first 1000 characters) to see what AI receives
+
+### Testing Steps
+- [ ] Generate a new chapter for blueprint 150001
+- [ ] Check server logs for debug output
+- [ ] Identify which field is NULL/empty
+- [ ] Verify if fallback logic is executing
+- [ ] Determine root cause of missing data
+
+## 🐛 CRITICAL: Remove ALL Markdown Formatting from Blueprint Display
+
+### Issue
+Blueprint sections are displaying markdown symbols (##, **, ###) in the UI even though AI prompts instruct "DO NOT use markdown formatting". The AI is ignoring this instruction.
+
+### Root Cause
+- AI prompts say "no markdown" but AI still generates markdown
+- Frontend stripMarkdown() only removes from display, not from database
+- Need to strip markdown from AI responses BEFORE storing in database
+
+### Solution
+- [ ] Create stripMarkdownFromText() function in server/routers.ts
+- [ ] Apply stripping to blueprint generation (initial_questions, blueprint_generation, refinement)
+- [ ] Apply stripping to chapter outline generation
+- [ ] Apply stripping to chapter content generation
+- [ ] Test with user account (blueprint 180002) to verify no markdown symbols appear
+- [ ] Regenerate blueprint to test fix
+
+## 🐛 CRITICAL: AI Generating Tables Instead of Narrative Prose
+
+### Issue
+AI is generating plain text tables (using | pipes and dashes) in chapter content, which looks unprofessional and breaks book formatting. Example:
+```
+| Couple | Starting Age | Years to Invest | Monthly Contribution (8% return) | Total Contribution | Final Value (Age 65) |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+```
+
+### Root Cause
+- AI prompt doesn't explicitly prohibit tables
+- AI is treating financial data as data presentation instead of narrative storytelling
+- Need to enforce "narrative prose only" rule
+
+### Solution
+- [ ] Update chapter generation prompt to explicitly prohibit ALL table formats
+- [ ] Add instruction: "Write in narrative paragraph format ONLY - NO tables, NO lists, NO data grids"
+- [ ] Add instruction: "If presenting data, weave it into the narrative naturally"
+- [ ] Add example of how to present comparison data in prose format
+- [ ] Test with blueprint 180002 to verify tables are eliminated
+- [ ] Regenerate affected chapters with new prompt
+
+## 🎨 Smart Book Formatting System (NEW PRIORITY)
+
+### Vision
+Create intelligent book formatting that supports tables, graphs, graphics, and publishing-ready layout for professional book creation.
+
+### Phase 1: Markdown Rendering with Tables
+- [ ] Remove stripMarkdownFromText() calls from backend (restore AI's formatting ability)
+- [ ] Install markdown-to-HTML library (marked or remark) with table support (GFM)
+- [ ] Replace stripMarkdown() in GenerateManuscript.tsx with proper markdown renderer
+- [ ] Style HTML tables with professional book typography
+- [ ] Test table rendering with blueprint 180002
+
+### Phase 2: Enhanced Content Support
+- [ ] Add support for images in chapter content
+- [ ] Add support for block quotes and callouts
+- [ ] Add support for code blocks (for technical books)
+- [ ] Add support for footnotes
+- [ ] Style all elements with book-appropriate typography
+
+### Phase 3: Data Visualization
+- [ ] Detect tables with numeric data
+- [ ] Add "View as Chart" option for data tables
+- [ ] Implement chart rendering (bar, line, pie charts)
+- [ ] Allow users to toggle between table and chart view
+- [ ] Export charts as images for publishing
+
+### Phase 4: Publishing Format
+- [ ] Implement 6"×9" page layout preview
+- [ ] Add proper margins (0.75" inside, 0.5" outside, 0.75" top/bottom)
+- [ ] Add page numbers and running headers
+- [ ] Implement chapter page breaks
+- [ ] Add font sizing for print (11pt body, 14pt headings)
+- [ ] Preview mode: "Screen View" vs "Print Preview"
+
+### Phase 5: Export Enhancements
+- [ ] Export with formatted tables (DOCX, PDF)
+- [ ] Export with embedded charts/graphs
+- [ ] Maintain formatting in all export formats
+- [ ] Generate print-ready PDF with proper page dimensions
+
+## 🐛 CRITICAL: AI Not Generating Proper Markdown Table Syntax
+
+### Issue
+AI is generating tables with pipes but WITHOUT the header separator row (|---|---|), so markdown parser can't recognize them as tables. Example of what AI generates:
+```
+Year | Starting Principal | Interest Earned (10%) | Ending Balance
+1 | $1,000 | $100.00 | $1,100.00
+```
+
+Should be:
+```
+| Year | Starting Principal | Interest Earned (10%) | Ending Balance |
+|------|-------------------|----------------------|----------------|
+| 1 | $1,000 | $100.00 | $1,100.00 |
+```
+
+### Solution
+- [x] Update chapter generation prompt to include markdown table syntax example
+- [x] Update requestEdit prompt to include markdown table syntax example
+- [x] Add explicit instruction: "Use proper markdown table format with header separator row (|---|---|)"
+- [ ] Test with blueprint 180002 to verify tables render as HTML
+- [ ] Add post-processing to detect and fix malformed tables if needed
+
+## 🔧 Add Post-Processing to Fix Malformed Tables
+
+### Issue
+Even though AI prompts now include table syntax instructions, existing chapters and some AI responses still have malformed tables (missing header separator rows). Need automatic fixing.
+
+### Solution
+- [x] Create `fixMarkdownTables()` function that detects tables and adds missing `|---|---|` separator rows
+- [x] Apply function to content before rendering in GenerateManuscript.tsx
+- [ ] Test with existing chapters to verify tables render correctly
+- [ ] Consider adding to backend as well for consistent storage
