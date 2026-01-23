@@ -2733,3 +2733,28 @@ This makes tables incomplete and confusing for readers.
 - [x] Add instruction: "If you include a table, every cell must contain real calculated values"
 - [x] Update requestEdit prompt with same instruction
 - [ ] Test with existing chapter to verify complete tables
+
+## ✏️ Manual Chapter Editing Feature
+
+### User Request
+Add an "Edit" button to each chapter that allows direct manual editing of chapter content without going through AI.
+
+### Requirements
+- Edit button next to each chapter
+- Toggle between view mode and edit mode
+- Textarea for manual text editing
+- Save button to persist changes
+- Cancel button to discard changes
+- Auto-save progress while editing
+- Maintain markdown formatting in edit mode
+
+### Implementation
+- [x] Add edit mode state to GenerateManuscript component
+- [x] Add "Edit Manually" button to chapter display
+- [x] Create textarea with markdown content when in edit mode
+- [x] Add Save and Cancel buttons in edit mode
+- [x] Implement updateChapterContent mutation in backend
+- [x] Connect save mutation to frontend
+- [ ] Add auto-save every 30 seconds while editing
+- [ ] Show save status indicator (saving/saved)
+- [ ] Test manual editing flow with user account

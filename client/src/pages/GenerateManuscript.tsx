@@ -25,6 +25,8 @@ export default function GenerateManuscript() {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [editMessage, setEditMessage] = useState("");
   const [showChat, setShowChat] = useState(false);
+  const [isManualEditing, setIsManualEditing] = useState(false);
+  const [manualEditContent, setManualEditContent] = useState("");
 
   // Get blueprint data
   const { data: blueprint } = trpc.blueprint.get.useQuery(
@@ -128,6 +130,19 @@ export default function GenerateManuscript() {
     },
   });
 
+  // Manual edit mutation
+  const saveManualEdit = trpc.manuscript.updateChapterContent.useMutation({
+    onSuccess: async () => {
+      await utils.manuscript.getChapter.invalidate();
+      setIsManualEditing(false);
+      setManualEditContent("");
+      toast.success("Chapter updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to save changes");
+    },
+  });
+
   const handleGenerate = () => {
     if (!currentSection) return;
     generateChapter.mutate({
@@ -149,6 +164,23 @@ export default function GenerateManuscript() {
       manuscriptId: currentManuscript.id,
       userMessage: editMessage,
       currentContent: currentManuscript.content || "",
+    });
+  };
+
+  const handleStartManualEdit = () => {
+    if (!currentManuscript) return;
+    setManualEditContent(currentManuscript.content || "");
+    setIsManualEditing(true);
+    setShowChat(false);
+  };
+
+  const handleSaveManualEdit = () => {
+    if (!currentManuscript) return;
+    const wordCount = manualEditContent.split(/\s+/).filter(w => w.length > 0).length;
+    saveManualEdit.mutate({
+      manuscriptId: currentManuscript.id,
+      content: manualEditContent,
+      wordCount,
     });
   };
 
@@ -251,15 +283,26 @@ export default function GenerateManuscript() {
             </div>
           ) : (
             <div>
-              {/* Content Display */}
-              <div className="mb-6 p-6 bg-muted/30 rounded-lg max-h-[600px] overflow-y-auto">
-                <div 
-                  className="prose prose-slate max-w-none book-content"
-                  dangerouslySetInnerHTML={{ 
-                    __html: marked.parse(fixMarkdownTables(currentManuscript.content || "")) as string 
-                  }}
-                />
-              </div>
+              {/* Content Display or Edit Mode */}
+              {isManualEditing ? (
+                <div className="mb-6">
+                  <Textarea
+                    value={manualEditContent}
+                    onChange={(e) => setManualEditContent(e.target.value)}
+                    className="min-h-[600px] font-mono text-sm"
+                    placeholder="Edit chapter content (markdown supported)..."
+                  />
+                </div>
+              ) : (
+                <div className="mb-6 p-6 bg-muted/30 rounded-lg max-h-[600px] overflow-y-auto">
+                  <div 
+                    className="prose prose-slate max-w-none book-content"
+                    dangerouslySetInnerHTML={{ 
+                      __html: marked.parse(fixMarkdownTables(currentManuscript.content || "")) as string 
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Word Count */}
               <div className="flex items-center justify-between mb-6">
@@ -271,14 +314,45 @@ export default function GenerateManuscript() {
                 </span>
               </div>
 
-              {/* AI Chat Interface */}
+              {/* Manual Edit or AI Chat Interface */}
               {!isApproved && (
                 <div className="mb-6">
-                  {!showChat ? (
-                    <Button onClick={() => setShowChat(true)} variant="outline" className="w-full">
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Request Edits from AI
-                    </Button>
+                  {isManualEditing ? (
+                    <div className="flex gap-2">
+                      <Button onClick={handleSaveManualEdit} disabled={saveManualEdit.isPending} className="flex-1">
+                        {saveManualEdit.isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            Save Changes
+                          </>
+                        )}
+                      </Button>
+                      <Button 
+                        onClick={() => {
+                          setIsManualEditing(false);
+                          setManualEditContent("");
+                        }} 
+                        variant="outline"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : !showChat ? (
+                    <div className="flex gap-2">
+                      <Button onClick={handleStartManualEdit} variant="outline" className="flex-1">
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Edit Manually
+                      </Button>
+                      <Button onClick={() => setShowChat(true)} variant="outline" className="flex-1">
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Request Edits from AI
+                      </Button>
+                    </div>
                   ) : (
                     <Card>
                       <CardHeader>

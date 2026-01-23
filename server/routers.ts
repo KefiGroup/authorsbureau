@@ -1497,6 +1497,31 @@ Create a warm, engaging invitation for readers to join the author's email list. 
         return { success: true };
       }),
 
+    // Update chapter content manually
+    updateChapterContent: protectedProcedure
+      .input(z.object({
+        manuscriptId: z.number(),
+        content: z.string(),
+        wordCount: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { manuscripts } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        await db.update(manuscripts)
+          .set({ 
+            content: input.content,
+            wordCount: input.wordCount,
+            updatedAt: new Date(),
+          })
+          .where(eq(manuscripts.id, input.manuscriptId));
+
+        return { success: true };
+      }),
+
     // Request edit via AI chat
     requestEdit: protectedProcedure
       .input(z.object({
