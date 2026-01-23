@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Plus, BookOpen, Trash2, ArrowRight } from "lucide-react";
@@ -20,9 +22,20 @@ export default function AIWritingStudio() {
   const [, navigate] = useLocation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
+  const { isAuthenticated } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      window.location.href = getLoginUrl();
+    }
+  }, [isAuthenticated]);
 
   // Get all user's projects
-  const { data: projects, isLoading, refetch } = trpc.blueprint.getUserProjects.useQuery();
+  const { data: projects, isLoading, refetch } = trpc.blueprint.getUserProjects.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
 
   // Delete project mutation
   const deleteProject = trpc.blueprint.delete.useMutation({

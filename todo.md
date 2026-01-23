@@ -2791,3 +2791,21 @@ AI Writing Studio homepage should show:
 - [x] Update AI Writing Studio route (/ai-writing-studio)
 - [x] Add empty state for new users
 - [ ] Test with user account to verify existing book appears
+
+## 🎯 Homepage Navigation Improvements
+
+### User Request
+Simplify homepage flow and add proper authentication buttons:
+1. Remove intermediate demo screen
+2. "Or Start Writing From Scratch" should go directly to /ai-writing-studio (with login check)
+3. Add "Get Started" button (primary CTA)
+4. Add "Sign In" button (for returning users)
+
+### Implementation
+- [x] Read Home.tsx to understand current button layout
+- [x] Update hero section to single "Get Started" button
+- [x] Add "Get Started" button as primary CTA (navigates to /ai-writing-studio)
+- [x] Add "Sign In" button in header (visible when not authenticated)
+- [x] Add authentication check in AIWritingStudio component
+- [x] Redirect to login if user not authenticated
+- [ ] Test complete flow: Homepage → Login → AI Writing Studio

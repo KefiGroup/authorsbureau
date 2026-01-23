@@ -22,11 +22,12 @@ export default function Home() {
     },
   });
 
-  const handleStartFromScratch = () => {
-    createBlueprint.mutate({
-      projectType: "novel", // Default, will be updated in conversation
-      workingTitle: "Untitled Project",
-    });
+  const handleGetStarted = () => {
+    if (isAuthenticated) {
+      setLocation("/ai-writing-studio");
+    } else {
+      window.location.href = getLoginUrl();
+    }
   };
 
   return (
@@ -42,9 +43,14 @@ export default function Home() {
             <Button variant="ghost" asChild>
               <Link href="/featured-authors">Featured Authors</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
+            <Button variant="ghost" asChild>
               <Link href="#how-it-works">Watch Demo</Link>
             </Button>
+            {!isAuthenticated && (
+              <Button size="lg" asChild>
+                <a href={getLoginUrl()}>Sign In</a>
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -64,37 +70,14 @@ export default function Home() {
             dominate Amazon with our comprehensive AI-powered platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {isAuthenticated ? (
-              <>
-                <Button size="lg" asChild>
-                  <Link href="/ready-to-publish">
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Upload Existing Manuscript
-                  </Link>
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  onClick={handleStartFromScratch}
-                  disabled={createBlueprint.isPending}
-                >
-                  {createBlueprint.isPending ? "Starting..." : "Or Start Writing From Scratch"}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button size="lg" asChild>
-                  <Link href="/choose-track">
-                    Start Writing Your Book
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline">
-                  Watch Demo
-                </Button>
-              </>
-            )}
+            <Button size="lg" onClick={handleGetStarted}>
+              <Sparkles className="mr-2 h-5 w-5" />
+              Get Started
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="#how-it-works">Watch Demo</Link>
+            </Button>
           </div>
         </div>
       </section>
