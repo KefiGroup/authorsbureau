@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { BookOpen, LayoutDashboard, LogOut, PanelLeft, PenTool, TrendingUp, User, Settings } from "lucide-react";
+import { BookOpen, LayoutDashboard, LogOut, PanelLeft, PenTool, TrendingUp, User, Settings, Rocket } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -30,9 +30,9 @@ import { Button } from "./ui/button";
 
 const mainMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: PenTool, label: "AI Writing Studio", path: "/writing-studio" },
-  { icon: BookOpen, label: "AI Publishing Studio", path: "/books" },
-  { icon: TrendingUp, label: "AI Marketing Studio", path: "/marketing" },
+  { icon: PenTool, label: "AI Writing Studio", path: "/ai-writing-studio" },
+  { icon: Rocket, label: "AI Publishing Studio", path: "/ai-publishing-studio" },
+  { icon: TrendingUp, label: "AI Marketing Studio", path: "/ai-marketing-studio" },
 ];
 
 const accountMenuItems = [

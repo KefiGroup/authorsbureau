@@ -171,6 +171,40 @@ export default function Dashboard() {
               </CardHeader>
             </Link>
           </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Link href="/ai-publishing-studio">
+              <CardHeader>
+                <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                  <Rocket className="h-6 w-6 text-blue-600" />
+                </div>
+                <CardTitle className="flex items-center gap-2">
+                  AI Publishing Studio
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">NEW</span>
+                </CardTitle>
+                <CardDescription>
+                  Transform your manuscript into a professional publication ready for distribution
+                </CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Link href="/ai-marketing-studio">
+              <CardHeader>
+                <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
+                </div>
+                <CardTitle className="flex items-center gap-2">
+                  AI Marketing Studio
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">NEW</span>
+                </CardTitle>
+                <CardDescription>
+                  Promote your book with AI-powered marketing campaigns and audience engagement
+                </CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
         </div>
 
         {/* Recent Books */}
