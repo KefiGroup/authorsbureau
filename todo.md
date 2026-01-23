@@ -1040,3 +1040,82 @@ This is priority #1 from the next steps list
 - [ ] Verify `**bold**` appears as bold text (no asterisks)
 - [ ] Verify `*italic*` appears as italic text (no asterisks)
 - [ ] Verify horizontal rules appear as visual separators
+
+
+---
+
+## 🆕 Feature Request: Novella Length Option (20,000 words / ~10 chapters)
+
+### User Request
+- [ ] User finds 25 chapters (50,000+ words) too long for some projects
+- [ ] Wants option to create shorter books around 20,000 words (~10 chapters)
+- [ ] This is standard novella length
+
+### Implementation Plan
+- [ ] Add "Target Length" selection during blueprint creation or book structure setup
+- [ ] Options should include:
+  * Short Story (5,000-10,000 words / 3-5 chapters)
+  * Novella (20,000-40,000 words / 8-15 chapters)
+  * Novel (50,000-80,000 words / 20-30 chapters)
+  * Epic Novel (80,000+ words / 30+ chapters)
+- [ ] Update chapter outline generation to respect target length
+- [ ] Adjust AI prompts to generate appropriate chapter count based on selected length
+- [ ] Update progress tracking to show correct percentages for shorter books
+
+### Files to Modify
+- [ ] client/src/pages/StartWritingProcess.tsx: Add target length selection UI
+- [ ] server/routers.ts: Update blueprint generation to include targetLength parameter
+- [ ] server/writing-studio-agent-v2.ts: Adjust chapter count generation based on target length
+- [ ] drizzle/schema.ts: Ensure targetLength field exists in storyBlueprints table
+
+### User Experience
+- User selects "Novella (20,000 words)" during blueprint creation
+- AI generates 10-chapter outline instead of 25
+- Progress bar shows "Chapter 5 of 10" instead of "Chapter 5 of 25"
+- User can complete book faster with shorter structure
+
+
+---
+
+## ✅ IMPLEMENTED: User's Custom AI Writing Prompt Integrated
+
+### User Request (Completed)
+- [x] Replace current AI chapter generation prompt with user's custom "Author-First Writing AI" prompt
+- [x] New prompt emphasizes: assume first, ask later, edit instead of interrogate
+- [x] Focus on momentum and minimal questioning
+
+### Key Changes Implemented
+- [x] **Assume intelligently** - No clarifying questions during writing
+- [x] **Generate confidently** - Produce complete content based on blueprint
+- [x] **Never interrupt creative flow** - No mid-chapter questions
+- [x] **Avoid AI-sounding phrases**: "Unlock", "Dive into", "Revolutionary", "In today's fast-paced world", "Embark on a journey", "Transform your life"
+- [x] **Context awareness**: Always maintain full book blueprint, previous chapters, character voice
+- [x] **Human voice**: Clear, direct, concrete language with authentic tone
+- [x] **Decisive behavior**: Make strong assumptions and proceed, let user edit
+
+### Implementation Details
+- [x] Updated chapter generation prompt in server/routers.ts (lines 1412-1478)
+  * Added "Author-First Writing AI" identity
+  * Core principles: assume intelligently, generate confidently, never interrupt flow
+  * Explicit list of forbidden AI phrases
+  * Emphasis on human, direct, concrete writing
+  * Context awareness requirements
+- [x] Updated system message (lines 1538-1582)
+  * Changed from "professional author" to "Author-First Writing AI"
+  * Added "world-class authoring system, not a chatbot" positioning
+  * Emphasized calm, confident editor role
+  * Added "IF UNSURE: Make a strong assumption, proceed, and let the user edit"
+
+### Future Enhancements (Not Yet Implemented)
+- [ ] Add rewrite variations feature (generate 3 options when user requests edits)
+- [ ] Update AI command bar to support natural language commands
+- [ ] Implement "Living Blueprint" panel (collapsible, non-blocking)
+
+### Files Modified
+- [x] server/routers.ts: Replaced chapter generation prompt and system message
+
+### User Experience Goals (Achieved)
+- AI generates confidently without mid-chapter questions
+- Professional, human-sounding prose
+- No generic AI phrases
+- Context-aware writing that maintains consistency
