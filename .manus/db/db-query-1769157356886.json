@@ -1,0 +1,38 @@
+{
+  "query": "SELECT id, workingTitle, projectType, blueprintGenerated, createdAt FROM storyBlueprints ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, workingTitle, projectType, blueprintGenerated, createdAt FROM storyBlueprints ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "270001",
+      "workingTitle": "The 3R Investment Framework: A Beginner's Guide to Value Investing and Financial Urgency",
+      "projectType": "non_fiction",
+      "blueprintGenerated": "1",
+      "createdAt": "2026-01-23 08:04:52"
+    },
+    {
+      "id": "90007",
+      "workingTitle": "The Passive Income Starter Kit: A Beginner's Guide to Building Wealth While You Sleep",
+      "projectType": "non_fiction",
+      "blueprintGenerated": "1",
+      "createdAt": "2026-01-22 11:53:26"
+    },
+    {
+      "id": "30004",
+      "workingTitle": "NULL",
+      "projectType": "novel",
+      "blueprintGenerated": "0",
+      "createdAt": "2026-01-22 06:10:56"
+    },
+    {
+      "id": "30003",
+      "workingTitle": "Untitled Project",
+      "projectType": "novel",
+      "blueprintGenerated": "0",
+      "createdAt": "2026-01-22 05:52:21"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tworkingTitle\tprojectType\tblueprintGenerated\tcreatedAt\n270001\tThe 3R Investment Framework: A Beginner's Guide to Value Investing and Financial Urgency\tnon_fiction\t1\t2026-01-23 08:04:52\n90007\tThe Passive Income Starter Kit: A Beginner's Guide to Building Wealth While You Sleep\tnon_fiction\t1\t2026-01-22 11:53:26\n30004\tNULL\tnovel\t0\t2026-01-22 06:10:56\n30003\tUntitled Project\tnovel\t0\t2026-01-22 05:52:21\n",
+  "stderr": "",
+  "execution_time_ms": 1602
+}

@@ -8,13 +8,36 @@ import { Link } from "wouter";
 
 export default function Dashboard() {
   const { data: books, isLoading: booksLoading } = trpc.book.getMyBooks.useQuery();
+  const { data: blueprints, isLoading: blueprintsLoading } = trpc.blueprint.getUserProjects.useQuery();
   const { data: authorProfile } = trpc.author.getProfile.useQuery();
+
+  // Combine blueprints and books into a unified project list
+  const allProjects = [
+    ...(blueprints?.map(bp => ({
+      id: bp.id,
+      title: bp.workingTitle || 'Untitled Project',
+      status: bp.blueprintGenerated ? 'outlining' : 'idea',
+      wordCount: 0,
+      genre: bp.primaryGenre,
+      type: 'blueprint' as const,
+      updatedAt: bp.updatedAt,
+    })) || []),
+    ...(books?.map(book => ({
+      id: book.id,
+      title: book.title,
+      status: book.status,
+      wordCount: book.wordCount || 0,
+      genre: book.genre,
+      type: 'book' as const,
+      updatedAt: book.updatedAt,
+    })) || []),
+  ].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
 
   const stats = [
     {
       title: "Total Books",
-      value: books?.length || 0,
+      value: allProjects.length,
       icon: BookOpen,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
@@ -22,7 +45,7 @@ export default function Dashboard() {
     },
     {
       title: "In Progress",
-      value: books?.filter((b) => ["drafting", "editing"].includes(b.status)).length || 0,
+      value: allProjects.filter((p) => ["idea", "outlining", "drafting", "editing"].includes(p.status)).length,
       icon: Clock,
       color: "text-amber-600",
       bgColor: "bg-amber-50",
@@ -30,7 +53,7 @@ export default function Dashboard() {
     },
     {
       title: "Published",
-      value: books?.filter((b) => b.status === "published").length || 0,
+      value: allProjects.filter((p) => p.status === "published").length,
       icon: Rocket,
       color: "text-green-600",
       bgColor: "bg-green-50",
@@ -38,7 +61,7 @@ export default function Dashboard() {
     },
     {
       title: "Total Words",
-      value: books?.reduce((sum, b) => sum + (b.wordCount || 0), 0).toLocaleString() || "0",
+      value: allProjects.reduce((sum, p) => sum + p.wordCount, 0).toLocaleString(),
       icon: PenTool,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
@@ -46,7 +69,7 @@ export default function Dashboard() {
     },
   ];
 
-  const recentBooks = books?.slice(0, 5) || [];
+  const recentProjects = allProjects.slice(0, 5);
 
   const getStatusInfo = (status: string) => {
     const statusMap: Record<string, { label: string; color: string; icon: string }> = {
@@ -206,9 +229,9 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            {booksLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading books...</div>
-            ) : recentBooks.length === 0 ? (
+            {(booksLoading || blueprintsLoading) ? (
+              <div className="text-center py-8 text-muted-foreground">Loading projects...</div>
+            ) : recentProjects.length === 0 ? (
               <div className="text-center py-12 space-y-4">
                 <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center mx-auto">
                   <BookOpen className="h-10 w-10 text-muted-foreground" />
@@ -228,13 +251,13 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {recentBooks.map((book) => {
-                  const statusInfo = getStatusInfo(book.status);
-                  const progress = calculateProgress(book);
+                {recentProjects.map((project) => {
+                  const statusInfo = getStatusInfo(project.status);
+                  const progress = calculateProgress(project);
                   
                   return (
                     <div
-                      key={book.id}
+                      key={project.id}
                       className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors"
                     >
                       <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -243,10 +266,10 @@ export default function Dashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-foreground truncate">{book.title}</h3>
+                            <h3 className="font-semibold text-foreground truncate">{project.title}</h3>
                             <p className="text-sm text-muted-foreground">
-                              {book.wordCount?.toLocaleString() || 0} words
-                              {book.genre && ` • ${book.genre}`}
+                              {project.wordCount?.toLocaleString() || 0} words
+                              {project.genre && ` • ${project.genre}`}
                             </p>
                           </div>
                           <span
@@ -267,7 +290,7 @@ export default function Dashboard() {
                       </div>
                       
                       <Button variant="ghost" size="sm" asChild className="flex-shrink-0">
-                        <Link href={`/ai-writing-studio`}>
+                        <Link href={project.type === 'blueprint' ? `/start-writing?blueprintId=${project.id}` : `/ai-writing-studio`}>
                           <ArrowRight className="h-4 w-4" />
                         </Link>
                       </Button>

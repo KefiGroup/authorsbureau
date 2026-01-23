@@ -564,3 +564,52 @@ When user requests AI edits:
   - "shorten" → condense while preserving key points
   - "expand" → add more details and examples
 - [x] Prompt now emphasizes that author expects to see actual modifications
+
+
+---
+
+## 🐛 Dashboard Not Displaying Existing Book Projects - FIXED ✅
+
+### Issue - RESOLVED
+- [x] User has 1 book project in the system
+- [x] Dashboard shows "No books yet" in Recent Books section - FIXED
+- [x] All statistics show 0 (Total Books: 0, In Progress: 0, Published: 0, Total Words: 0) - FIXED
+- [x] Dashboard is not loading or displaying existing project data - FIXED
+- [x] Dashboard queries may not be fetching from the correct tables or using correct user ID - FIXED
+
+### Expected Behavior
+Dashboard should:
+1. Display total count of user's book projects
+2. Show in-progress and published counts
+3. Display total word count across all projects
+4. List recent book projects with titles, status, and progress
+5. Allow clicking on projects to continue working on them
+
+### Solution Applied ✅
+- [x] Found that dashboard was only querying books table, not storyBlueprints
+- [x] Added blueprint.getUserProjects query to Dashboard component
+- [x] Combined blueprints and books into unified allProjects list
+- [x] Updated statistics to count all projects (blueprints + books)
+- [x] Updated Recent Books section to display all projects sorted by date
+- [x] Added project type detection to navigate correctly:
+  - Blueprints → /start-writing?blueprintId={id}
+  - Books → /ai-writing-studio
+- [x] Dashboard now shows all 4 blueprints + 2 books = 6 total projects
+
+
+---
+
+## 🚨 CRITICAL: AI Editing Still Not Working After Prompt Fix
+
+### Issue
+- [ ] Previous fix to AI editing prompt didn't solve the problem
+- [ ] AI still returns same content when asked to rewrite
+- [ ] Prompt instructions are being ignored by the AI model
+- [ ] Need stronger approach - possibly system message or different model parameters
+
+### Investigation Needed
+- [ ] Check if the prompt is actually being sent correctly
+- [ ] Try using system message instead of user message
+- [ ] Add temperature parameter to encourage more variation
+- [ ] Consider using a different approach: show diff/comparison before applying
+- [ ] Test with explicit examples in the prompt

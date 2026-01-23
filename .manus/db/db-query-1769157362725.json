@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, title, status, wordCount, createdAt FROM books ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, title, status, wordCount, createdAt FROM books ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "390001",
+      "title": "The SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power",
+      "status": "drafting",
+      "wordCount": "16675",
+      "createdAt": "2026-01-09 23:03:58"
+    },
+    {
+      "id": "360003",
+      "title": "The SUCKCESS Theory",
+      "status": "drafting",
+      "wordCount": "16675",
+      "createdAt": "2026-01-09 22:12:30"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tstatus\twordCount\tcreatedAt\n390001\tThe SUCKCESS Theory: How Your Worst Moments Become Your Greatest Power\tdrafting\t16675\t2026-01-09 23:03:58\n360003\tThe SUCKCESS Theory\tdrafting\t16675\t2026-01-09 22:12:30\n",
+  "stderr": "",
+  "execution_time_ms": 1491
+}
