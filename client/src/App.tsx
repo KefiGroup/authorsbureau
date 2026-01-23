@@ -26,6 +26,7 @@ import WriteManuscript from "@/pages/WriteManuscript";
 import GenerateManuscript from "@/pages/GenerateManuscript";
 import ReviewChapterOutline from "@/pages/ReviewChapterOutline";
 import BookStructureSelection from "@/pages/BookStructureSelection";
+import AIWritingStudio from "@/pages/AIWritingStudio";
 
 
 function Router() {
@@ -40,6 +41,8 @@ function Router() {
       <Route path={"/books"} component={MyBooks} />
       <Route path={"/writing/:id"} component={WritingProject} />
        <Route path={"writing-studio"} component={WritingStudio} />
+      <Route path="/ai-writing-studio" component={AIWritingStudio} />
+      <Route path="/start-writing" component={StartWritingProcess} />
       <Route path="/start-writing/:blueprintId" component={StartWritingProcess} />
       <Route path="/review-outline/:blueprintId" component={ReviewChapterOutline} />
       <Route path="/book-structure/:blueprintId" component={BookStructureSelection} />

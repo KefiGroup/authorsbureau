@@ -2758,3 +2758,36 @@ Add an "Edit" button to each chapter that allows direct manual editing of chapte
 - [ ] Add auto-save every 30 seconds while editing
 - [ ] Show save status indicator (saving/saved)
 - [ ] Test manual editing flow with user account
+
+## 🚨 CRITICAL: Add Project List Dashboard to AI Writing Studio
+
+### User Issue
+When user returns to AI Writing Studio, it shows a fresh start page instead of their existing books. User's work appears lost because there's no way to access in-progress projects.
+
+### Current Behavior
+- AI Writing Studio always shows "Start Your Writing Process" with initial questions
+- No list of existing books/projects
+- No way to continue working on existing books
+- Forces user to start from scratch every time
+
+### Expected Behavior
+AI Writing Studio homepage should show:
+1. **Project List** - All user's books with:
+   - Book title
+   - Progress indicator (e.g., "4 of 25 chapters complete")
+   - Last updated timestamp
+   - "Continue Writing" button
+   - "Delete" button (with confirmation)
+2. **"+ Start New Book"** button prominently displayed
+3. Empty state message if no projects exist
+
+### Implementation
+- [x] Create `getUserProjects` query to fetch all user's blueprints
+- [x] Create AIWritingStudio component showing all books
+- [x] Add project cards with title, progress, and actions
+- [x] Add "Continue Writing" button that navigates to correct page (blueprint/outline/manuscript)
+- [x] Add "Start New Book" button prominently displayed
+- [x] Add delete button with confirmation dialog
+- [x] Update AI Writing Studio route (/ai-writing-studio)
+- [x] Add empty state for new users
+- [ ] Test with user account to verify existing book appears

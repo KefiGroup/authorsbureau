@@ -508,6 +508,23 @@ Generate the author bio now:`;
         return blueprint;
       }),
 
+    // Get all user's projects
+    getUserProjects: protectedProcedure
+      .query(async ({ ctx }) => {
+        const { storyBlueprints } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq, desc } = await import("drizzle-orm");
+
+        const projects = await db.select()
+          .from(storyBlueprints)
+          .where(eq(storyBlueprints.userId, ctx.user.id))
+          .orderBy(desc(storyBlueprints.updatedAt));
+
+        return projects;
+      }),
+
     // Get blueprint by book ID
     getByBookId: protectedProcedure
       .input(z.object({ bookId: z.number() }))
@@ -567,6 +584,36 @@ Generate the author bio now:`;
         }
 
         await db.updateStoryBlueprint(input.blueprintId, input.data);
+        return { success: true };
+      }),
+
+    // Delete blueprint
+    delete: protectedProcedure
+      .input(z.object({ blueprintId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify ownership
+        const blueprint = await db.getStoryBlueprintById(input.blueprintId);
+        if (!blueprint) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Blueprint not found",
+          });
+        }
+        if (blueprint.userId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        // Delete the blueprint
+        const { storyBlueprints } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const database = await getDb();
+        if (!database) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        await database.delete(storyBlueprints).where(eq(storyBlueprints.id, input.blueprintId));
         return { success: true };
       }),
 
