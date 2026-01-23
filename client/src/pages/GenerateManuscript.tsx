@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
-import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download } from "lucide-react";
 import { toast } from "sonner";
 import { marked } from "marked";
+import { exportToDocx } from "@/lib/exportDocx";
 import DashboardLayout from "@/components/DashboardLayout";
 import { gfmHeadingId } from "marked-gfm-heading-id";
 import { fixMarkdownTables } from "@/lib/markdown-utils";
@@ -315,6 +316,26 @@ export default function GenerateManuscript() {
                   Status: {currentManuscript.status === "draft" ? "Draft" : "Approved"}
                 </span>
               </div>
+
+              {/* Export to DOCX Button */}
+              {currentManuscript?.content && (
+                <div className="mb-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      exportToDocx({
+                        title: currentSection?.title || `Section ${currentManuscript.sectionNumber || ''}`,
+                        content: currentManuscript.content || '',
+                        author: 'Authors Bureau',
+                      });
+                      toast.success('Downloading Word document...');
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download as DOCX
+                  </Button>
+                </div>
+              )}
 
               {/* Manual Edit or AI Chat Interface */}
               {!isApproved && (
