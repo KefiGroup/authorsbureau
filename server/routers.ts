@@ -1373,11 +1373,47 @@ Return ONLY a JSON object with this structure:
         console.log("First 500 chars of blueprintInfo:", blueprintInfo.substring(0, 500));
         console.log("=== END DEBUG ===");
 
+        // Extract target audience from blueprint
+        const essentialData = blueprintData.essentialData as { targetAudience?: string; projectType?: string; briefDescription?: string } | null;
+        const targetAudience = essentialData?.targetAudience || "general readers";
+        const projectType = blueprintData.projectType || essentialData?.projectType || "book";
+        
+        // Build audience-specific writing instructions
+        let audienceInstructions = "";
+        const audienceLower = targetAudience.toLowerCase();
+        
+        if (audienceLower.includes("beginner") || audienceLower.includes("new") || audienceLower.includes("novice")) {
+          audienceInstructions = `
+AUDIENCE ADAPTATION (CRITICAL):
+This book is for ${targetAudience}. You MUST:
+- Use simple, clear language that anyone can understand
+- Explain all technical terms and jargon when first introduced
+- Include concrete examples and analogies to illustrate concepts
+- Break down complex ideas into digestible steps
+- Avoid assuming prior knowledge
+- Use conversational tone while maintaining professionalism
+- Add practical examples that beginners can relate to`;
+        } else if (audienceLower.includes("advanced") || audienceLower.includes("expert") || audienceLower.includes("professional")) {
+          audienceInstructions = `
+AUDIENCE ADAPTATION:
+This book is for ${targetAudience}. You should:
+- Use industry-standard terminology
+- Assume foundational knowledge
+- Focus on advanced concepts and nuances
+- Include technical depth and precision`;
+        } else {
+          audienceInstructions = `
+AUDIENCE: ${targetAudience}
+- Write in a style appropriate for this audience
+- Balance accessibility with depth`;
+        }
+
         if (input.sectionType === "chapter") {
-          prompt = `You are a professional author writing a book chapter. Generate the FULL CONTENT for this chapter based on the blueprint and outline below.
+          prompt = `You are a professional author writing a ${projectType} chapter. Generate the FULL CONTENT for this chapter based on the blueprint and outline below.
 
 **Book Blueprint:**
 ${blueprintInfo}
+${audienceInstructions}
 
 **Chapter to Write:**
 Chapter ${input.sectionNumber}: ${input.sectionTitle}
@@ -1386,12 +1422,12 @@ ${chapterOutline ? `Summary: ${chapterOutline.summary}` : ""}
 **Instructions:**
 - Write the COMPLETE chapter content (not just an outline)
 - Target 2,500-3,500 words for this chapter
-- Use engaging, professional prose appropriate for the book's genre and audience
-- Include vivid descriptions, dialogue (if appropriate), and smooth transitions
+- CRITICAL: Adapt your writing style to match the target audience specified above
+- Include vivid descriptions, examples, and smooth transitions
 - Maintain consistency with the book's overall theme and tone
 - Do NOT include "Chapter X" heading - just write the content
 - Write in a narrative style, not bullet points
-- Use markdown formatting for rich content (bold, italic, tables, etc.)
+- Use markdown formatting for emphasis (bold, italic) but NO headers (##)
 - CRITICAL: If including tables, use PROPER markdown table syntax with header separator:
   Example:
   | Column 1 | Column 2 | Column 3 |
@@ -1591,50 +1627,71 @@ Create a warm, engaging invitation for readers to join the author's email list. 
 
         if (!manuscript[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Manuscript not found" });
 
-        // Generate AI response with edit
-        const prompt = `You are a professional editor helping an author refine their book chapter. The author has requested an edit.
+        // Generate AI response with edit using research-based approach
+        const systemMessage = `You are a professional book editor specializing in creative writing and content adaptation.
 
-**Current Chapter Content:**
+CORE PRINCIPLE: When asked to rewrite or edit content, you MUST produce completely different wording. Never return the same text unchanged.
+
+EDITING GUIDELINES:
+
+1. AUDIENCE ADAPTATION:
+   - "for beginners" or "for new investors" = Use simple language, explain jargon, add concrete examples
+   - "more professional" = Use formal tone, industry terminology, authoritative voice
+   - "for experts" = Use technical language, assume prior knowledge
+
+2. REWRITING MODES:
+   - "Rewrite" = Completely rephrase every sentence while keeping the same meaning
+   - "Simplify" = Break complex ideas into simple, clear language
+   - "Expand" = Add details, examples, explanations, and context
+   - "Shorten" = Condense to essential points, remove redundancy
+   - "Improve" = Enhance prose quality, add vivid details, strengthen narrative
+
+3. FEW-SHOT EXAMPLES:
+
+   Example 1 - Simplifying for new investors:
+   BEFORE: "Utilize dollar-cost averaging to mitigate volatility exposure."
+   AFTER: "Invest the same amount regularly. This reduces the risk of buying at the wrong time."
+
+   Example 2 - Complete rewrite:
+   BEFORE: "The market experienced significant turbulence."
+   AFTER: "Stock prices swung wildly up and down."
+
+   Example 3 - Adding examples:
+   BEFORE: "Diversification reduces risk."
+   AFTER: "Diversification reduces risk. For instance, instead of putting all your money in tech stocks, spread it across technology, healthcare, and real estate."
+
+4. FORMATTING:
+   - Use markdown for emphasis (bold, italic) but avoid headers (##)
+   - For tables, use proper markdown syntax with header separators
+   - Calculate all table values - never use placeholders like "---"
+
+5. WORD COUNT:
+   - Maintain similar length (±10%) unless specifically asked to change
+   - For "shorten": aim for 50-70% of original
+   - For "expand": aim for 150-200% of original
+
+REMEMBER: The author expects to see actual changes. Every sentence should be rewritten, not just slightly tweaked.`;
+
+        const userMessage = `Original Content:
 ${input.currentContent}
 
-**Author's Edit Request:**
-${input.userMessage}
+Edit Request: ${input.userMessage}
 
-**CRITICAL INSTRUCTIONS:**
-- You MUST make actual changes to the content based on the author's request
-- DO NOT return the same content unchanged - the author expects to see modifications
-- If the request is to "rewrite", you must rephrase sentences, restructure paragraphs, and improve the writing while keeping the same meaning
-- If the request is to "improve", enhance the prose, add vivid details, strengthen the narrative
-- If the request is to "shorten", condense the content while preserving key points
-- If the request is to "expand", add more details, examples, or descriptions
-- Provide the COMPLETE REVISED chapter content with all requested changes applied
-- Maintain the same word count (±10%) unless specifically asked to change length
-- Keep the same tone and style unless specifically asked to change them
-- Return the full revised chapter content
-- Use markdown formatting for rich content (bold, italic, tables, etc.)
-- CRITICAL: If including tables, use PROPER markdown table syntax with header separator:
-  Example:
-  | Column 1 | Column 2 | Column 3 |
-  |----------|----------|----------|
-  | Data 1   | Data 2   | Data 3   |
-  
-  The header separator row (|---|---|) is REQUIRED for tables to render correctly.
-- CRITICAL: NO PLACEHOLDER DASHES (---) IN TABLES! Every table cell MUST contain actual calculated data.
-  ❌ WRONG: | --- | --- | --- |
-  ✅ CORRECT: | 30 | 30 | $1,010 |
-  If you include a table, calculate and fill in ALL rows with real values.
-
-Provide the revised chapter content now:`;
+Provide the complete revised content following the editing guidelines.`;
 
         const response = await invokeLLM({
           messages: [
-            { role: "user", content: prompt }
+            { role: "system", content: systemMessage },
+            { role: "user", content: userMessage }
           ],
         });
 
-        const revisedContent = typeof response.choices[0].message.content === 'string' 
+        let revisedContent = typeof response.choices[0].message.content === 'string' 
           ? response.choices[0].message.content 
           : JSON.stringify(response.choices[0].message.content);
+        
+        // Remove markdown headers (##) from output as per user preference
+        revisedContent = revisedContent.replace(/^#{1,6}\s+/gm, '');
         const wordCount = revisedContent.split(/\s+/).length;
 
         // Save the edit to history

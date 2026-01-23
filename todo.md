@@ -613,3 +613,63 @@ Dashboard should:
 - [ ] Add temperature parameter to encourage more variation
 - [ ] Consider using a different approach: show diff/comparison before applying
 - [ ] Test with explicit examples in the prompt
+
+
+---
+
+## 🔬 RESEARCH: Competitor AI Writing Tools Editing Features
+
+### Task
+- [ ] Research Sudowrite's editing features and prompts
+- [ ] Research NovelAI's content rewriting approach
+- [ ] Research Jasper AI's content improvement system
+- [ ] Research Claude/ChatGPT best practices for creative writing edits
+- [ ] Analyze what makes their editing "impressive" and effective
+- [ ] Document key findings and patterns
+
+### Implementation
+- [ ] Design improved AI editing system based on research
+- [ ] Implement system message + user message approach
+- [ ] Add temperature/top_p parameters for creative variation
+- [ ] Consider multiple editing modes (rewrite, expand, improve tone, etc.)
+- [ ] Add before/after comparison view
+- [ ] Test with real content to verify effectiveness
+
+
+---
+
+## 🎯 ROOT CAUSE: Chapter Generation Not Considering Target Audience
+
+### Real Issue
+- [ ] User is getting content that's NOT suitable for target audience (new investors)
+- [ ] User has to click "Request Edits" and ask AI to rewrite everything
+- [ ] The problem is NOT the editing feature - it's the INITIAL chapter generation
+- [ ] AI should write suitable content from the start based on book's target audience
+
+### What Should Happen
+1. **During Blueprint Creation:** User specifies target audience (e.g., "new investors", "beginners")
+2. **During Chapter Generation:** AI uses that context to write appropriately from the start
+3. **Result:** Content is already suitable, minimal editing needed
+
+### Investigation Needed - COMPLETED ✅
+- [x] Find the chapter generation prompt in routers.ts - Found at line 1376-1508
+- [x] Check if it uses blueprint context (target audience, genre, tone) - It was NOT using target audience!
+- [x] Verify if target audience field exists in blueprint schema - YES, in essentialData.targetAudience
+- [x] Improve prompt to consider audience and write appropriately - IMPLEMENTED
+
+### Solution Implemented ✅
+- [x] Extract targetAudience from blueprint.essentialData
+- [x] Detect audience type (beginner/new/novice vs advanced/expert vs general)
+- [x] Add audience-specific instructions to chapter generation prompt:
+  - For beginners: Simple language, explain jargon, add examples, conversational tone
+  - For experts: Technical terminology, assume knowledge, advanced concepts
+  - For general: Balance accessibility with depth
+- [x] Updated prompt to emphasize "CRITICAL: Adapt your writing style to match the target audience"
+
+### Expected Outcome
+When generating a chapter for a book targeting "new investors":
+- ✅ Use simple language automatically
+- ✅ Explain jargon and concepts
+- ✅ Include concrete examples
+- ✅ Avoid complex financial terminology
+- ✅ NO need to ask for rewrites afterward
