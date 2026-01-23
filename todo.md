@@ -3012,3 +3012,14 @@ Complete the 3-studio architecture:
 - [x] Removed complex blueprint creation logic
 - [x] Using simple Link component instead of onClick handler
 - [x] Test the button navigates correctly - Successfully navigates to AI Writing Studio
+
+---
+
+## 🔐 Fix Post-Login Redirect to Dashboard ✅
+
+### Resolution
+- [x] After signing in, users are now automatically redirected to Dashboard
+- [x] Expected flow: Homepage → Sign In → Dashboard (FIXED!)
+- [x] Added useEffect in Home.tsx to check isAuthenticated on mount
+- [x] Automatically redirects to /dashboard when user is authenticated
+- [x] Test complete sign in flow - User to verify after deployment

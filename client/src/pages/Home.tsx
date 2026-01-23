@@ -5,10 +5,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { BookOpen, PenTool, Rocket, TrendingUp, ArrowRight, CheckCircle2, Sparkles, Star, Users, BookMarked } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useEffect } from "react";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+
+  // Automatically redirect authenticated users to Dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation("/dashboard");
+    }
+  }, [isAuthenticated, setLocation]);
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
