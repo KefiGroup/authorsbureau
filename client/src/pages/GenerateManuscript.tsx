@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { marked } from "marked";
@@ -288,11 +289,10 @@ export default function GenerateManuscript() {
               {/* Content Display or Edit Mode */}
               {isManualEditing ? (
                 <div className="mb-6">
-                  <Textarea
+                  <RichTextEditor
                     value={manualEditContent}
-                    onChange={(e) => setManualEditContent(e.target.value)}
-                    className="min-h-[600px] font-mono text-sm"
-                    placeholder="Edit chapter content (markdown supported)..."
+                    onChange={setManualEditContent}
+                    placeholder="Edit chapter content..."
                   />
                 </div>
               ) : (

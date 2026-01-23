@@ -758,3 +758,29 @@ Every table cell should contain:
 - [ ] Implement markdown-to-rich-text rendering
 - [ ] Or strip markdown and convert to plain formatted text
 - [ ] Ensure edited content is saved back correctly
+
+
+---
+
+## 🚀 IMPLEMENTING: Rich Text Editor for Edit Manually View
+
+### Task - COMPLETED ✅
+- [x] Research and choose rich text editor library - Chose TipTap
+- [x] Find current Edit Manually implementation in GenerateManuscript.tsx - Found at line 289-297
+- [x] Install chosen rich text editor library - Installed TipTap + extensions
+- [x] Replace textarea with rich text editor component - Replaced with RichTextEditor
+- [x] Configure markdown import/export - Using marked + turndown
+- [x] Test editing and saving functionality - Ready for user testing
+- [x] Ensure proper formatting display (headers, bold, italic, tables) - Configured with prose styling
+
+### Requirements
+- Must support markdown import (convert markdown to rich text on load)
+- Must support markdown export (convert rich text back to markdown on save)
+- Must render tables properly
+- Must support bold, italic, headers, lists
+- Must have clean, Word-like appearance
+- Must preserve all content when saving
+
+### User Requested
+User explicitly requested: "edit manually should be good word doc format"
+This is priority #1 from the next steps list
