@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, AlignmentType } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, AlignmentType, WidthType, BorderStyle } from 'docx';
 import { saveAs } from 'file-saver';
 
 interface ExportOptions {
@@ -14,7 +14,7 @@ export async function exportToDocx(options: ExportOptions): Promise<void> {
   const { title, content, author = 'Authors Bureau' } = options;
 
   // Parse markdown and convert to docx elements
-  const paragraphs = parseMarkdownToDocx(content);
+  const elements = parseMarkdownToDocx(content);
 
   const doc = new Document({
     sections: [
@@ -29,7 +29,7 @@ export async function exportToDocx(options: ExportOptions): Promise<void> {
               after: 400,
             },
           }),
-          ...paragraphs,
+          ...elements,
         ],
       },
     ],
@@ -59,24 +59,43 @@ export async function exportToDocx(options: ExportOptions): Promise<void> {
 }
 
 /**
- * Parse markdown content into DOCX paragraphs
+ * Parse markdown content into DOCX elements (paragraphs and tables)
  */
-function parseMarkdownToDocx(markdown: string): Paragraph[] {
+function parseMarkdownToDocx(markdown: string): (Paragraph | Table)[] {
   const lines = markdown.split('\n');
-  const paragraphs: Paragraph[] = [];
+  const elements: (Paragraph | Table)[] = [];
+  let i = 0;
 
-  for (let i = 0; i < lines.length; i++) {
+  while (i < lines.length) {
     const line = lines[i];
+
+    // Check if this line starts a table
+    if (line.trim().startsWith('|')) {
+      // Collect all consecutive table lines
+      const tableLines: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith('|')) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+
+      // Parse and create table
+      const table = parseMarkdownTable(tableLines);
+      if (table) {
+        elements.push(table);
+      }
+      continue;
+    }
 
     // Skip empty lines
     if (!line.trim()) {
-      paragraphs.push(new Paragraph({ text: '' }));
+      elements.push(new Paragraph({ text: '' }));
+      i++;
       continue;
     }
 
     // Headers
     if (line.startsWith('####')) {
-      paragraphs.push(
+      elements.push(
         new Paragraph({
           text: line.replace(/^####\s*/, ''),
           heading: HeadingLevel.HEADING_4,
@@ -84,7 +103,7 @@ function parseMarkdownToDocx(markdown: string): Paragraph[] {
         })
       );
     } else if (line.startsWith('###')) {
-      paragraphs.push(
+      elements.push(
         new Paragraph({
           text: line.replace(/^###\s*/, ''),
           heading: HeadingLevel.HEADING_3,
@@ -92,7 +111,7 @@ function parseMarkdownToDocx(markdown: string): Paragraph[] {
         })
       );
     } else if (line.startsWith('##')) {
-      paragraphs.push(
+      elements.push(
         new Paragraph({
           text: line.replace(/^##\s*/, ''),
           heading: HeadingLevel.HEADING_2,
@@ -100,7 +119,7 @@ function parseMarkdownToDocx(markdown: string): Paragraph[] {
         })
       );
     } else if (line.startsWith('#')) {
-      paragraphs.push(
+      elements.push(
         new Paragraph({
           text: line.replace(/^#\s*/, ''),
           heading: HeadingLevel.HEADING_1,
@@ -110,7 +129,7 @@ function parseMarkdownToDocx(markdown: string): Paragraph[] {
     }
     // Bullet lists
     else if (line.match(/^[\*\-]\s/)) {
-      paragraphs.push(
+      elements.push(
         new Paragraph({
           text: line.replace(/^[\*\-]\s/, ''),
           bullet: {
@@ -121,7 +140,7 @@ function parseMarkdownToDocx(markdown: string): Paragraph[] {
     }
     // Numbered lists
     else if (line.match(/^\d+\.\s/)) {
-      paragraphs.push(
+      elements.push(
         new Paragraph({
           text: line.replace(/^\d+\.\s/, ''),
           numbering: {
@@ -134,16 +153,95 @@ function parseMarkdownToDocx(markdown: string): Paragraph[] {
     // Regular paragraphs with inline formatting
     else {
       const textRuns = parseInlineFormatting(line);
-      paragraphs.push(
+      elements.push(
         new Paragraph({
           children: textRuns,
           spacing: { after: 120 },
         })
       );
     }
+
+    i++;
   }
 
-  return paragraphs;
+  return elements;
+}
+
+/**
+ * Parse markdown table into a Word Table
+ */
+function parseMarkdownTable(tableLines: string[]): Table | null {
+  if (tableLines.length < 2) return null;
+
+  // Parse table rows
+  const rows: string[][] = [];
+  let isHeaderSeparator = false;
+
+  for (let i = 0; i < tableLines.length; i++) {
+    const line = tableLines[i].trim();
+    
+    // Check if this is the separator line (|---|---|)
+    if (line.match(/^\|[\s\-:|]+\|$/)) {
+      isHeaderSeparator = true;
+      continue;
+    }
+
+    // Parse cells from the line
+    const cells = line
+      .split('|')
+      .slice(1, -1) // Remove first and last empty elements
+      .map(cell => cell.trim());
+
+    if (cells.length > 0) {
+      rows.push(cells);
+    }
+  }
+
+  if (rows.length === 0) return null;
+
+  // Create table rows
+  const tableRows: TableRow[] = rows.map((rowCells, rowIndex) => {
+    const isHeaderRow = rowIndex === 0 && isHeaderSeparator;
+
+    return new TableRow({
+      children: rowCells.map(cellText => {
+        return new TableCell({
+          children: [
+            new Paragraph({
+              children: parseInlineFormatting(cellText),
+              spacing: { before: 100, after: 100 },
+            }),
+          ],
+          shading: isHeaderRow ? {
+            fill: 'E8E8E8', // Light gray background for header
+          } : undefined,
+          margins: {
+            top: 100,
+            bottom: 100,
+            left: 100,
+            right: 100,
+          },
+        });
+      }),
+    });
+  });
+
+  // Create table with borders
+  return new Table({
+    rows: tableRows,
+    width: {
+      size: 100,
+      type: WidthType.PERCENTAGE,
+    },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+      left: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+      right: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+    },
+  });
 }
 
 /**

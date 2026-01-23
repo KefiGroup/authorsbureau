@@ -890,3 +890,55 @@ This is priority #1 from the next steps list
   * Added detailed LaTeX prohibition with wrong vs. correct examples
   * Specified plain text symbols to use: ÷, ×, ±, ≈, (), [], {}
   * Applied to system message so it affects all section types (prologue, epilogue, etc.)
+
+
+---
+
+#### ✅ FIXED: DOCX Export Table Rendering Issue
+
+### Problem (Resolved)
+- [x] Markdown tables in chapter content were not converted to Word tables in DOCX export
+- [x] Tables showed as plain text with pipe characters (|) instead of proper table formatting
+- [x] Example: `| Action | Cost |` displayed literally instead of as a formatted table
+- [x] Made exported documents unprofessional and hard to read
+
+### Root Cause (Identified)
+- [x] exportDocx.ts was not parsing markdown tables correctly
+- [x] Previous implementation treated tables as plain text paragraphs
+- [x] Needed to detect markdown table syntax and convert to Word Table objects
+
+### Solution Implemented
+- [x] Updated exportDocx.ts to detect markdown table syntax (lines starting with |)
+- [x] Added parseMarkdownTable function to parse table rows and cells
+- [x] Created Word Table objects using docx library's Table class
+- [x] Applied proper table styling:
+  * Black borders on all sides and between cells
+  * Gray background (#E8E8E8) for header rows
+  * Cell padding (100 units on all sides)
+  * 100% width (full page width)
+  * Support for inline formatting (bold, italic) within cells
+- [x] Changed return type from Paragraph[] to (Paragraph | Table)[] to support mixed content
+- [x] Created comprehensive unit test suite with 9 test cases (all passing)
+
+### Testing Results
+- [x] 9 unit tests passing:
+  * Simple 2-column tables ✅
+  * Complex 3-column tables with long text ✅
+  * Tables without separator lines ✅
+  * Tables with extra whitespace ✅
+  * Single-column tables ✅
+  * Multi-column tables (5+ columns) ✅
+  * Empty/invalid tables ✅
+  * Single-line tables ✅
+  * Separator lines with alignment markers ✅
+
+### Files Modified
+- [x] client/src/lib/exportDocx.ts: Complete rewrite with table support
+- [x] server/docx.table-export.test.ts: Created unit test suite (9 tests)
+
+### User Testing Required
+- [ ] Export a chapter with tables to DOCX
+- [ ] Open in Microsoft Word
+- [ ] Verify tables appear as properly formatted Word tables (not plain text)
+- [ ] Verify header rows have gray background
+- [ ] Verify borders appear correctly
