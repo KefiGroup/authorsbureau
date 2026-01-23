@@ -254,11 +254,13 @@ export default function Dashboard() {
                 {recentProjects.map((project) => {
                   const statusInfo = getStatusInfo(project.status);
                   const progress = calculateProgress(project);
+                  const projectUrl = project.type === 'blueprint' ? `/start-writing?blueprintId=${project.id}` : `/ai-writing-studio`;
                   
                   return (
-                    <div
+                    <Link
                       key={project.id}
-                      className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                      href={projectUrl}
+                      className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors cursor-pointer"
                     >
                       <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <BookOpen className="h-7 w-7 text-primary" />
@@ -289,12 +291,10 @@ export default function Dashboard() {
                         </div>
                       </div>
                       
-                      <Button variant="ghost" size="sm" asChild className="flex-shrink-0">
-                        <Link href={project.type === 'blueprint' ? `/start-writing?blueprintId=${project.id}` : `/ai-writing-studio`}>
-                          <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </div>
+                      <div className="flex-shrink-0">
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    </Link>
                   );
                 })}
               </div>

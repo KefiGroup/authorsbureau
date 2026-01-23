@@ -942,3 +942,63 @@ This is priority #1 from the next steps list
 - [ ] Verify tables appear as properly formatted Word tables (not plain text)
 - [ ] Verify header rows have gray background
 - [ ] Verify borders appear correctly
+
+
+---
+
+## ✅ FIXED: Unclickable Book Card on Dashboard
+
+### Problem (Resolved)
+- [x] Book cards on dashboard homepage were not clickable
+- [x] User could not navigate to book details by clicking the card
+- [x] Only the arrow button on the right side was clickable
+- [x] This prevented users from accessing their book projects
+
+### Root Cause (Identified)
+- [x] Card was a `<div>` element without click handler
+- [x] Only the arrow button had a Link wrapper
+- [x] No cursor: pointer style on the card
+
+### Solution Implemented
+- [x] Wrapped entire card in `<Link>` component
+- [x] Added cursor-pointer class to card
+- [x] Removed nested Button with Link (replaced with simple ArrowRight icon)
+- [x] Now entire card is clickable and navigates to book details
+
+### Files Modified
+- [x] client/src/pages/Dashboard.tsx: Wrapped book card in Link (lines 260-297)
+
+### User Testing Required
+- [ ] Click anywhere on a book card on dashboard
+- [ ] Verify it navigates to the correct page (AI Writing Studio for blueprints)
+- [ ] Verify hover state shows cursor pointer
+
+
+---
+
+## ✅ FIXED: Review Chapter Outline Not Resuming Progress
+
+### Problem (Resolved)
+- [x] User clicks on book card from dashboard
+- [x] System navigates to "Review Chapter Outline" page even if outline already approved
+- [x] User has to manually click "Approve Outline" again (redundant step)
+- [x] Should automatically skip to next step if outline already approved
+
+### Root Cause (Identified)
+- [x] ReviewChapterOutline.tsx had no resume logic
+- [x] Page didn't check if outline.approved === true on mount
+- [x] No automatic navigation to next step for returning users
+
+### Solution Implemented
+- [x] Added useEffect to check if outline is already approved
+- [x] If approved, automatically navigate to `/book-structure/${blueprintId}`
+- [x] User now skips redundant approval step when resuming progress
+
+### Files Modified
+- [x] client/src/pages/ReviewChapterOutline.tsx: Added resume progress useEffect (lines 66-74)
+
+### User Testing Required
+- [ ] Generate and approve a chapter outline
+- [ ] Log out and back in
+- [ ] Click on the book card from dashboard
+- [ ] Verify system skips "Review Chapter Outline" and goes directly to book structure or manuscript generation

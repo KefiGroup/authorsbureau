@@ -63,6 +63,16 @@ export default function ReviewChapterOutline() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blueprint, outline, outlineLoading, blueprintId, isGenerating]);
 
+  // Resume progress: Skip to next step if outline already approved
+  useEffect(() => {
+    if (outline && outline.approved) {
+      // Outline already approved, check if book structure exists
+      // If structure exists, go to manuscript generation
+      // Otherwise, go to book structure selection
+      navigate(`/book-structure/${blueprintId}`);
+    }
+  }, [outline, blueprintId, navigate]);
+
   const handleRegenerateOutline = () => {
     setIsGenerating(true);
     generateOutline.mutate({ blueprintId: Number(blueprintId) });
