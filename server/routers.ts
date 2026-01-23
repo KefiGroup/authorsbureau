@@ -1600,11 +1600,16 @@ ${input.currentContent}
 **Author's Edit Request:**
 ${input.userMessage}
 
-**Instructions:**
-- Provide the COMPLETE REVISED chapter content incorporating the requested changes
-- Maintain the same word count (±10%)
-- Keep the same tone and style
-- Make ONLY the changes requested, don't rewrite unnecessarily
+**CRITICAL INSTRUCTIONS:**
+- You MUST make actual changes to the content based on the author's request
+- DO NOT return the same content unchanged - the author expects to see modifications
+- If the request is to "rewrite", you must rephrase sentences, restructure paragraphs, and improve the writing while keeping the same meaning
+- If the request is to "improve", enhance the prose, add vivid details, strengthen the narrative
+- If the request is to "shorten", condense the content while preserving key points
+- If the request is to "expand", add more details, examples, or descriptions
+- Provide the COMPLETE REVISED chapter content with all requested changes applied
+- Maintain the same word count (±10%) unless specifically asked to change length
+- Keep the same tone and style unless specifically asked to change them
 - Return the full revised chapter content
 - Use markdown formatting for rich content (bold, italic, tables, etc.)
 - CRITICAL: If including tables, use PROPER markdown table syntax with header separator:

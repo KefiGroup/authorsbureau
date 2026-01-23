@@ -534,3 +534,33 @@ After blueprint generation completes:
 - [x] useEffect automatically updates UI when blueprint data is refetched
 - [x] BlueprintPreview component shows all generated sections on right side
 - [x] User can review premise, characters, plot, themes, etc.
+
+
+---
+
+## 🐛 AI Chapter Editing Not Working - Returns Same Content - FIXED ✅
+
+### Issue - RESOLVED
+- [x] User clicks "Request Edits from AI" button on chapter content
+- [x] User provides editing instructions (e.g., "rewrite this section")
+- [x] AI returns the exact same content without making any changes - FIXED
+- [x] Edit prompt is not instructing AI to actually apply the requested changes - FIXED
+
+### Expected Behavior
+When user requests AI edits:
+1. User provides specific editing instructions
+2. AI reads the current chapter content
+3. AI applies the requested changes (rewrite, improve, shorten, etc.)
+4. AI returns the modified content
+5. User can approve or request further edits
+
+### Solution Applied ✅
+- [x] Found requestEdit mutation in server/routers.ts (line 1573)
+- [x] Improved AI prompt with explicit "CRITICAL INSTRUCTIONS" section
+- [x] Added explicit prohibition: "DO NOT return the same content unchanged"
+- [x] Added specific guidance for common edit requests:
+  - "rewrite" → rephrase sentences, restructure paragraphs
+  - "improve" → enhance prose, add vivid details
+  - "shorten" → condense while preserving key points
+  - "expand" → add more details and examples
+- [x] Prompt now emphasizes that author expects to see actual modifications
