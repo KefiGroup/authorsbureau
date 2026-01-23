@@ -673,3 +673,29 @@ When generating a chapter for a book targeting "new investors":
 - ✅ Include concrete examples
 - ✅ Avoid complex financial terminology
 - ✅ NO need to ask for rewrites afterward
+
+
+---
+
+## 🐛 Details Modal Appearing Too Early in Conversation
+
+### Issue
+- [ ] User is in the middle of answering the 3rd AI question
+- [ ] "Details" modal pops up asking for Tone & Voice and Writing Style
+- [ ] This interrupts the natural conversation flow
+- [ ] Modal should only appear AFTER all 3 AI questions are answered
+
+### Expected Behavior
+1. User answers Question 1 (about the book idea)
+2. User answers Question 2 (about target audience, genre, etc.)
+3. User answers Question 3 (about specific details)
+4. **THEN** the Details modal appears asking for Tone & Writing Style preferences
+5. User selects preferences and clicks "Complete Blueprint"
+6. AI generates the blueprint
+
+### Investigation Completed ✅
+- [x] Found where the Details modal is triggered - Line 143-147 in StartWritingProcess.tsx
+- [x] Checked the condition - It was showing when userMessageCount >= 3
+- [x] Problem: Modal appeared immediately when user SENT 3rd question, before AI responded
+- [x] Fixed: Now checks both userMessageCount >= 3 AND assistantMessageCount >= 3
+- [x] Result: Modal only appears after AI has responded to the 3rd question

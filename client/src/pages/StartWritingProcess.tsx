@@ -139,8 +139,10 @@ export default function StartWritingProcess() {
       const userMessageCount = messages.filter(m => m.role === "user").length + 1;
       setQuestionCount(userMessageCount);
       
-      // Show final checkpoint modal after 3 questions
-      if (userMessageCount >= 3 && conversationMode === "initial_questions") {
+      // Show final checkpoint modal after AI responds to 3rd question
+      // Check assistant message count to ensure AI has responded
+      const assistantMessageCount = [...messages, { role: "assistant", content: data.message }].filter(m => m.role === "assistant").length;
+      if (userMessageCount >= 3 && assistantMessageCount >= 3 && conversationMode === "initial_questions") {
         setShowFinalCheckpoint(true);
       }
       
