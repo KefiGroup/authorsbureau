@@ -866,3 +866,27 @@ This is priority #1 from the next steps list
 
 ### Files Modified
 - client/src/pages/GenerateManuscript.tsx: Added resume progress useEffect (lines 85-108)
+
+
+---
+
+## ✅ FIXED: LaTeX Formula Rendering Issue
+
+### Problem (Resolved)
+- [x] AI was generating formulas using LaTeX syntax (\text{}, \frac{}, etc.)
+- [x] LaTeX code displayed as raw text instead of rendered formulas
+- [x] Example: `\text{FI Number} = \frac{\text{Annual Expenses}}{0.04}` showed literally instead of as math equation
+- [x] Affected both rich text editor display and DOCX export
+
+### Solution Implemented
+- [x] Updated AI prompt in server/routers.ts to prohibit LaTeX syntax
+- [x] Added explicit instructions to use plain text formulas instead
+- [x] Provided examples: "FI Number = Annual Expenses ÷ 0.04" or "Result = (A + B) / C"
+- [x] Added to both chapter-specific prompt AND system message (applies to all section types)
+- [ ] User needs to test with new chapter generation to verify formulas display correctly
+
+### Files Modified
+- [x] server/routers.ts: Updated generateChapter mutation AI prompt (lines 1443-1447 and line 1517)
+  * Added detailed LaTeX prohibition with wrong vs. correct examples
+  * Specified plain text symbols to use: ÷, ×, ±, ≈, (), [], {}
+  * Applied to system message so it affects all section types (prologue, epilogue, etc.)

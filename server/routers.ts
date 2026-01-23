@@ -1440,6 +1440,11 @@ ${chapterOutline ? `Summary: ${chapterOutline.summary}` : ""}
   ❌ WRONG: | --- | --- | --- |
   ✅ CORRECT: | 30 | 30 | $1,010 |
   If you include a table, calculate and fill in ALL rows with real values.
+- CRITICAL: NO LATEX FORMULAS! When writing mathematical formulas or equations, use plain text format:
+  ❌ WRONG: \text{FI Number} = \frac{\text{Annual Expenses}}{0.04}
+  ✅ CORRECT: FI Number = Annual Expenses ÷ 0.04
+  ✅ CORRECT: Result = (A + B) / C
+  Never use LaTeX syntax like \text{}, \frac{}, \sqrt{}, etc. Use plain text with standard symbols: ÷, ×, ±, ≈, (), [], {}
 
 Generate the full chapter content now:`
         } else if (input.sectionType === "prologue") {
@@ -1509,6 +1514,7 @@ ABSOLUTE REQUIREMENTS:
 3. If you create a comparison table, calculate ALL values for ALL rows
 4. Tables with incomplete data are UNACCEPTABLE and will be rejected
 5. Every row in every table must be complete with real, meaningful data
+6. NEVER use LaTeX syntax for formulas - use plain text with standard symbols (÷, ×, ±, ≈) instead
 
 Example of FORBIDDEN table:
 | Strategy | Return | Value |
