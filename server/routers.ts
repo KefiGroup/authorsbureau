@@ -1501,8 +1501,33 @@ Create a warm, engaging invitation for readers to join the author's email list. 
         }
 
         // Generate content with AI
+        const systemMessage = `You are a professional author writing high-quality book content. 
+
+ABSOLUTE REQUIREMENTS:
+1. NEVER use placeholder dashes (---) or "TBD" or empty cells in tables
+2. ALL table cells MUST contain actual calculated data, real numbers, or specific text
+3. If you create a comparison table, calculate ALL values for ALL rows
+4. Tables with incomplete data are UNACCEPTABLE and will be rejected
+5. Every row in every table must be complete with real, meaningful data
+
+Example of FORBIDDEN table:
+| Strategy | Return | Value |
+|----------|--------|-------|
+| ---      | ---    | ---   |  ❌ NEVER DO THIS
+| Saving   | 0.5%   | $11,614 |
+
+Example of REQUIRED table:
+| Strategy | Return | Value |
+|----------|--------|-------|
+| Bonds    | 3.0%   | $42,789 |  ✅ ALWAYS DO THIS
+| Saving   | 0.5%   | $11,614 |
+| Stocks   | 8.0%   | $100,626 |
+
+If you cannot calculate exact values, use reasonable estimates based on the context.`;
+
         const response = await invokeLLM({
           messages: [
+            { role: "system", content: systemMessage },
             { role: "user", content: prompt }
           ],
         });

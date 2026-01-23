@@ -699,3 +699,62 @@ When generating a chapter for a book targeting "new investors":
 - [x] Problem: Modal appeared immediately when user SENT 3rd question, before AI responded
 - [x] Fixed: Now checks both userMessageCount >= 3 AND assistantMessageCount >= 3
 - [x] Result: Modal only appears after AI has responded to the 3rd question
+
+
+---
+
+## 🚨 CRITICAL: AI Generating Placeholder Dashes in Tables
+
+### Issue
+- [ ] AI is generating tables with placeholder dashes (`---`) instead of actual data
+- [ ] Example: Investment comparison table has rows with `--- | --- | ---`
+- [ ] Only some rows have real data (Saving: 0.5% | $11,614)
+- [ ] Makes content look unprofessional and incomplete
+- [ ] This violates the existing prompt instruction: "CRITICAL: NO PLACEHOLDER DASHES (---) IN TABLES!"
+
+### Root Cause
+- [ ] The chapter generation prompt already has instructions against placeholder dashes
+- [ ] But the AI is ignoring this instruction
+- [ ] Need to make the instruction even more explicit and emphatic
+- [ ] Possibly need to add examples of what NOT to do
+
+### Expected Behavior
+Every table cell should contain:
+- Actual calculated numbers
+- Real strategy names
+- Complete data points
+- NO placeholder dashes or "TBD" or "---"
+
+### Solution Implemented ✅
+- [x] Added system message with ABSOLUTE REQUIREMENTS for table data
+- [x] Added negative examples showing FORBIDDEN table format with dashes
+- [x] Added positive examples showing REQUIRED table format with real data
+- [x] Emphasized that incomplete tables are "UNACCEPTABLE and will be rejected"
+- [x] Instructed AI to use reasonable estimates if exact values unknown
+- [x] Used emoji markers (❌ ✅) to make requirements visually clear
+
+
+---
+
+## 🐛 Edit Manually View Showing Raw Markdown Instead of Formatted Text
+
+### Issue
+- [ ] When user clicks "Edit Manually" on a chapter, the editor shows raw markdown
+- [ ] Markdown headers are visible: `## The Financial Cost of Inaction`
+- [ ] Bold/italic markers are visible: `*not*`, `**Investor A**`, `**$946,000**`
+- [ ] Should display as formatted Word-style document, not markdown code
+- [ ] User expects WYSIWYG editing experience
+
+### Expected Behavior
+- Headers should be rendered as larger, bold text (not `##`)
+- Bold text should appear bold (not `**text**`)
+- Italic text should appear italic (not `*text*`)
+- Tables should be properly formatted
+- Clean, professional document appearance like Microsoft Word
+
+### Investigation Needed
+- [ ] Find the Edit Manually component (likely in GenerateManuscript.tsx)
+- [ ] Check if it's using a textarea or rich text editor
+- [ ] Implement markdown-to-rich-text rendering
+- [ ] Or strip markdown and convert to plain formatted text
+- [ ] Ensure edited content is saved back correctly
