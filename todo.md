@@ -1119,3 +1119,42 @@ This is priority #1 from the next steps list
 - Professional, human-sounding prose
 - No generic AI phrases
 - Context-aware writing that maintains consistency
+
+
+---
+
+## ✅ IMPLEMENTED: Page Count Selection (Replaces Word Count)
+
+### User Request (Completed)
+- [x] Replace "word count" selection with "page count" selection
+- [x] Options: 150 pages, 200 pages, 250 pages, 300 pages
+- [x] More intuitive for authors than word counts
+- [x] Show as checkbox/button options (not a text question)
+
+### Page to Word/Chapter Conversion (Implemented)
+- [x] 150 pages ≈ 37,500 words (~12-15 chapters)
+- [x] 200 pages ≈ 50,000 words (~15-20 chapters)
+- [x] 250 pages ≈ 62,500 words (~20-25 chapters)
+- [x] 300 pages ≈ 75,000 words (~25-30 chapters)
+
+### Implementation Details
+- [x] Added targetPages field to essentialData interface (line 16)
+- [x] Updated initial questions to ask for page count as 4th question (line 76)
+- [x] Added page count suggestions: [SUGGESTIONS: 150 pages | 200 pages | 250 pages | 300 pages] (line 90)
+- [x] Updated completion check to require targetPages (line 116)
+- [x] Added page-to-word conversion table in blueprint generation prompt (lines 148-152)
+- [x] Updated blueprint generation to include both pages and calculated word count (line 157)
+- [x] Updated targetLength example to show "200 pages (approximately 50,000 words)" format (line 183)
+
+### User Experience
+- User answers 4 questions: project type, description, audience, page count
+- Page count appears as 4 clickable buttons: 150 | 200 | 250 | 300 pages
+- AI automatically calculates word count and chapter count from page selection
+- Blueprint shows "200 pages (approximately 50,000 words)" instead of just word count
+
+### Files Modified
+- [x] server/writing-studio-agent-v2.ts: Added page count question and conversion logic
+
+### Future Enhancement
+- [ ] Add targetPages field to database schema (drizzle/schema.ts) if not already present
+- [ ] Update UI to display "Your 200-page book" in progress indicators

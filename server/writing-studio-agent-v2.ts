@@ -13,6 +13,7 @@ interface ConversationState {
     projectType?: string;
     briefDescription?: string;
     targetAudience?: string;
+    targetPages?: number;
     workingTitle?: string;
   };
   generatedBlueprint?: Partial<StoryBlueprint>;
@@ -53,13 +54,15 @@ async function handleInitialQuestions(
   const needsProjectType = !essentialData.projectType;
   const needsDescription = !essentialData.briefDescription;
   const needsAudience = !essentialData.targetAudience;
+  const needsPages = !essentialData.targetPages;
 
   const systemPrompt = `You are an expert story development coach. You're helping an author create a comprehensive story blueprint.
 
-Your Goal: Gather 3 essential pieces of information efficiently and warmly:
+Your Goal: Gather 4 essential pieces of information efficiently and warmly:
 1. Project type (novel, novella, memoir, etc.)
 2. Brief description (2-3 sentences about what the book is about)
 3. Target audience (who will read this book)
+4. Target page count (how long they want the book to be)
 
 Author Profile (for context only - do NOT mention specific book titles):
 ${authorProfile ? `- Pen Name: ${authorProfile.penName || "Not provided"}
@@ -73,6 +76,7 @@ Current Status:
 ${needsProjectType ? "- Need to ask: What type of project are you writing?" : "✓ Project type collected"}
 ${needsDescription ? "- Need to ask: What's your book about? (2-3 sentences)" : "✓ Brief description collected"}
 ${needsAudience ? "- Need to ask: Who is this book for? (Your ideal reader)" : "✓ Target audience collected"}
+${needsPages ? "- Need to ask: How many pages do you want your book to be?" : "✓ Target pages collected"}
 
 Instructions:
 - Be warm, encouraging, and conversational
@@ -81,8 +85,9 @@ Instructions:
 - You may reference their background/expertise to show understanding, but NEVER mention specific book titles
 - Always frame this as a NEW project they're creating, not continuing previous work
 - Use generic terms like "your book", "your project", "this work" - never specific titles
-- When you have all 3 pieces, tell them you'll generate a complete blueprint
+- When you have all 4 pieces, tell them you'll generate a complete blueprint
 - Provide suggestion buttons for common answers
+- For page count question, ALWAYS provide these exact suggestions: [SUGGESTIONS: 150 pages | 200 pages | 250 pages | 300 pages]
 - DO NOT use Markdown formatting (**, ##, etc.) in your responses - use plain, natural text only
 
 Suggestion Format:
@@ -108,7 +113,7 @@ End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4]`;
   const cleanMessage = aiMessage.replace(/\[SUGGESTIONS:.*?\]/g, "").trim();
 
   // Check if we have all essential data
-  const isComplete = !!essentialData.projectType && !!essentialData.briefDescription && !!essentialData.targetAudience;
+  const isComplete = !!essentialData.projectType && !!essentialData.briefDescription && !!essentialData.targetAudience && !!essentialData.targetPages;
 
   return {
     message: cleanMessage,
@@ -137,12 +142,19 @@ Essential Information Provided:
 - Project Type: ${essentialData.projectType}
 - Brief Description: ${essentialData.briefDescription}
 - Target Audience: ${essentialData.targetAudience}
+- Target Pages: ${essentialData.targetPages} pages
 - Working Title: ${essentialData.workingTitle || "Not provided"}
+
+PAGE TO WORD COUNT CONVERSION:
+- 150 pages = approximately 37,500 words (~12-15 chapters)
+- 200 pages = approximately 50,000 words (~15-20 chapters)
+- 250 pages = approximately 62,500 words (~20-25 chapters)
+- 300 pages = approximately 75,000 words (~25-30 chapters)
 
 Your Task:
 Generate a comprehensive story blueprint with these 9 sections:
 
-1. Project Overview: Project type, working title (or suggest one), target word count
+1. Project Overview: Project type, working title (or suggest one), target page count AND calculated word count
 2. Genre Classification: Primary genre, secondary genre, market positioning
 3. Core Premise: Logline (one sentence), elevator pitch (2-3 sentences), unique hook
 4. Protagonist: Name, age, key traits, goal, internal conflict, character arc
@@ -168,7 +180,7 @@ Return your response as a JSON object with this structure:
   "blueprint": {
     "projectType": "novel" | "novella" | "short_story" | "memoir" | "non_fiction" | "childrens_book",
     "workingTitle": "...",
-    "targetLength": "...",
+    "targetLength": "200 pages (approximately 50,000 words)",
     "primaryGenre": "...",
     "secondaryGenre": "...",
     "corePremise": "...",
