@@ -5,7 +5,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Plus, BookOpen, Trash2, ArrowRight } from "lucide-react";
+import { Loader2, Plus, BookOpen, Trash2, ArrowRight, Rocket, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -34,6 +34,12 @@ export default function AIWritingStudio() {
 
   // Get all user's projects
   const { data: projects, isLoading, refetch } = trpc.blueprint.getUserProjects.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
+
+  // Get all books to check word counts
+  const { data: books } = trpc.book.getMyBooks.useQuery(
     undefined,
     { enabled: isAuthenticated }
   );
@@ -143,13 +149,51 @@ export default function AIWritingStudio() {
                     <div className="text-sm text-muted-foreground">
                       Last updated: {new Date(project.updatedAt).toLocaleDateString()}
                     </div>
-                    <Button
-                      onClick={() => handleContinue(project.id, project.blueprintGenerated === true, false)}
-                      className="w-full"
-                    >
-                      Continue Writing
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
+                    {/* Check if manuscript is ready for publishing (40,000+ words) */}
+                    {(() => {
+                      const book = books?.find(b => b.title === title);
+                      const wordCount = book?.wordCount || 0;
+                      const isReadyToPublish = wordCount >= 40000;
+
+                      return (
+                        <div className="space-y-2">
+                          {isReadyToPublish && (
+                            <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 mb-2">
+                              <CheckCircle2 className="h-4 w-4" />
+                              <span className="font-medium">{wordCount.toLocaleString()} words - Ready to publish!</span>
+                            </div>
+                          )}
+                          
+                          {isReadyToPublish ? (
+                            <div className="space-y-2">
+                              <Button
+                                onClick={() => navigate('/ai-publishing-studio')}
+                                className="w-full bg-green-600 hover:bg-green-700"
+                              >
+                                <Rocket className="h-4 w-4 mr-2" />
+                                Continue to Publishing
+                              </Button>
+                              <Button
+                                onClick={() => handleContinue(project.id, project.blueprintGenerated === true, false)}
+                                variant="outline"
+                                className="w-full"
+                              >
+                                Continue Writing
+                                <ArrowRight className="h-4 w-4 ml-2" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={() => handleContinue(project.id, project.blueprintGenerated === true, false)}
+                              className="w-full"
+                            >
+                              Continue Writing
+                              <ArrowRight className="h-4 w-4 ml-2" />
+                            </Button>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </CardContent>
               </Card>
