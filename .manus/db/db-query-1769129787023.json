@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, workingTitle, projectType, blueprintGenerated FROM storyBlueprints ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, workingTitle, projectType, blueprintGenerated FROM storyBlueprints ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "150001",
+      "workingTitle": "The 3R Architecture: Value Investing for Beginners",
+      "projectType": "non_fiction",
+      "blueprintGenerated": "1"
+    },
+    {
+      "id": "120002",
+      "workingTitle": "Untitled Project",
+      "projectType": "novel",
+      "blueprintGenerated": "0"
+    },
+    {
+      "id": "120001",
+      "workingTitle": "Untitled Project",
+      "projectType": "novel",
+      "blueprintGenerated": "0"
+    },
+    {
+      "id": "90025",
+      "workingTitle": "The Architecture of Wealth: A Beginner's Guide to Value Investing and the 3R Framework",
+      "projectType": "non_fiction",
+      "blueprintGenerated": "1"
+    },
+    {
+      "id": "90024",
+      "workingTitle": "The Responsible Investor: A Beginner's Guide to Value Investing and the 3R Framework",
+      "projectType": "non_fiction",
+      "blueprintGenerated": "1"
+    },
+    {
+      "id": "90023",
+      "workingTitle": "NULL",
+      "projectType": "novel",
+      "blueprintGenerated": "0"
+    },
+    {
+      "id": "90022",
+      "workingTitle": "The Architecture of Wealth: A 3R Guide to Value Investing",
+      "projectType": "non_fiction",
+      "blueprintGenerated": "1"
+    },
+    {
+      "id": "90021",
+      "workingTitle": "Untitled Project",
+      "projectType": "novel",
+      "blueprintGenerated": "0"
+    },
+    {
+      "id": "90020",
+      "workingTitle": "Value Investing for Beginners: The Architect's Guide to Long-Term Wealth",
+      "projectType": "non_fiction",
+      "blueprintGenerated": "1"
+    },
+    {
+      "id": "90019",
+      "workingTitle": "Untitled Project",
+      "projectType": "novel",
+      "blueprintGenerated": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tworkingTitle\tprojectType\tblueprintGenerated\n150001\tThe 3R Architecture: Value Investing for Beginners\tnon_fiction\t1\n120002\tUntitled Project\tnovel\t0\n120001\tUntitled Project\tnovel\t0\n90025\tThe Architecture of Wealth: A Beginner's Guide to Value Investing and the 3R Framework\tnon_fiction\t1\n90024\tThe Responsible Investor: A Beginner's Guide to Value Investing and the 3R Framework\tnon_fiction\t1\n90023\tNULL\tnovel\t0\n90022\tThe Architecture of Wealth: A 3R Guide to Value Investing\tnon_fiction\t1\n90021\tUntitled Project\tnovel\t0\n90020\tValue Investing for Beginners: The Architect's Guide to Long-Term Wealth\tnon_fiction\t1\n90019\tUntitled Project\tnovel\t0\n",
+  "stderr": "",
+  "execution_time_ms": 1585
+}

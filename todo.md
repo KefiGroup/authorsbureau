@@ -2495,3 +2495,43 @@ Fix the requestEdit mutation to ensure AI-revised content updates the chapter di
   4. Verify markdown is removed (no ##, **, etc. in display)
   5. Test scrolling works (smooth scrolling within container)
   6. Test multiple edits in sequence (ready for testing)
+
+
+---
+
+## 🎯 Remove Markdown & Add Category Suggestions - CURRENT TASK
+
+### Remove Markdown Formatting from AI Text
+- [ ] Update blueprint generation AI prompt to return plain text (no ##, **, etc.)
+- [ ] Update chapter outline generation AI prompt to return plain text
+- [ ] Update chapter generation AI prompt to return plain text
+- [ ] Update chapter edit AI prompt to return plain text
+- [ ] Test all AI-generated content displays without markdown
+
+### Add Bestseller Category Suggestions to Blueprint
+- [ ] Enhance blueprint AI prompt to analyze book concept
+- [ ] Add category research to suggest 3-5 specific Amazon KDP categories
+- [ ] Focus on low-competition categories where book can rank #1
+- [ ] Display suggested categories in blueprint results
+- [ ] Test category suggestions with real book concepts
+
+
+---
+
+## 🚨 CRITICAL BUG FIX - Chapter Generation Ignores Blueprint
+
+### Issue
+- Chapter generation is generating completely wrong content (fantasy story about "Elara Vane")
+- AI is NOT reading the blueprint data for "The 3R Architecture: Value Investing for Beginners"
+- Generated content has nothing to do with the book's topic
+
+### Debug Steps
+- [x] Check if blueprintData.blueprintContent is being passed correctly to AI prompt
+- [x] Verify blueprint data exists in database for the user's book (Blueprint ID: 150001)
+- [x] Check if the wrong blueprint is being retrieved
+- [ ] Test with user's actual book to verify fix works
+
+### Fix
+- [x] Fix chapter generation to use essentialData as fallback when blueprintContent is empty
+- [x] Add validation to ensure blueprint content exists before generating
+- [ ] Test generation with "The 3R Architecture" book to verify correct content

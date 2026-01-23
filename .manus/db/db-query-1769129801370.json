@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, workingTitle, blueprintContent FROM storyBlueprints WHERE workingTitle LIKE '%3R%' OR workingTitle LIKE '%Value Investing%' LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, workingTitle, blueprintContent FROM storyBlueprints WHERE workingTitle LIKE '%3R%' OR workingTitle LIKE '%Value Investing%' LIMIT 1;",
+  "rows": [
+    {
+      "id": "90008",
+      "workingTitle": "The Architecture of Wealth: A Beginner's Guide to Value Investing with the 3R Framework",
+      "blueprintContent": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tworkingTitle\tblueprintContent\n90008\tThe Architecture of Wealth: A Beginner's Guide to Value Investing with the 3R Framework\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1522
+}

@@ -1008,8 +1008,10 @@ Blueprint:
 ${JSON.stringify(blueprint[0].essentialData, null, 2)}
 
 Generate 20 chapters. For each chapter, provide:
-1. Chapter title (creative and engaging)
-2. Chapter summary (2-3 sentences describing what happens)
+1. Chapter title (creative and engaging, NO markdown symbols)
+2. Chapter summary (2-3 sentences describing what happens, NO markdown symbols)
+
+IMPORTANT: Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.) in titles or summaries.
 
 Return ONLY a JSON object with this structure:
 {
@@ -1273,12 +1275,15 @@ Return ONLY a JSON object with this structure:
         // Build AI prompt based on section type
         let prompt = "";
         const blueprintData = blueprint[0];
+        
+        // Use blueprintContent if available, otherwise use essentialData
+        const blueprintInfo = blueprintData.blueprintContent || JSON.stringify(blueprintData.essentialData, null, 2) || "No blueprint data available";
 
         if (input.sectionType === "chapter") {
           prompt = `You are a professional author writing a book chapter. Generate the FULL CONTENT for this chapter based on the blueprint and outline below.
 
 **Book Blueprint:**
-${blueprintData.blueprintContent || ""}
+${blueprintInfo}
 
 **Chapter to Write:**
 Chapter ${input.sectionNumber}: ${input.sectionTitle}
@@ -1292,13 +1297,14 @@ ${chapterOutline ? `Summary: ${chapterOutline.summary}` : ""}
 - Maintain consistency with the book's overall theme and tone
 - Do NOT include "Chapter X" heading - just write the content
 - Write in a narrative style, not bullet points
+- IMPORTANT: Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.)
 
 Generate the full chapter content now:`;
         } else if (input.sectionType === "prologue") {
           prompt = `You are a professional author. Write a compelling PROLOGUE for this book based on the blueprint below.
 
 **Book Blueprint:**
-${blueprintData.blueprintContent || ""}
+${blueprintInfo}
 
 **Instructions:**
 - Write a complete prologue (800-1,200 words)
@@ -1310,7 +1316,7 @@ ${blueprintData.blueprintContent || ""}
           prompt = `You are a professional author. Write a satisfying EPILOGUE for this book based on the blueprint below.
 
 **Book Blueprint:**
-${blueprintData.blueprintContent || ""}
+${blueprintInfo}
 
 **Instructions:**
 - Write a complete epilogue (800-1,200 words)
@@ -1468,6 +1474,7 @@ ${input.userMessage}
 - Keep the same tone and style
 - Make ONLY the changes requested, don't rewrite unnecessarily
 - Return the full revised chapter content
+- IMPORTANT: Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.)
 
 Provide the revised chapter content now:`;
 

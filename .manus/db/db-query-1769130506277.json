@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, workingTitle, blueprintGenerated, SUBSTRING(blueprintContent, 1, 500) as content_preview FROM storyBlueprints WHERE id = 150001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, workingTitle, blueprintGenerated, SUBSTRING(blueprintContent, 1, 500) as content_preview FROM storyBlueprints WHERE id = 150001;",
+  "rows": [
+    {
+      "id": "150001",
+      "workingTitle": "The 3R Architecture: Value Investing for Beginners",
+      "blueprintGenerated": "1",
+      "content_preview": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tworkingTitle\tblueprintGenerated\tcontent_preview\n150001\tThe 3R Architecture: Value Investing for Beginners\t1\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1513
+}
