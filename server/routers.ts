@@ -819,6 +819,7 @@ Generate the author bio now:`;
               updateData.projectType = blueprintResponse.blueprintData.projectType;
               updateData.workingTitle = blueprintResponse.blueprintData.workingTitle;
               updateData.targetLength = blueprintResponse.blueprintData.targetLength;
+              updateData.targetPages = updatedEssentialData.targetPages || null; // Save user-selected page count
               updateData.primaryGenre = blueprintResponse.blueprintData.primaryGenre;
               updateData.secondaryGenre = blueprintResponse.blueprintData.secondaryGenre;
               updateData.corePremise = blueprintResponse.blueprintData.corePremise;

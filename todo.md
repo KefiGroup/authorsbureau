@@ -1158,3 +1158,26 @@ This is priority #1 from the next steps list
 ### Future Enhancement
 - [ ] Add targetPages field to database schema (drizzle/schema.ts) if not already present
 - [ ] Update UI to display "Your 200-page book" in progress indicators
+
+
+---
+
+## ✅ COMPLETED: Database Schema Update - targetPages Field Added
+
+### Task (Completed)
+- [x] Add targetPages field to storyBlueprints table in drizzle/schema.ts
+- [x] Run database migration (added column directly via SQL)
+- [x] Update server code to save targetPages when creating blueprints
+- [ ] Test that page count is properly stored and retrieved
+
+### Implementation Details
+- [x] Added column to schema.ts: `targetPages: int("targetPages")` (line 103)
+- [x] Made it optional (nullable) for backward compatibility with existing blueprints
+- [x] Added column to database: `ALTER TABLE storyBlueprints ADD COLUMN targetPages INT NULL`
+- [x] Updated blueprint save logic in server/routers.ts (line 822): `updateData.targetPages = updatedEssentialData.targetPages || null`
+
+### How It Works
+- User selects page count (150, 200, 250, or 300) during blueprint creation
+- System saves targetPages to database alongside targetLength
+- targetLength contains calculated value like "200 pages (approximately 50,000 words)"
+- targetPages stores the raw number (150, 200, 250, or 300) for future calculations

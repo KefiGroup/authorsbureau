@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "a8fc9f36-94e7-427c-a071-b97348b8d160",
-  "prevId": "308488f8-d9a1-40cc-825a-8cd90ded09fa",
+  "id": "90024542-6e5f-420e-a807-daf197315565",
+  "prevId": "a8fc9f36-94e7-427c-a071-b97348b8d160",
   "tables": {
     "ai_recommendation_feedback": {
       "name": "ai_recommendation_feedback",
@@ -2144,6 +2144,13 @@
         "targetLength": {
           "name": "targetLength",
           "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "targetPages": {
+          "name": "targetPages",
+          "type": "int",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

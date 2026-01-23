@@ -100,6 +100,7 @@ export const storyBlueprints = mysqlTable("storyBlueprints", {
   projectType: mysqlEnum("projectType", ["novel", "novella", "short_story", "memoir", "non_fiction", "childrens_book"]).notNull(),
   workingTitle: varchar("workingTitle", { length: 500 }),
   targetLength: varchar("targetLength", { length: 100 }), // e.g., "80,000-100,000 words", "50 pages"
+  targetPages: int("targetPages"), // User-selected page count (150, 200, 250, 300)
   primaryGenre: varchar("primaryGenre", { length: 100 }),
   secondaryGenre: varchar("secondaryGenre", { length: 100 }),
   
