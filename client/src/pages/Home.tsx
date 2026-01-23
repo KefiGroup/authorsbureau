@@ -46,10 +46,19 @@ export default function Home() {
             <Button variant="ghost" asChild>
               <Link href="#how-it-works">Watch Demo</Link>
             </Button>
-            {!isAuthenticated && (
+            {isAuthenticated ? (
               <Button size="lg" asChild>
-                <a href={getLoginUrl()}>Sign In</a>
+                <Link href="/dashboard">Go to Dashboard</Link>
               </Button>
+            ) : (
+              <>
+                <Button variant="outline" size="lg" asChild>
+                  <a href={getLoginUrl()}>Sign In</a>
+                </Button>
+                <Button size="lg" asChild>
+                  <a href={getLoginUrl()}>Sign Up</a>
+                </Button>
+              </>
             )}
           </div>
         </div>

@@ -2943,3 +2943,16 @@ Complete the 3-studio architecture:
 - [x] Button correctly starts the blueprint creation process
 - [x] Updated button href in Dashboard.tsx
 - [x] Test the complete flow: Dashboard → Start New Book → Blueprint creation
+
+---
+
+## 🔐 Add Sign Up and Sign In Buttons to Homepage Header ✅
+
+### Completed
+- [x] Added Sign Up and Sign In buttons to top right of homepage header
+- [x] Kept "Featured Authors" and "Watch Demo" links
+- [x] Buttons visible when user is NOT logged in
+- [x] Sign In button: outline style, links to login URL
+- [x] Sign Up button: primary style, links to login URL (Manus OAuth handles both)
+- [x] When logged in, shows "Go to Dashboard" button instead
+- [x] Responsive design maintained for mobile
