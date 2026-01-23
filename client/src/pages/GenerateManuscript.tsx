@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
-import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { marked } from "marked";
 import { exportToDocx } from "@/lib/exportDocx";
 import DashboardLayout from "@/components/DashboardLayout";
+import { RewriteVariationsModal } from "@/components/RewriteVariationsModal";
 import { gfmHeadingId } from "marked-gfm-heading-id";
 import { fixMarkdownTables } from "@/lib/markdown-utils";
 
@@ -31,6 +32,7 @@ export default function GenerateManuscript() {
   const [showChat, setShowChat] = useState(false);
   const [isManualEditing, setIsManualEditing] = useState(false);
   const [manualEditContent, setManualEditContent] = useState("");
+  const [showRewriteModal, setShowRewriteModal] = useState(false);
 
   // Get blueprint data
   const { data: blueprint } = trpc.blueprint.get.useQuery(
@@ -401,6 +403,10 @@ export default function GenerateManuscript() {
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Request Edits from AI
                       </Button>
+                      <Button onClick={() => setShowRewriteModal(true)} variant="outline" className="flex-1">
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Request 3 Variations
+                      </Button>
                     </div>
                   ) : (
                     <Card>
@@ -479,6 +485,22 @@ export default function GenerateManuscript() {
         </Button>
       </div>
     </div>
+
+      {/* Rewrite Variations Modal */}
+      {currentManuscript && (
+        <RewriteVariationsModal
+          open={showRewriteModal}
+          onOpenChange={setShowRewriteModal}
+          manuscriptId={currentManuscript.id}
+          currentContent={currentManuscript.content || ""}
+          chapterTitle={sections[currentSectionIndex]?.title || ""}
+          blueprintId={Number(blueprintId)}
+          onSelectVariation={(newContent) => {
+            setManualEditContent(newContent);
+            setIsManualEditing(true);
+          }}
+        />
+      )}
     </DashboardLayout>
   );
 }

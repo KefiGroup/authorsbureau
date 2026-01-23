@@ -1181,3 +1181,57 @@ This is priority #1 from the next steps list
 - System saves targetPages to database alongside targetLength
 - targetLength contains calculated value like "200 pages (approximately 50,000 words)"
 - targetPages stores the raw number (150, 200, 250, or 300) for future calculations
+
+
+---
+
+## ✅ IMPLEMENTED: 3-Variation Rewrite for Chapter Edits
+
+### User Request (Completed)
+- [x] When user requests chapter edits/rewrites, generate 3 distinct creative variations
+- [x] Give authors more options to choose from instead of single rewrite
+- [x] Aligns with "Author-First" philosophy from custom prompt
+
+### Backend Implementation (Completed)
+- [x] Create new tRPC mutation: `manuscript.generateRewriteVariations`
+- [x] Input: manuscriptId, editInstructions, currentContent, chapterTitle, blueprintId
+- [x] Generate 3 distinct variations using LLM with different creative approaches
+- [x] Return array of 3 variations with metadata (approach, label, description)
+- [x] Each variation is meaningfully different with distinct creative strategies
+- [x] Added getContent helper to handle LLM response content type conversion
+
+### Frontend Implementation (Completed)
+- [x] Add "Request 3 Variations" button to chapter editor (next to Edit Manually and Request Edits)
+- [x] Created RewriteVariationsModal component with edit instructions input
+- [x] Display 3 variations in tabs for easy comparison
+- [x] Allow user to select one variation to replace current content
+- [x] Add "Regenerate 3 New Variations" button if unsatisfied
+- [x] Show loading state while generating variations
+- [x] Selected variation loads into manual editor for further refinement
+
+### Variation Strategies (Implemented)
+- [x] Variation 1: Conservative (minor improvements, preserve structure, 80-90% original)
+- [x] Variation 2: Moderate (balanced changes, some restructuring, 60-70% original)
+- [x] Variation 3: Bold (creative reimagining, significant changes, 40-50% original)
+
+### User Experience Flow
+1. User clicks "Request 3 Variations" on a chapter
+2. Enters edit instructions: "Make this more engaging and add more examples"
+3. System generates 3 variations in parallel (15-30 seconds)
+4. User previews all 3 variations in tabs (Conservative, Moderate, Bold)
+5. User selects preferred variation
+6. Selected variation loads into manual editor for final refinement
+7. User can regenerate if unsatisfied with all 3 variations
+
+### Files Created/Modified
+- [x] server/routers.ts: Added generateRewriteVariations mutation (lines 1956-2102)
+- [x] client/src/pages/GenerateManuscript.tsx: Added "Request 3 Variations" button and modal integration
+- [x] client/src/components/RewriteVariationsModal.tsx: Created new modal component with tabs UI
+
+### User Testing Required
+- [ ] Generate a chapter
+- [ ] Click "Request 3 Variations"
+- [ ] Enter edit instructions
+- [ ] Verify 3 variations are generated with distinct approaches
+- [ ] Select one variation and verify it loads into manual editor
+- [ ] Test regenerate functionality

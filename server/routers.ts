@@ -1952,6 +1952,154 @@ Provide the complete revised content following the editing guidelines.`;
 
         return { success: true };
       }),
+
+    // Generate 3 rewrite variations for a chapter
+    generateRewriteVariations: protectedProcedure
+      .input(z.object({
+        manuscriptId: z.number(),
+        editInstructions: z.string(),
+        currentContent: z.string(),
+        chapterTitle: z.string(),
+        blueprintId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { storyBlueprints } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+        const { invokeLLM } = await import("./_core/llm");
+
+        // Get blueprint for context
+        const blueprint = await db.select().from(storyBlueprints)
+          .where(eq(storyBlueprints.id, input.blueprintId))
+          .limit(1);
+        
+        if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
+
+        // Generate 3 variations with different creative approaches
+        const variations = await Promise.all([
+          // Variation 1: Conservative (minor improvements, preserve structure)
+          invokeLLM({
+            messages: [
+              {
+                role: "system",
+                content: `You are an Author-First Writing AI generating a CONSERVATIVE rewrite variation.
+
+Approach: Make minor improvements while preserving the original structure and flow. Focus on clarity, polish, and subtle enhancements. Keep 80-90% of the original intact.
+
+User's edit request: ${input.editInstructions}
+
+Book context:
+${JSON.stringify(blueprint[0].essentialData, null, 2)}
+
+IMPORTANT:
+- Return ONLY the rewritten chapter content in markdown format
+- NO explanations, NO meta-commentary, NO "Here's the rewrite" text
+- Start directly with the chapter content
+- Use plain text formulas (NO LaTeX: \\text{}, \\frac{}, etc.)
+- Avoid AI phrases: "unlock", "dive into", "revolutionary", "embark on a journey"`
+              },
+              {
+                role: "user",
+                content: `Chapter Title: ${input.chapterTitle}\n\nCurrent Content:\n${input.currentContent}`
+              }
+            ]
+          }),
+
+          // Variation 2: Moderate (balanced changes, some restructuring)
+          invokeLLM({
+            messages: [
+              {
+                role: "system",
+                content: `You are an Author-First Writing AI generating a MODERATE rewrite variation.
+
+Approach: Make balanced changes with some restructuring. Improve flow, add depth, and enhance engagement. Keep 60-70% of the original, restructure 30-40%.
+
+User's edit request: ${input.editInstructions}
+
+Book context:
+${JSON.stringify(blueprint[0].essentialData, null, 2)}
+
+IMPORTANT:
+- Return ONLY the rewritten chapter content in markdown format
+- NO explanations, NO meta-commentary, NO "Here's the rewrite" text
+- Start directly with the chapter content
+- Use plain text formulas (NO LaTeX: \\text{}, \\frac{}, etc.)
+- Avoid AI phrases: "unlock", "dive into", "revolutionary", "embark on a journey"`
+              },
+              {
+                role: "user",
+                content: `Chapter Title: ${input.chapterTitle}\n\nCurrent Content:\n${input.currentContent}`
+              }
+            ]
+          }),
+
+          // Variation 3: Bold (creative reimagining, significant changes)
+          invokeLLM({
+            messages: [
+              {
+                role: "system",
+                content: `You are an Author-First Writing AI generating a BOLD rewrite variation.
+
+Approach: Creative reimagining with significant changes. Restructure for maximum impact, add new examples/stories, transform the narrative. Keep 40-50% of the original, reimagine 50-60%.
+
+User's edit request: ${input.editInstructions}
+
+Book context:
+${JSON.stringify(blueprint[0].essentialData, null, 2)}
+
+IMPORTANT:
+- Return ONLY the rewritten chapter content in markdown format
+- NO explanations, NO meta-commentary, NO "Here's the rewrite" text
+- Start directly with the chapter content
+- Use plain text formulas (NO LaTeX: \\text{}, \\frac{}, etc.)
+- Avoid AI phrases: "unlock", "dive into", "revolutionary", "embark on a journey"`
+              },
+              {
+                role: "user",
+                content: `Chapter Title: ${input.chapterTitle}\n\nCurrent Content:\n${input.currentContent}`
+              }
+            ]
+          }),
+        ]);
+
+        // Extract content as string
+        const getContent = (response: any): string => {
+          const content = response.choices[0].message.content;
+          if (typeof content === 'string') return content;
+          if (Array.isArray(content)) {
+            return content.map((item: any) => item.type === 'text' ? item.text : '').join('');
+          }
+          return '';
+        };
+
+        return {
+          variations: [
+            {
+              id: 1,
+              approach: "conservative",
+              label: "Conservative",
+              description: "Minor improvements, preserves structure",
+              content: getContent(variations[0]),
+            },
+            {
+              id: 2,
+              approach: "moderate",
+              label: "Moderate",
+              description: "Balanced changes, some restructuring",
+              content: getContent(variations[1]),
+            },
+            {
+              id: 3,
+              approach: "bold",
+              label: "Bold",
+              description: "Creative reimagining, significant changes",
+              content: getContent(variations[2]),
+            },
+          ],
+        };
+      }),
   }),
 
   // Manuscript Analysis (AI-Agentic Publishing)
