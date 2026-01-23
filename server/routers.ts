@@ -1353,6 +1353,10 @@ ${chapterOutline ? `Summary: ${chapterOutline.summary}` : ""}
   | Data 4   | Data 5   | Data 6   |
   
   The header separator row (|---|---|) is REQUIRED for tables to render correctly.
+- CRITICAL: NO PLACEHOLDER DASHES (---) IN TABLES! Every table cell MUST contain actual calculated data.
+  ❌ WRONG: | --- | --- | --- |
+  ✅ CORRECT: | 30 | 30 | $1,010 |
+  If you include a table, calculate and fill in ALL rows with real values.
 
 Generate the full chapter content now:`
         } else if (input.sectionType === "prologue") {
@@ -1538,6 +1542,10 @@ ${input.userMessage}
   | Data 1   | Data 2   | Data 3   |
   
   The header separator row (|---|---|) is REQUIRED for tables to render correctly.
+- CRITICAL: NO PLACEHOLDER DASHES (---) IN TABLES! Every table cell MUST contain actual calculated data.
+  ❌ WRONG: | --- | --- | --- |
+  ✅ CORRECT: | 30 | 30 | $1,010 |
+  If you include a table, calculate and fill in ALL rows with real values.
 
 Provide the revised chapter content now:`;
 

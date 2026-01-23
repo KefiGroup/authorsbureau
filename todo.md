@@ -2711,3 +2711,25 @@ After 3 AI conversational questions, show a pop-up modal with comprehensive chec
 - [x] Add finalCheckpointData field to database schema
 - [x] Pass modal data to blueprint generation
 - [ ] Test complete flow: 3 questions → modal → blueprint generation
+
+## 🐛 CRITICAL: AI Generating Incomplete Tables with Placeholder Dashes (---)
+
+### Issue
+AI is generating tables with placeholder dashes `---` instead of calculating all the data values. Example:
+```
+| AGE STARTED | YEARS TO GOAL | MONTHLY CONTRIBUTION |
+|-------------|---------------|----------------------|
+| ---         | ---           | ---                  |  ← Should have actual data
+| 30          | 30            | $1,010               |  ← Has data
+| ---         | ---           | ---                  |  ← Should have actual data
+| 40          | 20            | $2,850               |  ← Has data
+```
+
+This makes tables incomplete and confusing for readers.
+
+### Solution
+- [x] Update chapter generation prompt to explicitly prohibit placeholder dashes
+- [x] Add instruction: "Calculate and fill in ALL table rows with actual data - NO placeholder dashes (---) allowed"
+- [x] Add instruction: "If you include a table, every cell must contain real calculated values"
+- [x] Update requestEdit prompt with same instruction
+- [ ] Test with existing chapter to verify complete tables
