@@ -58,8 +58,7 @@ export default function AIWritingStudio() {
   });
 
   const handleStartNew = () => {
-    // Simply stay on AI Writing Studio page - it will show the project list
-    // User can click "Start New Book" button which is already on this page
+    navigate("/start-writing");
   };
 
   const handleContinue = (blueprintId: number, blueprintGenerated: boolean, outlineGenerated: boolean) => {
