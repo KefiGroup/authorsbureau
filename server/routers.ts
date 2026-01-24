@@ -792,8 +792,27 @@ Generate the author bio now:`;
           const extracted = await extractEssentialData(input.message, conversationHistory);
           updatedEssentialData = { ...essentialData, ...extracted };
           
-          // Check if we have all essential data
-          if (updatedEssentialData.projectType && updatedEssentialData.briefDescription && updatedEssentialData.targetAudience) {
+          // Check if we have all essential data (including branching path completion)
+          let shouldGenerateBlueprint = false;
+          
+          if (updatedEssentialData.wantsDetailedOnboarding === true) {
+            // Detailed path: need all 3 essential + all 3 detailed + pages
+            shouldGenerateBlueprint = !!updatedEssentialData.projectType && 
+                                     !!updatedEssentialData.briefDescription && 
+                                     !!updatedEssentialData.targetAudience && 
+                                     !!updatedEssentialData.detailedContext?.themes &&
+                                     !!updatedEssentialData.detailedContext?.tone &&
+                                     !!updatedEssentialData.detailedContext?.structure &&
+                                     !!updatedEssentialData.targetPages;
+          } else if (updatedEssentialData.wantsDetailedOnboarding === false) {
+            // Quick path: need 3 essential + pages
+            shouldGenerateBlueprint = !!updatedEssentialData.projectType && 
+                                     !!updatedEssentialData.briefDescription && 
+                                     !!updatedEssentialData.targetAudience && 
+                                     !!updatedEssentialData.targetPages;
+          }
+          
+          if (shouldGenerateBlueprint) {
             nextMode = "blueprint_generation";
             
             // Automatically generate blueprint

@@ -1263,3 +1263,36 @@ This is priority #1 from the next steps list
 - [ ] Start a new book and verify intro message appears
 - [ ] Verify page count shows as clickable checkbox buttons
 - [ ] Verify all 5 page options are visible
+
+
+---
+
+## 🆕 Feature: Two-Tier Onboarding System with Branching Logic ✅
+
+### User Request
+- [x] After initial 3 questions, AI should ask: "Would you prefer me to create your blueprint now, or would you like to share more context about your book with me?"
+- [x] Two paths:
+  * Quick Path: 3 questions → checkbox modal → generate blueprint (5 minutes)
+  * Detailed Path: 3 questions → 3 more detailed questions → checkbox modal → generate blueprint (10 minutes)
+
+### Implementation Plan
+- [x] Update conversation state to track branching choice
+- [x] Add branching question after initial 3 questions are answered
+- [x] Provide 2 suggestion buttons: "Create Blueprint Now" | "Share More Context"
+- [x] If "Create Blueprint Now": proceed to checkbox modal (existing flow)
+- [x] If "Share More Context": ask 3 additional detailed questions
+- [x] Additional questions should cover: themes, tone, structure, character details, plot elements
+- [x] After additional questions, proceed to checkbox modal
+- [x] Both paths end at the same checkpoint modal before blueprint generation
+
+### Files Modified
+- [x] server/writing-studio-agent-v2.ts: Added branching logic and additional questions
+- [x] Updated ConversationState interface to track branching path (wantsDetailedOnboarding, detailedContext)
+- [x] server/routers.ts: Updated blueprint generation trigger to respect both paths
+- [x] server/blueprint.two-tier-onboarding.test.ts: Created comprehensive test suite (13 tests, all passing)
+
+### User Experience
+1. User answers 3 essential questions (type, description, audience)
+2. AI asks: "Would you prefer me to create your blueprint now, or share more context?"
+3a. Quick path: User clicks "Create Blueprint Now" → Checkbox modal → Done
+3b. Detailed path: User clicks "Share More Context" → 3 more questions → Checkbox modal → Done
