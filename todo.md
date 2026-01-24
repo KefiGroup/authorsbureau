@@ -1468,3 +1468,41 @@ This is priority #1 from the next steps list
 - [ ] Check WritingStudioChat component getModeLabel function
 - [ ] Ensure progress prop is being used to display indicator
 - [ ] Test visibility in UI after fix
+
+
+---
+
+## 🔧 Task: Simplify Detailed Path Flow
+
+### User Request
+- [ ] Remove open-ended questions 4-6 (themes, tone, structure) from detailed path
+- [ ] After user chooses "Share More Context", show reassuring message: "Great! We'll be drafting your blueprint now. You can refine any details during chapter editing."
+- [ ] Show checkbox modal immediately after branching choice for BOTH paths
+- [ ] Both quick and detailed paths should end at the same checkpoint modal
+
+### Implementation
+- [ ] Update writing-studio-agent-v2.ts to remove detailed context questions
+- [ ] Update handleInitialQuestions to show modal trigger message after branching
+- [ ] Update modal trigger logic in StartWritingProcess.tsx
+- [ ] Remove detailedContext tracking from ConversationState
+- [ ] Update progress calculation (Quick: 3 questions, Detailed: 3 questions + reassurance)
+- [ ] Test both paths to ensure modal appears correctly
+
+
+---
+
+## 🔧 Two-Tier Onboarding Simplification (COMPLETED ✅)
+
+### User Request
+- [x] Remove open-ended questions 4-6 (themes, tone, structure) from detailed path
+- [x] After user chooses "Share More Context", show reassuring message: "Great! We'll be drafting your blueprint now. You can refine any details during chapter editing."
+- [x] Show checkbox modal immediately after branching choice for BOTH paths
+- [x] Both quick and detailed paths should end at the same checkpoint modal
+
+### Implementation
+- [x] Update writing-studio-agent-v2.ts to remove detailed context questions
+- [x] Update handleInitialQuestions to show modal trigger message after branching
+- [x] Update modal trigger logic in StartWritingProcess.tsx
+- [x] Remove detailedContext tracking from ConversationState
+- [x] Update progress calculation (Quick: 3 questions, Detailed: 3 questions + reassurance)
+- [x] Test both paths to ensure modal appears correctly

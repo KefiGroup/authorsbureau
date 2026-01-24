@@ -17,12 +17,6 @@ interface ConversationState {
     workingTitle?: string;
     // Two-tier onboarding: track if user wants quick or detailed path
     wantsDetailedOnboarding?: boolean;
-    // Additional context from detailed path (3 more questions)
-    detailedContext?: {
-      themes?: string;
-      tone?: string;
-      structure?: string;
-    };
   };
   generatedBlueprint?: Partial<StoryBlueprint>;
   conversationHistory: Array<{ role: "user" | "assistant"; content: string }>;
@@ -69,10 +63,7 @@ async function handleInitialQuestions(
   const needsBranchingChoice = hasAnsweredThreeQuestions && essentialData.wantsDetailedOnboarding === undefined;
   const isDetailedPath = essentialData.wantsDetailedOnboarding === true;
   
-  // Detailed path: ask 3 additional questions
-  const needsThemes = isDetailedPath && !essentialData.detailedContext?.themes;
-  const needsTone = isDetailedPath && !essentialData.detailedContext?.tone;
-  const needsStructure = isDetailedPath && !essentialData.detailedContext?.structure;
+  // Detailed path: no additional questions, just show reassuring message before modal
 
   const systemPrompt = `You are an expert story development coach. You're helping an author create a comprehensive story blueprint.
 
@@ -88,11 +79,11 @@ After the 3 essential questions, ask: "Would you prefer me to create your bluepr
 - Provide 2 suggestion buttons: [SUGGESTIONS: Create Blueprint Now | Share More Context]
 
 If they choose "Share More Context":
-4. Ask about main themes and messages
-5. Ask about desired tone and writing style
-6. Ask about preferred structure or pacing
+- Show this reassuring message: "Great! We'll be drafting your blueprint now. You can refine any details during chapter editing."
+- Then immediately ask for page count (150, 200, 250, 300, > 300 pages)
 
-Then ask for page count (150, 200, 250, 300, > 300 pages)
+If they choose "Create Blueprint Now":
+- Immediately ask for page count (150, 200, 250, 300, > 300 pages)
 
 IMPORTANT: If this is the VERY FIRST message (no conversation history), start with:
 "We'll start by asking 3 important questions to get a sense of what you want to write. Let's begin!"
@@ -111,10 +102,7 @@ Current Status:
 ${needsProjectType ? "- Need to ask: What type of project are you writing?" : "✓ Project type collected"}
 ${needsDescription ? "- Need to ask: What's your book about? (2-3 sentences)" : "✓ Brief description collected"}
 ${needsAudience ? "- Need to ask: Who is this book for? (Your ideal reader)" : "✓ Target audience collected"}
-${needsBranchingChoice ? "- Need to ask: BRANCHING CHOICE - Create blueprint now or share more context?" : essentialData.wantsDetailedOnboarding === true ? "✓ User chose detailed path" : essentialData.wantsDetailedOnboarding === false ? "✓ User chose quick path" : ""}
-${isDetailedPath && needsThemes ? "- Need to ask: What are the main themes or messages?" : isDetailedPath && essentialData.detailedContext?.themes ? "✓ Themes collected" : ""}
-${isDetailedPath && needsTone ? "- Need to ask: What tone/style do you envision?" : isDetailedPath && essentialData.detailedContext?.tone ? "✓ Tone collected" : ""}
-${isDetailedPath && needsStructure ? "- Need to ask: What structure or pacing do you prefer?" : isDetailedPath && essentialData.detailedContext?.structure ? "✓ Structure collected" : ""}
+${needsBranchingChoice ? "- Need to ask: BRANCHING CHOICE - Create blueprint now or share more context?" : essentialData.wantsDetailedOnboarding === true ? "✓ User chose detailed path - show reassuring message" : essentialData.wantsDetailedOnboarding === false ? "✓ User chose quick path" : ""}
 ${needsPages ? "- Need to ask: How many pages do you want your book to be?" : "✓ Target pages collected"}
 
 Instructions:
@@ -148,11 +136,7 @@ SUGGESTION GENERATION RULES (CRITICAL - FOLLOW EXACTLY):
 4. **For Branching Choice:**
    - ALWAYS provide exactly: [SUGGESTIONS: Create Blueprint Now | Share More Context]
 
-5. **For Detailed Path Questions (themes, tone, structure):**
-   - Generate 4-5 options relevant to their specific book topic and genre
-   - Reference what they've already shared about their book
-
-6. **For Page Count Question:**
+5. **For Page Count Question:**
    - ALWAYS provide exactly: [SUGGESTIONS: 150 pages | 200 pages | 250 pages | 300 pages | > 300 pages]
 
 **CRITICAL RULES:**
@@ -187,13 +171,10 @@ End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4 | op
   let isComplete = false;
   
   if (essentialData.wantsDetailedOnboarding === true) {
-    // Detailed path: need all 3 essential + all 3 detailed + pages
+    // Detailed path: need 3 essential + pages (same as quick path now)
     isComplete = !!essentialData.projectType && 
                  !!essentialData.briefDescription && 
                  !!essentialData.targetAudience && 
-                 !!essentialData.detailedContext?.themes &&
-                 !!essentialData.detailedContext?.tone &&
-                 !!essentialData.detailedContext?.structure &&
                  !!essentialData.targetPages;
   } else if (essentialData.wantsDetailedOnboarding === false) {
     // Quick path: need 3 essential + pages
@@ -211,14 +192,11 @@ End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4 | op
   let total = 3; // Default to quick path (3 essential questions)
   
   if (essentialData.wantsDetailedOnboarding === true) {
-    // Detailed path: 6 questions + page count = 7 total
-    total = 7;
+    // Detailed path: 3 questions + page count = 4 total (same as quick path now)
+    total = 4;
     if (essentialData.projectType) current++;
     if (essentialData.briefDescription) current++;
     if (essentialData.targetAudience) current++;
-    if (essentialData.detailedContext?.themes) current++;
-    if (essentialData.detailedContext?.tone) current++;
-    if (essentialData.detailedContext?.structure) current++;
     if (essentialData.targetPages) current++;
   } else if (essentialData.wantsDetailedOnboarding === false) {
     // Quick path: 3 questions + page count = 4 total
@@ -532,11 +510,6 @@ export async function extractEssentialData(
   targetAudience?: string; 
   workingTitle?: string;
   wantsDetailedOnboarding?: boolean;
-  detailedContext?: {
-    themes?: string;
-    tone?: string;
-    structure?: string;
-  };
 }> {
   const prompt = `Extract essential story information from the author's response.
 
@@ -551,9 +524,6 @@ Extract any of these fields if mentioned:
 - targetAudience: Who will read this book
 - workingTitle: Title if mentioned
 - wantsDetailedOnboarding: true if user chose "Share More Context", false if user chose "Create Blueprint Now"
-- detailedContext.themes: Main themes or messages (if in detailed path)
-- detailedContext.tone: Desired tone or writing style (if in detailed path)
-- detailedContext.structure: Preferred structure or pacing (if in detailed path)
 
 Return JSON object with only the fields that are clearly mentioned.`;
 
@@ -585,15 +555,6 @@ Return JSON object with only the fields that are clearly mentioned.`;
                 targetAudience: { type: "string" },
                 workingTitle: { type: "string" },
                 wantsDetailedOnboarding: { type: "boolean" },
-                detailedContext: {
-                  type: "object",
-                  properties: {
-                    themes: { type: "string" },
-                    tone: { type: "string" },
-                    structure: { type: "string" },
-                  },
-                  additionalProperties: false,
-                },
               },
               additionalProperties: false,
             },

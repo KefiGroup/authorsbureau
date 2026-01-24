@@ -74,60 +74,7 @@ describe("Two-Tier Onboarding System", () => {
     }, 10000);
   });
 
-  describe("Detailed Context Extraction", () => {
-    it("should extract themes from detailed path", async () => {
-      const conversationHistory = [
-        { role: "assistant", content: "What are the main themes or messages you want to explore in your book?" },
-      ];
-
-      const userMessage = "I want to explore themes of justice, redemption, and the complexity of human nature.";
-      const result = await extractEssentialData(userMessage, conversationHistory);
-
-      expect(result.detailedContext?.themes).toBeDefined();
-      expect(result.detailedContext?.themes).toContain("justice");
-    });
-
-    it("should extract tone from detailed path", async () => {
-      const conversationHistory = [
-        { role: "assistant", content: "What tone or writing style do you envision for your book?" },
-      ];
-
-      const userMessage = "I want a dark, atmospheric tone with elements of suspense and psychological depth.";
-      const result = await extractEssentialData(userMessage, conversationHistory);
-
-      expect(result.detailedContext?.tone).toBeDefined();
-      expect(result.detailedContext?.tone).toContain("dark");
-    });
-
-    it("should extract structure from detailed path", async () => {
-      const conversationHistory = [
-        { role: "assistant", content: "What structure or pacing do you prefer for your book?" },
-      ];
-
-      const userMessage = "I prefer a fast-paced structure with short chapters and multiple cliffhangers.";
-      const result = await extractEssentialData(userMessage, conversationHistory);
-
-      expect(result.detailedContext?.structure).toBeDefined();
-      expect(result.detailedContext?.structure).toContain("fast-paced");
-    });
-
-    it("should extract all detailed context fields together", async () => {
-      const conversationHistory = [
-        { role: "assistant", content: "What are the main themes?" },
-        { role: "user", content: "Justice and redemption" },
-        { role: "assistant", content: "What tone do you want?" },
-        { role: "user", content: "Dark and atmospheric" },
-        { role: "assistant", content: "What structure do you prefer?" },
-      ];
-
-      const userMessage = "Fast-paced with short chapters";
-      const result = await extractEssentialData(userMessage, conversationHistory);
-
-      // Should extract structure from current message
-      expect(result.detailedContext?.structure).toBeDefined();
-      expect(result.detailedContext?.structure).toContain("Fast-paced");
-    });
-  });
+  // Detailed context extraction tests removed - simplified flow no longer asks themes/tone/structure questions
 
   describe("Essential Data Extraction (Existing Functionality)", () => {
     it("should still extract project type", async () => {
@@ -189,7 +136,7 @@ describe("Two-Tier Onboarding System", () => {
       expect(result.detailedContext).toBeUndefined();
     });
 
-    it("should handle complete detailed path flow", async () => {
+    it("should handle complete detailed path flow (simplified - no extra questions)", async () => {
       const conversationHistory = [
         { role: "assistant", content: "What type of project?" },
         { role: "user", content: "Novel" },
@@ -199,12 +146,7 @@ describe("Two-Tier Onboarding System", () => {
         { role: "user", content: "Mystery readers" },
         { role: "assistant", content: "Create blueprint now or share more context?" },
         { role: "user", content: "Share More Context" },
-        { role: "assistant", content: "What are the main themes?" },
-        { role: "user", content: "Justice and morality" },
-        { role: "assistant", content: "What tone do you want?" },
-        { role: "user", content: "Dark and gritty" },
-        { role: "assistant", content: "What structure do you prefer?" },
-        { role: "user", content: "Fast-paced thriller" },
+        { role: "assistant", content: "Great! We'll be drafting your blueprint now. You can refine any details during chapter editing. How many pages do you want your book to be?" },
       ];
 
       const userMessage = "250 pages";
@@ -212,8 +154,8 @@ describe("Two-Tier Onboarding System", () => {
 
       // Should have detailed path choice
       expect(result.wantsDetailedOnboarding).toBe(true);
-      // Should have detailed context
-      expect(result.detailedContext).toBeDefined();
+      // Detailed context no longer exists in simplified flow
+      expect(result.detailedContext).toBeUndefined();
     });
   });
 });
