@@ -293,7 +293,7 @@ export default function GenerateManuscript() {
         </Link>
         <h1 className="text-3xl font-bold mb-2">{blueprint.workingTitle}</h1>
         <p className="text-muted-foreground">
-          Progress: {currentSectionIndex + 1} of {sections.length} sections
+          Viewing: {currentSection.type === "chapter" ? `Chapter ${currentSection.number}` : currentSection.title} ({currentSectionIndex + 1} of {sections.length} sections)
         </p>
       </div>
 

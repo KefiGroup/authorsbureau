@@ -1831,3 +1831,40 @@ Blueprint content in StartWriting.tsx is cut off and not scrollable. Users canno
 
 ### Status
 **COMPLETED** - Blueprint content is now fully scrollable. Users can view all sections from Cover Page through Writing Guidelines.
+
+
+---
+
+## 🐛 Inconsistent Progress Indicators in Manuscript Generation (IN PROGRESS)
+
+### Issue
+Three different progress numbers are displayed on the manuscript generation page:
+1. "Progress: 16 of 25 sections" (top subtitle)
+2. "Overall Progress 14 / 25 approved" (progress bar)
+3. Currently viewing "Chapter 15"
+
+This creates confusion about actual progress. Need to investigate what each counter tracks and standardize the logic.
+
+### Tasks
+- [x] Locate progress calculation logic in GenerateManuscript.tsx
+- [x] Identify what each counter is tracking (generated vs approved vs current)
+- [x] Determine the correct single source of truth for progress
+- [x] Standardize all progress displays to show consistent numbers
+- [x] Test with actual manuscript data to verify accuracy
+
+### Root Cause
+The subtitle showed "Progress: 16 of 25 sections" which was ambiguous - it actually meant "currently viewing section 16" but users interpreted it as "16 sections completed".
+
+### Solution
+Changed the subtitle from:
+- "Progress: {currentSectionIndex + 1} of {sections.length} sections"
+
+To:
+- "Viewing: Chapter 17 (18 of 25 sections)"
+
+This clearly distinguishes:
+1. **Current Position**: "Viewing: Chapter 17 (18 of 25 sections)" - which section you're looking at
+2. **Completion Progress**: "Overall Progress 15 / 25 approved" - how many sections are done
+
+### Status
+**COMPLETED** - Progress indicators now clearly show current position vs completion status. No more confusion between "viewing section X" and "X sections completed".
