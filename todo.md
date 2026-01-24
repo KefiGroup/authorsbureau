@@ -1235,3 +1235,31 @@ This is priority #1 from the next steps list
 - [ ] Verify 3 variations are generated with distinct approaches
 - [ ] Select one variation and verify it loads into manual editor
 - [ ] Test regenerate functionality
+
+
+---
+
+## ✅ FIXED: Page Count Now Shows as Checkbox Options
+
+### Problem (Resolved)
+- [x] AI was asking page count as a text question: "How long do you intend this book to be?"
+- [x] Now shows as checkbox buttons for faster selection
+- [x] Added intro message about "3 important questions"
+
+### Changes Implemented
+- [x] Added intro message: "We'll start by asking 3 important questions to get a sense of what you want to write. Let's begin!"
+- [x] Changed page count from text question to checkbox suggestions format
+- [x] Exact checkbox options implemented:
+  * 150 pages
+  * 200 pages
+  * 250 pages
+  * 300 pages
+  * > 300 pages
+
+### Files Modified
+- [x] server/writing-studio-agent-v2.ts: Updated initial message (line 67-70) and page count format (line 102)
+
+### User Testing Required
+- [ ] Start a new book and verify intro message appears
+- [ ] Verify page count shows as clickable checkbox buttons
+- [ ] Verify all 5 page options are visible
