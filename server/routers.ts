@@ -1583,10 +1583,10 @@ Include:
 1. Copyright notice: "Copyright © ${currentYear} by ${authorName}. All rights reserved."
 2. Standard rights statement (no part may be reproduced without permission)
 3. Publisher info placeholder (if self-published)
-4. ISBN placeholder
-5. Disclaimer (This is a work of fiction...)
+4. **ISBN placeholder: "ISBN: [Your ISBN Here]"** - Make this VERY CLEAR and prominent so the author can easily find and replace it
+5. Disclaimer (This is a work of fiction... OR This is a work of non-fiction... depending on genre)
 
-Format professionally. Just write the copyright page content, no heading.`;
+Format professionally with proper spacing. Just write the copyright page content, no heading.`;
         } else if (input.sectionType === "acknowledgements") {
           prompt = `Write professional ACKNOWLEDGEMENTS (2-3 paragraphs) for this book:
 

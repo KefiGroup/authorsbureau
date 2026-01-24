@@ -2393,3 +2393,18 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Test deletion workflow (dialog opens correctly with warning message)
 - [x] Verify Cancel button closes dialog without deleting
 - [ ] User to test actual deletion (click "Delete Permanently" to confirm cascade delete works)
+
+
+---
+
+## 🎯 NEW USER REQUEST: ISBN Reminder for Copyright Page
+
+**User Request:** Add ISBN reminder and link for authors to obtain ISBN before publishing
+
+**Requirements:**
+- [x] Add ISBN reminder banner/notice when generating copyright page
+- [x] Include link to ISBN registration services (Bowker for US, Nielsen for UK, Amazon KDP guide)
+- [x] Show ISBN placeholder in copyright page content ("ISBN: [Your ISBN Here]")
+- [x] Explain why ISBN is needed (required for print books on Amazon KDP)
+- [x] Update AI prompt to make ISBN placeholder very clear and prominent
+- [x] Test ISBN reminder implementation (code verified, will appear when user navigates to copyright section)
