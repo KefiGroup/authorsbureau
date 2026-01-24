@@ -152,12 +152,11 @@ export default function StartWritingProcess() {
       const userMessageCount = messages.filter(m => m.role === "user").length + 1;
       setQuestionCount(userMessageCount);
       
-      // Show final checkpoint modal immediately after branching choice
-      // Check if AI message contains the reassuring message or asks for page count
-      if (data.message.includes("We'll be drafting your blueprint now") || 
-          data.message.includes("Number of Pages") || 
-          data.message.includes("target book length") || 
-          data.message.includes("how many pages")) {
+      // Show final checkpoint modal after all 3 questions are answered
+      // Check if AI message indicates completion of 3 questions
+      if (data.message.includes("Perfect! I have everything I need") || 
+          data.message.includes("select your target page count") ||
+          data.message.includes("generate your complete blueprint")) {
         setShowFinalCheckpoint(true);
       }
       

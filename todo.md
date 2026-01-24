@@ -1506,3 +1506,22 @@ This is priority #1 from the next steps list
 - [x] Remove detailedContext tracking from ConversationState
 - [x] Update progress calculation (Quick: 3 questions, Detailed: 3 questions + reassurance)
 - [x] Test both paths to ensure modal appears correctly
+
+
+---
+
+## 🔧 Remove Branching Choice Entirely (CURRENT)
+
+### User Feedback
+- [x] "Share More Context" button still appearing - user wants it completely removed
+- [x] Simplify to single path: 3 questions → page count modal → generate blueprint
+- [x] No branching choice at all
+
+### Implementation
+- [x] Remove branching question from AI system prompt
+- [x] Remove wantsDetailedOnboarding tracking from ConversationState
+- [x] Update modal trigger to show after 3rd question is answered
+- [x] Update completion logic to check for 3 essential questions only
+- [x] Update progress calculation to show 3 questions total
+- [x] Remove branching choice detection from extractEssentialData
+- [x] Update tests to reflect single-path flow

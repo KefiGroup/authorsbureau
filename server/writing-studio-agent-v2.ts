@@ -15,8 +15,6 @@ interface ConversationState {
     targetAudience?: string;
     targetPages?: number;
     workingTitle?: string;
-    // Two-tier onboarding: track if user wants quick or detailed path
-    wantsDetailedOnboarding?: boolean;
   };
   generatedBlueprint?: Partial<StoryBlueprint>;
   conversationHistory: Array<{ role: "user" | "assistant"; content: string }>;
@@ -58,32 +56,20 @@ async function handleInitialQuestions(
   const needsAudience = !essentialData.targetAudience;
   const needsPages = !essentialData.targetPages;
   
-  // Two-tier onboarding: After 3 questions, ask if they want to share more context
+  // Check if all 3 essential questions are answered
   const hasAnsweredThreeQuestions = essentialData.projectType && essentialData.briefDescription && essentialData.targetAudience;
-  const needsBranchingChoice = hasAnsweredThreeQuestions && essentialData.wantsDetailedOnboarding === undefined;
-  const isDetailedPath = essentialData.wantsDetailedOnboarding === true;
-  
-  // Detailed path: no additional questions, just show reassuring message before modal
 
   const systemPrompt = `You are an expert story development coach. You're helping an author create a comprehensive story blueprint.
 
-Your Goal: Gather essential information through a two-tier onboarding system:
+Your Goal: Gather essential information through 3 simple questions:
 
-TIER 1 - Essential Questions (3 questions):
 1. Project type (novel, novella, memoir, etc.)
 2. Brief description (2-3 sentences about what the book is about)
 3. Target audience (who will read this book)
 
-TIER 2 - Branching Choice:
-After the 3 essential questions, ask: "Would you prefer me to create your blueprint now, or would you like to share more context about your book with me?"
-- Provide 2 suggestion buttons: [SUGGESTIONS: Create Blueprint Now | Share More Context]
+After collecting these 3 answers, the system will automatically show a page count selection modal (150, 200, 250, 300, > 300 pages).
 
-If they choose "Share More Context":
-- Show this reassuring message: "Great! We'll be drafting your blueprint now. You can refine any details during chapter editing."
-- Then immediately ask for page count (150, 200, 250, 300, > 300 pages)
-
-If they choose "Create Blueprint Now":
-- Immediately ask for page count (150, 200, 250, 300, > 300 pages)
+DO NOT ask about page count in the chat - the modal handles this automatically.
 
 IMPORTANT: If this is the VERY FIRST message (no conversation history), start with:
 "We'll start by asking 3 important questions to get a sense of what you want to write. Let's begin!"
@@ -102,8 +88,7 @@ Current Status:
 ${needsProjectType ? "- Need to ask: What type of project are you writing?" : "✓ Project type collected"}
 ${needsDescription ? "- Need to ask: What's your book about? (2-3 sentences)" : "✓ Brief description collected"}
 ${needsAudience ? "- Need to ask: Who is this book for? (Your ideal reader)" : "✓ Target audience collected"}
-${needsBranchingChoice ? "- Need to ask: BRANCHING CHOICE - Create blueprint now or share more context?" : essentialData.wantsDetailedOnboarding === true ? "✓ User chose detailed path - show reassuring message" : essentialData.wantsDetailedOnboarding === false ? "✓ User chose quick path" : ""}
-${needsPages ? "- Need to ask: How many pages do you want your book to be?" : "✓ Target pages collected"}
+
 
 Instructions:
 - Be warm, encouraging, and conversational
@@ -112,7 +97,8 @@ Instructions:
 - You may reference their background/expertise to show understanding, but NEVER mention specific book titles
 - Always frame this as a NEW project they're creating, not continuing previous work
 - Use generic terms like "your book", "your project", "this work" - never specific titles
-- When you have all 4 pieces, tell them you'll generate a complete blueprint
+- After collecting all 3 answers, tell them: "Perfect! I have everything I need. The next step is to select your target page count, and then I'll generate your complete blueprint."
+- DO NOT ask about page count - the modal will appear automatically
 - DO NOT use Markdown formatting (**, ##, etc.) in your responses - use plain, natural text only
 
 SUGGESTION GENERATION RULES (CRITICAL - FOLLOW EXACTLY):
@@ -133,11 +119,10 @@ SUGGESTION GENERATION RULES (CRITICAL - FOLLOW EXACTLY):
    - Example: For mystery novel, suggest: [SUGGESTIONS: Adult readers 30-50 | Young adults 18-25 | Mystery enthusiasts | General fiction readers | Thriller fans]
    - Example: For business book, suggest: [SUGGESTIONS: Entrepreneurs | Business professionals | Students | Career changers | Industry experts]
 
-4. **For Branching Choice:**
-   - ALWAYS provide exactly: [SUGGESTIONS: Create Blueprint Now | Share More Context]
-
-5. **For Page Count Question:**
-   - ALWAYS provide exactly: [SUGGESTIONS: 150 pages | 200 pages | 250 pages | 300 pages | > 300 pages]
+4. **After All 3 Questions:**
+   - DO NOT provide any more suggestions
+   - DO NOT ask about page count
+   - Simply acknowledge completion and tell them the modal will appear
 
 **CRITICAL RULES:**
 - NEVER generate suggestions about topics the user hasn't mentioned (e.g., don't suggest "investing" if they're writing a detective story)
@@ -167,51 +152,19 @@ End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4 | op
   const suggestions = extractSuggestions(aiMessage);
   const cleanMessage = aiMessage.replace(/\[SUGGESTIONS:.*?\]/g, "").trim();
 
-  // Check if we have all essential data (including branching path completion)
-  let isComplete = false;
-  
-  if (essentialData.wantsDetailedOnboarding === true) {
-    // Detailed path: need 3 essential + pages (same as quick path now)
-    isComplete = !!essentialData.projectType && 
-                 !!essentialData.briefDescription && 
-                 !!essentialData.targetAudience && 
-                 !!essentialData.targetPages;
-  } else if (essentialData.wantsDetailedOnboarding === false) {
-    // Quick path: need 3 essential + pages
-    isComplete = !!essentialData.projectType && 
-                 !!essentialData.briefDescription && 
-                 !!essentialData.targetAudience && 
-                 !!essentialData.targetPages;
-  } else {
-    // Haven't chosen path yet
-    isComplete = false;
-  }
+  // Check if we have all essential data (3 questions + page count from modal)
+  const isComplete = !!essentialData.projectType && 
+                     !!essentialData.briefDescription && 
+                     !!essentialData.targetAudience && 
+                     !!essentialData.targetPages;
 
-  // Calculate progress
+  // Calculate progress (3 questions total - page count handled by modal)
   let current = 0;
-  let total = 3; // Default to quick path (3 essential questions)
+  const total = 3;
   
-  if (essentialData.wantsDetailedOnboarding === true) {
-    // Detailed path: 3 questions + page count = 4 total (same as quick path now)
-    total = 4;
-    if (essentialData.projectType) current++;
-    if (essentialData.briefDescription) current++;
-    if (essentialData.targetAudience) current++;
-    if (essentialData.targetPages) current++;
-  } else if (essentialData.wantsDetailedOnboarding === false) {
-    // Quick path: 3 questions + page count = 4 total
-    total = 4;
-    if (essentialData.projectType) current++;
-    if (essentialData.briefDescription) current++;
-    if (essentialData.targetAudience) current++;
-    if (essentialData.targetPages) current++;
-  } else {
-    // Haven't chosen path yet, show progress for first 3 questions only
-    total = 3;
-    if (essentialData.projectType) current++;
-    if (essentialData.briefDescription) current++;
-    if (essentialData.targetAudience) current++;
-  }
+  if (essentialData.projectType) current++;
+  if (essentialData.briefDescription) current++;
+  if (essentialData.targetAudience) current++;
 
   return {
     message: cleanMessage,
@@ -509,7 +462,6 @@ export async function extractEssentialData(
   briefDescription?: string; 
   targetAudience?: string; 
   workingTitle?: string;
-  wantsDetailedOnboarding?: boolean;
 }> {
   const prompt = `Extract essential story information from the author's response.
 
@@ -523,7 +475,6 @@ Extract any of these fields if mentioned:
 - briefDescription: 2-3 sentence description of what the book is about
 - targetAudience: Who will read this book
 - workingTitle: Title if mentioned
-- wantsDetailedOnboarding: true if user chose "Share More Context", false if user chose "Create Blueprint Now"
 
 Return JSON object with only the fields that are clearly mentioned.`;
 
@@ -554,7 +505,6 @@ Return JSON object with only the fields that are clearly mentioned.`;
                 briefDescription: { type: "string" },
                 targetAudience: { type: "string" },
                 workingTitle: { type: "string" },
-                wantsDetailedOnboarding: { type: "boolean" },
               },
               additionalProperties: false,
             },
