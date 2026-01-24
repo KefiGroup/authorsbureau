@@ -2543,3 +2543,11 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Update to user's preference: 1,500-2,000 words per chapter - Reads from finalCheckpointData
 - [x] For 150 pages: Shows 20 chapters for short (1,500-2,000 words), 12 for medium, 8 for long
 - [x] Recalculate: 150 pages × 250 words/page = 37,500 total words ÷ user's chapter length preference
+
+
+### Blueprint Simplification (Remove Chapter Length Selection)
+- [x] Remove "Chapter Length" section from FinalCheckpointModal
+- [x] Update FinalCheckpointData interface to remove chapterLength field
+- [x] Update blueprint generator to show "10-15 chapters (AI-determined)" instead of calculated count
+- [x] Remove all word count calculations from blueprint
+- [x] Update blueprint prompt to instruct AI to determine optimal chapter structure (10-15 chapters)

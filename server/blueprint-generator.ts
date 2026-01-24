@@ -11,40 +11,7 @@ export async function generateBlueprintContent(blueprint: StoryBlueprint, author
 **Working Title:** ${blueprint.workingTitle || "Untitled"}
 **Target Length:** ${blueprint.targetLength || "Not specified"}
 **Target Pages:** ${blueprint.targetPages || "Not specified"}
-**Target Word Count:** ${blueprint.targetPages ? (() => {
-  const totalWords = blueprint.targetPages * 250;
-  const chapterContent = totalWords - 2500; // Reserve 2500 words for front/back matter
-  
-  // Get user's chapter length preference from finalCheckpointData
-  let wordsPerChapter = 2500; // Default to medium
-  let chapterLengthLabel = "Medium chapters (2,500-3,500 words)";
-  
-  if (blueprint.finalCheckpointData) {
-    try {
-      const prefs = JSON.parse(blueprint.finalCheckpointData);
-      const chapterLength = prefs.chapterLength?.[0]; // Get first selected option
-      
-      if (chapterLength?.includes('1,500-2,000')) {
-        wordsPerChapter = 1750; // Average of 1500-2000
-        chapterLengthLabel = "Short chapters (1,500-2,000 words)";
-      } else if (chapterLength?.includes('2,500-3,500')) {
-        wordsPerChapter = 3000; // Average of 2500-3500
-        chapterLengthLabel = "Medium chapters (2,500-3,500 words)";
-      } else if (chapterLength?.includes('4,000+')) {
-        wordsPerChapter = 4500; // 4000+ average
-        chapterLengthLabel = "Long chapters (4,000+ words)";
-      } else if (chapterLength?.includes('Variable')) {
-        wordsPerChapter = 2500; // Use medium as baseline for variable
-        chapterLengthLabel = "Variable length based on content";
-      }
-    } catch (e) {
-      // If parsing fails, use default
-    }
-  }
-  
-  const chapters = Math.round(chapterContent / wordsPerChapter);
-  return `${totalWords} words (${chapters} chapters × ${wordsPerChapter} words avg, based on ${chapterLengthLabel})`;
-})() : "Not specified"}
+**Target Structure:** ${blueprint.targetPages ? `${blueprint.targetPages} pages in 6" x 9" format, 10-15 chapters (AI will determine optimal structure based on content)` : "Not specified"}
 **Primary Genre:** ${blueprint.primaryGenre || "Not specified"}
 **Secondary Genre:** ${blueprint.secondaryGenre || "Not specified"}
 
@@ -66,7 +33,7 @@ ${JSON.stringify(JSON.parse(blueprint.finalCheckpointData), null, 2)}
 IMPORTANT: Incorporate the author's preferences throughout the blueprint:
 - Use the specified tone and voice
 - Follow the preferred writing style
-- Plan for the requested chapter length
+- Structure the book into 10-15 chapters based on what makes the most sense for the content
 - Include the special elements (case studies, exercises, charts, etc.)
 - Integrate the call-to-action strategy
 ` : ''}
@@ -79,24 +46,8 @@ Generate a professional, comprehensive story blueprint with the following sectio
 - Working Title
 - Author Name: ${authorName || "[Author Name Placeholder]"}
 - Genre Classification
-- Target Word Count: ${blueprint.targetPages ? (() => {
-  const totalWords = blueprint.targetPages * 250;
-  const chapterContent = totalWords - 2500;
-  
-  let wordsPerChapter = 2500;
-  if (blueprint.finalCheckpointData) {
-    try {
-      const prefs = JSON.parse(blueprint.finalCheckpointData);
-      const chapterLength = prefs.chapterLength?.[0];
-      if (chapterLength?.includes('1,500-2,000')) wordsPerChapter = 1750;
-      else if (chapterLength?.includes('2,500-3,500')) wordsPerChapter = 3000;
-      else if (chapterLength?.includes('4,000+')) wordsPerChapter = 4500;
-    } catch (e) {}
-  }
-  
-  const chapters = Math.round(chapterContent / wordsPerChapter);
-  return `${totalWords} words (${chapters} chapters × ${wordsPerChapter} words avg)`;
-})() : "Not specified"} (for ${blueprint.targetPages || "N/A"} pages in 6" x 9" format)
+- Target Structure: ${blueprint.targetPages || "Not specified"} pages in 6" x 9" format
+- Chapter Count: 10-15 chapters (AI will determine optimal structure based on content)
 - Date Created: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 
 ## Premise Statement

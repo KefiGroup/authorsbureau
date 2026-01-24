@@ -20,7 +20,6 @@ export interface FinalCheckpointData {
   toneVoiceOther: string;
   writingStyle: string[];
   writingStyleOther: string;
-  chapterLength: string[];
   specialElements: string[];
   specialElementsOther: string;
   callToAction: string[];
@@ -40,7 +39,6 @@ export function FinalCheckpointModal({ open, onComplete, onClose }: FinalCheckpo
     toneVoiceOther: "",
     writingStyle: [],
     writingStyleOther: "",
-    chapterLength: [],
     specialElements: [],
     specialElementsOther: "",
     callToAction: [],
@@ -216,32 +214,6 @@ export function FinalCheckpointModal({ open, onComplete, onClose }: FinalCheckpo
                     />
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Chapter Length */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Chapter Length</h3>
-              <div className="space-y-3">
-                {[
-                  "Short chapters (1,500-2,000 words)",
-                  "Medium chapters (2,500-3,500 words)",
-                  "Long chapters (4,000+ words)",
-                  "Variable length based on content",
-                ].map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`length-${option}`}
-                      checked={data.chapterLength.includes(option)}
-                      onCheckedChange={(checked) =>
-                        handleCheckboxChange("chapterLength", option, checked as boolean)
-                      }
-                    />
-                    <Label htmlFor={`length-${option}`} className="cursor-pointer">
-                      {option}
-                    </Label>
-                  </div>
-                ))}
               </div>
             </div>
 
