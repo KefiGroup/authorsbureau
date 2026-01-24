@@ -2537,3 +2537,9 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Fix blueprint KDP category suggestion prompt to align with BSR-based strategy (not book count)
 - [x] Update prompt to mention sales targets (e.g., "20-33 sales in 24hr") instead of "fewer than 1,000 books"
 - [x] Ensure blueprint prompt matches Publishing Studio's actual KDP optimization logic
+
+### Word Count Calculation Fix (CRITICAL)
+- [x] Fix hardcoded 3,500 words per chapter formula - Now uses user's checkbox selection
+- [x] Update to user's preference: 1,500-2,000 words per chapter - Reads from finalCheckpointData
+- [x] For 150 pages: Shows 20 chapters for short (1,500-2,000 words), 12 for medium, 8 for long
+- [x] Recalculate: 150 pages × 250 words/page = 37,500 total words ÷ user's chapter length preference
