@@ -1238,6 +1238,56 @@ export default function ReadyToPublish() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* ISBN Reminder Banner */}
+                <div className="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
+                      <AlertCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-lg mb-2">
+                        📚 Get Your ISBN Before Uploading
+                      </h3>
+                      <p className="text-blue-800 dark:text-blue-200 mb-4">
+                        Your manuscript includes an ISBN placeholder in the copyright page. Before uploading for AI analysis, 
+                        we recommend obtaining your ISBN and updating the manuscript file. This ensures your book is ready for immediate KDP upload after cover design.
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        <a
+                          href="https://www.myidentifiers.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Get ISBN (US - Bowker)
+                        </a>
+                        <a
+                          href="https://www.nielsenisbnstore.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Get ISBN (UK - Nielsen)
+                        </a>
+                        <a
+                          href="https://kdp.amazon.com/en_US/help/topic/G201834340"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          <BookOpen className="w-4 h-4" />
+                          Amazon KDP ISBN Guide
+                        </a>
+                      </div>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 mt-4">
+                        💡 <strong>Tip:</strong> You can also proceed without ISBN now and add it later before publishing to KDP.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Show existing manuscript loaded message */}
                 {existingManuscriptLoaded && existingBook && bookId && (
                   <div className="bg-green-50 border-2 border-green-500 rounded-lg p-6 space-y-4">

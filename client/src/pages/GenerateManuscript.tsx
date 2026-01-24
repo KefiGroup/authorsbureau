@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RichTextEditor } from "@/components/RichTextEditor";
-import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download, Sparkles, XCircle, RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download, Sparkles, XCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { marked } from "marked";
 import { exportToDocx } from "@/lib/exportDocx";
@@ -482,54 +482,6 @@ export default function GenerateManuscript() {
           {!currentManuscript || currentManuscript.status === "pending" ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">This section hasn't been generated yet.</p>
-              
-              {/* ISBN Reminder for Copyright Page */}
-              {currentSection?.type === "copyright" && (
-                <div className="max-w-2xl mx-auto mb-6 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1 text-left">
-                      <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">ISBN Required for Publishing</h4>
-                      <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
-                        Before publishing your book on Amazon KDP, you'll need an ISBN (International Standard Book Number). 
-                        The AI will generate a copyright page with an ISBN placeholder that you can update later.
-                      </p>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <a
-                          href="https://www.myidentifiers.com/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                        >
-                          Get ISBN (US - Bowker)
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                        <span className="hidden sm:inline text-blue-400 dark:text-blue-600">|</span>
-                        <a
-                          href="https://www.nielsenisbnstore.com/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                        >
-                          Get ISBN (UK - Nielsen)
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                        <span className="hidden sm:inline text-blue-400 dark:text-blue-600">|</span>
-                        <a
-                          href="https://kdp.amazon.com/en_US/help/topic/G201834340"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                        >
-                          Amazon KDP ISBN Guide
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
               <Button onClick={handleGenerate} disabled={isGenerating} size="lg">
                 {isGenerating ? (
                   <>

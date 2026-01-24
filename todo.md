@@ -2397,14 +2397,16 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 
 ---
 
-## 🎯 NEW USER REQUEST: ISBN Reminder for Copyright Page
+## 🎯 NEW USER REQUEST: ISBN Reminder in AI Publishing Studio
 
-**User Request:** Add ISBN reminder and link for authors to obtain ISBN before publishing
+**User Request:** Add ISBN reminder in AI Publishing Studio upload page (after book is written)
 
 **Requirements:**
-- [x] Add ISBN reminder banner/notice when generating copyright page
-- [x] Include link to ISBN registration services (Bowker for US, Nielsen for UK, Amazon KDP guide)
-- [x] Show ISBN placeholder in copyright page content ("ISBN: [Your ISBN Here]")
-- [x] Explain why ISBN is needed (required for print books on Amazon KDP)
-- [x] Update AI prompt to make ISBN placeholder very clear and prominent
-- [x] Test ISBN reminder implementation (code verified, will appear when user navigates to copyright section)
+- [x] Remove ISBN reminder from copyright generation page (wrong timing)
+- [x] Add ISBN reminder banner to AI Publishing Studio upload page
+- [x] Show reminder before manuscript upload/paste area
+- [x] Include links to Bowker (US), Nielsen (UK), Amazon KDP guide
+- [x] Explain: "Update the ISBN placeholder in your manuscript before uploading"
+- [x] Keep ISBN placeholder in copyright page content ("ISBN: [Your ISBN Here]")
+- [x] AI prompt already makes ISBN placeholder very clear and prominent
+- [x] Test complete flow: Generate Manuscript → Export to Publishing Studio → See ISBN reminder (✅ Working perfectly!)
