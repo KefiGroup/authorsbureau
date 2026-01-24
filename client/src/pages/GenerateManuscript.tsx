@@ -279,10 +279,43 @@ export default function GenerateManuscript() {
     downloadMutation.mutate({ blueprintId: Number(blueprintId) });
   };
 
-  const handleExportToPublishing = () => {
-    // Navigate to AI Publishing Studio with blueprint ID
-    navigate(`/ai-publishing-studio?blueprintId=${blueprintId}`);
-    toast.success("Redirecting to AI Publishing Studio...");
+  // Export manuscript mutation
+  const exportManuscript = trpc.manuscript.getManuscriptText.useQuery(
+    { blueprintId: Number(blueprintId) },
+    { enabled: false } // Don't auto-fetch, only fetch when explicitly called
+  );
+
+  const handleExportToPublishing = async () => {
+    if (!blueprintId) return;
+    
+    try {
+      toast.loading("Preparing manuscript for export...");
+      
+      // Fetch complete manuscript text
+      const manuscriptData = await exportManuscript.refetch();
+      
+      if (!manuscriptData.data) {
+        throw new Error("Failed to fetch manuscript data");
+      }
+      
+      // Store manuscript data in localStorage for Publishing Studio to pick up
+      localStorage.setItem('exportedManuscript', JSON.stringify({
+        manuscriptText: manuscriptData.data.manuscriptText,
+        bookTitle: manuscriptData.data.bookTitle,
+        wordCount: manuscriptData.data.wordCount,
+        blueprintId: blueprintId,
+        timestamp: Date.now(),
+      }));
+      
+      toast.dismiss();
+      toast.success("Manuscript ready! Redirecting to AI Publishing Studio...");
+      
+      // Navigate to AI Publishing Studio
+      navigate(`/ai-publishing-studio?from=manuscript&blueprintId=${blueprintId}`);
+    } catch (error: any) {
+      toast.dismiss();
+      toast.error(error.message || "Failed to export manuscript");
+    }
   };
 
   // Show detailed loading/error states

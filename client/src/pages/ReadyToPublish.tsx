@@ -51,7 +51,9 @@ interface AIAnalysis {
 
 export default function ReadyToPublish() {
   const [location, setLocation] = useLocation();
-  const bookIdFromUrl = new URLSearchParams(window.location.search).get('bookId');
+  const urlParams = new URLSearchParams(window.location.search);
+  const bookIdFromUrl = urlParams.get('bookId');
+  const fromManuscript = urlParams.get('from') === 'manuscript';
   const [bookId, setBookId] = useState<number | null>(bookIdFromUrl ? parseInt(bookIdFromUrl) : null);
   const [currentStep, setCurrentStep] = useState<WorkflowStep>("upload");
   const [accountChecklistComplete, setAccountChecklistComplete] = useState(false);
@@ -125,6 +127,40 @@ export default function ReadyToPublish() {
   const { data: userBooks } = trpc.book.getMyBooks.useQuery(undefined, {
     enabled: !bookId,
   });
+
+  // Load exported manuscript from localStorage if coming from manuscript generation
+  useEffect(() => {
+    if (fromManuscript && !existingManuscriptLoaded) {
+      const exportedData = localStorage.getItem('exportedManuscript');
+      if (exportedData) {
+        try {
+          const data = JSON.parse(exportedData);
+          // Check if data is recent (within last 5 minutes)
+          const isRecent = Date.now() - data.timestamp < 5 * 60 * 1000;
+          
+          if (isRecent) {
+            console.log('[Exported Manuscript] Loading manuscript from localStorage');
+            setManuscript(data.manuscriptText);
+            setWordCount(data.wordCount);
+            setInitialTitle(data.bookTitle);
+            setExistingManuscriptLoaded(true);
+            setStartingFresh(true); // Prevent auto-loading existing book
+            
+            // Clear localStorage after loading
+            localStorage.removeItem('exportedManuscript');
+            
+            toast.success(`Manuscript loaded! ${data.wordCount.toLocaleString()} words ready for publishing.`);
+          } else {
+            // Clear stale data
+            localStorage.removeItem('exportedManuscript');
+          }
+        } catch (e) {
+          console.error('Failed to parse exported manuscript:', e);
+          localStorage.removeItem('exportedManuscript');
+        }
+      }
+    }
+  }, [fromManuscript, existingManuscriptLoaded]);
 
   // Auto-select most recent book if no bookId provided (unless user explicitly starting fresh)
   useEffect(() => {

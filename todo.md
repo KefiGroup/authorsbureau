@@ -2159,3 +2159,47 @@ Add "Unapprove" button to allow users to reverse approval and make edits to appr
 When database updates don't reflect in UI immediately, always check React Query cache invalidation. The `refetchProgress()` function was already implemented but needed to be triggered manually by the user.
 
 **Status:** RESOLVED ✅
+
+
+---
+
+## 🎯 NEW USER REQUEST: Improve DOCX Formatting & Auto-Upload to Publishing Studio
+
+### Issue 1: DOCX Formatting Needs Improvement
+**Current Problem:** Downloaded Word document formatting is not publication-ready
+**Requirements:**
+- [x] Review current DOCX export formatting
+- [x] Identify formatting issues (spacing, fonts, page breaks, headers)
+- [x] Redesign DOCX export with professional book formatting:
+  - [x] Proper page breaks between sections
+  - [x] Professional fonts (Georgia serif for body)
+  - [x] Consistent spacing and margins (1.5 line spacing)
+  - [x] Chapter titles formatted as headings with chapter numbers
+  - [x] Page numbers (Roman for front matter, Arabic for main content)
+  - [ ] Table of contents (deferred - can be added by Word/Google Docs)
+  - [x] Professional copyright page layout
+  - [x] Dedication/Acknowledgements with proper spacing
+  - [x] Author Bio formatted nicely
+- [x] Test DOCX export with all 26 sections (download successful, 26 sections included)
+- [ ] Verify formatting in Microsoft Word and Google Docs (user to verify)
+
+### Issue 2: Manuscript Auto-Upload to AI Publishing Studio
+**Current Problem:** User has to manually upload manuscript to AI Publishing Studio
+**Requirements:**
+- [x] Add backend procedure to get complete manuscript text
+- [x] Fetch manuscript text when Export button clicked
+- [x] Store manuscript data in localStorage temporarily
+- [x] Automatically transfer manuscript data to AI Publishing Studio upload page
+- [x] Pre-fill manuscript content in Publishing Studio textarea
+- [x] Pre-fill book title from blueprint
+- [x] Navigate user directly to Publishing Studio with manuscript loaded
+- [x] Test workflow: Generate Manuscript → Click Export → Publishing Studio pre-filled (✅ Working perfectly!)
+
+**User Flow:**
+1. User completes manuscript generation (26/26 sections approved)
+2. User clicks "Export to Publishing Studio" button
+3. System automatically navigates to AI Publishing Studio with manuscript pre-loaded
+4. User sees manuscript content already filled in the textarea
+5. User can proceed directly to AI analysis without manual copy-paste
+
+**Status:** In Progress

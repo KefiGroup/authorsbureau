@@ -2205,7 +2205,7 @@ IMPORTANT:
         blueprintId: z.number(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak } = await import("docx");
+        const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak, PageNumber, NumberFormat, Header, Footer, TableOfContents, UnderlineType, convertInchesToTwip } = await import("docx");
         const { manuscripts, storyBlueprints, bookStructures, chapterOutlines } = await import("../drizzle/schema");
         const { getDb } = await import("./db");
         const db = await getDb();
@@ -2262,39 +2262,65 @@ IMPORTANT:
         if (struct?.hasAlsoBy) sections.push({ type: "alsoBy", title: "Also By This Author" });
         if (struct?.hasNewsletter) sections.push({ type: "newsletter", title: "Newsletter Signup" });
 
-        // Create DOCX document
-        const docSections: any[] = [];
+        // Create DOCX document with professional formatting
+        const bookTitle = blueprint[0].workingTitle || "Untitled";
+        const authorName = ctx.user.name || "Author";
+        
+        // Build document sections with proper page numbering
+        const documentSections: any[] = [];
 
-        // Title page
-        docSections.push(
-          new Paragraph({
-            text: blueprint[0].workingTitle || "Untitled",
-            heading: HeadingLevel.TITLE,
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 400 },
-          }),
-          new Paragraph({
-            text: ctx.user.name || "Author",
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 400 },
-          }),
-          new Paragraph({ text: "", pageBreakBefore: true })
-        );
+        // === TITLE PAGE (no page number) ===
+        documentSections.push({
+          properties: {
+            page: {
+              pageNumbers: {
+                start: 1,
+                formatType: NumberFormat.DECIMAL,
+              },
+            },
+          },
+          children: [
+            new Paragraph({
+              text: bookTitle,
+              alignment: AlignmentType.CENTER,
+              spacing: { before: convertInchesToTwip(3), after: convertInchesToTwip(0.5) },
+              style: "Title",
+            }),
+            new Paragraph({
+              text: authorName,
+              alignment: AlignmentType.CENTER,
+              spacing: { after: convertInchesToTwip(0.3) },
+            }),
+          ],
+        });
 
-        // Add each section
+        // === FRONT MATTER (Roman numerals: i, ii, iii) ===
+        const frontMatterChildren: any[] = [];
+        let frontMatterPageCount = 0;
+
+        // Add front matter sections (Prologue, Copyright, Dedication)
         for (const section of sections) {
+          if (section.type === "chapter") break; // Stop at first chapter
+          
           const manuscript = approvedManuscripts.find((m: any) => 
             m.sectionType === section.type && 
             (section.type !== "chapter" || m.sectionNumber === section.number)
           );
 
           if (manuscript) {
-            // Section heading
-            docSections.push(
+            frontMatterPageCount++;
+            
+            // Page break before section (except first)
+            if (frontMatterChildren.length > 0) {
+              frontMatterChildren.push(new Paragraph({ text: "", pageBreakBefore: true }));
+            }
+
+            // Section heading (black, not blue)
+            frontMatterChildren.push(
               new Paragraph({
                 text: section.title,
                 heading: HeadingLevel.HEADING_1,
-                spacing: { before: 400, after: 200 },
+                spacing: { before: convertInchesToTwip(1), after: convertInchesToTwip(0.3) },
               })
             );
 
@@ -2303,28 +2329,220 @@ IMPORTANT:
             const paragraphs = content.split("\n\n");
             paragraphs.forEach((para: string) => {
               if (para.trim()) {
-                docSections.push(
+                frontMatterChildren.push(
                   new Paragraph({
                     text: para.trim(),
-                    spacing: { after: 200 },
+                    spacing: { after: convertInchesToTwip(0.15), line: 360 },
                   })
                 );
               }
             });
-
-            // Page break after each section
-            docSections.push(
-              new Paragraph({ text: "", pageBreakBefore: true })
-            );
           }
         }
 
-        // Create document
+        if (frontMatterChildren.length > 0) {
+          documentSections.push({
+            properties: {
+              page: {
+                pageNumbers: {
+                  start: 1,
+                  formatType: NumberFormat.LOWER_ROMAN,
+                },
+              },
+            },
+            footers: {
+              default: new Footer({
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        children: [PageNumber.CURRENT],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            },
+            children: frontMatterChildren,
+          });
+        }
+
+        // === MAIN CONTENT (Arabic numerals: 1, 2, 3) ===
+        const mainContentChildren: any[] = [];
+        let chapterCount = 0;
+
+        // Add chapters and back matter
+        for (const section of sections) {
+          // Skip front matter sections
+          if (section.type === "prologue" || section.type === "copyright" || section.type === "dedication") continue;
+          
+          const manuscript = approvedManuscripts.find((m: any) => 
+            m.sectionType === section.type && 
+            (section.type !== "chapter" || m.sectionNumber === section.number)
+          );
+
+          if (manuscript) {
+            // Page break before section
+            if (mainContentChildren.length > 0) {
+              mainContentChildren.push(new Paragraph({ text: "", pageBreakBefore: true }));
+            }
+
+            // Section heading with chapter number for chapters
+            if (section.type === "chapter") {
+              chapterCount++;
+              mainContentChildren.push(
+                new Paragraph({
+                  text: `Chapter ${section.number}`,
+                  heading: HeadingLevel.HEADING_1,
+                  spacing: { before: convertInchesToTwip(1), after: convertInchesToTwip(0.1) },
+                }),
+                new Paragraph({
+                  text: section.title,
+                  heading: HeadingLevel.HEADING_2,
+                  spacing: { after: convertInchesToTwip(0.3) },
+                })
+              );
+            } else {
+              mainContentChildren.push(
+                new Paragraph({
+                  text: section.title,
+                  heading: HeadingLevel.HEADING_1,
+                  spacing: { before: convertInchesToTwip(1), after: convertInchesToTwip(0.3) },
+                })
+              );
+            }
+
+            // Section content
+            const content = manuscript.content || "";
+            const paragraphs = content.split("\n\n");
+            paragraphs.forEach((para: string) => {
+              if (para.trim()) {
+                mainContentChildren.push(
+                  new Paragraph({
+                    text: para.trim(),
+                    spacing: { after: convertInchesToTwip(0.15), line: 360 },
+                  })
+                );
+              }
+            });
+          }
+        }
+
+        if (mainContentChildren.length > 0) {
+          documentSections.push({
+            properties: {
+              page: {
+                pageNumbers: {
+                  start: 1,
+                  formatType: NumberFormat.DECIMAL,
+                },
+              },
+            },
+            headers: {
+              default: new Header({
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        text: bookTitle,
+                        size: 18,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            },
+            footers: {
+              default: new Footer({
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({
+                        children: [PageNumber.CURRENT],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            },
+            children: mainContentChildren,
+          });
+        }
+
+        // Create document with professional styles
         const doc = new Document({
-          sections: [{
-            properties: {},
-            children: docSections,
-          }],
+          styles: {
+            default: {
+              document: {
+                run: {
+                  font: "Georgia",
+                  size: 24, // 12pt
+                },
+                paragraph: {
+                  spacing: {
+                    line: 360, // 1.5 line spacing
+                  },
+                },
+              },
+            },
+            paragraphStyles: [
+              {
+                id: "Title",
+                name: "Title",
+                basedOn: "Normal",
+                run: {
+                  font: "Georgia",
+                  size: 56, // 28pt
+                  bold: true,
+                  color: "000000",
+                },
+                paragraph: {
+                  alignment: AlignmentType.CENTER,
+                  spacing: {
+                    before: convertInchesToTwip(3),
+                    after: convertInchesToTwip(0.5),
+                  },
+                },
+              },
+              {
+                id: "Heading1",
+                name: "Heading 1",
+                basedOn: "Normal",
+                run: {
+                  font: "Georgia",
+                  size: 32, // 16pt
+                  bold: true,
+                  color: "000000", // Black, not blue
+                },
+                paragraph: {
+                  spacing: {
+                    before: convertInchesToTwip(0.5),
+                    after: convertInchesToTwip(0.3),
+                  },
+                },
+              },
+              {
+                id: "Heading2",
+                name: "Heading 2",
+                basedOn: "Normal",
+                run: {
+                  font: "Georgia",
+                  size: 28, // 14pt
+                  bold: true,
+                  color: "000000",
+                },
+                paragraph: {
+                  spacing: {
+                    after: convertInchesToTwip(0.3),
+                  },
+                },
+              },
+            ],
+          },
+          sections: documentSections,
         });
 
         // Generate buffer
@@ -2408,6 +2626,100 @@ IMPORTANT:
           .where(eq(manuscripts.id, input.manuscriptId));
 
         return { success: true, wordCount };
+      }),
+
+    // Get complete manuscript as plain text for export to Publishing Studio
+    getManuscriptText: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const { manuscripts, storyBlueprints, bookStructures, chapterOutlines } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq, asc } = await import("drizzle-orm");
+
+        // Get blueprint
+        const blueprint = await db.select().from(storyBlueprints)
+          .where(eq(storyBlueprints.id, input.blueprintId))
+          .limit(1);
+        if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
+        if (blueprint[0].userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN" });
+
+        // Get book structure
+        const structure = await db.select().from(bookStructures)
+          .where(eq(bookStructures.blueprintId, input.blueprintId))
+          .limit(1);
+
+        // Get chapter outline
+        const outline = await db.select().from(chapterOutlines)
+          .where(eq(chapterOutlines.blueprintId, input.blueprintId))
+          .limit(1);
+
+        // Get all approved manuscripts
+        const allManuscripts = await db.select().from(manuscripts)
+          .where(eq(manuscripts.blueprintId, input.blueprintId))
+          .orderBy(asc(manuscripts.id));
+
+        const approvedManuscripts = allManuscripts.filter((m: any) => m.status === "approved");
+
+        if (approvedManuscripts.length === 0) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No approved sections to export" });
+        }
+
+        // Build sections in correct order
+        const sections: any[] = [];
+        const struct = structure[0];
+        const outlineData = outline[0]?.outline as { chapters: any[] } | null;
+
+        if (struct?.hasPrologue) sections.push({ type: "prologue", title: "Prologue" });
+        if (struct?.hasCopyright) sections.push({ type: "copyright", title: "Copyright" });
+        if (struct?.hasDedication) sections.push({ type: "dedication", title: "Dedication" });
+
+        // Add chapters
+        if (outlineData?.chapters) {
+          outlineData.chapters.forEach((ch: any, index: number) => {
+            sections.push({ type: "chapter", number: index + 1, title: ch.title });
+          });
+        }
+
+        if (struct?.hasEpilogue) sections.push({ type: "epilogue", title: "Epilogue" });
+        if (struct?.hasAcknowledgements) sections.push({ type: "acknowledgements", title: "Acknowledgements" });
+        if (struct?.hasAuthorBio) sections.push({ type: "authorBio", title: "Author Bio" });
+        if (struct?.hasAlsoBy) sections.push({ type: "alsoBy", title: "Also By This Author" });
+        if (struct?.hasNewsletter) sections.push({ type: "newsletter", title: "Newsletter Signup" });
+
+        // Build complete manuscript text
+        let manuscriptText = "";
+        let totalWordCount = 0;
+
+        for (const section of sections) {
+          const manuscript = approvedManuscripts.find((m: any) => 
+            m.sectionType === section.type && 
+            (section.type !== "chapter" || m.sectionNumber === section.number)
+          );
+
+          if (manuscript) {
+            // Add section heading
+            if (section.type === "chapter") {
+              manuscriptText += `\n\nChapter ${section.number}: ${section.title}\n\n`;
+            } else {
+              manuscriptText += `\n\n${section.title}\n\n`;
+            }
+
+            // Add section content
+            manuscriptText += manuscript.content || "";
+            totalWordCount += manuscript.wordCount || 0;
+          }
+        }
+
+        return {
+          manuscriptText: manuscriptText.trim(),
+          bookTitle: blueprint[0].workingTitle || "Untitled",
+          wordCount: totalWordCount,
+          sectionCount: approvedManuscripts.length,
+        };
       }),
   }),
 
