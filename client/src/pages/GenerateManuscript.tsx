@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
-import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download, Sparkles } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download, Sparkles, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { marked } from "marked";
 import { exportToDocx } from "@/lib/exportDocx";
@@ -148,6 +148,18 @@ export default function GenerateManuscript() {
     },
   });
 
+  // Unapprove chapter mutation
+  const unapproveChapter = trpc.manuscript.unapproveChapter.useMutation({
+    onSuccess: () => {
+      refetchManuscript();
+      refetchProgress();
+      toast.success("Chapter unapproved! You can now make edits.");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to unapprove chapter");
+    },
+  });
+
   // Request edit mutation
   const requestEdit = trpc.manuscript.requestEdit.useMutation({
     onSuccess: async () => {
@@ -200,6 +212,11 @@ export default function GenerateManuscript() {
   const handleApprove = () => {
     if (!currentManuscript) return;
     approveChapter.mutate({ manuscriptId: currentManuscript.id });
+  };
+
+  const handleUnapprove = () => {
+    if (!currentManuscript) return;
+    unapproveChapter.mutate({ manuscriptId: currentManuscript.id });
   };
 
   const handleRequestEdit = () => {
@@ -539,8 +556,8 @@ export default function GenerateManuscript() {
                 </div>
               )}
 
-              {/* Approve Button */}
-              {!isApproved && (
+              {/* Approve/Unapprove Button */}
+              {!isApproved ? (
                 <Button onClick={handleApprove} disabled={isApproving} size="lg" className="w-full mb-4">
                   {isApproving ? (
                     <>
@@ -551,6 +568,26 @@ export default function GenerateManuscript() {
                     <>
                       <CheckCircle2 className="h-4 w-4 mr-2" />
                       Approve & Continue to Next Section
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <Button 
+                  onClick={handleUnapprove} 
+                  disabled={unapproveChapter.isPending} 
+                  size="lg" 
+                  variant="outline"
+                  className="w-full mb-4"
+                >
+                  {unapproveChapter.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Unapproving...
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Unapprove to Make Edits
                     </>
                   )}
                 </Button>

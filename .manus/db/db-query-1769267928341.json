@@ -1,0 +1,221 @@
+{
+  "query": "\nSELECT \n  id,\n  blueprintId,\n  sectionType,\n  sectionNumber,\n  status,\n  SUBSTRING(content, 1, 50) as content_preview\nFROM manuscripts \nWHERE blueprintId = 510001\nORDER BY \n  CASE sectionType\n    WHEN 'prologue' THEN 1\n    WHEN 'copyright' THEN 2\n    WHEN 'dedication' THEN 3\n    WHEN 'chapter' THEN 4\n    WHEN 'epilogue' THEN 5\n    WHEN 'acknowledgements' THEN 6\n    WHEN 'authorBio' THEN 7\n    WHEN 'alsoBy' THEN 8\n    WHEN 'newsletter' THEN 9\n  END,\n  sectionNumber;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute \nSELECT \n  id,\n  blueprintId,\n  sectionType,\n  sectionNumber,\n  status,\n  SUBSTRING(content, 1, 50) as content_preview\nFROM manuscripts \nWHERE blueprintId = 510001\nORDER BY \n  CASE sectionType\n    WHEN 'prologue' THEN 1\n    WHEN 'copyright' THEN 2\n    WHEN 'dedication' THEN 3\n    WHEN 'chapter' THEN 4\n    WHEN 'epilogue' THEN 5\n    WHEN 'acknowledgements' THEN 6\n    WHEN 'authorBio' THEN 7\n    WHEN 'alsoBy' THEN 8\n    WHEN 'newsletter' THEN 9\n  END,\n  sectionNumber;\n",
+  "rows": [
+    {
+      "id": "300001",
+      "blueprintId": "510001",
+      "sectionType": "prologue",
+      "sectionNumber": "NULL",
+      "status": "approved",
+      "content_preview": "The first time I understood what it meant to be tr"
+    },
+    {
+      "id": "330001",
+      "blueprintId": "510001",
+      "sectionType": "copyright",
+      "sectionNumber": "NULL",
+      "status": "approved",
+      "content_preview": "Copyright © 2026 by Pauline Teo. All rights reserv"
+    },
+    {
+      "id": "300002",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "1",
+      "status": "approved",
+      "content_preview": "The Silent Thief: Why Your Money is Shrinking"
+    },
+    {
+      "id": "300003",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "2",
+      "status": "approved",
+      "content_preview": "The Investor's Mindset: Shifting from Consumer to "
+    },
+    {
+      "id": "300004",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "3",
+      "status": "approved",
+      "content_preview": "The Power of Compounding: Your Financial Snowball"
+    },
+    {
+      "id": "300005",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "4",
+      "status": "approved",
+      "content_preview": "Mapping Your Journey: Setting Realistic Investment"
+    },
+    {
+      "id": "300006",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "5",
+      "status": "approved",
+      "content_preview": "The Value Investing Philosophy: Buying Dollars for"
+    },
+    {
+      "id": "300007",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "6",
+      "status": "approved",
+      "content_preview": "\"You have the framework,\" Professor Sharma said, l"
+    },
+    {
+      "id": "300008",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "7",
+      "status": "approved",
+      "content_preview": "The core challenge in value investing is not findi"
+    },
+    {
+      "id": "300009",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "8",
+      "status": "approved",
+      "content_preview": "The Second R: Assessing Right Management"
+    },
+    {
+      "id": "300010",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "9",
+      "status": "approved",
+      "content_preview": "Reading Between the Lines: Clues from Annual Repor"
+    },
+    {
+      "id": "300011",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "10",
+      "status": "approved",
+      "content_preview": "The fluorescent lights of the economics lecture ha"
+    },
+    {
+      "id": "300012",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "11",
+      "status": "approved",
+      "content_preview": "Ethan sat hunched over his laptop, the glow of the"
+    },
+    {
+      "id": "300013",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "12",
+      "status": "approved",
+      "content_preview": "The third R, Professor Sharma had explained, was t"
+    },
+    {
+      "id": "300014",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "13",
+      "status": "draft",
+      "content_preview": "The market had been choppy, a nervous sea of red a"
+    },
+    {
+      "id": "300015",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "14",
+      "status": "approved",
+      "content_preview": "Ethan stared at the number on the screen, feeling "
+    },
+    {
+      "id": "300016",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "15",
+      "status": "approved",
+      "content_preview": "Ethan had spent the last several weeks buried in a"
+    },
+    {
+      "id": "300017",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "16",
+      "status": "approved",
+      "content_preview": "The First Purchase: Overcoming Analysis Paralysis"
+    },
+    {
+      "id": "300018",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "17",
+      "status": "approved",
+      "content_preview": "The market had been quiet for three weeks, which f"
+    },
+    {
+      "id": "300019",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "18",
+      "status": "approved",
+      "content_preview": "Ethan watched the market tick by, the green and re"
+    },
+    {
+      "id": "300020",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "19",
+      "status": "approved",
+      "content_preview": "The hardest part of value investing is not buying."
+    },
+    {
+      "id": "300021",
+      "blueprintId": "510001",
+      "sectionType": "chapter",
+      "sectionNumber": "20",
+      "status": "approved",
+      "content_preview": "The market is not a mystery box. It is not a casin"
+    },
+    {
+      "id": "300022",
+      "blueprintId": "510001",
+      "sectionType": "epilogue",
+      "sectionNumber": "NULL",
+      "status": "approved",
+      "content_preview": "The air in the small office smelled faintly of old"
+    },
+    {
+      "id": "300023",
+      "blueprintId": "510001",
+      "sectionType": "acknowledgements",
+      "sectionNumber": "NULL",
+      "status": "approved",
+      "content_preview": "Writing a book about disciplined investing require"
+    },
+    {
+      "id": "300024",
+      "blueprintId": "510001",
+      "sectionType": "authorBio",
+      "sectionNumber": "NULL",
+      "status": "approved",
+      "content_preview": "[Author Name Here] is a seasoned financial analyst"
+    },
+    {
+      "id": "300025",
+      "blueprintId": "510001",
+      "sectionType": "newsletter",
+      "sectionNumber": "NULL",
+      "status": "approved",
+      "content_preview": "Thank you for reading _Value Investing for Beginne"
+    }
+  ],
+  "messages": [
+    "The",
+    "The firs"
+  ],
+  "stdout": "id\tblueprintId\tsectionType\tsectionNumber\tstatus\tcontent_preview\n300001\t510001\tprologue\tNULL\tapproved\tThe first time I understood what it meant to be tr\n330001\t510001\tcopyright\tNULL\tapproved\tCopyright © 2026 by Pauline Teo. All rights reserv\n300002\t510001\tchapter\t1\tapproved\tThe Silent Thief: Why Your Money is Shrinking\n\nThe\n300003\t510001\tchapter\t2\tapproved\tThe Investor's Mindset: Shifting from Consumer to \n300004\t510001\tchapter\t3\tapproved\tThe Power of Compounding: Your Financial Snowball\n\n300005\t510001\tchapter\t4\tapproved\tMapping Your Journey: Setting Realistic Investment\n300006\t510001\tchapter\t5\tapproved\tThe Value Investing Philosophy: Buying Dollars for\n300007\t510001\tchapter\t6\tapproved\t\"You have the framework,\" Professor Sharma said, l\n300008\t510001\tchapter\t7\tapproved\tThe core challenge in value investing is not findi\n300009\t510001\tchapter\t8\tapproved\tThe Second R: Assessing Right Management\n\nThe firs\n300010\t510001\tchapter\t9\tapproved\tReading Between the Lines: Clues from Annual Repor\n300011\t510001\tchapter\t10\tapproved\tThe fluorescent lights of the economics lecture ha\n300012\t510001\tchapter\t11\tapproved\tEthan sat hunched over his laptop, the glow of the\n300013\t510001\tchapter\t12\tapproved\tThe third R, Professor Sharma had explained, was t\n300014\t510001\tchapter\t13\tdraft\tThe market had been choppy, a nervous sea of red a\n300015\t510001\tchapter\t14\tapproved\tEthan stared at the number on the screen, feeling \n300016\t510001\tchapter\t15\tapproved\tEthan had spent the last several weeks buried in a\n300017\t510001\tchapter\t16\tapproved\tThe First Purchase: Overcoming Analysis Paralysis\n\n300018\t510001\tchapter\t17\tapproved\tThe market had been quiet for three weeks, which f\n300019\t510001\tchapter\t18\tapproved\tEthan watched the market tick by, the green and re\n300020\t510001\tchapter\t19\tapproved\tThe hardest part of value investing is not buying.\n300021\t510001\tchapter\t20\tapproved\tThe market is not a mystery box. It is not a casin\n300022\t510001\tepilogue\tNULL\tapproved\tThe air in the small office smelled faintly of old\n300023\t510001\tacknowledgements\tNULL\tapproved\tWriting a book about disciplined investing require\n300024\t510001\tauthorBio\tNULL\tapproved\t[Author Name Here] is a seasoned financial analyst\n300025\t510001\tnewsletter\tNULL\tapproved\tThank you for reading _Value Investing for Beginne\n",
+  "stderr": "",
+  "execution_time_ms": 1582
+}

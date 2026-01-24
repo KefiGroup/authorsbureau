@@ -1741,6 +1741,25 @@ IF UNSURE: Make a strong assumption, proceed, and let the user edit. Never stop 
         return { success: true };
       }),
 
+    // Unapprove a chapter (reverse approval)
+    unapproveChapter: protectedProcedure
+      .input(z.object({
+        manuscriptId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { manuscripts } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        await db.update(manuscripts)
+          .set({ status: "draft" })
+          .where(eq(manuscripts.id, input.manuscriptId));
+
+        return { success: true };
+      }),
+
     // Update chapter content manually
     updateChapterContent: protectedProcedure
       .input(z.object({
