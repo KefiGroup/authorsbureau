@@ -3,13 +3,70 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
-import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight, Sparkles, AlertCircle, Clock } from "lucide-react";
+import { BookOpen, PenTool, Rocket, TrendingUp, Plus, ArrowRight, Sparkles, AlertCircle, Clock, Trash2 } from "lucide-react";
 import { Link } from "wouter";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function Dashboard() {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<{ id: number; title: string; type: 'book' | 'blueprint' } | null>(null);
+  
   const { data: books, isLoading: booksLoading } = trpc.book.getMyBooks.useQuery();
   const { data: blueprints, isLoading: blueprintsLoading } = trpc.blueprint.getUserProjects.useQuery();
   const { data: authorProfile } = trpc.author.getProfile.useQuery();
+  
+  const utils = trpc.useUtils();
+  const deleteBook = trpc.book.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Book deleted successfully");
+      utils.book.getMyBooks.invalidate();
+      setDeleteDialogOpen(false);
+      setProjectToDelete(null);
+    },
+    onError: (error) => {
+      toast.error("Failed to delete book: " + error.message);
+    },
+  });
+  
+  const deleteBlueprint = trpc.blueprint.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Project deleted successfully");
+      utils.blueprint.getUserProjects.invalidate();
+      setDeleteDialogOpen(false);
+      setProjectToDelete(null);
+    },
+    onError: (error) => {
+      toast.error("Failed to delete project: " + error.message);
+    },
+  });
+  
+  const handleDeleteClick = (e: React.MouseEvent, project: { id: number; title: string; type: 'book' | 'blueprint' }) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setProjectToDelete(project);
+    setDeleteDialogOpen(true);
+  };
+  
+  const handleConfirmDelete = () => {
+    if (!projectToDelete) return;
+    
+    if (projectToDelete.type === 'book') {
+      deleteBook.mutate({ bookId: projectToDelete.id });
+    } else {
+      deleteBlueprint.mutate({ blueprintId: projectToDelete.id });
+    }
+  };
 
   // Combine blueprints and books into a unified project list
   const allProjects = [
@@ -257,44 +314,55 @@ export default function Dashboard() {
                   const projectUrl = project.type === 'blueprint' ? `/start-writing?blueprintId=${project.id}` : `/ai-writing-studio`;
                   
                   return (
-                    <Link
-                      key={project.id}
-                      href={projectUrl}
-                      className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors cursor-pointer"
-                    >
-                      <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <BookOpen className="h-7 w-7 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4 mb-2">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-foreground truncate">{project.title}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {project.wordCount?.toLocaleString() || 0} words
-                              {project.genre && ` • ${project.genre}`}
-                            </p>
+                    <div key={project.id} className="relative">
+                      <Link
+                        href={projectUrl}
+                        className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors cursor-pointer"
+                      >
+                        <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <BookOpen className="h-7 w-7 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-foreground truncate">{project.title}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {project.wordCount?.toLocaleString() || 0} words
+                                {project.genre && ` • ${project.genre}`}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusInfo.color}`}
+                              >
+                                {statusInfo.icon} {statusInfo.label}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={(e) => handleDeleteClick(e, project)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusInfo.color}`}
-                          >
-                            {statusInfo.icon} {statusInfo.label}
-                          </span>
+                          
+                          {/* Progress Bar */}
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <span>Progress</span>
+                              <span>{progress}%</span>
+                            </div>
+                            <Progress value={progress} className="h-2" />
+                          </div>
                         </div>
                         
-                        {/* Progress Bar */}
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>Progress</span>
-                            <span>{progress}%</span>
-                          </div>
-                          <Progress value={progress} className="h-2" />
+                        <div className="flex-shrink-0">
+                          <ArrowRight className="h-4 w-4 text-muted-foreground" />
                         </div>
-                      </div>
-                      
-                      <div className="flex-shrink-0">
-                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                    </Link>
+                      </Link>
+                    </div>
                   );
                 })}
               </div>
@@ -302,6 +370,34 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {projectToDelete?.type === 'book' ? 'Book' : 'Project'}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>"{projectToDelete?.title}"</strong>?
+              <br />
+              <br />
+              <span className="text-destructive font-semibold">
+                ⚠️ Warning: Once deleted, this {projectToDelete?.type === 'book' ? 'book' : 'project'} cannot be retrieved.
+              </span>
+              <br />
+              All chapters, manuscripts, and related data will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setProjectToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Permanently
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

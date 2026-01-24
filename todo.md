@@ -2377,3 +2377,19 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 3. AI generates chapters within the calculated word count range
 4. DOCX export uses 6"x9" page size with proper formatting
 5. Result: Manuscript matches user's target page count
+
+
+---
+
+## 🎯 NEW USER REQUEST: Delete Button for Dashboard Books
+
+**User Request:** Add delete button to book cards on Dashboard with permanent deletion warning
+
+**Requirements:**
+- [x] Add delete button (trash icon) to book card on Dashboard
+- [x] Show confirmation dialog before deletion
+- [x] Warning message: "Once deleted, this book cannot be retrieved"
+- [x] Implement backend delete procedure (cascade delete all related data via schema)
+- [x] Test deletion workflow (dialog opens correctly with warning message)
+- [x] Verify Cancel button closes dialog without deleting
+- [ ] User to test actual deletion (click "Delete Permanently" to confirm cascade delete works)
