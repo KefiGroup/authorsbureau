@@ -530,13 +530,41 @@ export default function StartWritingProcess() {
           />
         </div>
 
-        {/* Right: Blueprint Preview */}
-        <div className="bg-muted/30">
-          <BlueprintPreview
-            sections={blueprintSections}
-            isGenerating={generateBlueprint.isPending}
-            className="border-0 rounded-none h-full"
-          />
+        {/* Right: Blueprint Preview or Loading State */}
+        <div className="bg-muted/30 flex items-center justify-center">
+          {!blueprintGenerated && !generateBlueprint.isPending && (
+            <div className="text-center p-12">
+              <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Your Blueprint Will Appear Here</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Answer the questions on the left, and I'll generate a comprehensive story blueprint for you.
+              </p>
+            </div>
+          )}
+          
+          {generateBlueprint.isPending && (
+            <div className="text-center p-12">
+              <Loader2 className="h-16 w-16 text-primary mx-auto mb-4 animate-spin" />
+              <h3 className="text-lg font-semibold mb-2">Generating Your Blueprint</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                I'm creating a comprehensive story blueprint based on your answers. This will take a moment...
+              </p>
+            </div>
+          )}
+          
+          {blueprintGenerated && !generateBlueprint.isPending && (
+            <div className="text-center p-12">
+              <CheckCircle2 className="h-16 w-16 text-primary mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Blueprint Generated!</h3>
+              <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                Your comprehensive story blueprint is ready. Let's move on to chapter planning.
+              </p>
+              <Button size="lg" onClick={() => setLocation(`/chapter-outline/${blueprintId}`)}>
+                Review Chapter Outline
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

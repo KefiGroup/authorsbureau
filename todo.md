@@ -1525,3 +1525,25 @@ This is priority #1 from the next steps list
 - [x] Update progress calculation to show 3 questions total
 - [x] Remove branching choice detection from extractEssentialData
 - [x] Update tests to reflect single-path flow
+
+
+---
+
+## 🐛 BUG: Remove 9-Step Blueprint Sections (CURRENT)
+
+### Issue
+- After completing page count modal, system shows 9 individual sections (Genre Classification, Core Premise, Protagonist, Supporting Characters, Setting, Plot Structure, Target Audience, Thematic Elements)
+- Shows "1 of 9 sections complete" progress indicator
+- User wants blueprint to generate automatically without these individual section steps
+
+### Expected Behavior
+- After page count modal is completed, blueprint should generate completely in the background
+- No individual section-by-section UI should appear
+- Blueprint should be ready for review immediately
+
+### Solution Confirmed
+- [x] Remove 9-section UI entirely
+- [x] Hide BlueprintPreview component during initial questions and generation phase
+- [x] Show loading state during blueprint generation
+- [x] Display "Review Chapter Outline" button after generation completes
+- [x] Test complete flow to verify no 9-section UI appears
