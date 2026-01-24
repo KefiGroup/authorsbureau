@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, userId, projectType, createdAt FROM storyBlueprints ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, userId, projectType, createdAt FROM storyBlueprints ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "420003",
+      "userId": "840027",
+      "projectType": "novel",
+      "createdAt": "2026-01-24 06:30:42"
+    },
+    {
+      "id": "420002",
+      "userId": "840027",
+      "projectType": "novel",
+      "createdAt": "2026-01-24 06:07:45"
+    },
+    {
+      "id": "90007",
+      "userId": "2880065",
+      "projectType": "non_fiction",
+      "createdAt": "2026-01-22 11:53:26"
+    },
+    {
+      "id": "30004",
+      "userId": "1500035",
+      "projectType": "novel",
+      "createdAt": "2026-01-22 06:10:56"
+    },
+    {
+      "id": "30003",
+      "userId": "1500035",
+      "projectType": "novel",
+      "createdAt": "2026-01-22 05:52:21"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tprojectType\tcreatedAt\n420003\t840027\tnovel\t2026-01-24 06:30:42\n420002\t840027\tnovel\t2026-01-24 06:07:45\n90007\t2880065\tnon_fiction\t2026-01-22 11:53:26\n30004\t1500035\tnovel\t2026-01-22 06:10:56\n30003\t1500035\tnovel\t2026-01-22 05:52:21\n",
+  "stderr": "",
+  "execution_time_ms": 1531
+}

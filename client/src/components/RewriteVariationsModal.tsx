@@ -8,6 +8,20 @@ import { Loader2, Sparkles, Check } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
+// Strip markdown formatting symbols
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/^#{1,6}\s+/gm, '') // Remove heading markers
+    .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold markers
+    .replace(/\*(.+?)\*/g, '$1') // Remove italic markers
+    .replace(/_(.+?)_/g, '$1') // Remove italic markers (underscore)
+    .replace(/~~(.+?)~~/g, '$1') // Remove strikethrough
+    .replace(/`(.+?)`/g, '$1') // Remove inline code markers
+    .replace(/^[-*+]\s+/gm, '') // Remove list markers
+    .replace(/^\d+\.\s+/gm, '') // Remove numbered list markers
+    .trim();
+}
+
 interface RewriteVariationsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -161,8 +175,8 @@ export function RewriteVariationsModal({
 
                     <Card className="p-6 max-h-96 overflow-y-auto">
                       <div className="prose prose-sm dark:prose-invert max-w-none">
-                        {variation.content.split('\n').map((paragraph, idx) => (
-                          <p key={idx}>{paragraph}</p>
+                        {stripMarkdown(variation.content).split('\n').map((paragraph, idx) => (
+                          paragraph.trim() && <p key={idx}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
