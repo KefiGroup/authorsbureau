@@ -35,7 +35,7 @@ export async function generateNextMessage(
   state: ConversationState,
   userMessage: string | null,
   authorProfile: any
-): Promise<{ message: string; suggestions: string[]; isComplete: boolean; blueprintData?: Partial<StoryBlueprint> }> {
+): Promise<{ message: string; suggestions: string[]; isComplete: boolean; blueprintData?: Partial<StoryBlueprint>; progress?: { current: number; total: number } }> {
   const mode = state.mode;
 
   if (mode === "initial_questions") {
@@ -54,7 +54,7 @@ async function handleInitialQuestions(
   state: ConversationState,
   userMessage: string | null,
   authorProfile: any
-): Promise<{ message: string; suggestions: string[]; isComplete: boolean }> {
+): Promise<{ message: string; suggestions: string[]; isComplete: boolean; progress?: { current: number; total: number } }> {
   const history = state.conversationHistory;
   const essentialData = state.essentialData;
 
@@ -206,10 +206,40 @@ End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4 | op
     isComplete = false;
   }
 
+  // Calculate progress
+  let current = 0;
+  let total = 3; // Default to quick path (3 essential questions)
+  
+  if (essentialData.wantsDetailedOnboarding === true) {
+    // Detailed path: 6 questions + page count = 7 total
+    total = 7;
+    if (essentialData.projectType) current++;
+    if (essentialData.briefDescription) current++;
+    if (essentialData.targetAudience) current++;
+    if (essentialData.detailedContext?.themes) current++;
+    if (essentialData.detailedContext?.tone) current++;
+    if (essentialData.detailedContext?.structure) current++;
+    if (essentialData.targetPages) current++;
+  } else if (essentialData.wantsDetailedOnboarding === false) {
+    // Quick path: 3 questions + page count = 4 total
+    total = 4;
+    if (essentialData.projectType) current++;
+    if (essentialData.briefDescription) current++;
+    if (essentialData.targetAudience) current++;
+    if (essentialData.targetPages) current++;
+  } else {
+    // Haven't chosen path yet, show progress for first 3 questions only
+    total = 3;
+    if (essentialData.projectType) current++;
+    if (essentialData.briefDescription) current++;
+    if (essentialData.targetAudience) current++;
+  }
+
   return {
     message: cleanMessage,
     suggestions,
     isComplete,
+    progress: { current, total },
   };
 }
 
@@ -423,7 +453,7 @@ async function handleRefinement(
   state: ConversationState,
   userMessage: string | null,
   authorProfile: any
-): Promise<{ message: string; suggestions: string[]; isComplete: boolean; blueprintData?: Partial<StoryBlueprint> }> {
+): Promise<{ message: string; suggestions: string[]; isComplete: boolean; blueprintData?: Partial<StoryBlueprint>; progress?: { current: number; total: number } }> {
   const history = state.conversationHistory;
   const blueprint = state.generatedBlueprint;
 

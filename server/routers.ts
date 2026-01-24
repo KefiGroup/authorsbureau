@@ -716,6 +716,7 @@ Write the bio now:`;
           message: response.message,
           suggestions: response.suggestions,
           conversationMode: "initial_questions",
+          progress: response.progress,
         };
       }),
 
@@ -889,6 +890,7 @@ Write the bio now:`;
           suggestions: finalResponse.suggestions || [],
           conversationMode: nextMode,
           blueprintGenerated: !!finalResponse.blueprintData,
+          progress: finalResponse.progress,
         };
       }),
 

@@ -1411,3 +1411,60 @@ This is priority #1 from the next steps list
 - [x] Found 4 invokeLLM calls in writing-studio-agent-v2.ts
 - [x] Added model: "gpt-4o" parameter to all 4 invokeLLM calls
 - [ ] Test suggestion generation with real user scenario (pending)
+
+
+---
+
+## 🎯 Feature: Progress Indicator for Onboarding Questions
+
+### Requirement
+- [ ] Show "Question X of Y" indicator during onboarding
+- [ ] Quick path: Show "Question X of 3" for essential questions, then "Question X of 4" after page count
+- [ ] Detailed path: Show "Question X of 6" for all questions, then "Question X of 7" after page count
+- [ ] Update indicator dynamically based on chosen path
+
+### Implementation
+- [x] Add progress calculation logic to writing-studio-agent-v2.ts
+- [x] Return current question number and total questions in AI response
+- [x] Update WritingStudioChat.tsx to display progress indicator
+- [x] Pass progress from backend through routers.ts to frontend
+- [x] Update StartWritingProcess.tsx to track and pass progress state
+- [x] Add console logging to debug progress data flow
+- [ ] Debug why progress data is not displaying in UI (in progress)
+- [ ] Test with both quick and detailed paths (pending user test)
+
+
+---
+
+## 🐛 Bug: Final Checkpoint Modal Appearing Too Early
+
+### Issue
+- [ ] Modal "Almost Done! Let's Finalize Your Book Details" appears before 3rd question is answered
+- [ ] Modal disappears and reappears after 3rd question response
+- [ ] Timing logic is broken - should only show after branching path is chosen
+
+### Expected Behavior
+- [ ] Modal should ONLY appear after:
+  * Quick path: After user chooses "Create Blueprint Now"
+  * Detailed path: After user answers all 6 questions + chooses path
+
+### Fix
+- [x] Removed the old question count logic (lines 151-156 in StartWritingProcess.tsx)
+- [x] Updated logic to show modal only when AI asks for page count
+- [x] Modal now triggers based on AI message content ("Number of Pages", "target book length", "how many pages")
+- [ ] Test with both quick and detailed paths to ensure correct timing (pending user test)
+
+
+---
+
+## 🐛 Bug: Progress Indicator Not Visible in UI
+
+### Issue
+- [ ] Progress indicator ("Question X of Y") is not showing in the chat interface
+- [ ] Backend is calculating and returning progress data correctly
+- [ ] Frontend is receiving progress data but not displaying it
+
+### Fix
+- [ ] Check WritingStudioChat component getModeLabel function
+- [ ] Ensure progress prop is being used to display indicator
+- [ ] Test visibility in UI after fix

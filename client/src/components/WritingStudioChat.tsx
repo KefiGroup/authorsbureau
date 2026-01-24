@@ -21,6 +21,7 @@ interface WritingStudioChatProps {
   blueprintGenerated: boolean;
   onBack?: () => void;
   onSkip?: () => void;
+  progress?: { current: number; total: number };
 }
 
 export function WritingStudioChat({
@@ -32,6 +33,7 @@ export function WritingStudioChat({
   blueprintGenerated,
   onBack,
   onSkip,
+  progress,
 }: WritingStudioChatProps) {
   const [input, setInput] = useState("");
   const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
@@ -93,8 +95,14 @@ export function WritingStudioChat({
   };
 
   const getModeLabel = () => {
+    console.log("[WritingStudioChat] getModeLabel called", { progress, conversationMode, blueprintGenerated });
     if (blueprintGenerated) return "Blueprint Complete - Refinement Mode";
     if (conversationMode === "blueprint_generation") return "Generating Your Blueprint...";
+    if (progress && progress.total > 0) {
+      console.log("[WritingStudioChat] Showing progress:", `Question ${progress.current + 1} of ${progress.total}`);
+      return `Question ${progress.current + 1} of ${progress.total}`;
+    }
+    console.log("[WritingStudioChat] Falling back to 'Initial Questions'");
     return "Initial Questions";
   };
 

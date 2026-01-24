@@ -88,6 +88,7 @@ export default function StartWritingProcess() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [showFinalCheckpoint, setShowFinalCheckpoint] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
+  const [progress, setProgress] = useState<{ current: number; total: number } | undefined>(undefined);
 
   // Queries - ALL HOOKS MUST BE AT TOP BEFORE ANY CONDITIONAL RETURNS
   const { data: blueprint, isLoading: loadingBlueprint, refetch: refetchBlueprint } = trpc.blueprint.get.useQuery(
@@ -113,6 +114,9 @@ export default function StartWritingProcess() {
         suggestions: data.suggestions,
       }]);
       setConversationMode(data.conversationMode as "initial_questions" | "blueprint_generation" | "refinement");
+      if (data.progress) {
+        setProgress(data.progress);
+      }
     },
     onError: (error) => {
       toast.error("Failed to start conversation: " + error.message);
@@ -135,14 +139,23 @@ export default function StartWritingProcess() {
       ]);
       setConversationMode(data.conversationMode as "initial_questions" | "blueprint_generation" | "refinement");
       
+      // Update progress if available
+      console.log("[StartWritingProcess] Received progress from backend:", data.progress);
+      if (data.progress) {
+        console.log("[StartWritingProcess] Setting progress state:", data.progress);
+        setProgress(data.progress);
+      } else {
+        console.log("[StartWritingProcess] No progress data received");
+      }
+      
       // Count user questions (only count user messages)
       const userMessageCount = messages.filter(m => m.role === "user").length + 1;
       setQuestionCount(userMessageCount);
       
-      // Show final checkpoint modal after AI responds to 3rd question
-      // Check assistant message count to ensure AI has responded
-      const assistantMessageCount = [...messages, { role: "assistant", content: data.message }].filter(m => m.role === "assistant").length;
-      if (userMessageCount >= 3 && assistantMessageCount >= 3 && conversationMode === "initial_questions") {
+      // Show final checkpoint modal only when AI asks for page count
+      // This happens after branching path is complete (either quick or detailed)
+      // Check if the AI message contains "Number of Pages" or "target book length"
+      if (data.message.includes("Number of Pages") || data.message.includes("target book length") || data.message.includes("how many pages")) {
         setShowFinalCheckpoint(true);
       }
       
@@ -512,6 +525,7 @@ export default function StartWritingProcess() {
             isLoading={sendMessage.isPending || startConversation.isPending}
             conversationMode={conversationMode}
             blueprintGenerated={blueprintGenerated}
+            progress={progress}
           />
         </div>
 
