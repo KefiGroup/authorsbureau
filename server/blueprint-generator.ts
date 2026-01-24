@@ -100,16 +100,19 @@ Identify 5-7 major turning points in the story.
 - Unique Selling Points
 
 ## Amazon KDP Bestseller Strategy
-Analyze the book concept and suggest 3-5 specific Amazon KDP categories (both Kindle and Paperback) where this book has the HIGHEST chance of becoming a #1 bestseller. Focus on:
-1. LOW-COMPETITION categories (fewer than 1,000 books)
-2. Categories where the #1 book has modest sales (achievable ranking)
-3. Specific sub-categories rather than broad categories
-4. Categories that perfectly match the book's genre and themes
+Analyze the book concept and suggest 3-5 specific Amazon KDP categories where this book has the HIGHEST chance of becoming a #1 bestseller. Focus on categories with LOW SALES BARRIERS (not just book count). Use BSR-based analysis:
 
-For each suggested category, explain:
-- Why this category is a good fit
-- Estimated competition level (Low/Medium/High)
-- What makes this book competitive in this category
+1. **5-6 level deep categories** - Specific sub-categories (e.g., "Books > Self-Help > Personal Transformation > Happiness > Gratitude") not broad categories
+2. **Low daily sales requirement** - Categories where the current #1 book has a BSR indicating modest daily sales (e.g., BSR 50,000-100,000 = 3-8 sales/day)
+3. **Achievable sales targets** - Calculate realistic targets like "20-33 sales in 24hr to beat leader" or "30-50 sales in 24hr for safer margin"
+4. **Perfect content match** - Categories that legitimately fit the book's genre, themes, and target audience
+
+For each suggested category, provide:
+- Full category path (5-6 levels deep)
+- Current leader's estimated BSR range (e.g., "50,000-80,000")
+- Minimum sales target to beat leader (daily sales + 30%)
+- Why this category has low competition and high feasibility
+- Competitiveness score (1-10, where 10 = easiest to rank)
 
 ## Preliminary Keyword Suggestions
 Suggest 7 highly targeted keywords based on the suggested categories

@@ -2532,3 +2532,8 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Verify blueprint generator receives correct authorName parameter
 - [x] Check if author profile penName is being fetched correctly - Confirmed: Pauline Teo
 - [x] Add explicit model: "gpt-4o" parameter to blueprint-generator.ts to ensure GPT-4o is used
+
+### KDP Optimization Prompt Alignment
+- [x] Fix blueprint KDP category suggestion prompt to align with BSR-based strategy (not book count)
+- [x] Update prompt to mention sales targets (e.g., "20-33 sales in 24hr") instead of "fewer than 1,000 books"
+- [x] Ensure blueprint prompt matches Publishing Studio's actual KDP optimization logic
