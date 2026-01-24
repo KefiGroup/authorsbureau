@@ -2410,3 +2410,39 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Keep ISBN placeholder in copyright page content ("ISBN: [Your ISBN Here]")
 - [x] AI prompt already makes ISBN placeholder very clear and prominent
 - [x] Test complete flow: Generate Manuscript → Export to Publishing Studio → See ISBN reminder (✅ Working perfectly!)
+
+
+---
+
+## 🐛 BUG: Word Count Mismatch in Blueprint Generation
+
+**User Issue:** Blueprint shows 60,000-75,000 words when user selected 150 pages (should be 37,500 words)
+
+**Root Cause:** AI conversation is using old word count estimates that don't match 6" × 9" page size
+
+**Requirements:**
+- [x] Find where AI conversation sets target word count in blueprint
+- [x] Update word count calculation formula: `targetPages × 250 words/page`
+- [x] For 150 pages: Should show 37,500 words (not 60,000-75,000)
+- [x] For 200 pages: Should show 50,000 words
+- [x] For 250 pages: Should show 62,500 words
+- [ ] Test blueprint generation with 150 pages selection
+- [ ] Verify blueprint shows correct word count (37,500 words)
+
+
+---
+
+## 🎯 NEW USER REQUEST: Reduce Chapter Count to 10-15 Chapters
+
+**User Request:** Change from 20 chapters to 10-15 chapters per book
+
+**Impact on Word Count:**
+- 150 pages = 37,500 words ÷ 12 chapters (average) = ~3,125 words/chapter
+- This is a better length for non-fiction books (10-15 pages per chapter)
+
+**Requirements:**
+- [x] Find where chapter count (20) is hardcoded
+- [x] Update to generate 10-12 chapters instead (changed from 20 to 12)
+- [x] Update word count calculation: `(targetPages * 250) ÷ 12` words per chapter
+- [x] Update chapter outline generation to suggest 10-12 chapters
+- [ ] Test blueprint generation with new chapter count

@@ -197,11 +197,11 @@ Essential Information Provided:
 - Target Pages: ${essentialData.targetPages} pages
 - Working Title: ${essentialData.workingTitle || "Not provided"}
 
-PAGE TO WORD COUNT CONVERSION:
-- 150 pages = approximately 37,500 words (~12-15 chapters)
-- 200 pages = approximately 50,000 words (~15-20 chapters)
-- 250 pages = approximately 62,500 words (~20-25 chapters)
-- 300 pages = approximately 75,000 words (~25-30 chapters)
+PAGE TO WORD COUNT CONVERSION (6" x 9" format, 250 words/page):
+- 150 pages = approximately 37,500 words (~10-12 chapters)
+- 200 pages = approximately 50,000 words (~12-15 chapters)
+- 250 pages = approximately 62,500 words (~15-18 chapters)
+- 300 pages = approximately 75,000 words (~18-22 chapters)
 
 Your Task:
 Generate a comprehensive story blueprint with these 9 sections:

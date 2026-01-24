@@ -10,6 +10,8 @@ export async function generateBlueprintContent(blueprint: StoryBlueprint): Promi
 **Project Type:** ${blueprint.projectType}
 **Working Title:** ${blueprint.workingTitle || "Untitled"}
 **Target Length:** ${blueprint.targetLength || "Not specified"}
+**Target Pages:** ${blueprint.targetPages || "Not specified"}
+**Target Word Count:** ${blueprint.targetPages ? `${blueprint.targetPages * 250} words (based on 6" x 9" format, 250 words per page)` : "Not specified"}
 **Primary Genre:** ${blueprint.primaryGenre || "Not specified"}
 **Secondary Genre:** ${blueprint.secondaryGenre || "Not specified"}
 
@@ -44,7 +46,7 @@ Generate a professional, comprehensive story blueprint with the following sectio
 - Working Title
 - Author Name
 - Genre Classification
-- Target Word Count
+- Target Word Count: ${blueprint.targetPages ? `${blueprint.targetPages * 250} words` : "Not specified"} (for ${blueprint.targetPages || "N/A"} pages in 6" x 9" format)
 - Date Created
 
 ## Premise Statement

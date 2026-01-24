@@ -863,7 +863,7 @@ Write the bio now:`;
                 const totalWords = targetPages * wordsPerPage;
                 const frontBackMatterWords = 2500; // Estimated for Prologue, Copyright, Dedication, Acknowledgements, Author Bio, Newsletter
                 const chapterContentWords = totalWords - frontBackMatterWords;
-                const numberOfChapters = 20; // Standard chapter count
+                const numberOfChapters = 12; // Standard chapter count (10-15 chapters)
                 const wordsPerChapter = Math.round(chapterContentWords / numberOfChapters);
                 updateData.wordsPerChapter = wordsPerChapter;
                 console.log(`[Blueprint] Calculated wordsPerChapter: ${wordsPerChapter} (targetPages: ${targetPages}, totalWords: ${totalWords})`);
@@ -1132,7 +1132,7 @@ Write the bio now:`;
 Blueprint:
 ${JSON.stringify(blueprint[0].essentialData, null, 2)}
 
-Generate 20 chapters. For each chapter, provide:
+Generate 10-12 chapters (optimal for ${blueprint[0].targetPages || 150}-page books). For each chapter, provide:
 1. Chapter title (creative and engaging, NO markdown symbols)
 2. Chapter summary (2-3 sentences describing what happens, NO markdown symbols)
 
