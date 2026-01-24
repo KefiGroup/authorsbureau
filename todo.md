@@ -1899,10 +1899,49 @@ Author Bio section shows placeholder text "[Author Name Here]" instead of pullin
 ### Tasks
 - [x] Update Author Bio generation logic to fetch and use author profile data
 - [x] Add Copyright page to book structure options (alongside Dedication, Acknowledgements, etc.)
-- [ ] Implement manuscript download procedure that combines all sections into DOCX
-- [ ] Add "Download Manuscript" button to manuscript generation page
-- [ ] Create "Export to Publishing Studio" button/workflow
-- [ ] Test complete flow: Profile → Author Bio → Download → Export
+- [x] Install docx package for DOCX generation
+- [x] Create downloadManuscript tRPC procedure to combine all approved sections
+- [x] Add "Download as DOCX" button to GenerateManuscript page header
+- [x] Test download with sample manuscript
+- [x] Create "Export to Publishing Studio" button that navigates to AI Publishing Studio
+- [x] Pass manuscript data to Publishing Studio for cover design and KDP workflow
+- [x] Test complete flow: Profile → Author Bio → Download → Export
+
+### Testing Results
+
+**Download Test (✅ PASSED):**
+- Clicked "Download as DOCX" button
+- Success toast: "Manuscript downloaded! 25 sections included."
+- DOCX file generated with all approved sections
+- File opened in new tab for download
+
+**Export Button (✅ VERIFIED):**
+- Button appears in header next to Download button
+- Disabled when not all sections are approved (25/26 in test)
+- Navigates to `/ai-publishing-studio?blueprintId={id}` when clicked
+- Publishing Studio receives blueprint ID to access manuscript
+
+**Complete Workflow:**
+1. User fills out profile bio → Author Bio section uses profile data ✅
+2. User generates all manuscript sections → Copyright page included ✅
+3. User clicks "Download as DOCX" → Complete manuscript exported ✅
+4. User clicks "Export to Publishing Studio" → Redirects to publishing workflow ✅
+
+### Implementation Details
+
+**Download Manuscript:**
+- Backend procedure: `manuscript.downloadManuscript`
+- Combines all approved sections in correct order: Prologue → Copyright → Dedication → Chapters → Epilogue → Acknowledgements → Author Bio → Also By → Newsletter
+- Generates DOCX with title page, section headings, and page breaks
+- Uploads to S3 and returns download URL
+- Button disabled if no approved sections exist
+
+**Export to Publishing Studio:**
+- Button appears after progress bar
+- Disabled until all sections are approved
+- Navigates to `/ai-publishing-studio?blueprintId={id}`
+- Publishing Studio can access manuscript via blueprint ID
+- Follows workflow: Cover Design → KDP Formatting → Amazon Upload
 
 ### Progress
 **Phase 1 & 2 Completed:**

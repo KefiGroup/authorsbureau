@@ -2179,6 +2179,150 @@ IMPORTANT:
           ],
         };
       }),
+
+    // Download complete manuscript as DOCX
+    downloadManuscript: protectedProcedure
+      .input(z.object({
+        blueprintId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak } = await import("docx");
+        const { manuscripts, storyBlueprints, bookStructures, chapterOutlines } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq, asc } = await import("drizzle-orm");
+        const { storagePut } = await import("./storage");
+
+        // Get blueprint
+        const blueprint = await db.select().from(storyBlueprints)
+          .where(eq(storyBlueprints.id, input.blueprintId))
+          .limit(1);
+        if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
+
+        // Get book structure
+        const structure = await db.select().from(bookStructures)
+          .where(eq(bookStructures.blueprintId, input.blueprintId))
+          .limit(1);
+
+        // Get chapter outline
+        const outline = await db.select().from(chapterOutlines)
+          .where(eq(chapterOutlines.blueprintId, input.blueprintId))
+          .limit(1);
+
+        // Get all approved manuscripts
+        const allManuscripts = await db.select().from(manuscripts)
+          .where(eq(manuscripts.blueprintId, input.blueprintId))
+          .orderBy(asc(manuscripts.id));
+
+        const approvedManuscripts = allManuscripts.filter((m: any) => m.status === "approved");
+
+        if (approvedManuscripts.length === 0) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No approved sections to download" });
+        }
+
+        // Build sections in correct order
+        const sections: any[] = [];
+        const struct = structure[0];
+        const outlineData = outline[0]?.outline as { chapters: any[] } | null;
+
+        if (struct?.hasPrologue) sections.push({ type: "prologue", title: "Prologue" });
+        if (struct?.hasCopyright) sections.push({ type: "copyright", title: "Copyright" });
+        if (struct?.hasDedication) sections.push({ type: "dedication", title: "Dedication" });
+
+        // Add chapters
+        if (outlineData?.chapters) {
+          outlineData.chapters.forEach((ch: any, index: number) => {
+            sections.push({ type: "chapter", number: index + 1, title: ch.title });
+          });
+        }
+
+        if (struct?.hasEpilogue) sections.push({ type: "epilogue", title: "Epilogue" });
+        if (struct?.hasAcknowledgements) sections.push({ type: "acknowledgements", title: "Acknowledgements" });
+        if (struct?.hasAuthorBio) sections.push({ type: "authorBio", title: "Author Bio" });
+        if (struct?.hasAlsoBy) sections.push({ type: "alsoBy", title: "Also By This Author" });
+        if (struct?.hasNewsletter) sections.push({ type: "newsletter", title: "Newsletter Signup" });
+
+        // Create DOCX document
+        const docSections: any[] = [];
+
+        // Title page
+        docSections.push(
+          new Paragraph({
+            text: blueprint[0].workingTitle || "Untitled",
+            heading: HeadingLevel.TITLE,
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 400 },
+          }),
+          new Paragraph({
+            text: ctx.user.name || "Author",
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 400 },
+          }),
+          new Paragraph({ text: "", pageBreakBefore: true })
+        );
+
+        // Add each section
+        for (const section of sections) {
+          const manuscript = approvedManuscripts.find((m: any) => 
+            m.sectionType === section.type && 
+            (section.type !== "chapter" || m.sectionNumber === section.number)
+          );
+
+          if (manuscript) {
+            // Section heading
+            docSections.push(
+              new Paragraph({
+                text: section.title,
+                heading: HeadingLevel.HEADING_1,
+                spacing: { before: 400, after: 200 },
+              })
+            );
+
+            // Section content
+            const content = manuscript.content || "";
+            const paragraphs = content.split("\n\n");
+            paragraphs.forEach((para: string) => {
+              if (para.trim()) {
+                docSections.push(
+                  new Paragraph({
+                    text: para.trim(),
+                    spacing: { after: 200 },
+                  })
+                );
+              }
+            });
+
+            // Page break after each section
+            docSections.push(
+              new Paragraph({ text: "", pageBreakBefore: true })
+            );
+          }
+        }
+
+        // Create document
+        const doc = new Document({
+          sections: [{
+            properties: {},
+            children: docSections,
+          }],
+        });
+
+        // Generate buffer
+        const { Packer } = await import("docx");
+        const buffer = await Packer.toBuffer(doc);
+
+        // Upload to S3
+        const fileName = `${blueprint[0].workingTitle?.replace(/[^a-zA-Z0-9]/g, '_') || 'manuscript'}_${Date.now()}.docx`;
+        const fileKey = `manuscripts/${ctx.user.id}/${fileName}`;
+        const { url } = await storagePut(fileKey, buffer, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+        return { 
+          url, 
+          fileName,
+          sectionCount: approvedManuscripts.length,
+        };
+      }),
   }),
 
   // Manuscript Analysis (AI-Agentic Publishing)

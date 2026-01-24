@@ -175,6 +175,18 @@ export default function GenerateManuscript() {
     },
   });
 
+  // Download manuscript mutation
+  const downloadMutation = trpc.manuscript.downloadManuscript.useMutation({
+    onSuccess: (data) => {
+      // Open the download URL in a new tab
+      window.open(data.url, "_blank");
+      toast.success(`Manuscript downloaded! ${data.sectionCount} sections included.`);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to download manuscript");
+    },
+  });
+
   const handleGenerate = () => {
     if (!currentSection) return;
     generateChapter.mutate({
@@ -226,6 +238,17 @@ export default function GenerateManuscript() {
     if (currentSectionIndex < sections.length - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
     }
+  };
+
+  const handleDownloadManuscript = () => {
+    if (!blueprintId) return;
+    downloadMutation.mutate({ blueprintId: Number(blueprintId) });
+  };
+
+  const handleExportToPublishing = () => {
+    // Navigate to AI Publishing Studio with blueprint ID
+    navigate(`/ai-publishing-studio?blueprintId=${blueprintId}`);
+    toast.success("Redirecting to AI Publishing Studio...");
   };
 
   // Show detailed loading/error states
@@ -298,13 +321,43 @@ export default function GenerateManuscript() {
         </p>
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Bar with Actions */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-sm font-medium">Overall Progress</span>
-          <span className="text-sm text-muted-foreground">
-            {progress?.filter((m) => m.status === "approved").length || 0} / {sections.length} approved
-          </span>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Overall Progress</span>
+            <span className="text-sm text-muted-foreground">
+              {progress?.filter((m) => m.status === "approved").length || 0} / {sections.length} approved
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadManuscript}
+              disabled={downloadMutation.isPending || (progress?.filter((m) => m.status === "approved").length || 0) === 0}
+            >
+              {downloadMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download as DOCX
+                </>
+              )}
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleExportToPublishing}
+              disabled={(progress?.filter((m) => m.status === "approved").length || 0) < sections.length}
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Export to Publishing Studio
+            </Button>
+          </div>
         </div>
         <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
           <div
