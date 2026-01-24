@@ -113,6 +113,13 @@
       "when": 1769265069186,
       "tag": "0015_conscious_crystal",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "5",
+      "when": 1769294939403,
+      "tag": "0016_large_hobgoblin",
+      "breakpoints": true
     }
   ]
 }

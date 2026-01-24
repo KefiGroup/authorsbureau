@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE storyBlueprints ADD COLUMN isbn VARCHAR(20) AFTER wordsPerChapter;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute ALTER TABLE storyBlueprints ADD COLUMN isbn VARCHAR(20) AFTER wordsPerChapter;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1947
+}

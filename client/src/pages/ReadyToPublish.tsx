@@ -84,6 +84,31 @@ export default function ReadyToPublish() {
   const [startingFresh, setStartingFresh] = useState(false);
   const [initialTitle, setInitialTitle] = useState("");
   const [isSavingTitle, setIsSavingTitle] = useState(false);
+  const [isbn, setIsbn] = useState("");
+  
+  // Mutation to save ISBN to blueprint
+  const updateIsbn = trpc.blueprint.update.useMutation();
+  
+  // Debounced ISBN save (save after user stops typing for 1 second)
+  useEffect(() => {
+    if (!bookId || !isbn) return;
+    
+    const timeoutId = setTimeout(() => {
+      updateIsbn.mutate(
+        { blueprintId: bookId, data: { isbn } },
+        {
+          onSuccess: () => {
+            toast.success("ISBN saved");
+          },
+          onError: (error) => {
+            toast.error("Failed to save ISBN: " + error.message);
+          },
+        }
+      );
+    }, 1000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [isbn, bookId]);
   
   // AI Analysis state
   const [aiAnalysis, setAIAnalysis] = useState<AIAnalysis | null>(null);
@@ -1286,6 +1311,24 @@ export default function ReadyToPublish() {
                       </p>
                     </div>
                   </div>
+                </div>
+
+                {/* ISBN Input Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="isbn" className="text-base font-semibold flex items-center gap-2">
+                    ISBN-13 <span className="text-muted-foreground font-normal">(Optional - for copyright page)</span>
+                  </Label>
+                  <Input
+                    id="isbn"
+                    placeholder="978-X-XXXX-XXXX-X"
+                    value={isbn}
+                    onChange={(e) => setIsbn(e.target.value)}
+                    className="text-base"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Enter your ISBN-13 to automatically update the copyright page placeholder in your manuscript. 
+                    If you don't have one yet, you can add it later.
+                  </p>
                 </div>
 
                 {/* Show existing manuscript loaded message */}

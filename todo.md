@@ -2447,3 +2447,20 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Update chapter outline generation to use dynamic chapter count
 - [x] Implement smart calculation: 150p→10ch, 200p→13ch, 250p→16ch, 300p→20ch
 - [ ] Test blueprint generation with new smart calculation system
+
+
+---
+
+## 🎯 NEW USER REQUEST: ISBN Input Field in AI Publishing Studio
+
+**User Request:** Add ISBN input field to AI Publishing Studio that automatically updates copyright page in DOCX export
+
+**Requirements:**
+- [x] Add `isbn` field to database schema (storyBlueprints table)
+- [x] Add ISBN input field to AI Publishing Studio upload page (below ISBN reminder banner)
+- [x] Save ISBN to database when user enters it (debounced auto-save after 1 second)
+- [x] Update DOCX export copyright page to use stored ISBN instead of placeholder
+- [x] Show ISBN in copyright page as "ISBN: 978-XXXX-XXXX-X" format
+- [ ] Validate ISBN format (13 digits, starts with 978 or 979) - Optional enhancement
+- [x] Test workflow: ISBN input field appears correctly in Publishing Studio (✅ Working perfectly!)
+- [ ] User to test: Enter ISBN → Generate manuscript → Download DOCX → Verify ISBN appears in copyright page

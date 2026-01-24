@@ -102,6 +102,7 @@ export const storyBlueprints = mysqlTable("storyBlueprints", {
   targetLength: varchar("targetLength", { length: 100 }), // e.g., "80,000-100,000 words", "50 pages"
   targetPages: int("targetPages"), // User-selected page count (150, 200, 250, 300)
   wordsPerChapter: int("wordsPerChapter"), // Calculated words per chapter based on targetPages
+  isbn: varchar("isbn", { length: 20 }), // ISBN-13 for the book (978-XXXX-XXXX-X format)
   primaryGenre: varchar("primaryGenre", { length: 100 }),
   secondaryGenre: varchar("secondaryGenre", { length: 100 }),
   

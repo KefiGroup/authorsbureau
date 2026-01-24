@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "784fd812-0f9a-491b-bac7-70aac59fd0b2",
-  "prevId": "025f7a73-1501-4bc7-96e9-e53435432790",
+  "id": "e07d442d-1e00-4524-86d1-4dafcb200a8f",
+  "prevId": "784fd812-0f9a-491b-bac7-70aac59fd0b2",
   "tables": {
     "ai_recommendation_feedback": {
       "name": "ai_recommendation_feedback",
@@ -2166,6 +2166,13 @@
         "wordsPerChapter": {
           "name": "wordsPerChapter",
           "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "isbn": {
+          "name": "isbn",
+          "type": "varchar(20)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

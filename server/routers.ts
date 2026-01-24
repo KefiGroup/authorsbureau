@@ -580,6 +580,7 @@ Write the bio now:`;
           blueprintContent: z.string().optional(),
           essentialData: z.any().optional(),
           finalCheckpointData: z.string().optional(),
+          isbn: z.string().optional(),
         }),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -2407,7 +2408,12 @@ IMPORTANT:
 
         // === PAGE 3: COPYRIGHT PAGE ===
         const copyrightManuscript = approvedManuscripts.find((m: any) => m.sectionType === "copyright");
-        const copyrightContent = copyrightManuscript?.content || `Copyright © ${new Date().getFullYear()} by ${authorName}\n\nAll rights reserved.\n\nNo part of this publication may be reproduced, stored in a retrieval system, or transmitted in any form or by any means—electronic, mechanical, photocopying, recording, scanning, or otherwise—without prior written permission from the author, except in the case of brief quotations embodied in critical articles or reviews.`;
+        let copyrightContent = copyrightManuscript?.content || `Copyright © ${new Date().getFullYear()} by ${authorName}\n\nAll rights reserved.\n\nNo part of this publication may be reproduced, stored in a retrieval system, or transmitted in any form or by any means—electronic, mechanical, photocopying, recording, scanning, or otherwise—without prior written permission from the author, except in the case of brief quotations embodied in critical articles or reviews.`;
+        
+        // Replace ISBN placeholder with actual ISBN if available
+        if (blueprint[0].isbn) {
+          copyrightContent = copyrightContent.replace(/ISBN:?\s*\[Your ISBN Here\]/gi, `ISBN: ${blueprint[0].isbn}`);
+        }
         
         const copyrightParagraphs = copyrightContent.split("\n\n");
         const copyrightChildren: any[] = [];

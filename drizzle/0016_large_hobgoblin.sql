@@ -1,0 +1,1 @@
+ALTER TABLE `storyBlueprints` ADD `isbn` varchar(20);
