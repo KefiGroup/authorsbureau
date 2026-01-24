@@ -1728,3 +1728,21 @@ The complete end-to-end flow from onboarding to Word export is functional and pr
 **Time to Complete (Manual):** ~2 minutes for setup, ~30 seconds per section = **~13 minutes total for 24 sections**
 
 **With Bulk Generation:** Could reduce to ~3-5 minutes total (setup + background generation)
+
+
+---
+
+## 🐛 BUG: Right Panel Not Scrollable in StartWritingProcess
+
+**Issue:** The right side panel showing blueprint content cannot be scrolled, causing long content (character profiles, setting details, etc.) to be cut off and inaccessible.
+
+**Location:** `/start-writing?blueprintId=XXX` page, right panel with blueprint preview
+
+**Tasks:**
+- [x] Identify the container element for the right panel in StartWritingProcess.tsx
+- [x] Add `overflow-y-auto` or `overflow-y-scroll` CSS class to enable vertical scrolling
+- [x] Ensure the container has a fixed height (e.g., `h-screen` or `max-h-screen`)
+- [x] Test scrolling with long blueprint content
+- [x] Verify scroll behavior doesn't interfere with other UI elements
+
+**RESOLUTION:** Changed right panel container from `flex items-center justify-center` to `flex flex-col h-full overflow-hidden`. Wrapped placeholder/loading states in flex centering containers. Blueprint content now scrolls properly using ScrollArea component.
