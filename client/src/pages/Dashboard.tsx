@@ -70,15 +70,29 @@ export default function Dashboard() {
 
   // Combine blueprints and books into a unified project list
   const allProjects = [
-    ...(blueprints?.map(bp => ({
-      id: bp.id,
-      title: bp.workingTitle || 'Untitled Project',
-      status: bp.blueprintGenerated ? 'outlining' : 'idea',
-      wordCount: 0,
-      genre: bp.primaryGenre,
-      type: 'blueprint' as const,
-      updatedAt: bp.updatedAt,
-    })) || []),
+    ...(blueprints?.map(bp => {
+      // Determine accurate status based on workflow stage
+      let status = 'idea'; // Default: Blueprint questions not complete
+      
+      if (bp.manuscriptCompleted) {
+        status = 'drafting'; // All chapters complete
+      } else if (bp.manuscriptStarted) {
+        status = 'outlining'; // Writing in progress
+      } else if (bp.blueprintGenerated) {
+        status = 'outlining'; // Blueprint complete, ready to write
+      }
+      
+      return {
+        id: bp.id,
+        title: bp.workingTitle || 'Untitled Project',
+        status,
+        wordCount: 0,
+        genre: bp.primaryGenre,
+        type: 'blueprint' as const,
+        updatedAt: bp.updatedAt,
+        blueprintData: bp, // Keep full data for detailed status
+      };
+    }) || []),
     ...(books?.map(book => ({
       id: book.id,
       title: book.title,
@@ -128,11 +142,11 @@ export default function Dashboard() {
 
   const recentProjects = allProjects.slice(0, 5);
 
-  const getStatusInfo = (status: string) => {
+  const getStatusInfo = (status: string, project?: any) => {
     const statusMap: Record<string, { label: string; color: string; icon: string }> = {
-      idea: { label: "Planning", color: "bg-gray-100 text-gray-700", icon: "💡" },
-      outlining: { label: "Outlining", color: "bg-blue-100 text-blue-700", icon: "📝" },
-      drafting: { label: "Drafting", color: "bg-amber-100 text-amber-700", icon: "✍️" },
+      idea: { label: "Blueprint Questions", color: "bg-gray-100 text-gray-700", icon: "📋" },
+      outlining: { label: "Writing Manuscript", color: "bg-blue-100 text-blue-700", icon: "✍️" },
+      drafting: { label: "Manuscript Complete", color: "bg-amber-100 text-amber-700", icon: "✅" },
       editing: { label: "Editing", color: "bg-orange-100 text-orange-700", icon: "✏️" },
       designed: { label: "Designed", color: "bg-purple-100 text-purple-700", icon: "🎨" },
       marketing: { label: "Marketing", color: "bg-green-100 text-green-700", icon: "📢" },

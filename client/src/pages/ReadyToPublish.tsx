@@ -79,6 +79,7 @@ export default function ReadyToPublish() {
   const [uploadMethod, setUploadMethod] = useState<"paste" | "file">("paste");
   const [isUploading, setIsUploading] = useState(false);
   const [existingManuscriptLoaded, setExistingManuscriptLoaded] = useState(false);
+  const [isAutoLoading, setIsAutoLoading] = useState(false);
   const [showResumePrompt, setShowResumePrompt] = useState(false);
   const [hasCheckedResume, setHasCheckedResume] = useState(false);
   const [startingFresh, setStartingFresh] = useState(false);
@@ -165,16 +166,30 @@ export default function ReadyToPublish() {
           
           if (isRecent) {
             console.log('[Exported Manuscript] Loading manuscript from localStorage');
-            setManuscript(data.manuscriptText);
-            setWordCount(data.wordCount);
-            setInitialTitle(data.bookTitle);
-            setExistingManuscriptLoaded(true);
-            setStartingFresh(true); // Prevent auto-loading existing book
+            setIsAutoLoading(true);
             
-            // Clear localStorage after loading
-            localStorage.removeItem('exportedManuscript');
+            // Show loading toast
+            toast.loading('Loading your manuscript from Writing Studio...');
             
-            toast.success(`Manuscript loaded! ${data.wordCount.toLocaleString()} words ready for publishing.`);
+            // Simulate brief loading for better UX (even if instant)
+            setTimeout(() => {
+              setManuscript(data.manuscriptText);
+              setWordCount(data.wordCount);
+              setInitialTitle(data.bookTitle);
+              setExistingManuscriptLoaded(true);
+              setStartingFresh(true); // Prevent auto-loading existing book
+              setIsAutoLoading(false);
+              
+              // Clear localStorage after loading
+              localStorage.removeItem('exportedManuscript');
+              
+              // Dismiss loading toast and show success
+              toast.dismiss();
+              toast.success(
+                `✅ Manuscript loaded from Writing Studio (${data.wordCount.toLocaleString()} words)`,
+                { duration: 5000 }
+              );
+            }, 1200);
           } else {
             // Clear stale data
             localStorage.removeItem('exportedManuscript');
@@ -927,16 +942,26 @@ export default function ReadyToPublish() {
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-              <Sparkles className="w-8 h-8 text-primary" />
-              AI-Powered Publishing
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Upload your manuscript and let our AI publisher optimize everything for Amazon KDP success
-            </p>
+        {/* Header with Back Button */}
+        <div className="space-y-4">
+          <Button
+            variant="ghost"
+            onClick={() => setLocation('/dashboard')}
+            className="-ml-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                <Sparkles className="w-8 h-8 text-primary" />
+                AI-Powered Publishing
+              </h1>
+              <p className="text-muted-foreground mt-2">
+                Upload your manuscript and let our AI publisher optimize everything for Amazon KDP success
+              </p>
+            </div>
           </div>
           {bookId && existingBook && existingBook.status !== 'published' && (
             <Button
@@ -1402,7 +1427,7 @@ export default function ReadyToPublish() {
                             <CheckCircle2 className="w-6 h-6 text-green-600" />
                           </div>
                           <div>
-                            <p className="font-semibold text-green-900">Manuscript Loaded</p>
+                            <p className="font-semibold text-green-900">Manuscript Loaded ({wordCount.toLocaleString()} words)</p>
                             <p className="text-sm text-green-700">Ready for analysis</p>
                           </div>
                         </div>
@@ -1502,12 +1527,23 @@ export default function ReadyToPublish() {
                   </div>
                 )}
 
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                  {/* Edit Manuscript button - only show if coming from Writing Studio */}
+                  {bookId && fromManuscript && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setLocation(`/generate-manuscript?blueprintId=${bookId}`)}
+                      className="gap-2"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      Edit Manuscript in Writing Studio
+                    </Button>
+                  )}
                   <Button
                     onClick={handleAnalyzeManuscript}
                     disabled={!manuscript || manuscript.length < 100 || analyzeManuscript.isPending}
                     size="lg"
-                    className="gap-2"
+                    className="gap-2 ml-auto"
                   >
                     {analyzeManuscript.isPending ? (
                       <>

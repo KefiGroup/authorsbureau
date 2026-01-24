@@ -2514,3 +2514,12 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 
 - [x] Audit all invokeLLM calls to ensure they use GPT-4o (not gemini or other models) - 26 calls found, all will use gpt-4o via default
 - [x] Update any hardcoded model parameters to use gpt-4o - Changed default model in llm.ts to gpt-4o
+
+
+### High-Priority UX Improvements (From Workflow Report)
+- [x] Add "Back to Dashboard" button in AI Publishing Studio (top of page)
+- [x] Display word count in manuscript upload success message (e.g., "✅ Manuscript Loaded (1,847 words)")
+- [x] Fix dashboard status labels to show accurate workflow stage (Blueprint Questions, Reviewing Outline, Writing Manuscript, etc.)
+- [x] Add loading state for auto-load from Writing Studio (show spinner + toast)
+- [x] Add "Edit Manuscript" button in Publishing Studio to return to Writing Studio
+- [ ] Show breadcrumb navigation: "Writing Studio → Publishing Studio"
