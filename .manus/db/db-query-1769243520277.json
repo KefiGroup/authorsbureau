@@ -1,0 +1,73 @@
+{
+  "query": "SELECT id, userId, penName, bio FROM authors LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, userId, penName, bio FROM authors LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "userId": "1",
+      "penName": "Pauline Teo",
+      "bio": "Drawing on a diverse background that bridges corporate leadership, technological innovation, and educational expertise, [Author Name/They] brings a unique perspective to their writing."
+    },
+    {
+      "id": "10",
+      "userId": "3",
+      "penName": "Updated Name",
+      "bio": "Updated bio"
+    },
+    {
+      "id": "11",
+      "userId": "4",
+      "penName": "Book Author",
+      "bio": "Test author"
+    },
+    {
+      "id": "12",
+      "userId": "5",
+      "penName": "Prolific Author",
+      "bio": "Writes many books"
+    },
+    {
+      "id": "13",
+      "userId": "6",
+      "penName": "Update Author",
+      "bio": "Tests updates"
+    },
+    {
+      "id": "14",
+      "userId": "7",
+      "penName": "Delete Author",
+      "bio": "Tests deletion"
+    },
+    {
+      "id": "15",
+      "userId": "9",
+      "penName": "Chapter Author",
+      "bio": "Writes chapters"
+    },
+    {
+      "id": "16",
+      "userId": "8",
+      "penName": "Update Author",
+      "bio": "Tests updates"
+    },
+    {
+      "id": "17",
+      "userId": "11",
+      "penName": "Chapter Author",
+      "bio": "Writes chapters"
+    },
+    {
+      "id": "18",
+      "userId": "21",
+      "penName": "Test Author",
+      "bio": "A test author biography"
+    }
+  ],
+  "messages": [
+    "[Author Name/They] previously served as an Executive Director for a listed company, leveraging years of experience as a Founder and Investor to drive strategic growth. This foundation in high-level business operations informs their practical approach to subjects ranging from technology to professional development.",
+    "As a dedicated Learning & Development Specialist, [Author Name/They] holds an M.A. in Instructional Design and Technology, complementing a B.Bus and a Dip. HRD. Currently, [Author Name/They] is focused on building future-forward ventures, including We-Health.AI, 2Percent.AI, and AuthorsBureau.com, demonstrating a commitment to applying expertise across emerging fields. Their work reflects a deep understanding of how complex systems, human capital, and technology intersect."
+  ],
+  "stdout": "id\tuserId\tpenName\tbio\n1\t1\tPauline Teo\tDrawing on a diverse background that bridges corporate leadership, technological innovation, and educational expertise, [Author Name/They] brings a unique perspective to their writing.\n\n[Author Name/They] previously served as an Executive Director for a listed company, leveraging years of experience as a Founder and Investor to drive strategic growth. This foundation in high-level business operations informs their practical approach to subjects ranging from technology to professional development.\n\nAs a dedicated Learning & Development Specialist, [Author Name/They] holds an M.A. in Instructional Design and Technology, complementing a B.Bus and a Dip. HRD. Currently, [Author Name/They] is focused on building future-forward ventures, including We-Health.AI, 2Percent.AI, and AuthorsBureau.com, demonstrating a commitment to applying expertise across emerging fields. Their work reflects a deep understanding of how complex systems, human capital, and technology intersect.\n10\t3\tUpdated Name\tUpdated bio\n11\t4\tBook Author\tTest author\n12\t5\tProlific Author\tWrites many books\n13\t6\tUpdate Author\tTests updates\n14\t7\tDelete Author\tTests deletion\n15\t9\tChapter Author\tWrites chapters\n16\t8\tUpdate Author\tTests updates\n17\t11\tChapter Author\tWrites chapters\n18\t21\tTest Author\tA test author biography\n",
+  "stderr": "",
+  "execution_time_ms": 1653
+}

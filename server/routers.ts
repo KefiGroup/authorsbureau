@@ -162,37 +162,50 @@ export const appRouter = router({
         additionalInfo: z.string().optional(),
         targetLength: z.enum(["short", "medium", "long"]).default("medium"), // short=100 words, medium=150 words, long=200 words
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // Get author's pen name for personalization
+        const author = await db.getAuthorByUserId(ctx.user.id);
+        const authorName = author?.penName || "the author";
+        
+        console.log('[Bio Generation] User ID:', ctx.user.id);
+        console.log('[Bio Generation] Author object:', author);
+        console.log('[Bio Generation] Author name:', authorName);
         const lengthMap = {
           short: "100 words (suitable for back cover)",
           medium: "150 words (suitable for Amazon Author Central)",
           long: "200 words (suitable for website/press kit)",
         };
 
-        const prompt = `You are a professional author bio writer. Create a compelling third-person author biography based on the following information:
+        const firstName = authorName.split(' ')[0];
+        const prompt = `Write a professional author biography. The author's name is ${authorName}.
 
-${input.booksAuthored ? `Books Authored: ${input.booksAuthored}` : ""}
+${input.booksAuthored ? `Books: ${input.booksAuthored}` : ""}
 ${input.accomplishments ? `Accomplishments: ${input.accomplishments}` : ""}
 ${input.education ? `Education: ${input.education}` : ""}
-${input.additionalInfo ? `Additional Information: ${input.additionalInfo}` : ""}
+${input.additionalInfo ? `Additional: ${input.additionalInfo}` : ""}
 
-Requirements:
-- Write in third person (use "they" or the author's name if provided)
-- Target length: ${lengthMap[input.targetLength]}
-- Professional tone suitable for book publishing
-- Focus on credentials and achievements relevant to readers
-- No promotional language or excessive self-praise
-- Follow Amazon Author Central guidelines (no special formatting)
+IMPORTANT RULES:
+- Write in third person
+- Use "${authorName}" or "${firstName}" throughout the bio
+- DO NOT use: they, them, their, he, she, his, her, the author
+- Length: ${lengthMap[input.targetLength]}
+- Professional tone for book publishing
 
-Generate the author bio now:`;
+Example start: "${authorName} brings a unique blend of..."
+Example middle: "${firstName} previously served as..."
+Example end: "${authorName}'s work focuses on..."
+
+Write the bio now:`;
 
         const response = await invokeLLM({
+          model: "gpt-4o", // Use GPT-4o for best writing quality and instruction following
           messages: [
-            { role: "system", content: "You are a professional author bio writer specializing in book publishing." },
+            { role: "system", content: "You are a professional author bio writer. You MUST use the author's actual name throughout the bio. NEVER use pronouns like 'they', 'them', 'their', 'he', 'she'." },
             { role: "user", content: prompt },
+            { role: "assistant", content: `I understand. I will write the bio using only "${authorName}" and "${firstName}", never using pronouns. Here is the professional biography:\n\n${authorName}` },
           ],
         });
-
+        
         const content = response.choices[0].message.content;
         const generatedBio = typeof content === "string" ? content.trim() : "";
         const wordCount = generatedBio.split(/\s+/).length;

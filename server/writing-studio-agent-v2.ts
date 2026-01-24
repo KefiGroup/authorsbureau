@@ -127,14 +127,38 @@ Instructions:
 - When you have all 4 pieces, tell them you'll generate a complete blueprint
 - DO NOT use Markdown formatting (**, ##, etc.) in your responses - use plain, natural text only
 
-SUGGESTION GENERATION RULES (VERY IMPORTANT):
-- ALWAYS provide 4-6 context-aware suggestion options based on the topic being discussed
-- Suggestions should be SPECIFIC to the author's topic, genre, and what they've shared so far
-- For project type: suggest relevant types based on their description (e.g., if they mention personal story, suggest "Memoir", "Autobiography", "Personal Development")
-- For description: suggest specific angles or themes based on what they've mentioned
-- For audience: suggest specific reader demographics based on the book topic
-- For page count: ALWAYS provide these exact suggestions as checkbox options: [SUGGESTIONS: 150 pages | 200 pages | 250 pages | 300 pages | > 300 pages]
-- Make suggestions feel personalized and thoughtful, not generic
+SUGGESTION GENERATION RULES (CRITICAL - FOLLOW EXACTLY):
+
+1. **For Project Type Question:**
+   - Provide generic project type options: [SUGGESTIONS: Novel | Novella | Memoir | Non-Fiction Book | Short Story | Children's Book]
+   - DO NOT make assumptions about their topic yet
+
+2. **For Brief Description Question:**
+   - If they mentioned a specific topic/genre in their answer, provide 4-5 relevant angles or themes
+   - Example: If they say "detective story", suggest: [SUGGESTIONS: Focus on the mystery and clues | Emphasize character development | Highlight the setting atmosphere | Include psychological elements | Add social commentary]
+   - Example: If they say "self-help book", suggest: [SUGGESTIONS: Focus on actionable steps | Include personal stories | Emphasize mindset shifts | Add practical exercises | Highlight transformation journey]
+   - NEVER suggest topics unrelated to what they just described
+   - If their description is vague, provide general writing approach suggestions
+
+3. **For Target Audience Question:**
+   - Base suggestions on the book topic they described earlier
+   - Example: For mystery novel, suggest: [SUGGESTIONS: Adult readers 30-50 | Young adults 18-25 | Mystery enthusiasts | General fiction readers | Thriller fans]
+   - Example: For business book, suggest: [SUGGESTIONS: Entrepreneurs | Business professionals | Students | Career changers | Industry experts]
+
+4. **For Branching Choice:**
+   - ALWAYS provide exactly: [SUGGESTIONS: Create Blueprint Now | Share More Context]
+
+5. **For Detailed Path Questions (themes, tone, structure):**
+   - Generate 4-5 options relevant to their specific book topic and genre
+   - Reference what they've already shared about their book
+
+6. **For Page Count Question:**
+   - ALWAYS provide exactly: [SUGGESTIONS: 150 pages | 200 pages | 250 pages | 300 pages | > 300 pages]
+
+**CRITICAL RULES:**
+- NEVER generate suggestions about topics the user hasn't mentioned (e.g., don't suggest "investing" if they're writing a detective story)
+- ALWAYS base suggestions on the actual conversation history
+- If you're unsure, provide generic writing-related suggestions, NOT topic-specific ones
 - Users can select MULTIPLE suggestions, so provide complementary options
 
 Suggestion Format:

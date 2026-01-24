@@ -1296,3 +1296,103 @@ This is priority #1 from the next steps list
 2. AI asks: "Would you prefer me to create your blueprint now, or share more context?"
 3a. Quick path: User clicks "Create Blueprint Now" → Checkbox modal → Done
 3b. Detailed path: User clicks "Share More Context" → 3 more questions → Checkbox modal → Done
+
+---
+
+## 🐛 Bug: Irrelevant Suggestion Checkboxes in Writing Studio
+
+### Issue
+- [ ] AI shows hardcoded suggestion checkboxes that don't match user's book context
+- [ ] Example: User writing any book sees investing-related suggestions like "Focus on the ethical approach to investing"
+- [ ] Suggestions should be dynamically generated based on the user's actual project description
+
+### Investigation
+- [x] Found suggestion generation in writing-studio-agent-v2.ts (lines 130-165)
+- [x] Confirmed suggestions are AI-generated, not hardcoded
+- [x] Identified root cause: AI hallucinating suggestions from training data instead of using conversation context
+
+### Fix
+- [x] Added explicit question-specific suggestion rules to prevent hallucination
+- [x] Provided concrete examples for each question type (project type, description, audience, etc.)
+- [x] Added critical rule: "NEVER generate suggestions about topics the user hasn't mentioned"
+- [x] Structured suggestions to be contextual and relevant to actual conversation
+
+### Testing
+- [ ] Test with different book types (fiction, non-fiction, memoir, etc.)
+- [ ] Verify suggestions match the book's actual content and genre
+
+
+---
+
+## 🐛 Bug: Profile Page Not Saving Changes
+
+### Issue
+- [ ] Profile page reverts to previous saved version after attempting to save
+- [ ] Photo upload not working
+- [ ] All fields (pen name, bio, writing style, etc.) not persisting
+
+### Investigation
+- [ ] Check Profile.tsx component for save functionality
+- [ ] Check trpc mutation for updateProfile
+- [ ] Check if there's a validation error or network error
+- [ ] Check browser console for errors
+
+### Fix
+- [ ] Fix profile update mutation
+- [ ] Fix photo upload functionality
+- [ ] Ensure all fields save correctly
+- [ ] Add proper error handling and user feedback
+
+
+---
+
+## 🔧 Enhancement: Personalize AI-Generated Bio with Author's Name
+
+### Issue
+- [ ] AI-generated bio uses generic placeholders like "the author" or "[Author Name/They]"
+- [ ] Should use the author's actual pen name for a more personal, professional bio
+
+### Fix
+- [x] Update generateAuthorBio mutation to get author's pen name from database
+- [x] Added explicit instruction to ALWAYS use author's actual name
+- [x] Prohibited use of generic placeholders like "the author", "[Author Name]", "[They]"
+- [x] Made bio feel personal and professional by using author's real name
+
+
+---
+
+## 🐛 Bug: Bio Still Uses "They" Instead of Author's Name
+
+### Issue
+- [ ] Bio uses author's name in first sentence, then switches to "they" for the rest
+- [ ] Should consistently use author's name throughout the entire bio
+- [ ] Example: "Pauline brings..." then "They previously served..." (should be "She previously served..." or "Pauline previously served...")
+
+### Fix
+- [x] Strengthened AI prompt with CRITICAL REQUIREMENTS section
+- [x] Added explicit prohibition: "NEVER use pronouns like 'they', 'them', 'their', 'he', 'she', 'his', 'her'"
+- [x] Provided concrete examples of CORRECT vs WRONG usage
+- [x] Instructed AI to vary between full name and first name for natural flow
+- [x] Switched from Gemini Flash to GPT-4o for better instruction following
+- [x] Added model parameter support to invokeLLM helper
+- [x] Used assistant message priming to force correct format
+- [ ] Test to ensure entire bio uses proper references (pending user test)
+
+
+---
+
+## 🚨 CRITICAL: Bio Generator Outputting Placeholder Text
+
+### Issue
+- [ ] AI is literally outputting "[Author Name/They]" in the generated bio
+- [ ] Should be using actual author name "Pauline Teo"
+- [ ] Possible causes:
+  * authorName variable not being retrieved correctly from database
+  * Prompt template string interpolation not working
+  * LLM ignoring instructions completely
+
+### Investigation Needed
+- [ ] Add console logging to check authorName value
+- [ ] Verify database query is returning pen name
+- [ ] Check if prompt is being constructed correctly
+- [ ] Test with simpler, more direct prompt structure

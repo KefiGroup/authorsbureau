@@ -1,0 +1,58 @@
+{
+  "query": "SELECT * FROM authors ORDER BY updatedAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT * FROM authors ORDER BY updatedAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "150002",
+      "userId": "540132",
+      "penName": "Updated Name",
+      "bio": "Updated bio",
+      "website": "https://updated.com",
+      "avatarUrl": "NULL",
+      "createdAt": "2026-01-06 14:54:23",
+      "updatedAt": "2026-01-06 14:54:23",
+      "linkedInUrl": "NULL",
+      "booksAuthored": "NULL",
+      "accomplishments": "NULL",
+      "education": "NULL"
+    },
+    {
+      "id": "150001",
+      "userId": "540131",
+      "penName": "Test Author",
+      "bio": "A test author biography",
+      "website": "https://testauthor.com",
+      "avatarUrl": "NULL",
+      "createdAt": "2026-01-06 14:54:23",
+      "updatedAt": "2026-01-06 14:54:23",
+      "linkedInUrl": "NULL",
+      "booksAuthored": "NULL",
+      "accomplishments": "NULL",
+      "education": "NULL"
+    },
+    {
+      "id": "150003",
+      "userId": "540133",
+      "penName": "Book Author",
+      "bio": "Writes books",
+      "website": "NULL",
+      "avatarUrl": "NULL",
+      "createdAt": "2026-01-06 14:54:23",
+      "updatedAt": "2026-01-06 14:54:23",
+      "linkedInUrl": "NULL",
+      "booksAuthored": "NULL",
+      "accomplishments": "NULL",
+      "education": "NULL"
+    }
+  ],
+  "messages": [
+    "1\t1\tPauline Teo\tDrawing on a diverse background that bridges corporate leadership, technological innovation, and educational expertise, [Author Name/They] brings a unique perspective to their writing.",
+    "[Author Name/They] previously served as an Executive Director for a listed company, leveraging years of experience as a Founder and Investor to drive strategic growth. This foundation in high-level business operations informs their practical approach to subjects ranging from technology to professional development.",
+    "As a dedicated Learning & Development Specialist, [Author Name/They] holds an M.A. in Instructional Design and Technology, complementing a B.Bus and a Dip. HRD. Currently, [Author Name/They] is focused on building future-forward ventures, including We-Health.AI, 2Percent.AI, and AuthorsBureau.com, demonstrating a commitment to applying expertise across emerging fields. Their work reflects a deep understanding of how complex systems, human capital, and technology intersect.\thttps://paulineteo.com/\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663277157978/cRuN9X42UZpzT82DAFfXDj/author-photos/1-1769233642135-9g2mmi.jpg\t2026-01-05 16:01:34\t2026-01-24 06:57:12\thttps://www.linkedin.com/in/paulineteo/\tNULL\tFormer Listed Company Executive Director  | Founder & Investor | Author  | Learning & Development Specialist  |   Building We-Health.AI, 2Percent.AI & AuthorsBureau.com\tM.A. (Instructional Design and Technology)  |   B.Bus |   Dip. HRD",
+    "180001\t1500035\tPauline Teo\tPauline Teo is an accomplished author and thought leader, best known for their insightful work, *Be SUCKcessful*. With a background rooted in [mention a relevant field like business strategy, personal development, leadership, or entrepreneurship - *since no specific field was provided, I will use a general but strong phrase*], they bring a wealth of practical experience and innovative perspectives to the challenges of modern success.",
+    "Their writing is characterized by a unique blend of candid wisdom and actionable advice, empowering readers to navigate complexities and achieve their goals. [Author's Name] has dedicated their career to understanding the nuances of human potential and translating complex ideas into accessible, impactful strategies. Through their work, they aim to inspire individuals to redefine their approach to achievement and embrace authentic growth. They reside in [mention a general location if known, e.g., the Pacific Northwest, or omit if unknown] and continue to explore new frontiers in personal and professional development.\tNULL\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663277157978/cRuN9X42UZpzT82DAFfXDj/author-photos/1500035-1768000446251-dacjdk.jpg\t2026-01-09 22:11:46\t2026-01-09 23:15:11\thttps://www.linkedin.com/in/paulineteo/\tBe SUCKcessful\tNULL\tNULL"
+  ],
+  "stdout": "id\tuserId\tpenName\tbio\twebsite\tavatarUrl\tcreatedAt\tupdatedAt\tlinkedInUrl\tbooksAuthored\taccomplishments\teducation\n1\t1\tPauline Teo\tDrawing on a diverse background that bridges corporate leadership, technological innovation, and educational expertise, [Author Name/They] brings a unique perspective to their writing.\n\n[Author Name/They] previously served as an Executive Director for a listed company, leveraging years of experience as a Founder and Investor to drive strategic growth. This foundation in high-level business operations informs their practical approach to subjects ranging from technology to professional development.\n\nAs a dedicated Learning & Development Specialist, [Author Name/They] holds an M.A. in Instructional Design and Technology, complementing a B.Bus and a Dip. HRD. Currently, [Author Name/They] is focused on building future-forward ventures, including We-Health.AI, 2Percent.AI, and AuthorsBureau.com, demonstrating a commitment to applying expertise across emerging fields. Their work reflects a deep understanding of how complex systems, human capital, and technology intersect.\thttps://paulineteo.com/\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663277157978/cRuN9X42UZpzT82DAFfXDj/author-photos/1-1769233642135-9g2mmi.jpg\t2026-01-05 16:01:34\t2026-01-24 06:57:12\thttps://www.linkedin.com/in/paulineteo/\tNULL\tFormer Listed Company Executive Director  | Founder & Investor | Author  | Learning & Development Specialist  |   Building We-Health.AI, 2Percent.AI & AuthorsBureau.com\tM.A. (Instructional Design and Technology)  |   B.Bus |   Dip. HRD\n180001\t1500035\tPauline Teo\tPauline Teo is an accomplished author and thought leader, best known for their insightful work, *Be SUCKcessful*. With a background rooted in [mention a relevant field like business strategy, personal development, leadership, or entrepreneurship - *since no specific field was provided, I will use a general but strong phrase*], they bring a wealth of practical experience and innovative perspectives to the challenges of modern success.\n\nTheir writing is characterized by a unique blend of candid wisdom and actionable advice, empowering readers to navigate complexities and achieve their goals. [Author's Name] has dedicated their career to understanding the nuances of human potential and translating complex ideas into accessible, impactful strategies. Through their work, they aim to inspire individuals to redefine their approach to achievement and embrace authentic growth. They reside in [mention a general location if known, e.g., the Pacific Northwest, or omit if unknown] and continue to explore new frontiers in personal and professional development.\tNULL\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663277157978/cRuN9X42UZpzT82DAFfXDj/author-photos/1500035-1768000446251-dacjdk.jpg\t2026-01-09 22:11:46\t2026-01-09 23:15:11\thttps://www.linkedin.com/in/paulineteo/\tBe SUCKcessful\tNULL\tNULL\n150002\t540132\tUpdated Name\tUpdated bio\thttps://updated.com\tNULL\t2026-01-06 14:54:23\t2026-01-06 14:54:23\tNULL\tNULL\tNULL\tNULL\n150001\t540131\tTest Author\tA test author biography\thttps://testauthor.com\tNULL\t2026-01-06 14:54:23\t2026-01-06 14:54:23\tNULL\tNULL\tNULL\tNULL\n150003\t540133\tBook Author\tWrites books\tNULL\tNULL\t2026-01-06 14:54:23\t2026-01-06 14:54:23\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1516
+}
