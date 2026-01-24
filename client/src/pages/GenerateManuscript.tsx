@@ -35,25 +35,25 @@ export default function GenerateManuscript() {
   const [showRewriteModal, setShowRewriteModal] = useState(false);
 
   // Get blueprint data
-  const { data: blueprint } = trpc.blueprint.get.useQuery(
+  const { data: blueprint, isLoading: blueprintLoading, error: blueprintError } = trpc.blueprint.get.useQuery(
     { blueprintId: Number(blueprintId) },
     { enabled: !!blueprintId }
   );
 
   // Get chapter outline
-  const { data: outline } = trpc.manuscript.getChapterOutline.useQuery(
+  const { data: outline, isLoading: outlineLoading, error: outlineError } = trpc.manuscript.getChapterOutline.useQuery(
     { blueprintId: Number(blueprintId) },
     { enabled: !!blueprintId }
   );
 
   // Get book structure
-  const { data: structure } = trpc.manuscript.getBookStructure.useQuery(
+  const { data: structure, isLoading: structureLoading, error: structureError } = trpc.manuscript.getBookStructure.useQuery(
     { blueprintId: Number(blueprintId) },
     { enabled: !!blueprintId }
   );
 
   // Get progress
-  const { data: progress, refetch: refetchProgress } = trpc.manuscript.getProgress.useQuery(
+  const { data: progress, isLoading: progressLoading, error: progressError, refetch: refetchProgress } = trpc.manuscript.getProgress.useQuery(
     { blueprintId: Number(blueprintId) },
     { enabled: !!blueprintId }
   );
@@ -227,11 +227,48 @@ export default function GenerateManuscript() {
     }
   };
 
+  // Show detailed loading/error states
+  if (blueprintError || outlineError || structureError || progressError) {
+    return (
+      <div className="container py-8">
+        <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+          <p className="text-destructive font-semibold">Error loading manuscript data:</p>
+          {blueprintError && <p className="text-sm">Blueprint: {blueprintError.message}</p>}
+          {outlineError && <p className="text-sm">Outline: {outlineError.message}</p>}
+          {structureError && <p className="text-sm">Structure: {structureError.message}</p>}
+          {progressError && <p className="text-sm">Progress: {progressError.message}</p>}
+          <Button onClick={() => navigate(`/dashboard`)}>Return to Dashboard</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (blueprintLoading || outlineLoading || structureLoading || progressLoading) {
+    return (
+      <div className="container py-8">
+        <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="text-sm text-muted-foreground">
+            {blueprintLoading && <p>Loading blueprint...</p>}
+            {outlineLoading && <p>Loading chapter outline...</p>}
+            {structureLoading && <p>Loading book structure...</p>}
+            {progressLoading && <p>Loading progress...</p>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!blueprint || !outline || !structure || sections.length === 0) {
     return (
       <div className="container py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+          <p className="text-muted-foreground">Missing required data</p>
+          <p className="text-sm">Blueprint: {blueprint ? '✓' : '✗'}</p>
+          <p className="text-sm">Outline: {outline ? '✓' : '✗'}</p>
+          <p className="text-sm">Structure: {structure ? '✓' : '✗'}</p>
+          <p className="text-sm">Sections: {sections.length}</p>
+          <Button onClick={() => navigate(`/dashboard`)}>Return to Dashboard</Button>
         </div>
       </div>
     );
