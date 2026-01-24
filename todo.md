@@ -1998,3 +1998,65 @@ Add "Unapprove" button to allow users to reverse approval and make edits to appr
 - Progress count updates in real-time ✅
 
 **Status: COMPLETED** - Unapprove feature fully functional. Users now have full control over manuscript editing workflow.
+
+
+---
+
+## 🐛 Author Bio Not Using Profile Data
+
+**Issue:** Author Bio section shows generic "[Author Name Here]" placeholder text instead of pulling from user's profile bio. User has a bio saved in Profile page.
+
+**Root Cause:** This section was generated before the profile integration feature was implemented. Existing sections need to be regenerated to use the new profile-based logic.
+
+**Solution:** Add "Regenerate from Profile" button to Author Bio section that pulls bio directly from user profile without full regeneration.
+
+### Tasks
+- [ ] Create regenerateAuthorBioFromProfile mutation in server/routers.ts
+- [ ] Add "Regenerate from Profile" button to Author Bio section (only shows for authorBio type)
+- [ ] Test regeneration with user's actual profile bio
+- [ ] Verify author name is replaced throughout the bio text
+- [ ] Save checkpoint after testing
+
+
+---
+
+## ✅ COMPLETED: Author Bio Sync from Profile Feature
+
+### User Request (Completed)
+- [x] Author Bio section should automatically pull from user's profile bio
+- [x] Add "Sync from Profile" button to manually update Author Bio with latest profile data
+- [x] Replace "[Author Name/They]" placeholders with actual author name
+
+### Implementation Details
+- [x] Created syncAuthorBioFromProfile mutation in server/routers.ts (lines 2348-2408)
+- [x] Added authorization check via blueprint relationship
+- [x] Fetches author profile and replaces placeholders with actual pen name
+- [x] Added "Sync from Profile" button to GenerateManuscript.tsx (only shows for Author Bio section)
+- [x] Button styled with RefreshCw icon and spinning animation during sync
+- [x] Added syncAuthorBio mutation and handleSyncAuthorBio handler in frontend
+
+### Testing Results (\u2705 ALL PASSED)
+
+**Test Case: Sync Author Bio from Profile**
+1. Initial state: Generic placeholder text with "[Author Name Here]"
+2. Clicked "Sync from Profile" button
+3. Result:
+   - Content replaced with actual profile bio \u2705
+   - "[Author Name/They]" replaced with "Pauline Teo" \u2705
+   - Real accomplishments included (Executive Director, M.A. in Instructional Design, We-Health.AI, 2Percent.AI, AuthorsBureau.com) \u2705
+   - Word count updated (233 → 128 words) \u2705
+   - Status remains "Draft" for review \u2705
+   - Success toast: "Author Bio synced from profile! Please review and approve." \u2705
+
+### Files Modified
+- [x] server/routers.ts: Added syncAuthorBioFromProfile mutation
+- [x] client/src/pages/GenerateManuscript.tsx: Added Sync from Profile button and handler
+- [x] client/src/pages/GenerateManuscript.tsx: Added RefreshCw icon import
+
+### User Experience
+- User fills out profile bio in Profile page
+- When generating manuscript, Author Bio section uses profile data automatically
+- If profile bio is updated later, user can click "Sync from Profile" to refresh Author Bio content
+- User can review synced bio and approve when satisfied
+
+**Status: COMPLETED** - Author Bio now correctly pulls from user profile. Users can sync at any time to update with latest profile changes.

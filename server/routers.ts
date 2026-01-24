@@ -2342,6 +2342,69 @@ IMPORTANT:
           sectionCount: approvedManuscripts.length,
         };
       }),
+
+    // Sync Author Bio from Profile
+    syncAuthorBioFromProfile: protectedProcedure
+      .input(z.object({
+        manuscriptId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { manuscripts, authors } = await import("../drizzle/schema");
+        const { getDb } = await import("./db");
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        const { eq } = await import("drizzle-orm");
+
+        // Get manuscript
+        const { storyBlueprints } = await import("../drizzle/schema");
+        const manuscript = await db.select().from(manuscripts)
+          .where(eq(manuscripts.id, input.manuscriptId))
+          .limit(1);
+        if (!manuscript[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Manuscript not found" });
+        
+        // Check authorization via blueprint
+        const blueprint = await db.select().from(storyBlueprints)
+          .where(eq(storyBlueprints.id, manuscript[0].blueprintId))
+          .limit(1);
+        if (!blueprint[0] || blueprint[0].userId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+
+        // Get author profile
+        const authorProfile = await db.select().from(authors)
+          .where(eq(authors.userId, ctx.user.id))
+          .limit(1);
+        
+        const author = authorProfile[0];
+        if (!author || !author.bio) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "No bio found in profile. Please add your bio in the Profile page first." });
+        }
+
+        // Replace placeholders in bio with actual author name
+        const authorName = author.penName || ctx.user.name || "the author";
+        let personalizedBio = author.bio;
+        
+        // Replace various placeholder formats
+        personalizedBio = personalizedBio.replace(/\[Author Name Here\]/g, authorName);
+        personalizedBio = personalizedBio.replace(/\[Author Name\/They\]/g, authorName);
+        personalizedBio = personalizedBio.replace(/\[Author Name\]/g, authorName);
+        personalizedBio = personalizedBio.replace(/\[They\]/g, authorName);
+
+        // Calculate word count
+        const wordCount = personalizedBio.split(/\s+/).filter(w => w.length > 0).length;
+
+        // Update manuscript
+        await db.update(manuscripts)
+          .set({
+            content: personalizedBio,
+            wordCount,
+            status: "draft", // Set to draft so user can review before approving
+            updatedAt: new Date(),
+          })
+          .where(eq(manuscripts.id, input.manuscriptId));
+
+        return { success: true, wordCount };
+      }),
   }),
 
   // Manuscript Analysis (AI-Agentic Publishing)

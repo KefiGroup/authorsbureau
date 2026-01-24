@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/RichTextEditor";
-import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download, Sparkles, XCircle } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download, Sparkles, XCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { marked } from "marked";
 import { exportToDocx } from "@/lib/exportDocx";
@@ -160,6 +160,18 @@ export default function GenerateManuscript() {
     },
   });
 
+  // Sync Author Bio from Profile mutation
+  const syncAuthorBio = trpc.manuscript.syncAuthorBioFromProfile.useMutation({
+    onSuccess: () => {
+      refetchManuscript();
+      refetchProgress();
+      toast.success("Author Bio synced from profile! Please review and approve.");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to sync from profile");
+    },
+  });
+
   // Request edit mutation
   const requestEdit = trpc.manuscript.requestEdit.useMutation({
     onSuccess: async () => {
@@ -217,6 +229,11 @@ export default function GenerateManuscript() {
   const handleUnapprove = () => {
     if (!currentManuscript) return;
     unapproveChapter.mutate({ manuscriptId: currentManuscript.id });
+  };
+
+  const handleSyncAuthorBio = () => {
+    if (!currentManuscript) return;
+    syncAuthorBio.mutate({ manuscriptId: currentManuscript.id });
   };
 
   const handleRequestEdit = () => {
@@ -503,6 +520,17 @@ export default function GenerateManuscript() {
                     </div>
                   ) : !showChat ? (
                     <div className="flex gap-2">
+                      {currentSection?.type === "authorBio" && (
+                        <Button 
+                          onClick={handleSyncAuthorBio} 
+                          variant="default" 
+                          className="flex-1"
+                          disabled={syncAuthorBio.isPending}
+                        >
+                          <RefreshCw className={`h-4 w-4 mr-2 ${syncAuthorBio.isPending ? 'animate-spin' : ''}`} />
+                          Sync from Profile
+                        </Button>
+                      )}
                       <Button onClick={handleStartManualEdit} variant="outline" className="flex-1">
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Edit Manually
