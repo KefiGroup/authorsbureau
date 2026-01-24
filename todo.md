@@ -1396,3 +1396,18 @@ This is priority #1 from the next steps list
 - [ ] Verify database query is returning pen name
 - [ ] Check if prompt is being constructed correctly
 - [ ] Test with simpler, more direct prompt structure
+
+
+---
+
+## 🔧 Task: Switch Writing Studio AI Agent to GPT-4o
+
+### Requirement
+- [x] Update writing-studio-agent-v2.ts to use GPT-4o instead of default Gemini Flash
+- [x] Ensure contextual suggestions are generated correctly
+- [ ] Test with user's account to verify suggestions are relevant to book topic (pending user test)
+
+### Implementation
+- [x] Found 4 invokeLLM calls in writing-studio-agent-v2.ts
+- [x] Added model: "gpt-4o" parameter to all 4 invokeLLM calls
+- [ ] Test suggestion generation with real user scenario (pending)

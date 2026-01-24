@@ -176,7 +176,7 @@ End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4 | op
     messages.push({ role: "user", content: "I'm ready to start creating my story blueprint!" });
   }
 
-  const response = await invokeLLM({ messages });
+  const response = await invokeLLM({ model: "gpt-4o", messages });
   const content = response.choices[0].message.content;
   const aiMessage = typeof content === "string" ? content : "";
 
@@ -287,6 +287,7 @@ Return your response as a JSON object with this structure:
 }`;
 
   const response = await invokeLLM({
+    model: "gpt-4o",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: "Generate my complete story blueprint now!" },
@@ -462,7 +463,7 @@ CRITICAL Instructions:
     messages.push({ role: "user", content: userMessage });
   }
 
-  const response = await invokeLLM({ messages });
+  const response = await invokeLLM({ model: "gpt-4o", messages });
   const content = response.choices[0].message.content;
   const aiMessage = typeof content === "string" ? content : "";
 
@@ -527,6 +528,7 @@ Extract any of these fields if mentioned:
 Return JSON object with only the fields that are clearly mentioned.`;
 
   const response = await invokeLLM({
+    model: "gpt-4o",
     messages: [
       {
         role: "system",
