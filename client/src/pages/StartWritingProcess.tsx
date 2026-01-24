@@ -532,7 +532,7 @@ export default function StartWritingProcess() {
         </div>
 
         {/* Right: Blueprint Preview or Loading State */}
-        <div className="bg-muted/30 flex flex-col h-full overflow-hidden">
+        <div className="bg-muted/30 flex flex-col h-full">
           {!blueprintGenerated && !generateBlueprint.isPending && (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center p-12">
@@ -558,7 +558,7 @@ export default function StartWritingProcess() {
           )}
           
           {blueprintGenerated && !generateBlueprint.isPending && (
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full overflow-hidden">
               {/* Success Header */}
               <div className="text-center p-8 border-b">
                 <CheckCircle2 className="h-12 w-12 text-primary mx-auto mb-3" />
@@ -569,7 +569,7 @@ export default function StartWritingProcess() {
               </div>
               
               {/* Blueprint Content Preview */}
-              <ScrollArea className="flex-1 p-6">
+              <div className="flex-1 overflow-y-auto p-6">
                 {blueprint?.blueprintContent ? (
                   <div className="prose prose-sm max-w-none">
                     <div className="whitespace-pre-wrap text-sm leading-relaxed">
@@ -581,7 +581,7 @@ export default function StartWritingProcess() {
                     <p>Blueprint content is being finalized...</p>
                   </div>
                 )}
-              </ScrollArea>
+              </div>
               
               {/* Action Buttons */}
               <div className="p-6 border-t bg-background">

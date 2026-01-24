@@ -1808,3 +1808,26 @@ When users clicked "Request 3 Variations" button in manuscript editor, markdown 
 
 ### Status
 **READY FOR USER TESTING** - The fix is implemented and tested. Markdown symbols will no longer appear in variation text when users click "Request 3 Variations".
+
+
+---
+
+## 🐛 Blueprint Display Scrolling Issue (IN PROGRESS)
+
+### Issue
+Blueprint content in StartWriting.tsx is cut off and not scrollable. Users cannot view the full generated blueprint content.
+
+### Tasks
+- [x] Locate blueprint display component in StartWriting.tsx
+- [x] Add overflow-y-auto and max-height to blueprint content container
+- [x] Test scrolling in browser to ensure full blueprint is viewable
+- [x] Verify "Save Blueprint" and "Review Chapter Outline" buttons remain accessible
+
+### Solution
+- Removed `overflow-hidden` from parent container (line 535)
+- Added `overflow-hidden` to blueprint content wrapper (line 561)
+- Replaced `ScrollArea` component with native `overflow-y-auto` div (line 572)
+- Tested bidirectional scrolling: users can now scroll through entire blueprint content
+
+### Status
+**COMPLETED** - Blueprint content is now fully scrollable. Users can view all sections from Cover Page through Writing Guidelines.
