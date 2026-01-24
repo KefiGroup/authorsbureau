@@ -1314,7 +1314,7 @@ Return ONLY a JSON object with this structure:
     generateChapter: protectedProcedure
       .input(z.object({
         blueprintId: z.number(),
-        sectionType: z.enum(["prologue", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]),
+        sectionType: z.enum(["prologue", "copyright", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]),
         sectionNumber: z.number().optional(),
         sectionTitle: z.string(),
       }))
@@ -1542,6 +1542,31 @@ ${blueprintInfo}
 **Book Theme:** ${blueprintData.blueprintContent?.substring(0, 200)}
 
 Create a professional, touching dedication. Just write the dedication text, no heading.`;
+        } else if (input.sectionType === "copyright") {
+          // Get author info for copyright
+          const { authors } = await import("../drizzle/schema");
+          const authorProfile = await db.select().from(authors)
+            .where(eq(authors.userId, ctx.user.id))
+            .limit(1);
+          
+          const author = authorProfile[0];
+          const authorName = author?.penName || ctx.user.name || "[Author Name]";
+          const currentYear = new Date().getFullYear();
+          
+          prompt = `Generate a professional COPYRIGHT PAGE for this book:
+
+**Book Title:** ${blueprintData.workingTitle}
+**Author Name:** ${authorName}
+**Copyright Year:** ${currentYear}
+
+Include:
+1. Copyright notice: "Copyright © ${currentYear} by ${authorName}. All rights reserved."
+2. Standard rights statement (no part may be reproduced without permission)
+3. Publisher info placeholder (if self-published)
+4. ISBN placeholder
+5. Disclaimer (This is a work of fiction...)
+
+Format professionally. Just write the copyright page content, no heading.`;
         } else if (input.sectionType === "acknowledgements") {
           prompt = `Write professional ACKNOWLEDGEMENTS (2-3 paragraphs) for this book:
 
@@ -1549,12 +1574,32 @@ Create a professional, touching dedication. Just write the dedication text, no h
 
 Thank the people who typically help authors: editors, beta readers, family, supporters, etc. Make it warm and professional. Just write the acknowledgements text, no heading.`;
         } else if (input.sectionType === "authorBio") {
-          prompt = `Write a professional AUTHOR BIO (150-200 words) for the author of this book:
+          // Get author profile to use their bio
+          const { authors } = await import("../drizzle/schema");
+          const authorProfile = await db.select().from(authors)
+            .where(eq(authors.userId, ctx.user.id))
+            .limit(1);
+          
+          const author = authorProfile[0];
+          
+          if (author && author.bio) {
+            // Use the author's profile bio directly
+            prompt = `Format this author bio for publication in a book:
+
+${author.bio}
+
+Ensure it's in third person, professional, and compelling. If the author's name is a placeholder like "[Author Name Here]", replace it with "${author.penName || ctx.user.name || 'the author'}".
+Just return the formatted bio text, no heading.`;
+          } else {
+            // Fallback: Generate a generic bio
+            prompt = `Write a professional AUTHOR BIO (150-200 words) for the author of this book:
 
 **Book Title:** ${blueprintData.workingTitle}
 **Book Theme:** ${blueprintData.blueprintContent?.substring(0, 300)}
+**Author Name:** ${author?.penName || ctx.user.name || '[Author Name]'}
 
 Create a compelling third-person bio that establishes credibility and connects with readers. Just write the bio text, no heading.`;
+          }
         } else if (input.sectionType === "alsoBy") {
           prompt = `Create an "ALSO BY THIS AUTHOR" page for this book:
 
@@ -1649,7 +1694,7 @@ IF UNSURE: Make a strong assumption, proceed, and let the user edit. Never stop 
     getChapter: protectedProcedure
       .input(z.object({
         blueprintId: z.number(),
-        sectionType: z.enum(["prologue", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]),
+        sectionType: z.enum(["prologue", "copyright", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]),
         sectionNumber: z.number().optional(),
       }))
       .query(async ({ ctx, input }) => {

@@ -60,13 +60,14 @@ export default function GenerateManuscript() {
 
   // Build sections list (optional sections + chapters)
   const sections: Array<{
-    type: "prologue" | "chapter" | "epilogue" | "dedication" | "acknowledgements" | "authorBio" | "alsoBy" | "newsletter";
+    type: "prologue" | "copyright" | "chapter" | "epilogue" | "dedication" | "acknowledgements" | "authorBio" | "alsoBy" | "newsletter";
     number?: number;
     title: string;
   }> = [];
 
   if (structure && outline) {
     if (structure.hasPrologue) sections.push({ type: "prologue", title: "Prologue" });
+    if (structure.hasCopyright) sections.push({ type: "copyright", title: "Copyright" });
     if (structure.hasDedication) sections.push({ type: "dedication", title: "Dedication" });
 
     // Add chapters

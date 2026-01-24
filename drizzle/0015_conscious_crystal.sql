@@ -1,0 +1,1 @@
+ALTER TABLE `manuscripts` MODIFY COLUMN `sectionType` enum('prologue','copyright','chapter','epilogue','dedication','acknowledgements','authorBio','alsoBy','newsletter') NOT NULL;

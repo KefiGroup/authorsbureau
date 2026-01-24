@@ -1868,3 +1868,49 @@ This clearly distinguishes:
 
 ### Status
 **COMPLETED** - Progress indicators now clearly show current position vs completion status. No more confusion between "viewing section X" and "X sections completed".
+
+
+---
+
+## 🚀 Author Bio Auto-Population from Profile (IN PROGRESS)
+
+### Issue
+Author Bio section shows placeholder text "[Author Name Here]" instead of pulling from the user's profile. This should automatically use the author's name and bio from their profile settings.
+
+### Tasks
+- [ ] Check user profile schema for bio/author info fields
+- [ ] Add bio field to user profile if not exists
+- [ ] Update Author Bio generation prompt to use profile data
+- [ ] Create Profile page/settings for users to edit their bio
+- [ ] Test Author Bio generation with real profile data
+- [ ] Regenerate Author Bio section to verify it uses profile data
+
+
+---
+
+## 🚀 Manuscript Completion Features (IN PROGRESS)
+
+### Requirements
+1. **Author Bio from Profile** - Update Author Bio generation to automatically pull from user's profile
+2. **Copyright Page** - Add Copyright page option to book structure
+3. **Download Manuscript** - Add "Download as DOCX" button to export complete manuscript
+4. **Export to Publishing Studio** - Create workflow to send completed manuscript to AI Publishing Studio
+
+### Tasks
+- [x] Update Author Bio generation logic to fetch and use author profile data
+- [x] Add Copyright page to book structure options (alongside Dedication, Acknowledgements, etc.)
+- [ ] Implement manuscript download procedure that combines all sections into DOCX
+- [ ] Add "Download Manuscript" button to manuscript generation page
+- [ ] Create "Export to Publishing Studio" button/workflow
+- [ ] Test complete flow: Profile → Author Bio → Download → Export
+
+### Progress
+**Phase 1 & 2 Completed:**
+- ✅ Author Bio now pulls from user profile (fallback to AI generation if profile bio is empty)
+- ✅ Copyright page added to book structure schema and generation logic
+- ✅ Database updated with hasCopyright field (default: true)
+- ✅ Copyright generation includes: copyright notice, rights statement, publisher info, ISBN placeholder, fiction disclaimer
+
+**Remaining:**
+- Download manuscript as DOCX
+- Export to AI Publishing Studio

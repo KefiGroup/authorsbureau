@@ -232,6 +232,7 @@ export const bookStructures = mysqlTable("bookStructures", {
   id: int("id").autoincrement().primaryKey(),
   blueprintId: int("blueprintId").notNull().references(() => storyBlueprints.id, { onDelete: "cascade" }),
   hasPrologue: boolean("hasPrologue").default(false).notNull(),
+  hasCopyright: boolean("hasCopyright").default(true).notNull(), // Default true - required for publishing
   hasDedication: boolean("hasDedication").default(false).notNull(),
   hasAcknowledgements: boolean("hasAcknowledgements").default(false).notNull(),
   hasEpilogue: boolean("hasEpilogue").default(false).notNull(),
@@ -251,7 +252,7 @@ export type InsertBookStructure = typeof bookStructures.$inferInsert;
 export const manuscripts = mysqlTable("manuscripts", {
   id: int("id").autoincrement().primaryKey(),
   blueprintId: int("blueprintId").notNull().references(() => storyBlueprints.id, { onDelete: "cascade" }),
-  sectionType: mysqlEnum("sectionType", ["prologue", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]).notNull(),
+  sectionType: mysqlEnum("sectionType", ["prologue", "copyright", "chapter", "epilogue", "dedication", "acknowledgements", "authorBio", "alsoBy", "newsletter"]).notNull(),
   sectionNumber: int("sectionNumber"), // Chapter number (null for non-chapter sections)
   sectionTitle: varchar("sectionTitle", { length: 500 }),
   content: mediumtext("content"), // Generated chapter/section content

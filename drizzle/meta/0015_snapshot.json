@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "90024542-6e5f-420e-a807-daf197315565",
-  "prevId": "a8fc9f36-94e7-427c-a071-b97348b8d160",
+  "id": "025f7a73-1501-4bc7-96e9-e53435432790",
+  "prevId": "bb990604-07f6-4874-b2fb-c2aaf2e006fb",
   "tables": {
     "ai_recommendation_feedback": {
       "name": "ai_recommendation_feedback",
@@ -608,6 +608,14 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "hasCopyright": {
+          "name": "hasCopyright",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
         },
         "hasDedication": {
           "name": "hasDedication",
@@ -1605,7 +1613,7 @@
         },
         "sectionType": {
           "name": "sectionType",
-          "type": "enum('prologue','chapter','epilogue','dedication','acknowledgements','authorBio','alsoBy','newsletter')",
+          "type": "enum('prologue','copyright','chapter','epilogue','dedication','acknowledgements','authorBio','alsoBy','newsletter')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
