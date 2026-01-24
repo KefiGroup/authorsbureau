@@ -578,6 +578,8 @@ Write the bio now:`;
           conversationHistory: z.any().optional(),
           blueprintGenerated: z.boolean().optional(),
           blueprintContent: z.string().optional(),
+          essentialData: z.any().optional(),
+          finalCheckpointData: z.string().optional(),
         }),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -853,6 +855,20 @@ Write the bio now:`;
               updateData.workingTitle = blueprintResponse.blueprintData.workingTitle;
               updateData.targetLength = blueprintResponse.blueprintData.targetLength;
               updateData.targetPages = updatedEssentialData.targetPages || null; // Save user-selected page count
+              
+              // Calculate wordsPerChapter based on targetPages
+              if (updatedEssentialData.targetPages) {
+                const targetPages = updatedEssentialData.targetPages;
+                const wordsPerPage = 250; // Standard for 6"x9" with Georgia 12pt, 1.5 spacing
+                const totalWords = targetPages * wordsPerPage;
+                const frontBackMatterWords = 2500; // Estimated for Prologue, Copyright, Dedication, Acknowledgements, Author Bio, Newsletter
+                const chapterContentWords = totalWords - frontBackMatterWords;
+                const numberOfChapters = 20; // Standard chapter count
+                const wordsPerChapter = Math.round(chapterContentWords / numberOfChapters);
+                updateData.wordsPerChapter = wordsPerChapter;
+                console.log(`[Blueprint] Calculated wordsPerChapter: ${wordsPerChapter} (targetPages: ${targetPages}, totalWords: ${totalWords})`);
+              }
+              
               updateData.primaryGenre = blueprintResponse.blueprintData.primaryGenre;
               updateData.secondaryGenre = blueprintResponse.blueprintData.secondaryGenre;
               updateData.corePremise = blueprintResponse.blueprintData.corePremise;
@@ -1443,6 +1459,10 @@ AUDIENCE: ${targetAudience}
 - Balance accessibility with depth`;
         }
 
+        // Calculate target word count for chapters
+        const targetWords = blueprintData.wordsPerChapter || 2500; // Default to 2500 if not set
+        const wordCountRange = `${Math.round(targetWords * 0.9)}-${Math.round(targetWords * 1.1)}`; // ±10% range
+        
         if (input.sectionType === "chapter") {
           prompt = `You are an Author-First Writing AI designed to write complete, publish-ready chapters with confidence and momentum.
 
@@ -1463,7 +1483,7 @@ ${chapterOutline ? `Summary: ${chapterOutline.summary}` : ""}
 **Writing Instructions:**
 
 1. CONTENT REQUIREMENTS:
-   - Write the COMPLETE chapter (2,500-3,500 words)
+   - Write the COMPLETE chapter (${wordCountRange} words)
    - Do NOT include "Chapter X" heading - just write the content
    - Maintain full awareness of the book blueprint and previous chapters
    - Ensure consistency with established themes, tone, and character/concept voice

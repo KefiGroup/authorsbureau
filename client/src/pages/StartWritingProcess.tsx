@@ -295,15 +295,30 @@ export default function StartWritingProcess() {
   };
 
   const handleFinalCheckpointComplete = (data: FinalCheckpointData) => {
-    // Store the checkpoint data in the blueprint
+    // Extract target page count from numberOfPages selection
+    let targetPages: number | null = null;
+    if (data.numberOfPages.length > 0) {
+      const pageSelection = data.numberOfPages[0]; // Take first selection
+      const match = pageSelection.match(/(\d+)/);
+      if (match) {
+        targetPages = parseInt(match[1]);
+      }
+    }
+    
+    // Store the checkpoint data and targetPages in the blueprint
     if (blueprintId) {
-      // TODO: Re-add finalCheckpointData after schema sync
-      // updateBlueprint.mutate({
-      //   blueprintId,
-      //   data: {
-      //     finalCheckpointData: JSON.stringify(data),
-      //   },
-      // });
+      // Update essentialData with targetPages
+      const currentEssentialData = blueprint?.essentialData as any || {};
+      updateBlueprint.mutate({
+        blueprintId,
+        data: {
+          essentialData: {
+            ...currentEssentialData,
+            targetPages,
+          },
+          finalCheckpointData: JSON.stringify(data),
+        },
+      });
     }
     
     // Close modal and trigger blueprint generation

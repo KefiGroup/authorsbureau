@@ -2297,3 +2297,83 @@ When database updates don't reflect in UI immediately, always check React Query 
 - [x] Modal should have "Cancel" button
 - [ ] Test workflow: Try to generate Author Bio with empty profile → Modal appears
 - [ ] Test workflow: Complete profile bio → Generate Author Bio → Works without modal
+
+
+---
+
+## 🎯 NEW USER REQUEST: Reduce Chapters to 150 Pages
+
+### Requirement: Adjust Word Count Per Chapter
+**Goal:** Reduce manuscript from 215 pages to 150 pages by targeting 1,750 words per chapter
+
+**Tasks:**
+- [ ] Update AI generation prompt to target 1,750 words per chapter (instead of current ~2,500)
+- [ ] Add word count parameter to blueprint schema
+- [ ] Add word count control UI in blueprint settings
+- [ ] Modify chapter generation procedure to use blueprint word count target
+- [ ] Regenerate all 20 chapters with new 1,750-word target
+- [ ] Verify final manuscript is approximately 37,500 words (150 pages)
+- [ ] Test DOCX download to confirm page count
+
+**Calculation:**
+- Target pages: 150
+- Words per page: 250
+- Total words needed: 37,500
+- Number of chapters: 20
+- Words per chapter: 1,750
+- Front/back matter: ~2,500 words (Prologue, Copyright, Dedication, Acknowledgements, Author Bio, Newsletter)
+
+
+---
+
+## 🎯 NEW USER REQUEST: Word Count Control for New Books
+
+### Requirement: Add Target Page Count / Word Count Control
+**Goal:** Allow users to specify target page count (e.g., 150 pages) when creating new books, which automatically calculates words per chapter
+
+**Tasks:**
+- [ ] Add `targetPageCount` field to blueprint schema (default: 150)
+- [ ] Add `wordsPerChapter` calculated field to blueprint schema
+- [ ] Add page count input to blueprint creation UI
+- [ ] Show calculated "words per chapter" based on page count selection
+- [ ] Update AI chapter generation prompt to use blueprint's `wordsPerChapter` setting
+- [ ] Verify DOCX formatting (6"x9") applies to all new books (already implemented)
+- [ ] Test creating a new book with 150-page target
+- [ ] Verify generated chapters are ~1,750 words each
+- [ ] Download DOCX and confirm page count matches target
+
+**Calculation Logic:**
+```
+Target Pages: 150
+Words per page: 250 (standard for 6"x9" with Georgia 12pt, 1.5 spacing)
+Total words needed: 150 × 250 = 37,500 words
+Front/back matter: ~2,500 words (Prologue, Copyright, etc.)
+Chapter content needed: 37,500 - 2,500 = 35,000 words
+Number of chapters: 20 (typical)
+Words per chapter: 35,000 ÷ 20 = 1,750 words
+```
+
+
+---
+
+## 🎯 Word Count Control for 150-Page Books (COMPLETED)
+
+**User Request:** All new books should be formatted to 6"x9" with word count control for target page count
+
+**Implementation:**
+- [x] Add `wordsPerChapter` field to storyBlueprints schema
+- [x] Calculate `wordsPerChapter` based on `targetPages` when blueprint is generated
+  - Formula: (targetPages × 250 words/page - 2500 front/back matter) ÷ 20 chapters
+  - Example: 150 pages = 1,750 words/chapter
+- [x] Update AI chapter generation prompt to use blueprint's `wordsPerChapter` (±10% range)
+- [x] Update StartWritingProcess to save targetPages from Final Checkpoint Modal to essentialData
+- [x] Update blueprint.update procedure to accept essentialData and finalCheckpointData
+- [x] DOCX export already uses 6"x9" page size for all books
+- [ ] Test with new book creation (150 pages = 1,750 words/chapter)
+
+**How It Works:**
+1. User selects target page count in Final Checkpoint Modal (150, 200, 250, 300 pages)
+2. System calculates wordsPerChapter: `(targetPages × 250 - 2500) ÷ 20`
+3. AI generates chapters within the calculated word count range
+4. DOCX export uses 6"x9" page size with proper formatting
+5. Result: Manuscript matches user's target page count
