@@ -1,0 +1,23 @@
+{
+  "query": "SELECT * FROM bookStructures WHERE blueprintId = 450008;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT * FROM bookStructures WHERE blueprintId = 450008;",
+  "rows": [
+    {
+      "id": "150001",
+      "blueprintId": "450008",
+      "hasPrologue": "0",
+      "hasDedication": "1",
+      "hasAcknowledgements": "1",
+      "hasEpilogue": "0",
+      "hasAuthorBio": "1",
+      "hasAlsoBy": "0",
+      "hasNewsletter": "1",
+      "createdAt": "2026-01-24 11:34:28",
+      "updatedAt": "2026-01-24 11:34:28"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tblueprintId\thasPrologue\thasDedication\thasAcknowledgements\thasEpilogue\thasAuthorBio\thasAlsoBy\thasNewsletter\tcreatedAt\tupdatedAt\n150001\t450008\t0\t1\t1\t0\t1\t0\t1\t2026-01-24 11:34:28\t2026-01-24 11:34:28\n",
+  "stderr": "",
+  "execution_time_ms": 1518
+}

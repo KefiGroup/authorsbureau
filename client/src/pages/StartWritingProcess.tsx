@@ -6,6 +6,7 @@ import { BlueprintPreview } from "@/components/BlueprintPreview";
 import { FinalCheckpointModal, FinalCheckpointData } from "@/components/FinalCheckpointModal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Sparkles, FileText, ArrowRight, CheckCircle2, BookOpen, LogOut, User, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
@@ -553,16 +554,48 @@ export default function StartWritingProcess() {
           )}
           
           {blueprintGenerated && !generateBlueprint.isPending && (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-16 w-16 text-primary mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Blueprint Generated!</h3>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                Your comprehensive story blueprint is ready. Let's move on to chapter planning.
-              </p>
-              <Button size="lg" onClick={() => setLocation(`/chapter-outline/${blueprintId}`)}>
-                Review Chapter Outline
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+            <div className="flex flex-col h-full">
+              {/* Success Header */}
+              <div className="text-center p-8 border-b">
+                <CheckCircle2 className="h-12 w-12 text-primary mx-auto mb-3" />
+                <h3 className="text-lg font-semibold mb-2">Blueprint Generated!</h3>
+                <p className="text-muted-foreground text-sm">
+                  Your comprehensive story blueprint is ready.
+                </p>
+              </div>
+              
+              {/* Blueprint Content Preview */}
+              <ScrollArea className="flex-1 p-6">
+                {blueprint?.blueprintContent ? (
+                  <div className="prose prose-sm max-w-none">
+                    <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                      {blueprint.blueprintContent}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>Blueprint content is being finalized...</p>
+                  </div>
+                )}
+              </ScrollArea>
+              
+              {/* Action Buttons */}
+              <div className="p-6 border-t bg-background">
+                <Button 
+                  size="lg" 
+                  className="w-full"
+                  onClick={() => {
+                    if (!blueprintId) {
+                      toast.error("Blueprint ID is missing. Please try again.");
+                      return;
+                    }
+                    setLocation(`/review-outline/${blueprintId}`);
+                  }}
+                >
+                  Review Chapter Outline
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
         </div>

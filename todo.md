@@ -1547,3 +1547,76 @@ This is priority #1 from the next steps list
 - [x] Show loading state during blueprint generation
 - [x] Display "Review Chapter Outline" button after generation completes
 - [x] Test complete flow to verify no 9-section UI appears
+
+
+---
+
+## 🚨 CRITICAL BUGS: Blueprint Success Screen Issues (CURRENT)
+
+### Issues Reported by User
+1. **Blueprint content not visible** - Success screen says "Blueprint Generated!" but doesn't show the actual generated blueprint content
+2. **404 Navigation Error** - "Review Chapter Outline" button navigates to wrong blueprint ID (450007 instead of 450005), causing "Invalid Blueprint" error
+3. **No way to view blueprint** - After generation, users cannot see what was generated before proceeding to chapters
+
+### Root Causes
+- Removed BlueprintPreview component entirely without providing alternative way to view content
+- Navigation using wrong blueprint ID (possibly creating new blueprint instead of using current one)
+- Success screen only shows message, not the actual generated content
+
+### Required Fixes
+- [x] Add "View Blueprint" button on success screen to show generated content in modal or expandable section
+- [x] Fix navigation to use correct blueprint ID from URL params (`blueprintId` from query string)
+- [x] Ensure "Review Chapter Outline" button navigates to `/review-outline/{correctBlueprintId}` (fixed route mismatch)
+- [ ] Test complete flow: answer questions → modal → generation → view blueprint → navigate to chapters
+
+
+---
+
+## 🧪 END-TO-END TEST: Complete Book Creation Flow (CURRENT)
+
+### Goal
+Test the entire workflow from start to finish: new book → questions → blueprint → chapters → manuscript → Word download for publishing
+
+### Test Steps
+- [ ] Start new book from dashboard
+- [ ] Answer 3 essential questions (type, description, audience)
+- [ ] Complete page count modal
+- [ ] Verify blueprint content is displayed
+- [ ] Click "Review Chapter Outline" button
+- [ ] Review and approve chapter outline
+- [ ] Select optional elements (prologue, acknowledgements, etc.)
+- [ ] Generate complete manuscript
+- [ ] Download manuscript as Word document
+- [ ] Verify Word document can be uploaded to AI Publishing Studio
+
+
+---
+
+## 🐛 BUG: Review Chapter Outline Button Not Working
+
+**Issue:** After blueprint generation completes, clicking the "Review Chapter Outline" button doesn't navigate to the chapter outline page.
+
+**Tasks:**
+- [x] Check if button click handler is properly attached
+- [x] Verify navigation route matches the route defined in App.tsx
+- [x] Check browser console for JavaScript errors
+- [x] Test navigation with correct blueprint ID
+- [x] Ensure chapter outline page exists and is accessible
+
+**RESOLUTION:** Navigation works correctly. The issue was that the page was scrolled down, hiding the button. After scrolling to top, the button worked perfectly and navigated to `/review-outline/450008` successfully.
+
+
+---
+
+## 🐛 BUG: Manuscript Section Generation Not Working
+
+**Issue:** On the Generate Manuscript page (/generate-manuscript/450008), clicking "Generate Section" button doesn't trigger any action - no loading spinner, no API call, no error message.
+
+**Tasks:**
+- [x] Check if the Generate Section button click handler is properly attached (handleGenerate function exists)
+- [x] Verify the tRPC mutation for section generation exists and is working (generateChapter.mutate exists)
+- [x] Check server logs for any errors during section generation (no errors found)
+- [x] Test if the API endpoint is reachable (database tables exist: bookStructures, manuscripts)
+- [ ] **CRITICAL BLOCKER:** Generate Manuscript page times out when loading - investigate tRPC query hanging
+- [ ] Test manuscript generation after fixing timeout issue
+- [ ] Investigate if there's a "Generate All Sections" option instead of one-by-one generation

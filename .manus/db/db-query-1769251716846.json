@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, workingTitle, blueprintGenerated, LENGTH(blueprintContent) as content_length FROM storyBlueprints ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, workingTitle, blueprintGenerated, LENGTH(blueprintContent) as content_length FROM storyBlueprints ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "450007",
+      "workingTitle": "Value Investing for Beginners",
+      "blueprintGenerated": "1",
+      "content_length": "9725"
+    },
+    {
+      "id": "420003",
+      "workingTitle": "A",
+      "blueprintGenerated": "0",
+      "content_length": "NULL"
+    },
+    {
+      "id": "420002",
+      "workingTitle": "Road trip to Mexico",
+      "blueprintGenerated": "1",
+      "content_length": "9423"
+    },
+    {
+      "id": "90007",
+      "workingTitle": "The Passive Income Starter Kit: A Beginner's Guide to Building Wealth While You Sleep",
+      "blueprintGenerated": "1",
+      "content_length": "NULL"
+    },
+    {
+      "id": "30004",
+      "workingTitle": "NULL",
+      "blueprintGenerated": "0",
+      "content_length": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tworkingTitle\tblueprintGenerated\tcontent_length\n450007\tValue Investing for Beginners\t1\t9725\n420003\tA\t0\tNULL\n420002\tRoad trip to Mexico\t1\t9423\n90007\tThe Passive Income Starter Kit: A Beginner's Guide to Building Wealth While You Sleep\t1\tNULL\n30004\tNULL\t0\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1517
+}
