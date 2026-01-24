@@ -11,7 +11,16 @@ export async function generateBlueprintContent(blueprint: StoryBlueprint): Promi
 **Working Title:** ${blueprint.workingTitle || "Untitled"}
 **Target Length:** ${blueprint.targetLength || "Not specified"}
 **Target Pages:** ${blueprint.targetPages || "Not specified"}
-**Target Word Count:** ${blueprint.targetPages ? `${blueprint.targetPages * 250} words (based on 6" x 9" format, 250 words per page)` : "Not specified"}
+**Target Word Count:** ${blueprint.targetPages ? (() => {
+  const totalWords = blueprint.targetPages * 250;
+  const chapterContent = totalWords - 2500;
+  let chapters = 10;
+  if (blueprint.targetPages > 175) chapters = 13;
+  if (blueprint.targetPages > 225) chapters = 16;
+  if (blueprint.targetPages > 275) chapters = 20;
+  const wordsPerChapter = Math.round(chapterContent / chapters);
+  return `${totalWords} words (${chapters} chapters × ${wordsPerChapter} words, based on 6" x 9" format)`;
+})() : "Not specified"}
 **Primary Genre:** ${blueprint.primaryGenre || "Not specified"}
 **Secondary Genre:** ${blueprint.secondaryGenre || "Not specified"}
 
@@ -46,7 +55,16 @@ Generate a professional, comprehensive story blueprint with the following sectio
 - Working Title
 - Author Name
 - Genre Classification
-- Target Word Count: ${blueprint.targetPages ? `${blueprint.targetPages * 250} words` : "Not specified"} (for ${blueprint.targetPages || "N/A"} pages in 6" x 9" format)
+- Target Word Count: ${blueprint.targetPages ? (() => {
+  const totalWords = blueprint.targetPages * 250;
+  const chapterContent = totalWords - 2500;
+  let chapters = 10;
+  if (blueprint.targetPages > 175) chapters = 13;
+  if (blueprint.targetPages > 225) chapters = 16;
+  if (blueprint.targetPages > 275) chapters = 20;
+  const wordsPerChapter = Math.round(chapterContent / chapters);
+  return `${totalWords} words (${chapters} chapters × ${wordsPerChapter} words)`;
+})() : "Not specified"} (for ${blueprint.targetPages || "N/A"} pages in 6" x 9" format)
 - Date Created
 
 ## Premise Statement

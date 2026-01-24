@@ -856,17 +856,29 @@ Write the bio now:`;
               updateData.targetLength = blueprintResponse.blueprintData.targetLength;
               updateData.targetPages = updatedEssentialData.targetPages || null; // Save user-selected page count
               
-              // Calculate wordsPerChapter based on targetPages
+              // Calculate wordsPerChapter and optimal chapter count based on targetPages
               if (updatedEssentialData.targetPages) {
                 const targetPages = updatedEssentialData.targetPages;
                 const wordsPerPage = 250; // Standard for 6"x9" with Georgia 12pt, 1.5 spacing
                 const totalWords = targetPages * wordsPerPage;
                 const frontBackMatterWords = 2500; // Estimated for Prologue, Copyright, Dedication, Acknowledgements, Author Bio, Newsletter
                 const chapterContentWords = totalWords - frontBackMatterWords;
-                const numberOfChapters = 12; // Standard chapter count (10-15 chapters)
+                
+                // Determine optimal chapter count based on page range (keeps chapters 3,000-4,000 words)
+                let numberOfChapters: number;
+                if (targetPages <= 175) {
+                  numberOfChapters = 10; // 150 pages → 10 chapters × 3,500 words
+                } else if (targetPages <= 225) {
+                  numberOfChapters = 13; // 200 pages → 13 chapters × 3,654 words
+                } else if (targetPages <= 275) {
+                  numberOfChapters = 16; // 250 pages → 16 chapters × 3,750 words
+                } else {
+                  numberOfChapters = 20; // 300 pages → 20 chapters × 3,625 words
+                }
+                
                 const wordsPerChapter = Math.round(chapterContentWords / numberOfChapters);
                 updateData.wordsPerChapter = wordsPerChapter;
-                console.log(`[Blueprint] Calculated wordsPerChapter: ${wordsPerChapter} (targetPages: ${targetPages}, totalWords: ${totalWords})`);
+                console.log(`[Blueprint] Calculated wordsPerChapter: ${wordsPerChapter} (targetPages: ${targetPages}, chapters: ${numberOfChapters}, totalWords: ${totalWords})`);
               }
               
               updateData.primaryGenre = blueprintResponse.blueprintData.primaryGenre;
@@ -1127,12 +1139,25 @@ Write the bio now:`;
         if (!blueprint[0]) throw new TRPCError({ code: "NOT_FOUND", message: "Blueprint not found" });
 
         // Generate chapter outline using AI
+        // Calculate optimal chapter count based on target pages
+        const targetPages = blueprint[0].targetPages || 150;
+        let optimalChapters: number;
+        if (targetPages <= 175) {
+          optimalChapters = 10;
+        } else if (targetPages <= 225) {
+          optimalChapters = 13;
+        } else if (targetPages <= 275) {
+          optimalChapters = 16;
+        } else {
+          optimalChapters = 20;
+        }
+        
         const prompt = `Based on this book blueprint, generate a detailed chapter-by-chapter outline for a ${blueprint[0].projectType || "novel"}.
 
 Blueprint:
 ${JSON.stringify(blueprint[0].essentialData, null, 2)}
 
-Generate 10-12 chapters (optimal for ${blueprint[0].targetPages || 150}-page books). For each chapter, provide:
+Generate exactly ${optimalChapters} chapters (optimal for ${targetPages}-page books). For each chapter, provide:
 1. Chapter title (creative and engaging, NO markdown symbols)
 2. Chapter summary (2-3 sentences describing what happens, NO markdown symbols)
 

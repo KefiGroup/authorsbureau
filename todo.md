@@ -2443,6 +2443,7 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 **Requirements:**
 - [x] Find where chapter count (20) is hardcoded
 - [x] Update to generate 10-12 chapters instead (changed from 20 to 12)
-- [x] Update word count calculation: `(targetPages * 250) ÷ 12` words per chapter
-- [x] Update chapter outline generation to suggest 10-12 chapters
-- [ ] Test blueprint generation with new chapter count
+- [x] Update word count calculation: Smart system based on page range
+- [x] Update chapter outline generation to use dynamic chapter count
+- [x] Implement smart calculation: 150p→10ch, 200p→13ch, 250p→16ch, 300p→20ch
+- [ ] Test blueprint generation with new smart calculation system
