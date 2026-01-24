@@ -2205,7 +2205,7 @@ IMPORTANT:
         blueprintId: z.number(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak, PageNumber, NumberFormat, Header, Footer, TableOfContents, UnderlineType, convertInchesToTwip } = await import("docx");
+        const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak, PageNumber, NumberFormat, Header, Footer, TableOfContents, UnderlineType, convertInchesToTwip, BorderStyle } = await import("docx");
         const { manuscripts, storyBlueprints, bookStructures, chapterOutlines } = await import("../drizzle/schema");
         const { getDb } = await import("./db");
         const db = await getDb();
@@ -2262,17 +2262,27 @@ IMPORTANT:
         if (struct?.hasAlsoBy) sections.push({ type: "alsoBy", title: "Also By This Author" });
         if (struct?.hasNewsletter) sections.push({ type: "newsletter", title: "Newsletter Signup" });
 
-        // Create DOCX document with professional formatting
+        // Create DOCX document with KDP 6x9 formatting
         const bookTitle = blueprint[0].workingTitle || "Untitled";
         const authorName = ctx.user.name || "Author";
         
         // Build document sections with proper page numbering
         const documentSections: any[] = [];
 
-        // === TITLE PAGE (no page number) ===
+        // === PAGE 1: TITLE PAGE (no page number shown) ===
         documentSections.push({
           properties: {
             page: {
+              size: {
+                width: convertInchesToTwip(6),    // 6 inches
+                height: convertInchesToTwip(9),   // 9 inches
+              },
+              margin: {
+                top: convertInchesToTwip(1),
+                right: convertInchesToTwip(0.5),
+                bottom: convertInchesToTwip(1),
+                left: convertInchesToTwip(0.75),  // Larger left margin for binding
+              },
               pageNumbers: {
                 start: 1,
                 formatType: NumberFormat.DECIMAL,
@@ -2283,99 +2293,254 @@ IMPORTANT:
             new Paragraph({
               text: bookTitle,
               alignment: AlignmentType.CENTER,
-              spacing: { before: convertInchesToTwip(3), after: convertInchesToTwip(0.5) },
+              spacing: { before: convertInchesToTwip(3.5), after: convertInchesToTwip(0.5) },
               style: "Title",
-            }),
-            new Paragraph({
-              text: authorName,
-              alignment: AlignmentType.CENTER,
-              spacing: { after: convertInchesToTwip(0.3) },
             }),
           ],
         });
 
-        // === FRONT MATTER (Roman numerals: i, ii, iii) ===
-        const frontMatterChildren: any[] = [];
-        let frontMatterPageCount = 0;
+        // === PAGE 2: AUTHOR NAME PAGE ===
+        documentSections.push({
+          properties: {
+            page: {
+              size: {
+                width: convertInchesToTwip(6),
+                height: convertInchesToTwip(9),
+              },
+              margin: {
+                top: convertInchesToTwip(1),
+                right: convertInchesToTwip(0.5),
+                bottom: convertInchesToTwip(1),
+                left: convertInchesToTwip(0.75),
+              },
+              pageNumbers: {
+                start: 2,
+                formatType: NumberFormat.DECIMAL,
+              },
+            },
+          },
+          footers: {
+            default: new Footer({
+              children: [
+                new Paragraph({
+                  border: {
+                    top: {
+                      color: "4472C4",
+                      space: 1,
+                      style: BorderStyle.SINGLE,
+                      size: 6,
+                    },
+                  },
+                  children: [
+                    new TextRun({
+                      text: bookTitle.toUpperCase(),
+                      size: 18,
+                      font: "Georgia",
+                    }),
+                    new TextRun({
+                      text: "\t\t",
+                    }),
+                    new TextRun({
+                      children: [PageNumber.CURRENT],
+                      size: 18,
+                      font: "Georgia",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          },
+          children: [
+            new Paragraph({
+              text: authorName,
+              alignment: AlignmentType.CENTER,
+              spacing: { before: convertInchesToTwip(3.5) },
+              style: "AuthorName",
+            }),
+          ],
+        });
 
-        // Add front matter sections (Prologue, Copyright, Dedication)
+        // === PAGE 3: COPYRIGHT PAGE ===
+        const copyrightManuscript = approvedManuscripts.find((m: any) => m.sectionType === "copyright");
+        const copyrightContent = copyrightManuscript?.content || `Copyright © ${new Date().getFullYear()} by ${authorName}\n\nAll rights reserved.\n\nNo part of this publication may be reproduced, stored in a retrieval system, or transmitted in any form or by any means—electronic, mechanical, photocopying, recording, scanning, or otherwise—without prior written permission from the author, except in the case of brief quotations embodied in critical articles or reviews.`;
+        
+        const copyrightParagraphs = copyrightContent.split("\n\n");
+        const copyrightChildren: any[] = [];
+        copyrightParagraphs.forEach((para: string) => {
+          if (para.trim()) {
+            copyrightChildren.push(
+              new Paragraph({
+                text: para.trim(),
+                spacing: { after: convertInchesToTwip(0.15), line: 240 },
+              })
+            );
+          }
+        });
+
+        documentSections.push({
+          properties: {
+            page: {
+              size: {
+                width: convertInchesToTwip(6),
+                height: convertInchesToTwip(9),
+              },
+              margin: {
+                top: convertInchesToTwip(1),
+                right: convertInchesToTwip(0.5),
+                bottom: convertInchesToTwip(1),
+                left: convertInchesToTwip(0.75),
+              },
+              pageNumbers: {
+                start: 3,
+                formatType: NumberFormat.DECIMAL,
+              },
+            },
+          },
+          footers: {
+            default: new Footer({
+              children: [
+                new Paragraph({
+                  border: {
+                    top: {
+                      color: "4472C4",
+                      space: 1,
+                      style: BorderStyle.SINGLE,
+                      size: 6,
+                    },
+                  },
+                  children: [
+                    new TextRun({
+                      text: bookTitle.toUpperCase(),
+                      size: 18,
+                      font: "Georgia",
+                    }),
+                    new TextRun({
+                      text: "\t\t",
+                    }),
+                    new TextRun({
+                      children: [PageNumber.CURRENT],
+                      size: 18,
+                      font: "Georgia",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          },
+          children: copyrightChildren,
+        });
+
+        // === PAGE 4+: TABLE OF CONTENTS ===
+        const tocChildren: any[] = [
+          new Paragraph({
+            text: "TABLE OF CONTENTS",
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.LEFT,
+            spacing: { before: convertInchesToTwip(0.5), after: convertInchesToTwip(0.5) },
+          }),
+          new Paragraph({ text: "" }), // Spacing
+        ];
+
+        // Build TOC entries
+        let currentPage = 4; // Start counting from page after TOC
+        const WORDS_PER_PAGE = 250; // Approximate words per 6x9 page
+
         for (const section of sections) {
-          if (section.type === "chapter") break; // Stop at first chapter
-          
+          // Skip copyright (already on page 3)
+          if (section.type === "copyright") continue;
+
           const manuscript = approvedManuscripts.find((m: any) => 
             m.sectionType === section.type && 
             (section.type !== "chapter" || m.sectionNumber === section.number)
           );
 
           if (manuscript) {
-            frontMatterPageCount++;
-            
-            // Page break before section (except first)
-            if (frontMatterChildren.length > 0) {
-              frontMatterChildren.push(new Paragraph({ text: "", pageBreakBefore: true }));
-            }
+            const displayTitle = section.type === "chapter" 
+              ? `CHAPTER ${section.number}: ${section.title.toUpperCase()}`
+              : section.title.toUpperCase();
 
-            // Section heading (black, not blue)
-            frontMatterChildren.push(
+            tocChildren.push(
               new Paragraph({
-                text: section.title,
-                heading: HeadingLevel.HEADING_1,
-                spacing: { before: convertInchesToTwip(1), after: convertInchesToTwip(0.3) },
+                text: displayTitle,
+                spacing: { after: convertInchesToTwip(0.05) },
+              }),
+              new Paragraph({
+                text: `${currentPage}`,
+                indent: { left: convertInchesToTwip(0.5) },
+                spacing: { after: convertInchesToTwip(0.15) },
               })
             );
 
-            // Section content
-            const content = manuscript.content || "";
-            const paragraphs = content.split("\n\n");
-            paragraphs.forEach((para: string) => {
-              if (para.trim()) {
-                frontMatterChildren.push(
-                  new Paragraph({
-                    text: para.trim(),
-                    spacing: { after: convertInchesToTwip(0.15), line: 360 },
-                  })
-                );
-              }
-            });
+            // Estimate pages for this section
+            const wordCount = (manuscript.content || "").split(/\s+/).length;
+            const pagesForSection = Math.ceil(wordCount / WORDS_PER_PAGE);
+            currentPage += pagesForSection;
           }
         }
 
-        if (frontMatterChildren.length > 0) {
-          documentSections.push({
-            properties: {
-              page: {
-                pageNumbers: {
-                  start: 1,
-                  formatType: NumberFormat.LOWER_ROMAN,
-                },
+        documentSections.push({
+          properties: {
+            page: {
+              size: {
+                width: convertInchesToTwip(6),
+                height: convertInchesToTwip(9),
+              },
+              margin: {
+                top: convertInchesToTwip(1),
+                right: convertInchesToTwip(0.5),
+                bottom: convertInchesToTwip(1),
+                left: convertInchesToTwip(0.75),
+              },
+              pageNumbers: {
+                start: 4,
+                formatType: NumberFormat.DECIMAL,
               },
             },
-            footers: {
-              default: new Footer({
-                children: [
-                  new Paragraph({
-                    alignment: AlignmentType.CENTER,
-                    children: [
-                      new TextRun({
-                        children: [PageNumber.CURRENT],
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            },
-            children: frontMatterChildren,
-          });
-        }
+          },
+          footers: {
+            default: new Footer({
+              children: [
+                new Paragraph({
+                  border: {
+                    top: {
+                      color: "4472C4",
+                      space: 1,
+                      style: BorderStyle.SINGLE,
+                      size: 6,
+                    },
+                  },
+                  children: [
+                    new TextRun({
+                      text: bookTitle.toUpperCase(),
+                      size: 18,
+                      font: "Georgia",
+                    }),
+                    new TextRun({
+                      text: "\t\t",
+                    }),
+                    new TextRun({
+                      children: [PageNumber.CURRENT],
+                      size: 18,
+                      font: "Georgia",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          },
+          children: tocChildren,
+        });
 
-        // === MAIN CONTENT (Arabic numerals: 1, 2, 3) ===
+        // === PAGE 5+: MAIN CONTENT (Prologue, Chapters, Back Matter) ===
         const mainContentChildren: any[] = [];
         let chapterCount = 0;
+        let tocPageCount = Math.ceil(tocChildren.length / 30); // Estimate TOC pages
+        let startPage = 4 + tocPageCount;
 
-        // Add chapters and back matter
+        // Add all content sections (Prologue, Dedication, Chapters, Back Matter)
         for (const section of sections) {
-          // Skip front matter sections
-          if (section.type === "prologue" || section.type === "copyright" || section.type === "dedication") continue;
+          // Skip copyright (already added)
+          if (section.type === "copyright") continue;
           
           const manuscript = approvedManuscripts.find((m: any) => 
             m.sectionType === section.type && 
@@ -2433,35 +2598,47 @@ IMPORTANT:
           documentSections.push({
             properties: {
               page: {
+                size: {
+                  width: convertInchesToTwip(6),
+                  height: convertInchesToTwip(9),
+                },
+                margin: {
+                  top: convertInchesToTwip(1),
+                  right: convertInchesToTwip(0.5),
+                  bottom: convertInchesToTwip(1),
+                  left: convertInchesToTwip(0.75),
+                },
                 pageNumbers: {
-                  start: 1,
+                  start: startPage,
                   formatType: NumberFormat.DECIMAL,
                 },
               },
-            },
-            headers: {
-              default: new Header({
-                children: [
-                  new Paragraph({
-                    alignment: AlignmentType.CENTER,
-                    children: [
-                      new TextRun({
-                        text: bookTitle,
-                        size: 18,
-                      }),
-                    ],
-                  }),
-                ],
-              }),
             },
             footers: {
               default: new Footer({
                 children: [
                   new Paragraph({
-                    alignment: AlignmentType.CENTER,
+                    border: {
+                      top: {
+                        color: "4472C4",
+                        space: 1,
+                        style: BorderStyle.SINGLE,
+                        size: 6,
+                      },
+                    },
                     children: [
                       new TextRun({
+                        text: bookTitle.toUpperCase(),
+                        size: 18,
+                        font: "Georgia",
+                      }),
+                      new TextRun({
+                        text: "\t\t",
+                      }),
+                      new TextRun({
                         children: [PageNumber.CURRENT],
+                        size: 18,
+                        font: "Georgia",
                       }),
                     ],
                   }),
@@ -2505,6 +2682,20 @@ IMPORTANT:
                     before: convertInchesToTwip(3),
                     after: convertInchesToTwip(0.5),
                   },
+                },
+              },
+              {
+                id: "AuthorName",
+                name: "Author Name",
+                basedOn: "Normal",
+                run: {
+                  font: "Georgia",
+                  size: 32, // 16pt
+                  bold: false,
+                  color: "000000",
+                },
+                paragraph: {
+                  alignment: AlignmentType.CENTER,
                 },
               },
               {

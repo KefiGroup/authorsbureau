@@ -2203,3 +2203,95 @@ When database updates don't reflect in UI immediately, always check React Query 
 5. User can proceed directly to AI analysis without manual copy-paste
 
 **Status:** In Progress
+
+
+---
+
+## 🎯 NEW USER REQUEST: Fix DOCX Page Size, Add TOC, and Author Bio Modal
+
+### Issue 1: DOCX Page Size Not Set to 6" x 9"
+**Current Problem:** DOCX shows 213 pages when user expected 150 pages based on 6" x 9" size
+**Requirements:**
+- [ ] Analyze reference DOCX (Be_SUCKcessful_KDP.docx) to understand proper 6x9 formatting
+- [ ] Set page size to exactly 6" width x 9" height in DOCX export
+- [ ] Adjust margins for 6x9 book format (inside margin for binding)
+- [ ] Verify page count matches expected ~150 pages for the manuscript
+- [ ] Test with actual manuscript to confirm page count
+
+### Issue 2: Missing Table of Contents
+**Current Problem:** No Table of Contents on Page 3
+**Requirements:**
+- [ ] Add Table of Contents on Page 3
+- [ ] List all chapters with titles
+- [ ] Include front matter (Prologue) and back matter (Epilogue, Acknowledgements, Author Bio, etc.)
+- [ ] Format TOC professionally with proper spacing
+- [ ] Ensure TOC page numbers are accurate
+
+### Issue 3: Page Structure Not Following Standard
+**Current Problem:** Current structure doesn't match standard book format
+**Required Structure:**
+- [ ] Page 1: Book Title and Author Name (centered)
+- [ ] Page 2: Copyright page
+- [ ] Page 3: Table of Contents
+- [ ] Page 4 onwards: Prologue, Chapters, Back Matter
+
+### Issue 4: Author Bio Empty Profile Modal
+**Current Problem:** Users can reach Author Bio section with empty profile
+**Requirements:**
+- [ ] Detect when user navigates to Author Bio section
+- [ ] Check if author profile bio is empty
+- [ ] Show modal prompting user to complete profile first
+- [ ] Modal should have "Complete Profile" button that navigates to Profile page
+- [ ] Modal should have "Skip" option to continue anyway
+- [ ] Ensure professional author bios by encouraging profile completion
+
+**Status:** In Progress
+
+
+---
+
+## 🎯 NEW USER REQUEST: DOCX Formatting & Author Bio Modal
+
+### Issue 1: DOCX Formatting Needs Improvement
+**Current Problem:** Downloaded Word document formatting is not publication-ready
+**Requirements:**
+- [x] Review current DOCX export formatting
+- [x] Identify formatting issues (spacing, fonts, page breaks, headers)
+- [x] Redesign DOCX export with professional book formatting:
+  - [x] **6" x 9" page size** (KDP standard)
+  - [x] Proper page breaks between sections
+  - [x] Professional fonts (Georgia serif for body)
+  - [x] Consistent spacing and margins (1.5 line spacing, 0.75" binding margin)
+  - [x] Chapter titles formatted as headings with chapter numbers
+  - [x] **Page structure**: Title (pg 1) → Author (pg 2) → Copyright (pg 3) → TOC (pg 4+) → Content
+  - [x] **Table of Contents** with estimated page numbers
+  - [x] Page numbers with blue footer line + book title
+  - [x] Professional copyright page layout
+  - [x] Dedication/Acknowledgements with proper spacing
+  - [x] Author Bio formatted nicely
+- [ ] Test DOCX export with all 26 sections
+- [ ] Verify formatting in Microsoft Word and Google Docs
+
+### Issue 2: Manuscript Auto-Upload to AI Publishing Studio
+**Current Problem:** User has to manually upload manuscript to AI Publishing Studio
+**Requirements:**
+- [x] Add backend procedure to get complete manuscript text
+- [x] Fetch manuscript text when Export button clicked
+- [x] Store manuscript data in localStorage temporarily
+- [x] Automatically transfer manuscript data to AI Publishing Studio upload page
+- [x] Pre-fill manuscript content in Publishing Studio textarea
+- [x] Pre-fill book title from blueprint
+- [x] Navigate user directly to Publishing Studio with manuscript loaded
+- [x] Test workflow: Generate Manuscript → Click Export → Publishing Studio pre-filled (✅ Working perfectly!)
+
+### Issue 3: Author Bio Empty Profile Modal
+**Current Problem:** Users can generate Author Bio section even if their profile bio is empty
+**Requirements:**
+- [x] Add check when generating Author Bio section
+- [x] Query user's profile bio status
+- [x] Show modal if profile bio is empty
+- [x] Modal should explain why bio is needed
+- [x] Modal should have "Go to Profile" button
+- [x] Modal should have "Cancel" button
+- [ ] Test workflow: Try to generate Author Bio with empty profile → Modal appears
+- [ ] Test workflow: Complete profile bio → Generate Author Bio → Works without modal

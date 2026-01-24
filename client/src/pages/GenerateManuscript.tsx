@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { Loader2, CheckCircle2, ArrowLeft, ArrowRight, MessageSquare, Send, Download, Sparkles, XCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -33,6 +34,7 @@ export default function GenerateManuscript() {
   const [isManualEditing, setIsManualEditing] = useState(false);
   const [manualEditContent, setManualEditContent] = useState("");
   const [showRewriteModal, setShowRewriteModal] = useState(false);
+  const [showEmptyBioModal, setShowEmptyBioModal] = useState(false);
 
   // Get blueprint data
   const { data: blueprint, isLoading: blueprintLoading, error: blueprintError } = trpc.blueprint.get.useQuery(
@@ -211,8 +213,20 @@ export default function GenerateManuscript() {
     },
   });
 
+  // Get author profile to check bio status
+  const { data: authorProfile } = trpc.author.getProfile.useQuery();
+
   const handleGenerate = () => {
     if (!currentSection) return;
+
+    // Check if generating Author Bio section and profile bio is empty
+    if (currentSection.type === "authorBio") {
+      if (!authorProfile?.bio || authorProfile.bio.trim() === "") {
+        setShowEmptyBioModal(true);
+        return;
+      }
+    }
+
     generateChapter.mutate({
       blueprintId: Number(blueprintId),
       sectionType: currentSection.type,
@@ -698,6 +712,40 @@ export default function GenerateManuscript() {
           }}
         />
       )}
+
+      {/* Empty Bio Modal */}
+      <Dialog open={showEmptyBioModal} onOpenChange={setShowEmptyBioModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Complete Your Author Profile First</DialogTitle>
+            <DialogDescription>
+              To generate a professional Author Bio section, you need to complete your author profile bio first.
+              This ensures your manuscript includes accurate and compelling information about you as an author.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              Your author bio will be used to create the Author Bio section of your book. It should include:
+            </p>
+            <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1 mb-4">
+              <li>Your background and expertise</li>
+              <li>Your writing experience or credentials</li>
+              <li>Personal details that connect with readers</li>
+              <li>Your website or social media (optional)</li>
+            </ul>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEmptyBioModal(false)}>
+              Cancel
+            </Button>
+            <Link href="/profile">
+              <Button>
+                Go to Profile
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
