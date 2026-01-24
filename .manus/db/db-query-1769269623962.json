@@ -1,0 +1,16 @@
+{
+  "query": "SELECT sectionNumber, sectionType, sectionTitle, status FROM manuscripts WHERE blueprintId = 510001 AND status != 'approved' ORDER BY sectionNumber;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT sectionNumber, sectionType, sectionTitle, status FROM manuscripts WHERE blueprintId = 510001 AND status != 'approved' ORDER BY sectionNumber;",
+  "rows": [
+    {
+      "sectionNumber": "13",
+      "sectionType": "chapter",
+      "sectionTitle": "Simple Valuation Techniques: The Owner's Earnings Approach",
+      "status": "draft"
+    }
+  ],
+  "messages": [],
+  "stdout": "sectionNumber\tsectionType\tsectionTitle\tstatus\n13\tchapter\tSimple Valuation Techniques: The Owner's Earnings Approach\tdraft\n",
+  "stderr": "",
+  "execution_time_ms": 1510
+}

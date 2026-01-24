@@ -2393,12 +2393,16 @@ IMPORTANT:
         // Calculate word count
         const wordCount = personalizedBio.split(/\s+/).filter(w => w.length > 0).length;
 
+        // Preserve original status if already approved (don't force back to draft)
+        const originalStatus = manuscript[0].status;
+        const newStatus = originalStatus === "approved" ? "approved" : "draft";
+
         // Update manuscript
         await db.update(manuscripts)
           .set({
             content: personalizedBio,
             wordCount,
-            status: "draft", // Set to draft so user can review before approving
+            status: newStatus, // Preserve approved status, otherwise set to draft for review
             updatedAt: new Date(),
           })
           .where(eq(manuscripts.id, input.manuscriptId));

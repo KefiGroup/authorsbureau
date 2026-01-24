@@ -363,6 +363,14 @@ export default function GenerateManuscript() {
             <span className="text-sm text-muted-foreground">
               {progress?.filter((m) => m.status === "approved").length || 0} / {sections.length} approved
             </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => refetchProgress()}
+              className="h-6 px-2"
+            >
+              <RefreshCw className="h-3 w-3" />
+            </Button>
           </div>
           <div className="flex items-center gap-2">
             <Button

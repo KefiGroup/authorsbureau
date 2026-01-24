@@ -1,0 +1,166 @@
+{
+  "query": "SELECT id, sectionType, sectionNumber, status FROM manuscripts WHERE blueprintId = 510001 ORDER BY sectionNumber;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, sectionType, sectionNumber, status FROM manuscripts WHERE blueprintId = 510001 ORDER BY sectionNumber;",
+  "rows": [
+    {
+      "id": "300001",
+      "sectionType": "prologue",
+      "sectionNumber": "NULL",
+      "status": "approved"
+    },
+    {
+      "id": "300022",
+      "sectionType": "epilogue",
+      "sectionNumber": "NULL",
+      "status": "approved"
+    },
+    {
+      "id": "300023",
+      "sectionType": "acknowledgements",
+      "sectionNumber": "NULL",
+      "status": "approved"
+    },
+    {
+      "id": "300024",
+      "sectionType": "authorBio",
+      "sectionNumber": "NULL",
+      "status": "approved"
+    },
+    {
+      "id": "300025",
+      "sectionType": "newsletter",
+      "sectionNumber": "NULL",
+      "status": "approved"
+    },
+    {
+      "id": "330001",
+      "sectionType": "copyright",
+      "sectionNumber": "NULL",
+      "status": "approved"
+    },
+    {
+      "id": "300002",
+      "sectionType": "chapter",
+      "sectionNumber": "1",
+      "status": "approved"
+    },
+    {
+      "id": "300003",
+      "sectionType": "chapter",
+      "sectionNumber": "2",
+      "status": "approved"
+    },
+    {
+      "id": "300004",
+      "sectionType": "chapter",
+      "sectionNumber": "3",
+      "status": "approved"
+    },
+    {
+      "id": "300005",
+      "sectionType": "chapter",
+      "sectionNumber": "4",
+      "status": "approved"
+    },
+    {
+      "id": "300006",
+      "sectionType": "chapter",
+      "sectionNumber": "5",
+      "status": "approved"
+    },
+    {
+      "id": "300007",
+      "sectionType": "chapter",
+      "sectionNumber": "6",
+      "status": "approved"
+    },
+    {
+      "id": "300008",
+      "sectionType": "chapter",
+      "sectionNumber": "7",
+      "status": "approved"
+    },
+    {
+      "id": "300009",
+      "sectionType": "chapter",
+      "sectionNumber": "8",
+      "status": "approved"
+    },
+    {
+      "id": "300010",
+      "sectionType": "chapter",
+      "sectionNumber": "9",
+      "status": "approved"
+    },
+    {
+      "id": "300011",
+      "sectionType": "chapter",
+      "sectionNumber": "10",
+      "status": "approved"
+    },
+    {
+      "id": "300012",
+      "sectionType": "chapter",
+      "sectionNumber": "11",
+      "status": "approved"
+    },
+    {
+      "id": "300013",
+      "sectionType": "chapter",
+      "sectionNumber": "12",
+      "status": "approved"
+    },
+    {
+      "id": "300014",
+      "sectionType": "chapter",
+      "sectionNumber": "13",
+      "status": "draft"
+    },
+    {
+      "id": "300015",
+      "sectionType": "chapter",
+      "sectionNumber": "14",
+      "status": "approved"
+    },
+    {
+      "id": "300016",
+      "sectionType": "chapter",
+      "sectionNumber": "15",
+      "status": "approved"
+    },
+    {
+      "id": "300017",
+      "sectionType": "chapter",
+      "sectionNumber": "16",
+      "status": "approved"
+    },
+    {
+      "id": "300018",
+      "sectionType": "chapter",
+      "sectionNumber": "17",
+      "status": "approved"
+    },
+    {
+      "id": "300019",
+      "sectionType": "chapter",
+      "sectionNumber": "18",
+      "status": "approved"
+    },
+    {
+      "id": "300020",
+      "sectionType": "chapter",
+      "sectionNumber": "19",
+      "status": "approved"
+    },
+    {
+      "id": "300021",
+      "sectionType": "chapter",
+      "sectionNumber": "20",
+      "status": "approved"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tsectionType\tsectionNumber\tstatus\n300001\tprologue\tNULL\tapproved\n300022\tepilogue\tNULL\tapproved\n300023\tacknowledgements\tNULL\tapproved\n300024\tauthorBio\tNULL\tapproved\n300025\tnewsletter\tNULL\tapproved\n330001\tcopyright\tNULL\tapproved\n300002\tchapter\t1\tapproved\n300003\tchapter\t2\tapproved\n300004\tchapter\t3\tapproved\n300005\tchapter\t4\tapproved\n300006\tchapter\t5\tapproved\n300007\tchapter\t6\tapproved\n300008\tchapter\t7\tapproved\n300009\tchapter\t8\tapproved\n300010\tchapter\t9\tapproved\n300011\tchapter\t10\tapproved\n300012\tchapter\t11\tapproved\n300013\tchapter\t12\tapproved\n300014\tchapter\t13\tdraft\n300015\tchapter\t14\tapproved\n300016\tchapter\t15\tapproved\n300017\tchapter\t16\tapproved\n300018\tchapter\t17\tapproved\n300019\tchapter\t18\tapproved\n300020\tchapter\t19\tapproved\n300021\tchapter\t20\tapproved\n",
+  "stderr": "",
+  "execution_time_ms": 1512
+}

@@ -1,0 +1,166 @@
+{
+  "query": "SELECT sectionNumber, sectionType, sectionTitle, status FROM manuscripts WHERE blueprintId = 510001 ORDER BY sectionNumber;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT sectionNumber, sectionType, sectionTitle, status FROM manuscripts WHERE blueprintId = 510001 ORDER BY sectionNumber;",
+  "rows": [
+    {
+      "sectionNumber": "NULL",
+      "sectionType": "prologue",
+      "sectionTitle": "Prologue",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "NULL",
+      "sectionType": "epilogue",
+      "sectionTitle": "Epilogue",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "NULL",
+      "sectionType": "acknowledgements",
+      "sectionTitle": "Acknowledgements",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "NULL",
+      "sectionType": "authorBio",
+      "sectionTitle": "Author Bio",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "NULL",
+      "sectionType": "newsletter",
+      "sectionTitle": "Newsletter Signup",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "NULL",
+      "sectionType": "copyright",
+      "sectionTitle": "Copyright",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "1",
+      "sectionType": "chapter",
+      "sectionTitle": "The Silent Thief: Why Your Money is Shrinking",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "2",
+      "sectionType": "chapter",
+      "sectionTitle": "The Investor's Mindset: Shifting from Consumer to Owner",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "3",
+      "sectionType": "chapter",
+      "sectionTitle": "The Power of Compounding: Your Financial Snowball",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "4",
+      "sectionType": "chapter",
+      "sectionTitle": "Mapping Your Journey: Setting Realistic Investment Goals",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "5",
+      "sectionType": "chapter",
+      "sectionTitle": "The Value Investing Philosophy: Buying Dollars for Fifty Cents",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "6",
+      "sectionType": "chapter",
+      "sectionTitle": "The First R: Identifying the Right Business Model",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "7",
+      "sectionType": "chapter",
+      "sectionTitle": "Moats and Monopolies: Understanding Competitive Advantage",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "8",
+      "sectionType": "chapter",
+      "sectionTitle": "The Second R: Assessing Right Management",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "9",
+      "sectionType": "chapter",
+      "sectionTitle": "Reading Between the Lines: Clues from Annual Reports",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "10",
+      "sectionType": "chapter",
+      "sectionTitle": "The Language of Business: Introduction to Financial Statements",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "11",
+      "sectionType": "chapter",
+      "sectionTitle": "Key Metrics for Beginners: Profitability and Health",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "12",
+      "sectionType": "chapter",
+      "sectionTitle": "The Third R: Valuation vs. Price - The Margin of Safety",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "13",
+      "sectionType": "chapter",
+      "sectionTitle": "Simple Valuation Techniques: The Owner's Earnings Approach",
+      "status": "draft"
+    },
+    {
+      "sectionNumber": "14",
+      "sectionType": "chapter",
+      "sectionTitle": "Calculating the Discount: Applying the Margin of Safety",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "15",
+      "sectionType": "chapter",
+      "sectionTitle": "Building Your Toolkit: Choosing the Right Brokerage and Account",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "16",
+      "sectionType": "chapter",
+      "sectionTitle": "The First Purchase: Overcoming Analysis Paralysis",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "17",
+      "sectionType": "chapter",
+      "sectionTitle": "Diversification Done Right: Concentrated vs. Over-Diversified",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "18",
+      "sectionType": "chapter",
+      "sectionTitle": "The Waiting Game: Monitoring and Portfolio Maintenance",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "19",
+      "sectionType": "chapter",
+      "sectionTitle": "When to Sell: Recognizing Permanent Impairment",
+      "status": "approved"
+    },
+    {
+      "sectionNumber": "20",
+      "sectionType": "chapter",
+      "sectionTitle": "Your Next Steps: From Beginner to Independent Investor",
+      "status": "approved"
+    }
+  ],
+  "messages": [],
+  "stdout": "sectionNumber\tsectionType\tsectionTitle\tstatus\nNULL\tprologue\tPrologue\tapproved\nNULL\tepilogue\tEpilogue\tapproved\nNULL\tacknowledgements\tAcknowledgements\tapproved\nNULL\tauthorBio\tAuthor Bio\tapproved\nNULL\tnewsletter\tNewsletter Signup\tapproved\nNULL\tcopyright\tCopyright\tapproved\n1\tchapter\tThe Silent Thief: Why Your Money is Shrinking\tapproved\n2\tchapter\tThe Investor's Mindset: Shifting from Consumer to Owner\tapproved\n3\tchapter\tThe Power of Compounding: Your Financial Snowball\tapproved\n4\tchapter\tMapping Your Journey: Setting Realistic Investment Goals\tapproved\n5\tchapter\tThe Value Investing Philosophy: Buying Dollars for Fifty Cents\tapproved\n6\tchapter\tThe First R: Identifying the Right Business Model\tapproved\n7\tchapter\tMoats and Monopolies: Understanding Competitive Advantage\tapproved\n8\tchapter\tThe Second R: Assessing Right Management\tapproved\n9\tchapter\tReading Between the Lines: Clues from Annual Reports\tapproved\n10\tchapter\tThe Language of Business: Introduction to Financial Statements\tapproved\n11\tchapter\tKey Metrics for Beginners: Profitability and Health\tapproved\n12\tchapter\tThe Third R: Valuation vs. Price - The Margin of Safety\tapproved\n13\tchapter\tSimple Valuation Techniques: The Owner's Earnings Approach\tdraft\n14\tchapter\tCalculating the Discount: Applying the Margin of Safety\tapproved\n15\tchapter\tBuilding Your Toolkit: Choosing the Right Brokerage and Account\tapproved\n16\tchapter\tThe First Purchase: Overcoming Analysis Paralysis\tapproved\n17\tchapter\tDiversification Done Right: Concentrated vs. Over-Diversified\tapproved\n18\tchapter\tThe Waiting Game: Monitoring and Portfolio Maintenance\tapproved\n19\tchapter\tWhen to Sell: Recognizing Permanent Impairment\tapproved\n20\tchapter\tYour Next Steps: From Beginner to Independent Investor\tapproved\n",
+  "stderr": "",
+  "execution_time_ms": 1534
+}

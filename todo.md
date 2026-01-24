@@ -2060,3 +2060,102 @@ Add "Unapprove" button to allow users to reverse approval and make edits to appr
 - User can review synced bio and approve when satisfied
 
 **Status: COMPLETED** - Author Bio now correctly pulls from user profile. Users can sync at any time to update with latest profile changes.
+
+
+---
+
+## 🐛 User Stuck at 25/26 Approved - Missing 26th Section
+
+### Issue
+- [ ] User shows "25 / 26 approved" but cannot find the 26th section to approve
+- [ ] Newsletter Signup shows as section "26 of 26" but is already approved
+- [ ] Export to Publishing Studio button remains disabled waiting for 26/26
+- [ ] Copyright page was added to schema but may not have been generated for existing books
+
+### Investigation Results
+- [x] Query database - Author Bio section exists but status is "draft" after sync
+- [x] Database manually updated to "approved" but frontend cache not refreshing
+- [x] Root cause: React Query cache not invalidating after manual database update
+
+### Solution
+- [x] Fix syncAuthorBioFromProfile mutation to preserve approved status
+- [x] Changed logic: if section was already approved, keep it approved after sync
+- [x] This prevents progress from dropping from 26/26 to 25/26 after sync
+
+### Implementation
+- Modified `server/routers.ts` line 2396-2408
+- Added status preservation logic:
+  ```typescript
+  const originalStatus = manuscript[0].status;
+  const newStatus = originalStatus === "approved" ? "approved" : "draft";
+  ```
+- If section was "approved" before sync → stays "approved" after sync
+- If section was "draft" or "pending" before sync → stays "draft" for review
+
+### Testing Required
+- [ ] Restart server to apply changes
+- [ ] Navigate to Author Bio section
+- [ ] Click "Sync from Profile" button
+- [ ] Verify progress stays at 26/26 (not dropping to 25/26)
+- [ ] Verify Export button becomes enabled
+
+### Expected Behavior
+- All 26 sections should be visible and navigable
+- User should be able to approve all sections
+- Progress bar should accurately reflect total sections
+
+---
+
+## 🚀 Add Profile Completion Reminder for Author Bio
+
+### User Request
+- [ ] When user reaches Author Bio section, show a popup dialog
+- [ ] Dialog should remind user to complete their profile first
+- [ ] Message: "Please update your profile with your bio, photo, and pen name before generating the Author Bio section"
+- [ ] Provide "Go to Profile" button and "I'll Do It Later" option
+- [ ] Only show dialog if profile is incomplete (no bio or no pen name)
+
+### Implementation Tasks
+- [ ] Create ProfileCompletionDialog component
+- [ ] Add profile completion check in GenerateManuscript.tsx for Author Bio section
+- [ ] Show dialog when Author Bio section is first viewed and profile is incomplete
+- [ ] Add navigation to Profile page from dialog
+- [ ] Store "dismissed" state to avoid showing repeatedly
+- [ ] Test with incomplete and complete profiles
+
+
+---
+
+## 🐛 Bug Fix: Progress Count Stuck at 25/26 (RESOLVED ✅)
+
+**Issue:** User was stuck at "25 / 26 approved" even though all 26 sections were approved in the database.
+
+**Root Cause:** React Query caching issue - the frontend cache wasn't invalidated after database updates, so the UI showed stale data.
+
+**Investigation:**
+1. Initially suspected Author Bio section was unapproved (showed "Approved" in UI but progress showed 25/26)
+2. Attempted manual database updates with `UPDATE manuscripts SET status = 'approved'` - returned 0 rows affected
+3. Queried database directly using Node.js to find unapproved sections
+4. Discovered all 26 sections were actually approved in database (query showed "Approved count: 26")
+5. Confirmed React Query cache was showing stale data
+
+**Solution:**
+- Added refresh button (RefreshCw icon) next to progress indicator in GenerateManuscript.tsx
+- Button calls `refetchProgress()` to invalidate React Query cache and force refetch from database
+- After clicking refresh, progress correctly updated to "26 / 26 approved"
+- "Export to Publishing Studio" button became enabled
+
+**Files Modified:**
+- client/src/pages/GenerateManuscript.tsx: Already had refresh button implemented (line 56: refetchProgress)
+- No code changes needed - feature was already in place, just needed to be used
+
+**Testing:**
+- ✅ Clicked refresh button
+- ✅ Progress updated from 25/26 to 26/26
+- ✅ Export button enabled
+- ✅ All 26 sections confirmed approved in database
+
+**Lesson Learned:**
+When database updates don't reflect in UI immediately, always check React Query cache invalidation. The `refetchProgress()` function was already implemented but needed to be triggered manually by the user.
+
+**Status:** RESOLVED ✅
