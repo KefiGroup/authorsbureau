@@ -1,11 +1,23 @@
-import { invokeLLM } from "./_core/llm";
-import { StoryBlueprint } from "../drizzle/schema";
+# Blueprint Generator LLM Prompt
 
-/**
- * Generate comprehensive story blueprint markdown from collected data
- */
-export async function generateBlueprintContent(blueprint: StoryBlueprint, authorName?: string): Promise<string> {
-  const prompt = `You are an expert story development coach. Generate a comprehensive story blueprint document in PLAIN TEXT format (NO markdown symbols like ##, **, *, etc.) based on the following data collected from an author:
+**File:** `/home/ubuntu/authors-bureau-v2/server/blueprint-generator.ts`  
+**Model:** GPT-4o (changed from gemini-2.5-flash)  
+**Function:** `generateBlueprintContent(blueprint, authorName)`
+
+---
+
+## System Message
+
+```
+You are an expert story development coach who helps authors create comprehensive story blueprints. Generate professional, actionable, and inspiring blueprints in PLAIN TEXT format (NO markdown symbols like ##, **, *, etc.). Use line breaks and indentation for structure.
+```
+
+---
+
+## User Prompt Template
+
+```
+You are an expert story development coach. Generate a comprehensive story blueprint document in PLAIN TEXT format (NO markdown symbols like ##, **, *, etc.) based on the following data collected from an author:
 
 **Project Type:** ${blueprint.projectType}
 **Working Title:** ${blueprint.workingTitle || "Untitled"}
@@ -124,22 +136,38 @@ Provide 3-5 specific writing tips tailored to this story's genre and style.
 
 ---
 
-Make the blueprint professional, actionable, and inspiring. IMPORTANT: Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.). Use line breaks and indentation for structure instead.`;
+Make the blueprint professional, actionable, and inspiring. IMPORTANT: Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.). Use line breaks and indentation for structure instead.
+```
 
-  const response = await invokeLLM({
-    model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content: "You are an expert story development coach who helps authors create comprehensive story blueprints. Generate professional, actionable, and inspiring blueprints in PLAIN TEXT format (NO markdown symbols like ##, **, *, etc.). Use line breaks and indentation for structure.",
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-  });
+---
 
-  const content = response.choices[0].message.content;
-  return typeof content === "string" ? content : "";
-}
+## Key Variables Injected
+
+1. **`authorName`** - Now correctly pulls from `author.penName` (e.g., "Pauline Teo") instead of `ctx.user.name` (e.g., "Kefi Group")
+
+2. **`blueprint.targetPages`** - Must be set when user selects page count (150, 200, 250, 300)
+
+3. **Word Count Calculation Logic:**
+   - 150 pages → 37,500 words (10 chapters × 3,500 words)
+   - 200 pages → 50,000 words (13 chapters × 3,654 words)
+   - 250 pages → 62,500 words (16 chapters × 3,750 words)
+   - 300 pages → 75,000 words (20 chapters × 3,625 words)
+
+4. **`blueprint.finalCheckpointData`** - JSON containing user preferences from the final checkpoint modal (tone, voice, writing style, special elements, etc.)
+
+---
+
+## Recent Fixes
+
+✅ **Author Name:** Changed from `ctx.user.name` to `author.penName || ctx.user.name`  
+✅ **AI Model:** Changed from `gemini-2.5-flash` to `gpt-4o` for better quality and instruction following  
+✅ **Date:** Uses current date (January 24, 2026) instead of hardcoded values
+
+---
+
+## Testing Recommendations
+
+1. Create a new book with 150 pages selected
+2. Verify blueprint shows "Pauline Teo" as author name
+3. Verify blueprint shows "37,500 words (10 chapters × 3,500 words) (for 150 pages in 6" x 9" format)"
+4. Verify date shows current date (January 24, 2026)

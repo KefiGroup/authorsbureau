@@ -659,8 +659,12 @@ Write the bio now:`;
           });
         }
 
+        // Get author's pen name for personalization
+        const author = await db.getAuthorByUserId(ctx.user.id);
+        const authorName = author?.penName || ctx.user.name || undefined;
+        
         // Generate comprehensive blueprint using AI
-        const blueprintMarkdown = await generateBlueprintContent(blueprint, ctx.user.name || undefined);
+        const blueprintMarkdown = await generateBlueprintContent(blueprint, authorName);
 
         // Update blueprint with generated content (keep markdown for rich formatting)
         await db.updateStoryBlueprint(input.blueprintId, {

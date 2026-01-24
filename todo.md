@@ -2523,3 +2523,12 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Add loading state for auto-load from Writing Studio (show spinner + toast)
 - [x] Add "Edit Manuscript" button in Publishing Studio to return to Writing Studio
 - [ ] Show breadcrumb navigation: "Writing Studio → Publishing Studio"
+
+
+### Blueprint Generation Bugs (CRITICAL)
+- [x] Fix author name showing "Kefi Group" instead of user's pen name from profile
+- [x] Fix target word count showing 280 pages instead of selected 150 pages - Fixed for new books (old book deleted by user)
+- [x] Investigate caching issues in blueprint generation - Old blueprint deleted, fix will apply to new books
+- [x] Verify blueprint generator receives correct authorName parameter
+- [x] Check if author profile penName is being fetched correctly - Confirmed: Pauline Teo
+- [x] Add explicit model: "gpt-4o" parameter to blueprint-generator.ts to ensure GPT-4o is used
