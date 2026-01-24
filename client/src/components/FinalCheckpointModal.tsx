@@ -12,9 +12,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles } from "lucide-react";
+import { Sparkles, X } from "lucide-react";
 
 export interface FinalCheckpointData {
+  numberOfPages: string[];
   toneVoice: string[];
   toneVoiceOther: string;
   writingStyle: string[];
@@ -29,10 +30,12 @@ export interface FinalCheckpointData {
 interface FinalCheckpointModalProps {
   open: boolean;
   onComplete: (data: FinalCheckpointData) => void;
+  onClose?: () => void;
 }
 
-export function FinalCheckpointModal({ open, onComplete }: FinalCheckpointModalProps) {
+export function FinalCheckpointModal({ open, onComplete, onClose }: FinalCheckpointModalProps) {
   const [data, setData] = useState<FinalCheckpointData>({
+    numberOfPages: [],
     toneVoice: [],
     toneVoiceOther: "",
     writingStyle: [],
@@ -63,9 +66,25 @@ export function FinalCheckpointModal({ open, onComplete }: FinalCheckpointModalP
     onComplete(data);
   };
 
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
       <DialogContent className="max-w-3xl max-h-[90vh]">
+        {/* Custom close button that works */}
+        <button
+          onClick={handleClose}
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none z-50"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </button>
+        
         <DialogHeader>
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
@@ -78,6 +97,34 @@ export function FinalCheckpointModal({ open, onComplete }: FinalCheckpointModalP
 
         <ScrollArea className="max-h-[60vh] pr-4">
           <div className="space-y-8 py-4">
+            {/* Number of Pages - NEW SECTION */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Number of Pages</h3>
+              <p className="text-sm text-muted-foreground">Select your target book length</p>
+              <div className="space-y-3">
+                {[
+                  "150 pages",
+                  "200 pages",
+                  "250 pages",
+                  "300 pages",
+                  "More than 300 pages",
+                ].map((option) => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`pages-${option}`}
+                      checked={data.numberOfPages.includes(option)}
+                      onCheckedChange={(checked) =>
+                        handleCheckboxChange("numberOfPages", option, checked as boolean)
+                      }
+                    />
+                    <Label htmlFor={`pages-${option}`} className="cursor-pointer">
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Tone & Voice */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">Tone & Voice</h3>

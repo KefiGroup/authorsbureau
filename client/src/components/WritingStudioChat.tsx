@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Loader2, Send, Sparkles, User, ArrowLeft, ArrowRight } from "lucide-react";
+import { Loader2, Send, Sparkles, User, ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -34,6 +34,7 @@ export function WritingStudioChat({
   onSkip,
 }: WritingStudioChatProps) {
   const [input, setInput] = useState("");
+  const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -49,10 +50,28 @@ export function WritingStudioChat({
     }
   }, [isLoading]);
 
+  // Clear selected suggestions when new messages arrive
+  useEffect(() => {
+    setSelectedSuggestions([]);
+  }, [messages.length]);
+
   const handleSend = () => {
-    if (input.trim() && !isLoading) {
-      onSendMessage(input.trim());
+    // Combine input with selected suggestions
+    let finalMessage = input.trim();
+    
+    if (selectedSuggestions.length > 0) {
+      const suggestionsText = selectedSuggestions.join(", ");
+      if (finalMessage) {
+        finalMessage = `${suggestionsText}. ${finalMessage}`;
+      } else {
+        finalMessage = suggestionsText;
+      }
+    }
+    
+    if (finalMessage && !isLoading) {
+      onSendMessage(finalMessage);
       setInput("");
+      setSelectedSuggestions([]);
     }
   };
 
@@ -61,6 +80,16 @@ export function WritingStudioChat({
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleSuggestionToggle = (suggestion: string) => {
+    setSelectedSuggestions((prev) => {
+      if (prev.includes(suggestion)) {
+        return prev.filter((s) => s !== suggestion);
+      } else {
+        return [...prev, suggestion];
+      }
+    });
   };
 
   const getModeLabel = () => {
@@ -116,24 +145,36 @@ export function WritingStudioChat({
             >
               <p className="whitespace-pre-wrap">{message.content}</p>
               
-              {/* AI Suggestions */}
-              {message.role === "assistant" && message.suggestions && message.suggestions.length > 0 && (
+              {/* AI Suggestions - Multiple Selection */}
+              {message.role === "assistant" && message.suggestions && message.suggestions.length > 0 && index === messages.length - 1 && (
                 <div className="mt-3 space-y-2">
-                  <p className="text-sm text-muted-foreground">Quick options:</p>
+                  <p className="text-sm text-muted-foreground">Select one or more options (click to toggle):</p>
                   <div className="flex flex-wrap gap-2">
-                    {message.suggestions.map((suggestion, idx) => (
-                      <Button
-                        key={idx}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onSelectSuggestion(suggestion)}
-                        disabled={isLoading}
-                        className="text-xs"
-                      >
-                        {suggestion}
-                      </Button>
-                    ))}
+                    {message.suggestions.map((suggestion, idx) => {
+                      const isSelected = selectedSuggestions.includes(suggestion);
+                      return (
+                        <Button
+                          key={idx}
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleSuggestionToggle(suggestion)}
+                          disabled={isLoading}
+                          className={cn(
+                            "text-xs transition-all",
+                            isSelected && "ring-2 ring-primary ring-offset-1"
+                          )}
+                        >
+                          {isSelected && <Check className="h-3 w-3 mr-1" />}
+                          {suggestion}
+                        </Button>
+                      );
+                    })}
                   </div>
+                  {selectedSuggestions.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Selected: {selectedSuggestions.join(", ")}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -188,19 +229,30 @@ export function WritingStudioChat({
           )}
         </div>
         
+        {/* Show selected suggestions indicator */}
+        {selectedSuggestions.length > 0 && (
+          <div className="mb-2 p-2 bg-primary/10 rounded-md text-sm">
+            <span className="font-medium">Will send: </span>
+            {selectedSuggestions.join(", ")}
+            {input.trim() && ` + "${input.trim()}"`}
+          </div>
+        )}
+        
         <div className="flex gap-2">
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your response... (Shift+Enter for new line)"
+            placeholder={selectedSuggestions.length > 0 
+              ? "Add more details (optional) or press Enter to send selected options..."
+              : "Type your response... (Shift+Enter for new line)"}
             disabled={isLoading}
             className="min-h-[100px] max-h-[250px] resize-y"
           />
           <Button
             onClick={handleSend}
-            disabled={!input.trim() || isLoading}
+            disabled={(!input.trim() && selectedSuggestions.length === 0) || isLoading}
             size="icon"
             className="h-[100px] w-[60px]"
           >

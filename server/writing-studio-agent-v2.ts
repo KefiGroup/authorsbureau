@@ -86,12 +86,20 @@ Instructions:
 - Always frame this as a NEW project they're creating, not continuing previous work
 - Use generic terms like "your book", "your project", "this work" - never specific titles
 - When you have all 4 pieces, tell them you'll generate a complete blueprint
-- Provide suggestion buttons for common answers
-- For page count question, ALWAYS provide these exact suggestions: [SUGGESTIONS: 150 pages | 200 pages | 250 pages | 300 pages]
 - DO NOT use Markdown formatting (**, ##, etc.) in your responses - use plain, natural text only
 
+SUGGESTION GENERATION RULES (VERY IMPORTANT):
+- ALWAYS provide 4-6 context-aware suggestion options based on the topic being discussed
+- Suggestions should be SPECIFIC to the author's topic, genre, and what they've shared so far
+- For project type: suggest relevant types based on their description (e.g., if they mention personal story, suggest "Memoir", "Autobiography", "Personal Development")
+- For description: suggest specific angles or themes based on what they've mentioned
+- For audience: suggest specific reader demographics based on the book topic
+- For page count: ALWAYS provide these exact suggestions: [SUGGESTIONS: 150 pages | 200 pages | 250 pages | 300 pages | More than 300 pages]
+- Make suggestions feel personalized and thoughtful, not generic
+- Users can select MULTIPLE suggestions, so provide complementary options
+
 Suggestion Format:
-End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4]`;
+End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4 | option5]`;
 
   const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
     { role: "system", content: systemPrompt },

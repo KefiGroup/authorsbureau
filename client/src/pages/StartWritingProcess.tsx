@@ -529,6 +529,7 @@ export default function StartWritingProcess() {
       <FinalCheckpointModal
         open={showFinalCheckpoint}
         onComplete={handleFinalCheckpointComplete}
+        onClose={() => setShowFinalCheckpoint(false)}
       />
     </div>
     </DashboardLayout>
