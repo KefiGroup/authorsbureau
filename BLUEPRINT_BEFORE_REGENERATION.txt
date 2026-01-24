@@ -1,0 +1,10 @@
+Current Blueprint Content (BEFORE Regeneration with GPT-4o):
+
+Cover Page
+- Working Title: Value Investing for Beginners
+- Author Name: Kefi Group
+- Genre Classification: Financial Thriller / Educational Drama
+- Target Word Count: Not specified (for N/A pages in 6" x 9" format)  ← STILL SHOWING "Not specified"
+- Date Created: January 24, 2026
+
+This confirms the blueprint needs to be regenerated to pick up the updated targetPages=150 from the database.

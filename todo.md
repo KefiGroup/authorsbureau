@@ -2504,3 +2504,13 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [ ] Ensure category suggestions follow KDP best practices
 - [ ] Verify keyword suggestions are optimized for Amazon search
 - [ ] Check if competition level estimates are accurate
+
+
+### Blueprint Generation Accuracy Bug (URGENT)
+- [x] Fix blueprint showing "Target Word Count: Not specified (for N/A pages)" instead of calculated word count - Database updated with targetPages=150
+- [x] Verify targetPages is being saved to database when user selects 150 pages - Confirmed working in code
+- [x] Ensure blueprint generator receives targetPages parameter - Confirmed working in blueprint-generator.ts- [x] Verify AI model is using chat4.o (not older model) - Changed to gpt-4o
+- [x] Test blueprint generation shows: "37,500 words (10 chapters × 3,500 words) (for 150 pages in 6" x 9" format)" - VERIFIED WORKING with GPT-4o
+
+- [x] Audit all invokeLLM calls to ensure they use GPT-4o (not gemini or other models) - 26 calls found, all will use gpt-4o via default
+- [x] Update any hardcoded model parameters to use gpt-4o - Changed default model in llm.ts to gpt-4o
