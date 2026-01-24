@@ -660,7 +660,7 @@ Write the bio now:`;
         }
 
         // Generate comprehensive blueprint using AI
-        const blueprintMarkdown = await generateBlueprintContent(blueprint);
+        const blueprintMarkdown = await generateBlueprintContent(blueprint, ctx.user.name || undefined);
 
         // Update blueprint with generated content (keep markdown for rich formatting)
         await db.updateStoryBlueprint(input.blueprintId, {

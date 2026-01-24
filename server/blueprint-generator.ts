@@ -4,7 +4,7 @@ import { StoryBlueprint } from "../drizzle/schema";
 /**
  * Generate comprehensive story blueprint markdown from collected data
  */
-export async function generateBlueprintContent(blueprint: StoryBlueprint): Promise<string> {
+export async function generateBlueprintContent(blueprint: StoryBlueprint, authorName?: string): Promise<string> {
   const prompt = `You are an expert story development coach. Generate a comprehensive story blueprint document in PLAIN TEXT format (NO markdown symbols like ##, **, *, etc.) based on the following data collected from an author:
 
 **Project Type:** ${blueprint.projectType}
@@ -53,7 +53,7 @@ Generate a professional, comprehensive story blueprint with the following sectio
 
 ## Cover Page
 - Working Title
-- Author Name
+- Author Name: ${authorName || "[Author Name Placeholder]"}
 - Genre Classification
 - Target Word Count: ${blueprint.targetPages ? (() => {
   const totalWords = blueprint.targetPages * 250;
@@ -65,7 +65,7 @@ Generate a professional, comprehensive story blueprint with the following sectio
   const wordsPerChapter = Math.round(chapterContent / chapters);
   return `${totalWords} words (${chapters} chapters × ${wordsPerChapter} words)`;
 })() : "Not specified"} (for ${blueprint.targetPages || "N/A"} pages in 6" x 9" format)
-- Date Created
+- Date Created: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 
 ## Premise Statement
 Generate a compelling one-paragraph summary of the story based on the collected data.

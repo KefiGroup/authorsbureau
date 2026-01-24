@@ -2464,3 +2464,43 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [ ] Validate ISBN format (13 digits, starts with 978 or 979) - Optional enhancement
 - [x] Test workflow: ISBN input field appears correctly in Publishing Studio (✅ Working perfectly!)
 - [ ] User to test: Enter ISBN → Generate manuscript → Download DOCX → Verify ISBN appears in copyright page
+
+
+---
+
+## 🐛 BLUEPRINT GENERATION ISSUES
+
+**User Report:** Blueprint has missing information, wrong date (2023 instead of 2026), and KDP calculations need verification
+
+### Issue 1: Missing Information in Blueprint
+**Problems Found:**
+- Line 7: "Target Word Count: Not specified (for N/A pages in 6" x 9" format)" - Should show actual calculation
+- Line 5: "Author Name: [Author Name Here]" - Should use user's profile name
+- Missing: Target page count (150/200/250/300)
+- Missing: Number of chapters (should show 10/13/16/20 based on page count)
+
+**Requirements:**
+- [ ] Fix "Target Word Count: Not specified" to show actual calculated value (e.g., "37,500 words")
+- [ ] Fix "for N/A pages" to show actual selected page count (e.g., "for 150 pages")
+- [ ] Auto-fill author name from user profile instead of placeholder
+- [ ] Add "Number of Chapters" field showing calculated chapter count
+- [ ] Add "Words Per Chapter" field showing calculated words per chapter
+
+### Issue 2: Date Shows 2023 Instead of 2026
+**Problem Found:**
+- Line 8: "Date Created: October 26, 2023" - Should be current date (2026)
+
+**Requirements:**
+- [ ] Find where date is generated in blueprint
+- [ ] Update to use current date (new Date()) instead of hardcoded 2023
+- [ ] Format as "Month Day, Year" (e.g., "January 24, 2026")
+
+### Issue 3: Verify KDP Optimization Calculations
+**User Question:** Are the KDP category suggestions aligned with Publishing Studio KDP optimization standards?
+
+**Requirements:**
+- [ ] Review current KDP category suggestion logic in blueprint generator
+- [ ] Compare with Publishing Studio KDP optimization standards
+- [ ] Ensure category suggestions follow KDP best practices
+- [ ] Verify keyword suggestions are optimized for Amazon search
+- [ ] Check if competition level estimates are accurate
