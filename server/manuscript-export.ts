@@ -20,6 +20,28 @@ export interface ManuscriptData {
 }
 
 /**
+ * Strip markdown formatting from text for clean DOCX output
+ */
+function stripMarkdown(text: string): string {
+  return text
+    // Remove bold/italic markers
+    .replace(/\*\*([^*]+)\*\*/g, '$1')  // **bold**
+    .replace(/\*([^*]+)\*/g, '$1')      // *italic*
+    .replace(/__([^_]+)__/g, '$1')      // __bold__
+    .replace(/_([^_]+)_/g, '$1')        // _italic_
+    // Remove headers
+    .replace(/^#{1,6}\s+/gm, '')        // ## headers
+    // Remove inline code
+    .replace(/`([^`]+)`/g, '$1')        // `code`
+    // Remove links but keep text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // [text](url)
+    // Remove list markers
+    .replace(/^\s*[-*+]\s+/gm, '')     // - list items
+    .replace(/^\s*\d+\.\s+/gm, '')     // 1. numbered lists
+    .trim();
+}
+
+/**
  * Generate copyright page paragraphs
  */
 function generateCopyrightPage(manuscript: ManuscriptData): Paragraph[] {
@@ -239,8 +261,9 @@ export async function generateDOCX(manuscript: ManuscriptData): Promise<Buffer> 
       })
     );
 
-    // Chapter content - split by paragraphs
-    const paragraphs = chapter.content.split("\n\n");
+    // Chapter content - strip markdown and split by paragraphs
+    const cleanContent = stripMarkdown(chapter.content);
+    const paragraphs = cleanContent.split("\n\n");
     for (const para of paragraphs) {
       if (para.trim()) {
         docSections.push(

@@ -2578,3 +2578,17 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 ### ISBN Placeholder Note
 - [x] Update copyright page to show "[Your ISBN Here]" with helpful note about AI Publishing Studio
 - [x] Add instruction that ISBN will be added when exporting from AI Publishing Studio
+
+
+### Export Format Not Applying Fix
+- [ ] Restart development server to apply manuscript-export.ts changes
+- [ ] Verify export is using updated code (check for ISBN placeholder note)
+- [ ] Fix author name showing "Kefi Group" instead of "Pauline Teo"
+- [ ] Test export with fresh manuscript after server restart
+
+
+### Remove Markdown Formatting from DOCX Export
+- [x] Fix copyright page - remove ** asterisks around ISBN and Disclaimer
+- [x] Fix chapter titles - remove ## markdown syntax
+- [x] Ensure all text is properly formatted for KDP (no markdown leakage)
+- [ ] Test export shows professional formatting without markdown symbols (USER TO TEST: Re-export manuscript)
