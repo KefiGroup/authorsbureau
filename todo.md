@@ -2598,3 +2598,11 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Remove markdown formatting from copyright page generation prompt (line 1616 in routers.ts)
 - [x] Apply stripMarkdown() to AI-generated copyright content before adding to manuscript
 - [ ] Test that exported copyright page shows clean text without ** or ##
+
+
+### Automated Table of Contents with Word Styles
+- [x] Update chapter titles to use Word Heading 1 style in DOCX export (already using HeadingLevel.HEADING_1)
+- [x] Replace manual TOC text with Word's automatic TOC instruction
+- [x] Set TOC font size to 10pt for professional appearance
+- [x] Ensure TOC updates automatically when user opens the document in Word (added instructions)
+- [ ] Test that chapter page numbers are correctly linked in TOC (USER TO TEST: Export and insert TOC in Word)

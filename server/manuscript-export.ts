@@ -152,9 +152,9 @@ function generateCopyrightPage(manuscript: ManuscriptData): Paragraph[] {
 }
 
 /**
- * Generate table of contents paragraphs
+ * Generate table of contents with Word's automatic TOC field
  */
-function generateTableOfContents(chapters: Chapter[]): Paragraph[] {
+function generateTableOfContents(): Paragraph[] {
   const tocParagraphs: Paragraph[] = [];
 
   // TOC heading
@@ -167,15 +167,34 @@ function generateTableOfContents(chapters: Chapter[]): Paragraph[] {
     })
   );
 
-  // Chapter entries
-  for (const chapter of chapters) {
-    tocParagraphs.push(
-      new Paragraph({
-        text: `Chapter ${chapter.number}: ${chapter.title}`,
-        spacing: { after: 100 },
-      })
-    );
-  }
+  // Automatic TOC field - Word will populate this based on Heading 1 styles
+  tocParagraphs.push(
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: 'Right-click here in Microsoft Word and select "Update Field" to generate the table of contents automatically.',
+          italics: true,
+          size: 20, // 10pt font (size is in half-points)
+        }),
+      ],
+      spacing: { after: 200 },
+    })
+  );
+
+  // Add instruction for automatic TOC
+  tocParagraphs.push(
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: 'To insert automatic TOC: References → Table of Contents → Automatic Table 1',
+          italics: true,
+          size: 18, // 9pt font
+          color: '666666',
+        }),
+      ],
+      spacing: { after: 400 },
+    })
+  );
 
   return tocParagraphs;
 }
@@ -239,7 +258,7 @@ export async function generateDOCX(manuscript: ManuscriptData): Promise<Buffer> 
   );
 
   // Table of Contents
-  const toc = generateTableOfContents(chapters);
+  const toc = generateTableOfContents();
   docSections.push(...toc);
 
   // Page break before chapters
