@@ -2573,3 +2573,8 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Add proper page numbering with footer formatting
 - [x] Ensure content pages fit Amazon KDP Word doc template requirements (6"x9" sizing already correct)
 - [x] Test export with corrected formatting - Tests confirm DOCX generation works correctly
+
+
+### ISBN Placeholder Note
+- [x] Update copyright page to show "[Your ISBN Here]" with helpful note about AI Publishing Studio
+- [x] Add instruction that ISBN will be added when exporting from AI Publishing Studio
