@@ -580,6 +580,17 @@ export default function GenerateManuscript() {
                 </div>
               )}
 
+              {/* ISBN Note - Only show for copyright section */}
+              {currentSection?.type === "copyright" && currentManuscript.content?.includes("[Your ISBN Here]") && (
+                <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <p className="text-sm text-blue-900 dark:text-blue-100">
+                    <strong>📘 About ISBN:</strong> An ISBN (International Standard Book Number) is a unique identifier for your book. 
+                    Amazon KDP provides <strong>free ISBNs</strong> automatically when you publish. The placeholder "[Your ISBN Here]" will be replaced 
+                    with your actual ISBN during the publishing process—you don't need to obtain one manually.
+                  </p>
+                </div>
+              )}
+
               {/* Manual Edit or AI Chat Interface */}
               {!isApproved && (
                 <div className="mb-6">

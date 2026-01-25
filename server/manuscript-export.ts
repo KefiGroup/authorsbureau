@@ -93,19 +93,6 @@ function generateCopyrightPage(manuscript: ManuscriptData): Paragraph[] {
       new Paragraph({
         text: 'ISBN: [Your ISBN Here]',
         alignment: AlignmentType.CENTER,
-        spacing: { after: 100 },
-      })
-    );
-    copyrightParagraphs.push(
-      new Paragraph({
-        children: [
-          new TextRun({
-            text: 'Note: ISBN will be added when you export from AI Publishing Studio. Amazon KDP provides free ISBNs for both Kindle and Paperback formats.',
-            size: 18,
-            italics: true,
-          }),
-        ],
-        alignment: AlignmentType.CENTER,
         spacing: { after: 200 },
       })
     );

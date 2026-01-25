@@ -2770,3 +2770,16 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [ ] Verify cover selection triggers description question
 - [ ] Verify description selection persists to state
 - [ ] Test UI with real book data
+
+
+## Move ISBN Note from DOCX to Preview UI Only
+
+- [x] Remove ISBN note from DOCX export (manuscript-export.ts)
+- [x] Keep DOCX clean with only "ISBN: [Your ISBN Here]" placeholder
+- [x] Locate copyright page preview UI component (GenerateManuscript.tsx)
+- [x] Add ISBN explanatory note to preview UI only
+- [x] Note explains Amazon provides free ISBNs during publishing
+- [x] Move ISBN note to appear between Download button and action buttons
+- [x] Remove duplicate note from content display area
+- [ ] Test copyright page preview shows note in correct location
+- [ ] Test DOCX export does NOT include note
