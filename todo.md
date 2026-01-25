@@ -1,5 +1,10 @@
 # Authors Bureau - Project TODO
 
+
+## 🚨 CRITICAL BUGS
+
+- [x] **DOCX Export Fixed**: Manuscript download now works correctly - generates 76KB DOCX with all content, no markdown symbols, KDP-compliant formatting, and uses pen name from profile
+
 ## Persona 2: Ready to Publish Workflow (8-Step Process)
 
 ### Step 1: Upload Manuscript ✅

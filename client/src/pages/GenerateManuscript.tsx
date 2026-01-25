@@ -203,10 +203,32 @@ export default function GenerateManuscript() {
 
   // Download manuscript mutation
   const downloadMutation = trpc.manuscript.downloadManuscript.useMutation({
-    onSuccess: (data) => {
-      // Open the download URL in a new tab
-      window.open(data.url, "_blank");
-      toast.success(`Manuscript downloaded! ${data.sectionCount} sections included.`);
+    onSuccess: async (data) => {
+      try {
+        // Fetch the file from S3 URL
+        const response = await fetch(data.url);
+        if (!response.ok) throw new Error('Failed to fetch file');
+        
+        // Create blob from response
+        const blob = await response.blob();
+        
+        // Create download link
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = data.fileName || 'manuscript.docx';
+        document.body.appendChild(link);
+        link.click();
+        
+        // Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+        
+        toast.success(`Manuscript downloaded! ${data.sectionCount} sections included.`);
+      } catch (error) {
+        console.error('Download error:', error);
+        toast.error('Failed to download file. Please try again.');
+      }
     },
     onError: (error) => {
       toast.error(error.message || "Failed to download manuscript");

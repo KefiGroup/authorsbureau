@@ -2327,7 +2327,12 @@ IMPORTANT:
 
         // Create DOCX document with KDP 6x9 formatting
         const bookTitle = blueprint[0].workingTitle || "Untitled";
-        const authorName = ctx.user.name || "Author";
+        
+        // Get author profile to use pen name
+        const authorProfile = await db.select().from(await import("../drizzle/schema").then(m => m.authors))
+          .where(eq((await import("../drizzle/schema").then(m => m.authors)).userId, ctx.user.id))
+          .limit(1);
+        const authorName = authorProfile[0]?.penName || ctx.user.name || "Author";
         
         // Build document sections with proper page numbering
         const documentSections: any[] = [];
@@ -2805,8 +2810,18 @@ IMPORTANT:
         });
 
         // Generate buffer
+        console.log('[DOCX Debug] Document sections count:', documentSections.length);
+        console.log('[DOCX Debug] Approved manuscripts count:', approvedManuscripts.length);
+        console.log('[DOCX Debug] Main content children count:', mainContentChildren.length);
+        
         const { Packer } = await import("docx");
         const buffer = await Packer.toBuffer(doc);
+        
+        console.log('[DOCX Debug] Buffer size:', buffer.length, 'bytes');
+        if (buffer.length === 0) {
+          console.error('[DOCX Error] Generated buffer is empty!');
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Generated DOCX file is empty" });
+        }
 
         // Upload to S3
         const fileName = `${blueprint[0].workingTitle?.replace(/[^a-zA-Z0-9]/g, '_') || 'manuscript'}_${Date.now()}.docx`;
