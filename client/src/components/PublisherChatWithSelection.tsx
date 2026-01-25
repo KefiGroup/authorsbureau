@@ -41,7 +41,9 @@ interface PublisherChatWithSelectionProps {
   manuscript: string;
   initialAnalysis: {
     suggestedTitles: string[];
+    titleReasonings?: string[];
     suggestedSubtitles: string[];
+    subtitleReasonings?: string[];
     bookDescription: string;
     detectedGenre: string;
     targetAudience: string;
@@ -98,12 +100,7 @@ Let's start with the most important decision: your book title. A great title can
 
 Here are my recommended titles with the strategic reasoning behind each:`,
       titleSuggestions: initialAnalysis.suggestedTitles,
-      titleReasonings: [
-        "This title uses the contrarian 'ignore the noise' angle that resonates strongly with your target audience of anxious investors. It positions you as the calm, rational voice in a chaotic market. The word 'Quiet' creates intrigue and differentiates from loud, aggressive investment books.",
-        "Clear, benefit-driven title that immediately communicates the transformation (complicated → simplified). 'Disciplined Path' appeals to readers seeking structure and reliability. Strong keyword optimization for Amazon search.",
-        "The '50-Cent Dollar' metaphor is memorable and instantly communicates value investing's core concept. 'Beginner's Guide' removes intimidation and expands your addressable market. Perfect for first-time investors.",
-        "Action-oriented verbs ('Stop,' 'Start,' 'Mastering') create urgency and transformation. The gambling vs. owning contrast is powerful for your audience who've lost money chasing trends. Addresses both psychology and strategy."
-      ],
+      titleReasonings: initialAnalysis.titleReasonings || [],
     },
   ]);
   const [input, setInput] = useState("");
@@ -136,11 +133,12 @@ Here are my recommended titles with the strategic reasoning behind each:`,
 
 Now let's choose the perfect subtitle to complement it. A well-crafted subtitle clarifies your book's value proposition and helps readers understand exactly what they'll gain. Here are my recommendations:`,
             subtitleSuggestions: initialAnalysis.suggestedSubtitles,
+            subtitleReasonings: initialAnalysis.subtitleReasonings || [],
           },
         ]);
       }, 500);
     }
-  }, [selectedTitle, selectedSubtitle, initialAnalysis.suggestedSubtitles, messages.length]);
+  }, [selectedTitle, selectedSubtitle, initialAnalysis.suggestedSubtitles, initialAnalysis.subtitleReasonings, messages.length]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -198,12 +196,8 @@ Now let's choose the perfect subtitle to complement it. A well-crafted subtitle 
           content: `Excellent choice! "${title}" is a strong title that will capture attention.
 
 Now let's choose the perfect subtitle to complement it. A well-crafted subtitle clarifies your book's value proposition and helps readers understand exactly what they'll gain. Here are my recommendations:`,
-          subtitleSuggestions: initialAnalysis.suggestedSubtitles,
-          subtitleReasonings: [
-            "This comprehensive subtitle clearly communicates the book's scope and benefits. The step-by-step promise reduces intimidation, while listing specific topics (intrinsic value, behavioral finance, financial future) helps with Amazon keyword discovery and sets clear expectations.",
-            "The transformation narrative ('Gambler to Disciplined Owner') is emotionally compelling and speaks directly to your audience's pain point. 'Proven Framework' adds credibility, and 'Compounding Wealth' is a powerful value investing keyword that attracts serious investors.",
-            "Practical and benefit-focused subtitle that addresses the reader's skepticism ('Ignore the Hype'). 'Bargain Prices' is a core value investing concept that will resonate with your target audience. The roadmap metaphor suggests a clear, actionable path."
-          ],
+            subtitleSuggestions: initialAnalysis.suggestedSubtitles,
+          subtitleReasonings: initialAnalysis.subtitleReasonings || [],
         },
       ]);
     }, 500);
@@ -262,6 +256,7 @@ I'm generating 3 professional cover designs optimized for your genre and target 
 
 Now let's select a subtitle to complement it. Here are my recommendations:`,
             subtitleSuggestions: initialAnalysis.suggestedSubtitles,
+            subtitleReasonings: initialAnalysis.subtitleReasonings || [],
           },
         ]);
       }, 500);

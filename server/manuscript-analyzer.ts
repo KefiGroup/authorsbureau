@@ -5,7 +5,9 @@ import { invokeLLM } from "./_core/llm";
  */
 export interface ManuscriptAnalysis {
   suggestedTitles: string[];
+  titleReasonings?: string[]; // Strategic reasoning for each title
   suggestedSubtitles: string[];
+  subtitleReasonings?: string[]; // Strategic reasoning for each subtitle
   detectedGenre: string;
   themes: string[];
   targetAudience: string;
@@ -44,20 +46,24 @@ ${sampleText}
 
 **Your Task:**
 Analyze the manuscript and provide:
-1. **3-5 bestseller-caliber title options** using patterns from successful books in this genre. Think: what would catch a browser's eye in a bookstore? What would trend on Amazon?
-2. **3 subtitle options** that use the "promise + proof" formula top publishers use
-3. **Detected genre** (be specific, e.g., "Business & Entrepreneurship" not just "Business")
-4. **5-7 main themes** covered in the book
-5. **Target audience** description (who is this book for?)
-6. **Book description** (2-3 paragraphs, conversion-optimized for Amazon)
-7. **3-5 key benefits** readers will get from this book
-8. **Tone** of the writing (e.g., "Professional and authoritative", "Conversational and friendly")
+1. **4 bestseller-caliber title options** using patterns from successful books in this genre. Think: what would catch a browser's eye in a bookstore? What would trend on Amazon?
+2. **Strategic reasoning for each title** (2-3 sentences explaining WHY this title works: target audience appeal, market positioning, keyword optimization, emotional hooks, etc.)
+3. **3 subtitle options** that use the "promise + proof" formula top publishers use
+4. **Strategic reasoning for each subtitle** (2-3 sentences explaining how it complements the title and appeals to readers)
+5. **Detected genre** (be specific, e.g., "Business & Entrepreneurship" not just "Business")
+6. **5-7 main themes** covered in the book
+7. **Target audience** description (who is this book for?)
+8. **Book description** (2-3 paragraphs, conversion-optimized for Amazon)
+9. **3-5 key benefits** readers will get from this book
+10. **Tone** of the writing (e.g., "Professional and authoritative", "Conversational and friendly")
 
 **Output Format (JSON):**
 \`\`\`json
 {
-  "suggestedTitles": ["Title Option 1", "Title Option 2", "Title Option 3"],
+  "suggestedTitles": ["Title Option 1", "Title Option 2", "Title Option 3", "Title Option 4"],
+  "titleReasonings": ["Reasoning for title 1 explaining target audience appeal, market positioning, and why it works", "Reasoning for title 2...", "Reasoning for title 3...", "Reasoning for title 4..."],
   "suggestedSubtitles": ["Subtitle 1", "Subtitle 2", "Subtitle 3"],
+  "subtitleReasonings": ["Reasoning for subtitle 1 explaining how it complements the title", "Reasoning for subtitle 2...", "Reasoning for subtitle 3..."],
   "detectedGenre": "Specific Genre Name",
   "themes": ["Theme 1", "Theme 2", "Theme 3", "Theme 4", "Theme 5"],
   "targetAudience": "Detailed description of who this book is for",

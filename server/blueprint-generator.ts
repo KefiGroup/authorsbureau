@@ -5,6 +5,11 @@ import { StoryBlueprint } from "../drizzle/schema";
  * Generate comprehensive story blueprint markdown from collected data
  */
 export async function generateBlueprintContent(blueprint: StoryBlueprint, authorName?: string): Promise<string> {
+  // Check if this is non-fiction and use different prompt
+  if (blueprint.projectType === 'non_fiction') {
+    return generateNonFictionBlueprint(blueprint, authorName);
+  }
+  
   const prompt = `You are an expert story development coach. Generate a comprehensive story blueprint document in PLAIN TEXT format (NO markdown symbols like ##, **, *, etc.) based on the following data collected from an author:
 
 **Project Type:** ${blueprint.projectType}
@@ -124,6 +129,175 @@ Make the blueprint professional, actionable, and inspiring. IMPORTANT: Use PLAIN
       {
         role: "system",
         content: "You are an expert story development coach who helps authors create comprehensive story blueprints. Generate professional, actionable, and inspiring blueprints in PLAIN TEXT format (NO markdown symbols like ##, **, *, etc.). Use line breaks and indentation for structure.",
+      },
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  });
+
+  const content = response.choices[0].message.content;
+  return typeof content === "string" ? content : "";
+}
+
+/**
+ * Generate non-fiction book blueprint with educational structure
+ */
+async function generateNonFictionBlueprint(blueprint: StoryBlueprint, authorName?: string): Promise<string> {
+  const targetPages = blueprint.targetPages || 150;
+  const wordsPerPage = 250; // Standard 6x9 format
+  const targetWords = targetPages * wordsPerPage;
+  const minChapters = 10;
+  const maxChapters = 15;
+  const wordsPerChapter = Math.floor(targetWords / ((minChapters + maxChapters) / 2));
+
+  const prompt = `You are an expert non-fiction book development coach specializing in educational content structure. Generate a comprehensive book blueprint in PLAIN TEXT format (NO markdown symbols like ##, **, *, etc.) based on the following data:
+
+**Project Type:** Non-Fiction Educational Book
+**Working Title:** ${blueprint.workingTitle || "Untitled"}
+**Target Pages:** ${targetPages} pages (6" x 9" format)
+**Target Word Count:** ${targetWords.toLocaleString()} words total
+**Words Per Chapter:** Approximately ${wordsPerChapter.toLocaleString()} words per chapter
+**Chapter Count:** ${minChapters}-${maxChapters} chapters
+**Primary Genre:** ${blueprint.primaryGenre || "Not specified"}
+**Secondary Genre:** ${blueprint.secondaryGenre || "Not specified"}
+
+**Core Topic/Premise:** ${blueprint.corePremise || "Not provided"}
+**Target Audience:** ${JSON.stringify(blueprint.audienceData, null, 2)}
+**Thematic Elements:** ${JSON.stringify(blueprint.thematicElements, null, 2)}
+
+${blueprint.finalCheckpointData ? `**Author Preferences:**
+${JSON.stringify(JSON.parse(blueprint.finalCheckpointData), null, 2)}
+
+IMPORTANT: Incorporate the author's preferences throughout the blueprint:
+- Use the specified tone and voice
+- Follow the preferred writing style
+- Include the special elements (case studies, exercises, charts, etc.)
+- Integrate the call-to-action strategy
+` : ''}
+
+Generate a professional, comprehensive non-fiction book blueprint with the following sections.
+
+**CRITICAL PAGE COUNT ENFORCEMENT:**
+- Total book MUST be exactly ${targetPages} pages (${targetWords.toLocaleString()} words)
+- Each chapter should be approximately ${wordsPerChapter.toLocaleString()} words
+- DO NOT exceed the target page count
+- Structure content to fit within the page limit
+
+**IMPORTANT FORMATTING RULES:**
+- Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.)
+- Use line breaks and indentation for structure
+- Focus on educational progression, not narrative storytelling
+
+# Non-Fiction Book Blueprint
+
+## Cover Page
+- Working Title
+- Author Name: ${authorName || "[Author Name Placeholder]"}
+- Genre Classification
+- Target Structure: ${targetPages} pages in 6" x 9" format
+- Chapter Count: ${minChapters}-${maxChapters} chapters
+- Total Word Count: ${targetWords.toLocaleString()} words
+- Words Per Chapter: ~${wordsPerChapter.toLocaleString()} words
+- Date Created: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+
+## Book Overview
+Generate a compelling one-paragraph summary of what readers will learn from this book.
+
+## Target Audience Profile
+- Demographics (age, profession, income level)
+- Current challenges and pain points
+- Goals and aspirations
+- Reading preferences
+
+## Learning Objectives
+List 5-7 specific, measurable outcomes readers will achieve after reading this book.
+
+## Chapter-by-Chapter Outline
+
+For each of the ${minChapters}-${maxChapters} chapters, provide:
+1. **Chapter Title** (compelling and benefit-driven)
+2. **Chapter Purpose** (what readers will learn)
+3. **Key Concepts** (3-5 main ideas to cover)
+4. **Teaching Progression** (how concepts build on each other)
+5. **Practical Elements** (exercises, case studies, examples)
+6. **Word Count Target** (~${wordsPerChapter.toLocaleString()} words)
+
+Ensure chapters follow a logical educational progression:
+- Introduction chapters (1-2): Foundation and context
+- Core teaching chapters (3-${maxChapters - 2}): Main concepts and frameworks
+- Application chapters (${maxChapters - 1}-${maxChapters}): Implementation and next steps
+
+## Content Structure Guidelines
+
+### Front Matter (included in page count)
+- Title Page
+- Copyright Page
+- Dedication (optional)
+- Table of Contents
+- Introduction/Preface
+
+### Main Content
+- ${minChapters}-${maxChapters} educational chapters
+- Each chapter includes:
+  * Opening hook or story
+  * Core teaching content
+  * Examples and case studies
+  * Practical exercises or action steps
+  * Chapter summary
+
+### Back Matter (included in page count)
+- Conclusion
+- Call to Action
+- About the Author
+- Resources/Bibliography (if applicable)
+
+## Amazon KDP Bestseller Strategy
+Analyze the book concept and suggest 3-5 specific Amazon KDP categories where this book has the HIGHEST chance of becoming a #1 bestseller. Focus on categories with LOW SALES BARRIERS:
+
+1. **5-6 level deep categories** - Specific sub-categories
+2. **Low daily sales requirement** - Categories where #1 has BSR 50,000-100,000 (3-8 sales/day)
+3. **Achievable sales targets** - Calculate realistic targets (20-50 sales in 24hr)
+4. **Perfect content match** - Categories that fit the book's topic and audience
+
+For each category, provide:
+- Full category path (5-6 levels deep)
+- Current leader's estimated BSR range
+- Minimum sales target to beat leader
+- Why this category has low competition
+- Competitiveness score (1-10, where 10 = easiest)
+
+## Keyword Strategy
+Suggest 7 highly targeted keywords based on:
+- Topic relevance
+- Search volume
+- Competition level
+- Category alignment
+
+## Unique Value Proposition
+- What makes this book different from competitors?
+- Why should readers choose this book?
+- What unique insights or frameworks does it offer?
+
+## Writing Guidelines
+Provide 5-7 specific writing tips for non-fiction educational content:
+- Tone and voice recommendations
+- How to balance theory and practice
+- Storytelling techniques for non-fiction
+- How to make complex concepts accessible
+- Engagement strategies
+
+---
+
+Make the blueprint professional, actionable, and inspiring. Remember: PLAIN TEXT only, NO markdown symbols.`;
+
+  const response = await invokeLLM({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content: "You are an expert non-fiction book development coach who helps authors create comprehensive educational book blueprints. Generate professional, actionable blueprints in PLAIN TEXT format (NO markdown symbols). Focus on educational structure, learning progression, and strict adherence to page count targets.",
       },
       {
         role: "user",

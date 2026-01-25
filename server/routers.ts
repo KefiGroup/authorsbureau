@@ -666,10 +666,18 @@ Write the bio now:`;
         // Generate comprehensive blueprint using AI
         const blueprintMarkdown = await generateBlueprintContent(blueprint, authorName);
 
+        // Calculate words per chapter based on target pages
+        const targetPages = blueprint.targetPages || 150;
+        const wordsPerPage = 250; // Standard 6x9 format
+        const totalWords = targetPages * wordsPerPage;
+        const avgChapters = 12.5; // Average of 10-15 chapters
+        const wordsPerChapter = Math.floor(totalWords / avgChapters);
+
         // Update blueprint with generated content (keep markdown for rich formatting)
         await db.updateStoryBlueprint(input.blueprintId, {
           blueprintContent: blueprintMarkdown,
           blueprintGenerated: true,
+          wordsPerChapter: wordsPerChapter,
         });
 
         return { success: true, content: blueprintMarkdown };

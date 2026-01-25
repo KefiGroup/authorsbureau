@@ -2783,3 +2783,38 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Remove duplicate note from content display area
 - [ ] Test copyright page preview shows note in correct location
 - [ ] Test DOCX export does NOT include note
+
+
+## Fix Page Count Control and Content Type in Manuscript Generation
+
+### Issues Found
+- [x] Analyzed manuscript: 202 pages generated for 150-page target (35% overshoot)
+- [x] Identified wrong content type: AI generated fictional thriller instead of non-fiction guide
+- [x] Root cause: Blueprint generation creates fictional story structure for non-fiction requests
+
+### Fixes Needed
+- [x] Fix blueprint generation to detect non-fiction vs. fiction intent
+- [x] Created separate generateNonFictionBlueprint function
+- [x] Update non-fiction blueprint template to use educational structure (not narrative)
+- [x] Add strict page count enforcement in blueprint generation
+- [x] Calculate target words per chapter based on total page count
+- [x] Add wordsPerChapter calculation during blueprint generation
+- [x] Store wordsPerChapter in database for chapter generation to use
+- [x] Chapter generation already uses wordsPerChapter with ±10% tolerance
+- [ ] Test with new non-fiction manuscript to verify correct structure and page count
+
+
+## Fix Mismatched AI Reasoning for Title Suggestions
+
+### Issue
+- [x] Identified: Hardcoded reasoning doesn't match actual title suggestions
+- [x] Example: "The Accountant's Margin" shows reasoning for "The Quiet Investor"
+
+### Fix Approach
+- [x] Chosen Option 1: Have AI generate reasoning during analysis phase and store in blueprint
+- [x] Updated ManuscriptAnalysis interface to include titleReasonings and subtitleReasonings
+- [x] Updated AI prompt to generate reasoning for each title and subtitle
+- [x] Updated PublisherChatWithSelection to accept reasoning from initialAnalysis prop
+- [x] Replaced hardcoded reasoning with dynamic data from initialAnalysis
+- [x] Applied fix to both title and subtitle reasoning
+- [ ] Test with new manuscript analysis to verify reasoning matches titles
