@@ -2634,3 +2634,16 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] When author changes ISBN in Publishing Studio, update blueprint's isbn with debounced save
 - [x] Remove markdown symbols (**, |, ---, ###, etc.) from AI analysis display in Publishing Studio (PublisherChat)
 - [ ] Test field linking works bidirectionally with user account
+
+## 🎯 Feature: Title Selection on Analysis Step
+
+- [x] Add title selection UI on Analysis step showing all AI-suggested titles as clickable cards
+- [x] Allow authors to select a title by clicking on it
+- [x] Add inline editing capability for selected title (using prompt dialog)
+- [x] Sync selected/edited title back to Upload step (initialTitle state)
+- [x] Sync selected/edited title back to blueprint (workingTitle field) via debounced save
+- [x] Show visual indication of currently selected title (checkmark + primary border)
+- [x] Test title selection with user account - VERIFIED WORKING
+- [x] Verify sync from Analysis step to Upload step - CONFIRMED WORKING
+- [x] Verify debounced save to blueprint workingTitle field - IMPLEMENTED
+- [ ] Future enhancement: Replace prompt() with inline input field for better UX
