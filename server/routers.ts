@@ -1605,18 +1605,18 @@ Create a professional, touching dedication. Just write the dedication text, no h
           
           prompt = `Generate a professional COPYRIGHT PAGE for this book:
 
-**Book Title:** ${blueprintData.workingTitle}
-**Author Name:** ${authorName}
-**Copyright Year:** ${currentYear}
+Book Title: ${blueprintData.workingTitle}
+Author Name: ${authorName}
+Copyright Year: ${currentYear}
 
 Include:
 1. Copyright notice: "Copyright © ${currentYear} by ${authorName}. All rights reserved."
 2. Standard rights statement (no part may be reproduced without permission)
 3. Publisher info placeholder (if self-published)
-4. **ISBN placeholder: "ISBN: [Your ISBN Here]"** - Make this VERY CLEAR and prominent so the author can easily find and replace it
+4. ISBN placeholder: "ISBN: [Your ISBN Here]" - Make this VERY CLEAR and prominent so the author can easily find and replace it
 5. Disclaimer (This is a work of fiction... OR This is a work of non-fiction... depending on genre)
 
-Format professionally with proper spacing. Just write the copyright page content, no heading.`;
+IMPORTANT: Do NOT use any markdown formatting (no **, ##, or other markdown symbols). Write in plain text only with proper spacing. Just write the copyright page content, no heading.`;
         } else if (input.sectionType === "acknowledgements") {
           prompt = `Write professional ACKNOWLEDGEMENTS (2-3 paragraphs) for this book:
 
@@ -1718,13 +1718,26 @@ IF UNSURE: Make a strong assumption, proceed, and let the user edit. Never stop 
           ],
         });
 
-        const generatedContent = typeof response.choices[0].message.content === 'string' 
+        let generatedContent = typeof response.choices[0].message.content === 'string' 
           ? response.choices[0].message.content 
           : JSON.stringify(response.choices[0].message.content);
         
+        // Strip markdown formatting for clean professional output
+        const stripMarkdown = (text: string): string => {
+          return text
+            .replace(/\*\*([^*]+)\*\*/g, '$1')  // **bold**
+            .replace(/\*([^*]+)\*/g, '$1')      // *italic*
+            .replace(/^#{1,6}\s+/gm, '')        // # headings
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // [links](url)
+            .replace(/^[-*+]\s+/gm, '')         // - list items
+            .replace(/^\d+\.\s+/gm, '')        // 1. numbered lists
+            .trim();
+        };
+        
+        generatedContent = stripMarkdown(generatedContent);
         const wordCount = generatedContent.split(/\s+/).length;
 
-        // Update manuscript with generated content (keep markdown for rich formatting)
+        // Update manuscript with generated content (markdown has been stripped for clean output)
         await db.update(manuscripts)
           .set({
             content: generatedContent,

@@ -2592,3 +2592,9 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Fix chapter titles - remove ## markdown syntax
 - [x] Ensure all text is properly formatted for KDP (no markdown leakage)
 - [ ] Test export shows professional formatting without markdown symbols (USER TO TEST: Re-export manuscript)
+
+
+### Fix AI-Generated Copyright Page Markdown
+- [x] Remove markdown formatting from copyright page generation prompt (line 1616 in routers.ts)
+- [x] Apply stripMarkdown() to AI-generated copyright content before adding to manuscript
+- [ ] Test that exported copyright page shows clean text without ** or ##
