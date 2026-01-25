@@ -90,6 +90,30 @@ export default function ReadyToPublish() {
   // Mutation to save ISBN to blueprint
   const updateIsbn = trpc.blueprint.update.useMutation();
   
+  // Debounced title save (save after user stops typing for 1 second)
+  useEffect(() => {
+    if (!bookId || !initialTitle) return;
+    
+    const timeoutId = setTimeout(() => {
+      setIsSavingTitle(true);
+      updateIsbn.mutate(
+        { blueprintId: bookId, data: { workingTitle: initialTitle } },
+        {
+          onSuccess: () => {
+            setIsSavingTitle(false);
+            console.log('[Blueprint Link] Title saved to blueprint:', initialTitle);
+          },
+          onError: (error) => {
+            setIsSavingTitle(false);
+            console.error('[Blueprint Link] Failed to save title:', error.message);
+          },
+        }
+      );
+    }, 1000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [initialTitle, bookId]);
+  
   // Debounced ISBN save (save after user stops typing for 1 second)
   useEffect(() => {
     if (!bookId || !isbn) return;
@@ -148,6 +172,24 @@ export default function ReadyToPublish() {
     { bookId: bookId! },
     { enabled: !!bookId }
   );
+  
+  // Load raw blueprint for workingTitle and ISBN
+  const { data: blueprintData } = trpc.blueprint.getByBookId.useQuery(
+    { bookId: bookId! },
+    { enabled: !!bookId }
+  );
+  
+  // Auto-populate title and ISBN from blueprint (only if fields are empty)
+  useEffect(() => {
+    if (blueprintData && !initialTitle && blueprintData.workingTitle) {
+      console.log('[Blueprint Link] Auto-populating title from blueprint:', blueprintData.workingTitle);
+      setInitialTitle(blueprintData.workingTitle);
+    }
+    if (blueprintData && !isbn && blueprintData.isbn) {
+      console.log('[Blueprint Link] Auto-populating ISBN from blueprint:', blueprintData.isbn);
+      setIsbn(blueprintData.isbn);
+    }
+  }, [blueprintData]);
 
   // Load user's books to auto-select if no bookId provided
   const { data: userBooks } = trpc.book.getMyBooks.useQuery(undefined, {

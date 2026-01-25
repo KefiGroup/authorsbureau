@@ -67,6 +67,7 @@ export default function Books() {
       await deleteBookMutation.mutateAsync({ bookId });
       toast.success("Book deleted successfully");
       utils.book.getMyBooks.invalidate();
+      utils.blueprint.getUserProjects.invalidate(); // Also invalidate blueprints since they're linked to books
     } catch (error) {
       toast.error("Failed to delete book");
     }

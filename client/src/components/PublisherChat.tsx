@@ -6,6 +6,22 @@ import { Avatar } from "@/components/ui/avatar";
 import { Loader2, Send, User, Sparkles } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
+// Utility function to strip markdown symbols from text
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '$1') // Remove **bold**
+    .replace(/\*(.+?)\*/g, '$1') // Remove *italic*
+    .replace(/__(.+?)__/g, '$1') // Remove __underline__
+    .replace(/_(.+?)_/g, '$1') // Remove _italic_
+    .replace(/###\s+/g, '') // Remove ### headings
+    .replace(/##\s+/g, '') // Remove ## headings
+    .replace(/#\s+/g, '') // Remove # headings
+    .replace(/\|/g, '') // Remove | pipes
+    .replace(/---+/g, '') // Remove --- horizontal rules
+    .replace(/\[(.+?)\]\(.+?\)/g, '$1') // Remove [links](url)
+    .replace(/`(.+?)`/g, '$1'); // Remove `code`
+}
+
 interface Message {
   role: "assistant" | "user";
   content: string;
@@ -134,7 +150,7 @@ Just type your question or let me know what you'd like to explore!`,
                     : "bg-muted text-foreground"
                 }`}
               >
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                <p className="text-sm whitespace-pre-wrap">{stripMarkdown(message.content)}</p>
               </div>
               {message.role === "user" && (
                 <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">

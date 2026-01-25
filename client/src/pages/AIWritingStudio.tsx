@@ -54,10 +54,13 @@ export default function AIWritingStudio() {
     { enabled: isAuthenticated }
   );
 
+  const utils = trpc.useUtils();
+  
   // Delete project mutation
   const deleteProject = trpc.blueprint.delete.useMutation({
     onSuccess: () => {
-      refetch();
+      utils.blueprint.getUserProjects.invalidate();
+      utils.book.getMyBooks.invalidate(); // Also invalidate books since they're linked to blueprints
       toast.success("Project deleted successfully");
       setDeleteDialogOpen(false);
       setProjectToDelete(null);

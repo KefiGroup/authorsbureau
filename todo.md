@@ -2616,3 +2616,21 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] **FIXED**: Copyright page markdown symbols stripped
 - [x] **FIXED**: TOC uses proper Word format with 10pt font and tab stops with dot leaders
 - [x] **FIXED**: All content pages verified clean (no **, ###, *, _ symbols)
+
+## 🐛 CRITICAL BUG: Book Deletion
+
+- [x] **FIXED**: Book deletion now properly invalidates both books and blueprints queries across all views
+- [x] Dashboard: deleteBook mutation now invalidates both utils.book.getMyBooks and utils.blueprint.getUserProjects
+- [x] AI Writing Studio: deleteProject mutation now invalidates both utils.blueprint.getUserProjects and utils.book.getMyBooks
+- [x] Books page: deleteBook mutation now invalidates both queries
+- [x] Database schema already has cascade delete configured for all related tables (manuscripts, outlines, structures)
+
+## 🔗 Feature: Link All Fields Between Studios
+
+- [x] Link "Book Title" field in AI Publishing Studio to "Working Title" from AI Writing Studio blueprint
+- [x] Link ISBN field from blueprint to Publishing Studio
+- [x] Auto-populate fields but keep them editable
+- [x] When author changes title in Publishing Studio, update blueprint's workingTitle with debounced save
+- [x] When author changes ISBN in Publishing Studio, update blueprint's isbn with debounced save
+- [x] Remove markdown symbols (**, |, ---, ###, etc.) from AI analysis display in Publishing Studio (PublisherChat)
+- [ ] Test field linking works bidirectionally with user account

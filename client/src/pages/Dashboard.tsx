@@ -31,6 +31,7 @@ export default function Dashboard() {
     onSuccess: () => {
       toast.success("Book deleted successfully");
       utils.book.getMyBooks.invalidate();
+      utils.blueprint.getUserProjects.invalidate(); // Also invalidate blueprints since they're linked to books
       setDeleteDialogOpen(false);
       setProjectToDelete(null);
     },
