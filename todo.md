@@ -2647,3 +2647,15 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Verify sync from Analysis step to Upload step - CONFIRMED WORKING
 - [x] Verify debounced save to blueprint workingTitle field - IMPLEMENTED
 - [ ] Future enhancement: Replace prompt() with inline input field for better UX
+
+## 🎯 Feature: Extend Selection UI to All AI Suggestions
+
+- [x] Add subtitle selection UI with click-to-select cards (similar to title selection)
+- [x] Sync selected subtitle via saveProgress mutation (already includes selectedSubtitle field)
+- [x] Test subtitle selection UI - VERIFIED WORKING
+- [ ] Identify what other AI suggestions need selection UIs (cover design approach, market positioning, pricing)
+- [ ] Extend AI analysis to generate multiple options for cover design, positioning, pricing
+- [ ] Design selection UI pattern for non-text suggestions (e.g., pricing tiers, positioning strategies)
+- [ ] Implement selection UIs for cover design, market positioning, and pricing
+- [ ] Test all selection UIs and verify sync works
+- [ ] Ensure all selections are saved to book record for persistence
