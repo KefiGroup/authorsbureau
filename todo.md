@@ -2703,3 +2703,28 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Verify selected title/subtitle display in summary card
 - [x] Verify sync to blueprint and database
 
+
+## Add AI Reasoning and Rankings to All NY Times Consultant Recommendations (IN PROGRESS)
+
+### Title Selection
+- [x] Add ranking badges (Top Pick, #2 Choice, #3 Choice, #4 Choice) to each title
+- [x] Add individual reasoning text below each title explaining why it's a good choice
+- [x] Include strategic analysis (target audience appeal, market positioning, keyword optimization)
+- [x] Ensure "Top Pick" badge is visually prominent
+
+### Subtitle Selection
+- [x] Add ranking badges to each subtitle option
+- [x] Add individual reasoning for each subtitle suggestion
+- [x] Explain how each subtitle complements the selected title
+
+### Cover Design Recommendations
+- [ ] Add AI reasoning for each generated cover design (deferred - requires cover generation implementation)
+- [ ] Explain design choices (colors, typography, imagery)
+- [ ] Rank covers by predicted market performance
+
+### Testing
+- [x] Implement ranking badges and reasoning display for titles
+- [x] Implement ranking badges and reasoning display for subtitles
+- [x] Verify code compiles without TypeScript errors
+- [ ] Test with fresh book creation to verify UI displays correctly
+- [ ] Verify reasoning is clearly visible and readable

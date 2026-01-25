@@ -27,7 +27,9 @@ interface Message {
   role: "assistant" | "user";
   content: string;
   titleSuggestions?: string[];
+  titleReasonings?: string[]; // Reasoning for each title suggestion
   subtitleSuggestions?: string[];
+  subtitleReasonings?: string[]; // Reasoning for each subtitle suggestion
 }
 
 interface PublisherChatWithSelectionProps {
@@ -71,6 +73,12 @@ Let's start with the most important decision: your book title. A great title can
 
 Here are my recommended titles with the strategic reasoning behind each:`,
       titleSuggestions: initialAnalysis.suggestedTitles,
+      titleReasonings: [
+        "This title uses the contrarian 'ignore the noise' angle that resonates strongly with your target audience of anxious investors. It positions you as the calm, rational voice in a chaotic market. The word 'Quiet' creates intrigue and differentiates from loud, aggressive investment books.",
+        "Clear, benefit-driven title that immediately communicates the transformation (complicated → simplified). 'Disciplined Path' appeals to readers seeking structure and reliability. Strong keyword optimization for Amazon search.",
+        "The '50-Cent Dollar' metaphor is memorable and instantly communicates value investing's core concept. 'Beginner's Guide' removes intimidation and expands your addressable market. Perfect for first-time investors.",
+        "Action-oriented verbs ('Stop,' 'Start,' 'Mastering') create urgency and transformation. The gambling vs. owning contrast is powerful for your audience who've lost money chasing trends. Addresses both psychology and strategy."
+      ],
     },
   ]);
   const [input, setInput] = useState("");
@@ -166,6 +174,11 @@ Now let's choose the perfect subtitle to complement it. A well-crafted subtitle 
 
 Now let's choose the perfect subtitle to complement it. A well-crafted subtitle clarifies your book's value proposition and helps readers understand exactly what they'll gain. Here are my recommendations:`,
           subtitleSuggestions: initialAnalysis.suggestedSubtitles,
+          subtitleReasonings: [
+            "This comprehensive subtitle clearly communicates the book's scope and benefits. The step-by-step promise reduces intimidation, while listing specific topics (intrinsic value, behavioral finance, financial future) helps with Amazon keyword discovery and sets clear expectations.",
+            "The transformation narrative ('Gambler to Disciplined Owner') is emotionally compelling and speaks directly to your audience's pain point. 'Proven Framework' adds credibility, and 'Compounding Wealth' is a powerful value investing keyword that attracts serious investors.",
+            "Practical and benefit-focused subtitle that addresses the reader's skepticism ('Ignore the Hype'). 'Bargain Prices' is a core value investing concept that will resonate with your target audience. The roadmap metaphor suggests a clear, actionable path."
+          ],
         },
       ]);
     }, 500);
@@ -314,9 +327,28 @@ Now let's select a subtitle to complement it. Here are my recommendations:`,
                             </div>
                           ) : (
                             <>
-                              <p className="font-semibold text-base">{title}</p>
+                              <div className="flex items-center gap-2 mb-2">
+                                {idx === 0 && (
+                                  <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs font-semibold rounded">TOP PICK</span>
+                                )}
+                                {idx === 1 && (
+                                  <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded">#2 CHOICE</span>
+                                )}
+                                {idx === 2 && (
+                                  <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded">#3 CHOICE</span>
+                                )}
+                                {idx === 3 && (
+                                  <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded">#4 CHOICE</span>
+                                )}
+                              </div>
+                              <p className="font-semibold text-base mb-2">{title}</p>
+                              {message.titleReasonings && message.titleReasonings[idx] && (
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                  {message.titleReasonings[idx]}
+                                </p>
+                              )}
                               {selectedTitle === title && (
-                                <p className="text-xs text-primary mt-1 flex items-center gap-1">
+                                <p className="text-xs text-primary mt-2 flex items-center gap-1 font-medium">
                                   <Check className="w-3 h-3" /> Currently selected
                                 </p>
                               )}
@@ -432,9 +464,25 @@ Now let's select a subtitle to complement it. Here are my recommendations:`,
                             </div>
                           ) : (
                             <>
-                              <p className="font-medium text-sm">{subtitle}</p>
+                              <div className="flex items-center gap-2 mb-2">
+                                {idx === 0 && (
+                                  <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs font-semibold rounded">TOP PICK</span>
+                                )}
+                                {idx === 1 && (
+                                  <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded">#2 CHOICE</span>
+                                )}
+                                {idx === 2 && (
+                                  <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded">#3 CHOICE</span>
+                                )}
+                              </div>
+                              <p className="font-medium text-sm mb-2">{subtitle}</p>
+                              {message.subtitleReasonings && message.subtitleReasonings[idx] && (
+                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                  {message.subtitleReasonings[idx]}
+                                </p>
+                              )}
                               {selectedSubtitle === subtitle && (
-                                <p className="text-xs text-primary mt-1 flex items-center gap-1">
+                                <p className="text-xs text-primary mt-2 flex items-center gap-1 font-medium">
                                   <Check className="w-3 h-3" /> Currently selected
                                 </p>
                               )}
