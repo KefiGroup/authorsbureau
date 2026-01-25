@@ -38,7 +38,13 @@ IMPORTANT: Incorporate the author's preferences throughout the blueprint:
 - Integrate the call-to-action strategy
 ` : ''}
 
-Generate a professional, comprehensive story blueprint with the following sections:
+Generate a professional, comprehensive story blueprint with the following sections.
+
+**IMPORTANT FORMATTING RULES:**
+- DO NOT mention total word count anywhere in the blueprint
+- DO NOT calculate or show "X words" or "X,000 words"
+- ONLY show page count and chapter range (10-15 chapters)
+- Focus on narrative structure, not word count metrics
 
 # Story Blueprint
 

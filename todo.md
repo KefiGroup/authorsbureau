@@ -2551,3 +2551,9 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Update blueprint generator to show "10-15 chapters (AI-determined)" instead of calculated count
 - [x] Remove all word count calculations from blueprint
 - [x] Update blueprint prompt to instruct AI to determine optimal chapter structure (10-15 chapters)
+
+
+### Fix AI-Generated Word Count in Blueprint
+- [x] Update blueprint prompt to explicitly instruct AI to NOT generate word counts
+- [x] Add clear instruction: "DO NOT mention total word count, only show page count and chapter range"
+- [ ] Test new blueprint generation to verify no word counts appear (USER TO TEST: Create new book with 150 pages)
