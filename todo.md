@@ -2728,3 +2728,45 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Verify code compiles without TypeScript errors
 - [ ] Test with fresh book creation to verify UI displays correctly
 - [ ] Verify reasoning is clearly visible and readable
+
+
+## Extend Conversational Chat to All Consultation Steps (IN PROGRESS)
+
+### Cover Design Selection
+- [x] Add cover design suggestions as clickable options in chat
+- [x] Display cover thumbnails inline with Select buttons
+- [x] Add AI reasoning for each cover design (colors, typography, market appeal)
+- [x] Add ranking badges (TOP PICK, #2, #3) for cover designs
+- [x] Trigger next question (book description) after cover selection
+
+### Book Description Selection
+- [x] Add book description variations to chat with clickable Select buttons
+- [x] Add AI reasoning explaining why each description version works
+- [x] Add ranking badges for description options
+- [ ] Allow inline editing of selected description (deferred)
+- [ ] Trigger next question (author bio) after description selection
+
+### Author Bio Selection
+- [ ] Add author bio variations to chat with clickable Select buttons
+- [ ] Add AI reasoning for each bio variation (tone, positioning, credibility)
+- [ ] Add ranking badges for bio options
+- [ ] Allow inline editing of selected bio
+- [ ] Trigger next question (keywords) after bio selection
+
+### Keywords & Categories Selection
+- [ ] Add keyword suggestions to chat with Add/Remove buttons
+- [ ] Add AI reasoning explaining why each keyword is valuable
+- [ ] Add category suggestions with Select buttons
+- [ ] Show selected keywords/categories in summary card
+- [ ] Trigger completion message after keywords/categories selection
+
+### Integration
+- [x] Update ReadyToPublish to pass cover and description props
+- [x] Wire up onCoverSelect and onDescriptionSelect handlers
+- [x] Connect selections to existing state management
+
+### Testing
+- [ ] Test complete conversational flow from title to description
+- [ ] Verify cover selection triggers description question
+- [ ] Verify description selection persists to state
+- [ ] Test UI with real book data

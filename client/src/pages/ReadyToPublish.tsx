@@ -1657,12 +1657,20 @@ export default function ReadyToPublish() {
               }}
               selectedTitle={selectedTitle}
               selectedSubtitle={selectedSubtitle}
+              selectedCover={selectedCover?.url}
+              selectedDescription={editedDescription}
               onTitleSelect={(title) => {
                 setSelectedTitle(title);
                 setInitialTitle(title);
               }}
               onSubtitleSelect={(subtitle) => {
                 setSelectedSubtitle(subtitle);
+              }}
+              onCoverSelect={(coverUrl) => {
+                setSelectedCover({ url: coverUrl, prompt: "" });
+              }}
+              onDescriptionSelect={(description) => {
+                setEditedDescription(description);
               }}
               onComplete={() => setCurrentStep("profile-check")}
             />

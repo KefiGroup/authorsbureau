@@ -27,9 +27,14 @@ interface Message {
   role: "assistant" | "user";
   content: string;
   titleSuggestions?: string[];
-  titleReasonings?: string[]; // Reasoning for each title suggestion
+  titleReasonings?: string[];
   subtitleSuggestions?: string[];
-  subtitleReasonings?: string[]; // Reasoning for each subtitle suggestion
+  subtitleReasonings?: string[];
+  coverSuggestions?: Array<{ url: string; reasoning: string }>;
+  descriptionSuggestions?: Array<{ text: string; reasoning: string }>;
+  bioSuggestions?: Array<{ text: string; reasoning: string }>;
+  keywordSuggestions?: Array<{ keyword: string; reasoning: string }>;
+  categorySuggestions?: Array<{ category: string; reasoning: string }>;
 }
 
 interface PublisherChatWithSelectionProps {
@@ -45,8 +50,18 @@ interface PublisherChatWithSelectionProps {
   };
   selectedTitle: string;
   selectedSubtitle: string;
+  selectedCover?: string;
+  selectedDescription?: string;
+  selectedBio?: string;
+  selectedKeywords?: string[];
+  selectedCategories?: string[];
   onTitleSelect: (title: string) => void;
   onSubtitleSelect: (subtitle: string) => void;
+  onCoverSelect?: (coverUrl: string) => void;
+  onDescriptionSelect?: (description: string) => void;
+  onBioSelect?: (bio: string) => void;
+  onKeywordsSelect?: (keywords: string[]) => void;
+  onCategoriesSelect?: (categories: string[]) => void;
   onComplete: () => void;
 }
 
@@ -55,8 +70,18 @@ export function PublisherChatWithSelection({
   initialAnalysis,
   selectedTitle,
   selectedSubtitle,
+  selectedCover,
+  selectedDescription,
+  selectedBio,
+  selectedKeywords = [],
+  selectedCategories = [],
   onTitleSelect,
   onSubtitleSelect,
+  onCoverSelect,
+  onDescriptionSelect,
+  onBioSelect,
+  onKeywordsSelect,
+  onCategoriesSelect,
   onComplete,
 }: PublisherChatWithSelectionProps) {
   const chatMutation = trpc.manuscriptAnalysis.chatWithPublisher.useMutation();
@@ -188,7 +213,7 @@ Now let's choose the perfect subtitle to complement it. A well-crafted subtitle 
     onSubtitleSelect(subtitle);
     toast.success("Subtitle selected!");
     
-    // Add completion message
+    // Automatically trigger cover design question
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
@@ -198,16 +223,23 @@ Now let's choose the perfect subtitle to complement it. A well-crafted subtitle 
 
 **"${selectedTitle}: ${subtitle}"**
 
-This combination effectively communicates your book's value and will attract your target readers. 
+Now let's create a stunning cover that captures attention and drives sales. Your cover is the first thing readers see—it needs to instantly communicate your book's genre, quality, and value.
 
-What would you like to discuss next?
-
-1. Cover design strategy
-2. Market positioning and categories
-3. Pricing and royalty optimization
-4. Book description and marketing copy
-
-Or feel free to ask me anything about your publishing strategy!`,
+I'm generating 3 professional cover designs optimized for your genre and target audience. Each design uses proven visual strategies that perform well on Amazon. Here are my recommendations:`,
+          coverSuggestions: [
+            {
+              url: "/placeholder-cover-1.jpg",
+              reasoning: "Clean, professional design with bold typography that stands out in thumbnail view. The minimalist approach signals sophistication and appeals to your target audience of serious investors. Color psychology: Deep blue conveys trust and stability."
+            },
+            {
+              url: "/placeholder-cover-2.jpg",
+              reasoning: "Dynamic composition with financial imagery (charts, graphs) that immediately communicates the book's practical value. The contrasting colors create visual interest and improve click-through rates in search results."
+            },
+            {
+              url: "/placeholder-cover-3.jpg",
+              reasoning: "Metaphorical approach using imagery (mountain, path) that represents the journey to financial independence. This emotional connection resonates with readers seeking transformation. Warm tones create approachability."
+            }
+          ],
         },
       ]);
     }, 500);
@@ -242,6 +274,42 @@ Now let's select a subtitle to complement it. Here are my recommendations:`,
       toast.success("Custom subtitle set!");
       setShowCustomSubtitleInput(false);
       setCustomSubtitleValue("");
+    }
+  };
+
+  const handleCoverSelect = (coverUrl: string) => {
+    if (onCoverSelect) {
+      onCoverSelect(coverUrl);
+      toast.success("Cover selected!");
+      
+      // Automatically trigger book description question
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: `Excellent choice! Your cover will grab attention and communicate professionalism.
+
+Now let's craft a compelling book description that converts browsers into buyers. Your description is your sales pitch—it needs to hook readers in the first sentence, build desire, and create urgency.
+
+I've written 3 description variations optimized for Amazon's algorithm and reader psychology:`,
+            descriptionSuggestions: [
+              {
+                text: "Are you tired of watching your savings erode while 'experts' promise get-rich-quick schemes? This book reveals the time-tested strategy that Warren Buffett used to build billions—and how you can apply it starting today. Learn to identify undervalued companies, calculate intrinsic value, and build wealth through disciplined investing. No gambling, no timing the market, just proven principles that work.",
+                reasoning: "Opens with pain point (tired of losing money), establishes authority (Warren Buffett), promises transformation (starting today), and emphasizes proven results. Short, punchy sentences create urgency."
+              },
+              {
+                text: "What if you could stop gambling on hot stocks and start owning pieces of great businesses at bargain prices? The Quiet Investor shows you exactly how. Inside, you'll discover the step-by-step framework for calculating what a company is really worth, master the psychology that separates winners from losers, and build a portfolio designed for long-term wealth. Perfect for anxious beginners who want financial independence without the stress.",
+                reasoning: "Question hook engages curiosity, 'exactly how' promises actionable content, bullet-style benefits are scannable, and addresses target audience's emotional state (anxious beginners)."
+              },
+              {
+                text: "Stop chasing trends. Start building wealth. This beginner-friendly guide demystifies value investing with clear examples, practical calculations, and behavioral insights that keep you disciplined when markets panic. You'll learn to find 50-cent dollars, avoid common mistakes, and compound your money like the pros—all without a finance degree. Your path to financial security starts here.",
+                reasoning: "Command-style opening creates action orientation, 'beginner-friendly' removes intimidation, specific outcomes (find 50-cent dollars) make benefits concrete, closes with clear call-to-action."
+              }
+            ],
+          },
+        ]);
+      }, 500);
     }
   };
 
@@ -554,6 +622,153 @@ Now let's select a subtitle to complement it. Here are my recommendations:`,
                         </Button>
                       </div>
                     </div>
+                  )}
+                </div>
+              )}
+
+              {/* Cover Suggestions */}
+              {message.coverSuggestions && message.coverSuggestions.length > 0 && (
+                <div className="ml-11 mt-3 space-y-3">
+                  {message.coverSuggestions.map((cover: { url: string; reasoning: string }, idx: number) => (
+                    <div
+                      key={idx}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        selectedCover === cover.url
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <div className="flex items-start gap-4">
+                        {/* Cover Image Placeholder */}
+                        <div className="w-32 h-48 bg-muted rounded flex items-center justify-center flex-shrink-0">
+                          <p className="text-xs text-muted-foreground text-center px-2">Cover {idx + 1}</p>
+                        </div>
+                        
+                        <div className="flex-1 space-y-2">
+                          {/* Ranking Badge */}
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold px-2 py-1 rounded ${
+                              idx === 0 ? "bg-yellow-500 text-yellow-950" :
+                              idx === 1 ? "bg-blue-500 text-blue-950" :
+                              "bg-gray-500 text-gray-950"
+                            }`}>
+                              {idx === 0 ? "TOP PICK" : `#${idx + 1} CHOICE`}
+                            </span>
+                          </div>
+                          
+                          {/* AI Reasoning */}
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {cover.reasoning}
+                          </p>
+                          
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 pt-2">
+                            {selectedCover === cover.url ? (
+                              <Button size="sm" variant="outline" disabled>
+                                <Check className="w-4 h-4 mr-1" />
+                                Selected
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                onClick={() => handleCoverSelect(cover.url)}
+                              >
+                                Select
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Upload Your Own Cover */}
+                  {!selectedCover && (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        toast.info("Upload your own cover feature coming soon!");
+                      }}
+                    >
+                      <Edit2 className="w-4 h-4 mr-2" />
+                      Upload My Own Cover
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              {/* Book Description Suggestions */}
+              {message.descriptionSuggestions && message.descriptionSuggestions.length > 0 && (
+                <div className="ml-11 mt-3 space-y-3">
+                  {message.descriptionSuggestions.map((desc: { text: string; reasoning: string }, idx: number) => (
+                    <div
+                      key={idx}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        selectedDescription === desc.text
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <div className="space-y-2">
+                        {/* Ranking Badge */}
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs font-bold px-2 py-1 rounded ${
+                            idx === 0 ? "bg-yellow-500 text-yellow-950" :
+                            idx === 1 ? "bg-blue-500 text-blue-950" :
+                            "bg-gray-500 text-gray-950"
+                          }`}>
+                            {idx === 0 ? "TOP PICK" : `#${idx + 1} CHOICE`}
+                          </span>
+                        </div>
+                        
+                        {/* Description Text */}
+                        <p className="text-sm leading-relaxed">
+                          {desc.text}
+                        </p>
+                        
+                        {/* AI Reasoning */}
+                        <p className="text-xs text-muted-foreground italic border-l-2 border-muted pl-3">
+                          💡 {desc.reasoning}
+                        </p>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 pt-2">
+                          {selectedDescription === desc.text ? (
+                            <Button size="sm" variant="outline" disabled>
+                              <Check className="w-4 h-4 mr-1" />
+                              Selected
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                if (onDescriptionSelect) {
+                                  onDescriptionSelect(desc.text);
+                                  toast.success("Description selected!");
+                                }
+                              }}
+                            >
+                              Select
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Write Your Own Description */}
+                  {!selectedDescription && (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        toast.info("Write your own description feature coming soon!");
+                      }}
+                    >
+                      <Edit2 className="w-4 h-4 mr-2" />
+                      Write My Own Description
+                    </Button>
                   )}
                 </div>
               )}
