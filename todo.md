@@ -2557,3 +2557,19 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Update blueprint prompt to explicitly instruct AI to NOT generate word counts
 - [x] Add clear instruction: "DO NOT mention total word count, only show page count and chapter range"
 - [ ] Test new blueprint generation to verify no word counts appear (USER TO TEST: Create new book with 150 pages)
+
+
+### Book Export Formatting Improvements
+- [ ] Analyze Be SUCKcessful KDP formatting (reference document)
+- [ ] Compare with current Value Investing export formatting
+- [ ] Identify formatting gaps (fonts, spacing, headers, page breaks, etc.)
+- [ ] Update export code to match professional KDP standards
+- [ ] Test export with improved formatting
+
+
+### Critical KDP Formatting Fixes (Option 2)
+- [x] Fix author name in export - use penName from author profile instead of user.name (already correct in code)
+- [x] Improve copyright page to match Amazon KDP requirements
+- [x] Add proper page numbering with footer formatting
+- [x] Ensure content pages fit Amazon KDP Word doc template requirements (6"x9" sizing already correct)
+- [x] Test export with corrected formatting - Tests confirm DOCX generation works correctly

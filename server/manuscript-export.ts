@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Footer, PageNumber } from "docx";
 import PDFDocument from "pdfkit";
 
 export interface Chapter {
@@ -77,12 +77,26 @@ function generateCopyrightPage(manuscript: ManuscriptData): Paragraph[] {
     })
   );
 
-  // Legal notice
+  // Legal notice - Amazon KDP standard
   copyrightParagraphs.push(
     new Paragraph({
       children: [
         new TextRun({
-          text: 'No part of this book may be reproduced in any form or by any electronic or mechanical means, including information storage and retrieval systems, without written permission from the author, except for the use of brief quotations in a book review.',
+          text: 'No part of this book may be reproduced, distributed, or transmitted in any form or by any means, electronic or mechanical, including photocopying, recording, or by any information storage and retrieval system, without the prior written permission of the author, except in the case of brief quotations embodied in critical reviews and certain other noncommercial uses permitted by copyright law.',
+          size: 20,
+        }),
+      ],
+      alignment: AlignmentType.JUSTIFIED,
+      spacing: { after: 400 },
+    })
+  );
+
+  // Disclaimer (optional but recommended for non-fiction)
+  copyrightParagraphs.push(
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: 'The information contained within this book is for educational and informational purposes only. While every effort has been made to ensure accuracy, the author and publisher make no warranties or representations regarding the completeness or accuracy of the contents.',
           size: 20,
         }),
       ],
@@ -226,11 +240,33 @@ export async function generateDOCX(manuscript: ManuscriptData): Promise<Buffer> 
     );
   }
 
-  // Create document
+  // Create document with page numbering
   const doc = new Document({
     sections: [
       {
-        properties: {},
+        properties: {
+          page: {
+            pageNumbers: {
+              start: 1,
+              formatType: "decimal",
+            },
+          },
+        },
+        footers: {
+          default: new Footer({
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [
+                  new TextRun("Page "),
+                  new TextRun({
+                    children: [PageNumber.CURRENT],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        },
         children: docSections,
       },
     ],
