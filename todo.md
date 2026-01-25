@@ -2687,3 +2687,19 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] No duplicate book entries appear
 - [x] Progress shows combined Writing Studio + Publishing Studio percentages
 
+
+## Integrated Selection UI in AI Publisher Chat ✅
+
+- [x] Analyze current implementation (PublisherChat.tsx and ReadyToPublish.tsx)
+- [x] Design inline selection card component that displays with AI rationale
+- [x] Create PublisherChatWithSelection component with inline suggestions
+- [x] Inject interactive selection buttons inline with AI's reasoning
+- [x] Add "Write My Own" option for custom title input
+- [x] Add "Write My Own" option for custom subtitle input
+- [x] Remove standalone title/subtitle cards from top of Analysis step
+- [x] Maintain all existing selection and sync functionality
+- [x] Test selection workflow with real AI-generated suggestions
+- [x] Verify subtitle suggestions appear after title selection
+- [x] Verify selected title/subtitle display in summary card
+- [x] Verify sync to blueprint and database
+

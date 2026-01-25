@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useLocation } from "wouter";
 import { BookWrapSpecifications } from '@/components/BookWrapSpecifications';
-import { PublisherChat } from "@/components/PublisherChat";
+import { PublisherChatWithSelection } from "@/components/PublisherChatWithSelection";
 import { AmazonAccountChecklist } from "@/components/AmazonAccountChecklist";
 import { KDPPublishingAssistant } from "@/components/KDPPublishingAssistant";
 import { CoverUpload } from "@/components/CoverUpload";
@@ -1643,137 +1643,8 @@ export default function ReadyToPublish() {
               Back to Upload
             </Button>
             
-            {/* Title Selection Section */}
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Select Your Book Title</CardTitle>
-                <p className="text-sm text-muted-foreground">Choose one of our AI-suggested titles or edit to create your own. This will be used throughout your book.</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-3">
-                  {aiAnalysis.suggestedTitles.map((title, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        selectedTitle === title
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                      onClick={() => {
-                        setSelectedTitle(title);
-                        setInitialTitle(title);
-                        toast.success("Title selected!");
-                      }}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <p className="font-semibold text-lg">{title}</p>
-                          {selectedTitle === title && (
-                            <p className="text-xs text-primary mt-1">✓ Currently selected</p>
-                          )}
-                        </div>
-                        {selectedTitle === title && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const newTitle = prompt("Edit title:", title);
-                              if (newTitle && newTitle.trim()) {
-                                const updatedTitles = [...aiAnalysis.suggestedTitles];
-                                updatedTitles[index] = newTitle.trim();
-                                setAIAnalysis({ ...aiAnalysis, suggestedTitles: updatedTitles });
-                                setSelectedTitle(newTitle.trim());
-                                setInitialTitle(newTitle.trim());
-                                toast.success("Title updated!");
-                              }
-                            }}
-                          >
-                            Edit
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {selectedTitle && (
-                  <div className="pt-4 border-t">
-                    <p className="text-sm font-medium mb-2">Selected Title:</p>
-                    <p className="text-lg font-semibold text-primary">{selectedTitle}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      This title is automatically synced to Step 1 and your blueprint
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            {/* Subtitle Selection Section */}
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Select Your Book Subtitle</CardTitle>
-                <p className="text-sm text-muted-foreground">Choose one of our AI-suggested subtitles or edit to create your own. This will complement your title.</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-3">
-                  {aiAnalysis.suggestedSubtitles.map((subtitle, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        selectedSubtitle === subtitle
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                      onClick={() => {
-                        setSelectedSubtitle(subtitle);
-                        toast.success("Subtitle selected!");
-                      }}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <p className="font-medium">{subtitle}</p>
-                          {selectedSubtitle === subtitle && (
-                            <p className="text-xs text-primary mt-1">✓ Currently selected</p>
-                          )}
-                        </div>
-                        {selectedSubtitle === subtitle && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const newSubtitle = prompt("Edit subtitle:", subtitle);
-                              if (newSubtitle && newSubtitle.trim()) {
-                                const updatedSubtitles = [...aiAnalysis.suggestedSubtitles];
-                                updatedSubtitles[index] = newSubtitle.trim();
-                                setAIAnalysis({ ...aiAnalysis, suggestedSubtitles: updatedSubtitles });
-                                setSelectedSubtitle(newSubtitle.trim());
-                                toast.success("Subtitle updated!");
-                              }
-                            }}
-                          >
-                            Edit
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {selectedSubtitle && (
-                  <div className="pt-4 border-t">
-                    <p className="text-sm font-medium mb-2">Selected Subtitle:</p>
-                    <p className="text-base font-semibold text-primary">{selectedSubtitle}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      This subtitle is automatically synced throughout your book
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <PublisherChat
+            {/* Integrated Title/Subtitle Selection with AI Chat */}
+            <PublisherChatWithSelection
               manuscript={manuscript}
               initialAnalysis={{
                 suggestedTitles: aiAnalysis.suggestedTitles,
@@ -1783,6 +1654,15 @@ export default function ReadyToPublish() {
                 targetAudience: aiAnalysis.targetAudience,
                 themes: aiAnalysis.themes || [],
                 keyBenefits: aiAnalysis.keyBenefits || [],
+              }}
+              selectedTitle={selectedTitle}
+              selectedSubtitle={selectedSubtitle}
+              onTitleSelect={(title) => {
+                setSelectedTitle(title);
+                setInitialTitle(title);
+              }}
+              onSubtitleSelect={(subtitle) => {
+                setSelectedSubtitle(subtitle);
               }}
               onComplete={() => setCurrentStep("profile-check")}
             />
