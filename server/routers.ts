@@ -2268,7 +2268,7 @@ IMPORTANT:
         blueprintId: z.number(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak, PageNumber, NumberFormat, Header, Footer, TableOfContents, UnderlineType, convertInchesToTwip, BorderStyle } = await import("docx");
+        const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak, PageNumber, NumberFormat, Header, Footer, TableOfContents, UnderlineType, convertInchesToTwip, BorderStyle, TabStopType, TabStopPosition, LeaderType } = await import("docx");
         const { manuscripts, storyBlueprints, bookStructures, chapterOutlines } = await import("../drizzle/schema");
         const { getDb } = await import("./db");
         const db = await getDb();
@@ -2437,13 +2437,16 @@ IMPORTANT:
           copyrightContent = copyrightContent.replace(/ISBN:?\s*\[Your ISBN Here\]/gi, `ISBN: ${blueprint[0].isbn}`);
         }
         
+        // Strip markdown from copyright content
+        copyrightContent = stripMarkdownFromText(copyrightContent);
+        
         const copyrightParagraphs = copyrightContent.split("\n\n");
         const copyrightChildren: any[] = [];
         copyrightParagraphs.forEach((para: string) => {
           if (para.trim()) {
             copyrightChildren.push(
               new Paragraph({
-                text: para.trim(),
+                text: stripMarkdownFromText(para.trim()),
                 spacing: { after: convertInchesToTwip(0.15), line: 240 },
               })
             );
@@ -2534,13 +2537,16 @@ IMPORTANT:
 
             tocChildren.push(
               new Paragraph({
-                text: displayTitle,
-                spacing: { after: convertInchesToTwip(0.05) },
-              }),
-              new Paragraph({
-                text: `${currentPage}`,
-                indent: { left: convertInchesToTwip(0.5) },
-                spacing: { after: convertInchesToTwip(0.15) },
+                text: `${displayTitle}\t${currentPage}`,
+                spacing: { after: convertInchesToTwip(0.1) },
+                style: "TOCEntry",
+                tabStops: [
+                  {
+                    type: TabStopType.RIGHT,
+                    position: convertInchesToTwip(5.25), // 5.25 inches from left (6" width - 0.75" margin)
+                    leader: LeaderType.DOT,
+                  },
+                ],
               })
             );
 
@@ -2636,7 +2642,7 @@ IMPORTANT:
                   spacing: { before: convertInchesToTwip(1), after: convertInchesToTwip(0.1) },
                 }),
                 new Paragraph({
-                  text: section.title,
+                  text: stripMarkdownFromText(section.title),
                   heading: HeadingLevel.HEADING_2,
                   spacing: { after: convertInchesToTwip(0.3) },
                 })
@@ -2644,21 +2650,21 @@ IMPORTANT:
             } else {
               mainContentChildren.push(
                 new Paragraph({
-                  text: section.title,
+                  text: stripMarkdownFromText(section.title),
                   heading: HeadingLevel.HEADING_1,
                   spacing: { before: convertInchesToTwip(1), after: convertInchesToTwip(0.3) },
                 })
               );
             }
 
-            // Section content
-            const content = manuscript.content || "";
+            // Section content - strip all markdown formatting
+            const content = stripMarkdownFromText(manuscript.content || "");
             const paragraphs = content.split("\n\n");
             paragraphs.forEach((para: string) => {
               if (para.trim()) {
                 mainContentChildren.push(
                   new Paragraph({
-                    text: para.trim(),
+                    text: stripMarkdownFromText(para.trim()),
                     spacing: { after: convertInchesToTwip(0.15), line: 360 },
                   })
                 );
@@ -2801,6 +2807,21 @@ IMPORTANT:
                 paragraph: {
                   spacing: {
                     after: convertInchesToTwip(0.3),
+                  },
+                },
+              },
+              {
+                id: "TOCEntry",
+                name: "TOC Entry",
+                basedOn: "Normal",
+                run: {
+                  font: "Georgia",
+                  size: 20, // 10pt
+                  color: "000000",
+                },
+                paragraph: {
+                  spacing: {
+                    after: convertInchesToTwip(0.1),
                   },
                 },
               },

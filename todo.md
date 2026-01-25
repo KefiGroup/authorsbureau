@@ -2611,3 +2611,8 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Set TOC font size to 10pt for professional appearance
 - [x] Ensure TOC updates automatically when user opens the document in Word (added instructions)
 - [ ] Test that chapter page numbers are correctly linked in TOC (USER TO TEST: Export and insert TOC in Word)
+
+- [x] **FIXED**: stripMarkdown() now removes all markdown symbols from content paragraphs
+- [x] **FIXED**: Copyright page markdown symbols stripped
+- [x] **FIXED**: TOC uses proper Word format with 10pt font and tab stops with dot leaders
+- [x] **FIXED**: All content pages verified clean (no **, ###, *, _ symbols)

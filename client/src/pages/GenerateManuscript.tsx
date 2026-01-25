@@ -205,12 +205,24 @@ export default function GenerateManuscript() {
   const downloadMutation = trpc.manuscript.downloadManuscript.useMutation({
     onSuccess: async (data) => {
       try {
+        console.log('[Download Debug] S3 URL:', data.url);
+        console.log('[Download Debug] File name:', data.fileName);
+        
         // Fetch the file from S3 URL
         const response = await fetch(data.url);
-        if (!response.ok) throw new Error('Failed to fetch file');
+        console.log('[Download Debug] Fetch response status:', response.status);
+        console.log('[Download Debug] Fetch response headers:', response.headers);
+        
+        if (!response.ok) throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
         
         // Create blob from response
         const blob = await response.blob();
+        console.log('[Download Debug] Blob size:', blob.size, 'bytes');
+        console.log('[Download Debug] Blob type:', blob.type);
+        
+        if (blob.size === 0) {
+          throw new Error('Downloaded file is empty (0 bytes)');
+        }
         
         // Create download link
         const downloadUrl = window.URL.createObjectURL(blob);
@@ -226,11 +238,12 @@ export default function GenerateManuscript() {
         
         toast.success(`Manuscript downloaded! ${data.sectionCount} sections included.`);
       } catch (error) {
-        console.error('Download error:', error);
-        toast.error('Failed to download file. Please try again.');
+        console.error('[Download Error]', error);
+        toast.error(`Failed to download file: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     },
     onError: (error) => {
+      console.error('[Download Mutation Error]', error);
       toast.error(error.message || "Failed to download manuscript");
     },
   });
