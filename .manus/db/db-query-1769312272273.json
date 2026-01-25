@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, title, wordCount, status, createdAt, updatedAt FROM books WHERE id IN (630001, 630002);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, title, wordCount, status, createdAt, updatedAt FROM books WHERE id IN (630001, 630002);",
+  "rows": [
+    {
+      "id": "630001",
+      "title": "The 50-Cent Dollar: A Beginner's Guide to Value Investing and Financial Security",
+      "wordCount": "27591",
+      "status": "drafting",
+      "createdAt": "2026-01-25 02:26:21",
+      "updatedAt": "2026-01-25 03:20:34"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\twordCount\tstatus\tcreatedAt\tupdatedAt\n630001\tThe 50-Cent Dollar: A Beginner's Guide to Value Investing and Financial Security\t27591\tdrafting\t2026-01-25 02:26:21\t2026-01-25 03:20:34\n",
+  "stderr": "",
+  "execution_time_ms": 1548
+}

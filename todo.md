@@ -2648,14 +2648,42 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Verify debounced save to blueprint workingTitle field - IMPLEMENTED
 - [ ] Future enhancement: Replace prompt() with inline input field for better UX
 
-## 🎯 Feature: Extend Selection UI to All AI Suggestions
+## 🎯 Feature: Integrate Selection UI into AI Publisher Chat
 
-- [x] Add subtitle selection UI with click-to-select cards (similar to title selection)
-- [x] Sync selected subtitle via saveProgress mutation (already includes selectedSubtitle field)
-- [x] Test subtitle selection UI - VERIFIED WORKING
-- [ ] Identify what other AI suggestions need selection UIs (cover design approach, market positioning, pricing)
-- [ ] Extend AI analysis to generate multiple options for cover design, positioning, pricing
-- [ ] Design selection UI pattern for non-text suggestions (e.g., pricing tiers, positioning strategies)
-- [ ] Implement selection UIs for cover design, market positioning, and pricing
-- [ ] Test all selection UIs and verify sync works
-- [ ] Ensure all selections are saved to book record for persistence
+- [x] Add standalone title/subtitle selection cards at top of Analysis step
+- [ ] **NEW APPROACH**: Remove standalone cards and integrate selection UI into AI Publisher chat messages
+- [ ] Design selection buttons/cards that appear inline with AI rationale
+- [ ] Add "Write My Own" option for authors to input custom title/subtitle
+- [ ] Implement integrated selection UI in PublisherChat component
+- [ ] Parse AI messages to detect title/subtitle suggestions and add selection buttons
+- [ ] Show "Select" button next to each AI suggestion with rationale
+- [ ] Test integrated selection UI with AI chat flow
+- [ ] Extend to cover design, market positioning, and pricing suggestions
+- [ ] Ensure all selections sync to database via saveProgress mutation
+
+## 🐛 Dashboard Bugs
+
+- [x] **Progress Calculation Bug FIXED**: Dashboard now calculates progress based on Publishing Studio workflow completion (Upload → Analysis → Review → Profile → Cover → KDP → Preview → Export) instead of word count
+- [ ] **Unified Project Progress**: Merge books and blueprints into single project cards on Dashboard
+- [ ] Show combined overall progress from AI Writing Studio + AI Publishing Studio
+- [ ] Display individual progress breakdown for each studio within the card
+- [ ] Example: Overall 75% = Writing Studio 100% (Complete) + Publishing Studio 50% (Profile Check)
+- [ ] Eliminate "duplicate" entries by merging related book and blueprint records
+
+- [ ] **Unified Project Progress**: Merge books and blueprints into single project cards on Dashboard
+- [ ] Show combined overall progress from AI Writing Studio + AI Publishing Studio
+- [ ] Display individual progress breakdown for each studio within the card
+- [ ] Example: Overall 75% = Writing Studio 100% (Complete) + Publishing Studio 50% (Profile Check)
+- [ ] Eliminate "duplicate" entries by merging related book and blueprint records
+
+## Dashboard Redesign ✅
+
+- [x] Fixed "Cannot access 'calculateProgress' before initialization" error
+- [x] Merged books and blueprints into unified project cards
+- [x] Added writingProgress and publishingProgress fields
+- [x] Updated stats calculation to use mergedProjects
+- [x] Fixed Total Words stat to use book.wordCount
+- [x] Unified project cards show combined progress with studio breakdown
+- [x] No duplicate book entries appear
+- [x] Progress shows combined Writing Studio + Publishing Studio percentages
+

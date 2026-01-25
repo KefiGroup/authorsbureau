@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, title, wordCount, status, createdAt FROM books ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3Z4w1L9nNmwj47K.264d0fb1a256 --database cRuN9X42UZpzT82DAFfXDj --execute SELECT id, title, wordCount, status, createdAt FROM books ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "630001",
+      "title": "Value Investing Simplified: The Disciplined Path to Financial Independence",
+      "wordCount": "27591",
+      "status": "drafting",
+      "createdAt": "2026-01-25 02:26:21"
+    },
+    {
+      "id": "540008",
+      "title": "Book with Chapters",
+      "wordCount": "0",
+      "status": "idea",
+      "createdAt": "2026-01-24 09:44:51"
+    },
+    {
+      "id": "540006",
+      "title": "Second Book",
+      "wordCount": "0",
+      "status": "idea",
+      "createdAt": "2026-01-24 09:44:42"
+    },
+    {
+      "id": "540005",
+      "title": "First Book",
+      "wordCount": "0",
+      "status": "idea",
+      "createdAt": "2026-01-24 09:44:40"
+    },
+    {
+      "id": "540004",
+      "title": "Book with Chapters",
+      "wordCount": "0",
+      "status": "idea",
+      "createdAt": "2026-01-24 09:43:03"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\twordCount\tstatus\tcreatedAt\n630001\tValue Investing Simplified: The Disciplined Path to Financial Independence\t27591\tdrafting\t2026-01-25 02:26:21\n540008\tBook with Chapters\t0\tidea\t2026-01-24 09:44:51\n540006\tSecond Book\t0\tidea\t2026-01-24 09:44:42\n540005\tFirst Book\t0\tidea\t2026-01-24 09:44:40\n540004\tBook with Chapters\t0\tidea\t2026-01-24 09:43:03\n",
+  "stderr": "",
+  "execution_time_ms": 1506
+}

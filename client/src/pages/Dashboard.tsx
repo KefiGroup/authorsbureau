@@ -69,41 +69,76 @@ export default function Dashboard() {
     }
   };
 
-  // Combine blueprints and books into a unified project list
-  const allProjects = [
-    ...(blueprints?.map(bp => {
-      // Determine accurate status based on workflow stage
-      let status = 'idea'; // Default: Blueprint questions not complete
-      
-      if (bp.manuscriptCompleted) {
-        status = 'drafting'; // All chapters complete
-      } else if (bp.manuscriptStarted) {
-        status = 'outlining'; // Writing in progress
-      } else if (bp.blueprintGenerated) {
-        status = 'outlining'; // Blueprint complete, ready to write
-      }
-      
-      return {
-        id: bp.id,
-        title: bp.workingTitle || 'Untitled Project',
-        status,
-        wordCount: 0,
-        genre: bp.primaryGenre,
-        type: 'blueprint' as const,
-        updatedAt: bp.updatedAt,
-        blueprintData: bp, // Keep full data for detailed status
-      };
-    }) || []),
-    ...(books?.map(book => ({
-      id: book.id,
-      title: book.title,
-      status: book.status,
-      wordCount: book.wordCount || 0,
-      genre: book.genre,
-      type: 'book' as const,
-      updatedAt: book.updatedAt,
-    })) || []),
-  ].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+  // Define calculateProgress before using it
+  const calculateProgress = (book: any) => {
+    // Progress calculation based on Publishing Studio workflow completion
+    // Workflow steps: Upload (12.5%) → Analysis (25%) → Review & Edit (37.5%) → Profile Check (50%) → Cover Design (62.5%) → KDP Optimization (75%) → Amazon Preview (87.5%) → Export (100%)
+    
+    // If book has publishingProgress field, use it
+    if (book.publishingProgress !== undefined && book.publishingProgress !== null) {
+      return Math.round(book.publishingProgress);
+    }
+    
+    // Otherwise calculate based on status
+    const statusProgress: Record<string, number> = {
+      'ideation': 0,
+      'outlining': 25,
+      'drafting': 50,  // Manuscript complete = halfway through publishing workflow
+      'editing': 62,
+      'designed': 75,
+      'marketing': 87,
+      'published': 100,
+    };
+    
+    return statusProgress[book.status] || 0;
+  };
+  
+  // Merge books and blueprints into unified projects
+  const projectsMap = new Map<string, any>();
+  
+  // Add blueprints first
+  blueprints?.forEach(bp => {
+    const key = (bp.workingTitle || 'Untitled Project').toLowerCase();
+    projectsMap.set(key, {
+      id: bp.id,
+      title: bp.workingTitle || 'Untitled Project',
+      genre: bp.primaryGenre,
+      updatedAt: bp.updatedAt,
+      blueprint: bp,
+      book: null,
+      writingProgress: bp.manuscriptCompleted ? 100 : (bp.manuscriptStarted ? 50 : 25),
+      publishingProgress: 0,
+    });
+  });
+  
+  // Merge books with matching blueprints
+  books?.forEach(book => {
+    const key = book.title.toLowerCase();
+    const existing = projectsMap.get(key);
+    
+    if (existing) {
+      // Merge with existing blueprint
+      existing.book = book;
+      existing.writingProgress = 100; // Manuscript complete
+      existing.publishingProgress = calculateProgress(book);
+      existing.updatedAt = new Date(book.updatedAt) > new Date(existing.updatedAt) ? book.updatedAt : existing.updatedAt;
+    } else {
+      // Book without blueprint
+      projectsMap.set(key, {
+        id: book.id,
+        title: book.title,
+        genre: book.genre,
+        updatedAt: book.updatedAt,
+        blueprint: null,
+        book: book,
+        writingProgress: 100,
+        publishingProgress: calculateProgress(book),
+      });
+    }
+  });
+  
+  const allProjects = Array.from(projectsMap.values())
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
 
   const stats = [
@@ -117,7 +152,10 @@ export default function Dashboard() {
     },
     {
       title: "In Progress",
-      value: allProjects.filter((p) => ["idea", "outlining", "drafting", "editing"].includes(p.status)).length,
+      value: allProjects.filter((p) => {
+        const overallProgress = (p.writingProgress + p.publishingProgress) / 2;
+        return overallProgress < 100;
+      }).length,
       icon: Clock,
       color: "text-amber-600",
       bgColor: "bg-amber-50",
@@ -125,7 +163,7 @@ export default function Dashboard() {
     },
     {
       title: "Published",
-      value: allProjects.filter((p) => p.status === "published").length,
+      value: allProjects.filter((p) => p.publishingProgress === 100).length,
       icon: Rocket,
       color: "text-green-600",
       bgColor: "bg-green-50",
@@ -133,7 +171,7 @@ export default function Dashboard() {
     },
     {
       title: "Total Words",
-      value: allProjects.reduce((sum, p) => sum + p.wordCount, 0).toLocaleString(),
+      value: allProjects.reduce((sum, p) => sum + (p.book?.wordCount || 0), 0).toLocaleString(),
       icon: PenTool,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
@@ -156,12 +194,7 @@ export default function Dashboard() {
     return statusMap[status] || { label: "Unknown", color: "bg-gray-100 text-gray-700", icon: "❓" };
   };
 
-  const calculateProgress = (book: any) => {
-    // Simple progress calculation based on word count
-    const targetWords = 50000; // Average book length
-    const progress = Math.min((book.wordCount / targetWords) * 100, 100);
-    return Math.round(progress);
-  };
+  // calculateProgress function moved earlier in the file (line 73)
 
   return (
     <DashboardLayout>
@@ -324,9 +357,9 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-4">
                 {recentProjects.map((project) => {
-                  const statusInfo = getStatusInfo(project.status);
-                  const progress = calculateProgress(project);
-                  const projectUrl = project.type === 'blueprint' ? `/start-writing?blueprintId=${project.id}` : `/ai-writing-studio`;
+                  const overallProgress = Math.round((project.writingProgress + project.publishingProgress) / 2);
+                  const statusInfo = project.book ? getStatusInfo(project.book.status) : getStatusInfo('outlining');
+                  const projectUrl = project.book ? `/ready-to-publish?bookId=${project.book.id}` : `/start-writing?blueprintId=${project.id}`;
                   
                   return (
                     <div key={project.id} className="relative">
@@ -366,10 +399,22 @@ export default function Dashboard() {
                           {/* Progress Bar */}
                           <div className="space-y-1">
                             <div className="flex items-center justify-between text-xs text-muted-foreground">
-                              <span>Progress</span>
-                              <span>{progress}%</span>
+                              <span>Overall Progress</span>
+                              <span>{overallProgress}%</span>
                             </div>
-                            <Progress value={progress} className="h-2" />
+                            <Progress value={overallProgress} className="h-2" />
+                            
+                            {/* Studio Breakdown */}
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
+                              <div className="flex items-center gap-1">
+                                <span>✍️ Writing:</span>
+                                <span className="font-medium">{project.writingProgress}%</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <span>📚 Publishing:</span>
+                                <span className="font-medium">{project.publishingProgress}%</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         
