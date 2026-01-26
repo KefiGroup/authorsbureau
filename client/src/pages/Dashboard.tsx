@@ -52,10 +52,19 @@ export default function Dashboard() {
     },
   });
   
-  const handleDeleteClick = (e: React.MouseEvent, project: { id: number; title: string; type: 'book' | 'blueprint' }) => {
+  const handleDeleteClick = (e: React.MouseEvent, project: any) => {
     e.preventDefault();
     e.stopPropagation();
-    setProjectToDelete(project);
+    
+    // Determine the correct type and ID based on what exists
+    // Priority: If book exists, delete book. Otherwise delete blueprint.
+    const projectToDelete = {
+      id: project.book ? project.book.id : project.id,
+      title: project.title,
+      type: (project.book ? 'book' : 'blueprint') as 'book' | 'blueprint'
+    };
+    
+    setProjectToDelete(projectToDelete);
     setDeleteDialogOpen(true);
   };
   

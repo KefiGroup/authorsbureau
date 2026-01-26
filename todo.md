@@ -2850,3 +2850,5 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [ ] Test back button functionality
 
 - [ ] **Non-Fiction Outline Still Generating Fiction**: Existing "Value Investing for Beginners" book (blueprintId 720001) has a fictional story outline instead of actual value investing content - need to investigate and fix outline generation for non-fiction books
+
+- [x] **Delete Button Not Working**: Dashboard delete button shows "Failed to delete project: Blueprint not found" error when trying to delete the "Value Investing for Beginners" book - FIXED by updating handleDeleteClick in Dashboard.tsx to properly determine project type (book vs blueprint) and use correct ID for deletion
