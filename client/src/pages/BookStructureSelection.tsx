@@ -150,7 +150,11 @@ export default function BookStructureSelection() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(`/review-outline/${blueprintId}`)}
+              onClick={() => {
+                console.log('Back button clicked, blueprintId:', blueprintId);
+                console.log('Navigating to:', `/review-outline/${blueprintId}`);
+                navigate(`/review-outline/${blueprintId}`);
+              }}
             >
               <ChevronLeft className="h-4 w-4 mr-1" />
               Back to Outline

@@ -4,6 +4,7 @@
 ## 🚨 CRITICAL BUGS
 
 - [x] **DOCX Export Fixed**: Manuscript download now works correctly - generates 76KB DOCX with all content, no markdown symbols, KDP-compliant formatting, and uses pen name from profile
+- [x] **Back Button Fixed**: Back button on Book Structure Selection page now works correctly - removed auto-redirect useEffect in ReviewChapterOutline.tsx that was preventing backward navigation to approved outlines
 
 ## Persona 2: Ready to Publish Workflow (8-Step Process)
 
@@ -2838,3 +2839,11 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Keep delete button only on Dashboard for all books
 - [x] Removed unused imports and functions
 - [ ] Test that books can only be deleted from Dashboard
+
+
+## Fix Back Button on Book Structure Selection Page
+
+- [ ] Find Book Structure Selection page component
+- [ ] Diagnose why "Back to Outline" button is not working
+- [ ] Fix navigation to return to chapter outline review page
+- [ ] Test back button functionality

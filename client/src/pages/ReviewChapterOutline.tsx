@@ -64,14 +64,15 @@ export default function ReviewChapterOutline() {
   }, [blueprint, outline, outlineLoading, blueprintId, isGenerating]);
 
   // Resume progress: Skip to next step if outline already approved
-  useEffect(() => {
-    if (outline && outline.approved) {
-      // Outline already approved, check if book structure exists
-      // If structure exists, go to manuscript generation
-      // Otherwise, go to book structure selection
-      navigate(`/book-structure/${blueprintId}`);
-    }
-  }, [outline, blueprintId, navigate]);
+  // REMOVED: This was causing the back button to not work because it would
+  // immediately redirect users back to book-structure when they tried to
+  // view an already-approved outline. Users should be able to review their
+  // approved outline without being forced forward.
+  // useEffect(() => {
+  //   if (outline && outline.approved) {
+  //     navigate(`/book-structure/${blueprintId}`);
+  //   }
+  // }, [outline, blueprintId, navigate]);
 
   const handleRegenerateOutline = () => {
     setIsGenerating(true);
