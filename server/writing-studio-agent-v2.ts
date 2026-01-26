@@ -175,6 +175,211 @@ End your response with: [SUGGESTIONS: option1 | option2 | option3 | option4 | op
 }
 
 /**
+ * Handle non-fiction blueprint generation with educational/instructional focus
+ */
+async function handleNonFictionBlueprintGeneration(
+  state: ConversationState,
+  authorProfile: any
+): Promise<{ message: string; suggestions: string[]; isComplete: boolean; blueprintData: Partial<StoryBlueprint> }> {
+  const essentialData = state.essentialData;
+
+  const systemPrompt = `You are an expert non-fiction book development coach. Based on the author's essential information, generate a COMPLETE non-fiction book blueprint.
+
+Author Profile (for context only):
+${authorProfile ? `- Pen Name: ${authorProfile.penName || "Not provided"}
+- Bio: ${authorProfile.bio || "Not provided"}
+- Writing Style: ${authorProfile.writingStyle || "Not specified"}` : "No profile available"}
+
+Essential Information Provided:
+- Project Type: ${essentialData.projectType} (NON-FICTION)
+- Brief Description: ${essentialData.briefDescription}
+- Target Audience: ${essentialData.targetAudience}
+- Target Pages: ${essentialData.targetPages} pages
+- Working Title: ${essentialData.workingTitle || "Not provided"}
+
+PAGE TO WORD COUNT CONVERSION (6" x 9" format, 250 words/page):
+- 150 pages = approximately 37,500 words (~10-12 chapters)
+- 200 pages = approximately 50,000 words (~12-15 chapters)
+- 250 pages = approximately 62,500 words (~15-18 chapters)
+- 300 pages = approximately 75,000 words (~18-22 chapters)
+
+Your Task:
+Generate a comprehensive NON-FICTION book blueprint with these sections:
+
+1. Project Overview: Project type (non_fiction), working title, target page/word count
+2. Genre Classification: Primary category (e.g., Business, Self-Help, Finance), secondary category
+3. Core Purpose: What readers will learn, main value proposition, unique approach
+4. Target Audience: Demographics, pain points, goals, reading level
+5. Learning Objectives: 5-7 specific outcomes readers will achieve
+6. Chapter Structure: High-level chapter organization (10-15 chapters recommended)
+7. Teaching Methodology: How concepts will be taught (examples, exercises, case studies)
+8. Content Elements: Special features (worksheets, checklists, resources)
+9. Market Positioning: Comparable titles, unique differentiators
+
+Instructions:
+- Focus on EDUCATIONAL and INSTRUCTIONAL content
+- NO protagonist, plot, or story elements
+- Emphasize practical value and actionable insights
+- Suggest chapter titles that are benefit-driven
+- Return structured JSON data
+- DO NOT use Markdown formatting in the message field
+
+Return your response as a JSON object with this structure:
+{
+  "message": "Your encouraging message explaining you've generated the blueprint",
+  "blueprint": {
+    "projectType": "non_fiction",
+    "workingTitle": "...",
+    "targetLength": "200 pages (approximately 50,000 words)",
+    "primaryGenre": "Business" | "Self-Help" | "Finance" | "Health" | "Education" | "Biography" | "History" | "Science",
+    "secondaryGenre": "...",
+    "corePremise": "What readers will learn and why it matters",
+    "audienceData": { "targetAge": "...", "demographics": "...", "painPoints": ["..."], "goals": ["..."] },
+    "learningObjectives": ["Objective 1", "Objective 2", "..."],
+    "chapterStructure": { "totalChapters": 12, "chapterTitles": ["Chapter 1 Title", "..."], "progression": "How chapters build on each other" },
+    "teachingMethodology": { "approach": "...", "techniques": ["..."] },
+    "contentElements": { "exercises": true, "caseStudies": true, "worksheets": false, "resources": ["..."] },
+    "marketPositioning": { "comparableTitles": ["..."], "uniqueDifferentiators": ["..."] }
+  }
+}`;
+
+  const response = await invokeLLM({
+    model: "gpt-4o",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: "Generate my complete non-fiction book blueprint now!" },
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "nonfiction_blueprint",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            message: { type: "string" },
+            blueprint: {
+              type: "object",
+              properties: {
+                projectType: { type: "string", enum: ["non_fiction"] },
+                workingTitle: { type: "string" },
+                targetLength: { type: "string" },
+                primaryGenre: { type: "string" },
+                secondaryGenre: { type: "string" },
+                corePremise: { type: "string" },
+                audienceData: {
+                  type: "object",
+                  properties: {
+                    targetAge: { type: "string" },
+                    demographics: { type: "string" },
+                    painPoints: { type: "array", items: { type: "string" } },
+                    goals: { type: "array", items: { type: "string" } },
+                  },
+                  required: ["targetAge", "demographics", "painPoints", "goals"],
+                  additionalProperties: false,
+                },
+                learningObjectives: { type: "array", items: { type: "string" } },
+                chapterStructure: {
+                  type: "object",
+                  properties: {
+                    totalChapters: { type: "number" },
+                    chapterTitles: { type: "array", items: { type: "string" } },
+                    progression: { type: "string" },
+                  },
+                  required: ["totalChapters", "chapterTitles", "progression"],
+                  additionalProperties: false,
+                },
+                teachingMethodology: {
+                  type: "object",
+                  properties: {
+                    approach: { type: "string" },
+                    techniques: { type: "array", items: { type: "string" } },
+                  },
+                  required: ["approach", "techniques"],
+                  additionalProperties: false,
+                },
+                contentElements: {
+                  type: "object",
+                  properties: {
+                    exercises: { type: "boolean" },
+                    caseStudies: { type: "boolean" },
+                    worksheets: { type: "boolean" },
+                    resources: { type: "array", items: { type: "string" } },
+                  },
+                  required: ["exercises", "caseStudies", "worksheets", "resources"],
+                  additionalProperties: false,
+                },
+                marketPositioning: {
+                  type: "object",
+                  properties: {
+                    comparableTitles: { type: "array", items: { type: "string" } },
+                    uniqueDifferentiators: { type: "array", items: { type: "string" } },
+                  },
+                  required: ["comparableTitles", "uniqueDifferentiators"],
+                  additionalProperties: false,
+                },
+              },
+              required: [
+                "projectType",
+                "workingTitle",
+                "targetLength",
+                "primaryGenre",
+                "secondaryGenre",
+                "corePremise",
+                "audienceData",
+                "learningObjectives",
+                "chapterStructure",
+                "teachingMethodology",
+                "contentElements",
+                "marketPositioning",
+              ],
+              additionalProperties: false,
+            },
+          },
+          required: ["message", "blueprint"],
+          additionalProperties: false,
+        },
+      },
+    },
+  });
+
+  const content = response.choices[0].message.content;
+  const jsonString = typeof content === "string" ? content : "";
+  const parsed = JSON.parse(jsonString);
+
+  // Map non-fiction blueprint to StoryBlueprint structure
+  // Store non-fiction specific data in JSON fields (cast as any to bypass fiction-specific types)
+  const blueprintData: Partial<StoryBlueprint> = {
+    projectType: "non_fiction",
+    workingTitle: parsed.blueprint.workingTitle,
+    targetLength: parsed.blueprint.targetLength,
+    primaryGenre: parsed.blueprint.primaryGenre,
+    secondaryGenre: parsed.blueprint.secondaryGenre,
+    corePremise: parsed.blueprint.corePremise,
+    audienceData: parsed.blueprint.audienceData as any,
+    // Store non-fiction specific data (cast as any to bypass type checking)
+    settingData: {
+      learningObjectives: parsed.blueprint.learningObjectives,
+      chapterStructure: parsed.blueprint.chapterStructure,
+    } as any,
+    plotStructure: {
+      teachingMethodology: parsed.blueprint.teachingMethodology,
+      contentElements: parsed.blueprint.contentElements,
+    } as any,
+    thematicElements: {
+      marketPositioning: parsed.blueprint.marketPositioning,
+    } as any,
+  };
+
+  return {
+    message: parsed.message + "\n\nWhat would you like to refine?\n- Adjust chapter structure\n- Modify learning objectives\n- Change teaching approach\n- Or click 'Finalize Blueprint' if you're happy with this!",
+    suggestions: ["Refine chapters", "Adjust objectives", "Change approach", "Finalize blueprint"],
+    isComplete: true,
+    blueprintData,
+  };
+}
+
+/**
  * Handle blueprint generation (AI generates complete blueprint from essential data)
  */
 async function handleBlueprintGeneration(
@@ -182,6 +387,11 @@ async function handleBlueprintGeneration(
   authorProfile: any
 ): Promise<{ message: string; suggestions: string[]; isComplete: boolean; blueprintData: Partial<StoryBlueprint> }> {
   const essentialData = state.essentialData;
+
+  // Check if this is non-fiction and use different handling
+  if (essentialData.projectType === 'non_fiction' || essentialData.projectType === 'Non-fiction' || essentialData.projectType?.toLowerCase().includes('non') || essentialData.projectType?.toLowerCase().includes('nonfiction')) {
+    return handleNonFictionBlueprintGeneration(state, authorProfile);
+  }
 
   const systemPrompt = `You are an expert story architect. Based on the author's essential information, generate a COMPLETE story blueprint covering all 9 sections.
 

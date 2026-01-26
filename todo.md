@@ -5,6 +5,7 @@
 
 - [x] **DOCX Export Fixed**: Manuscript download now works correctly - generates 76KB DOCX with all content, no markdown symbols, KDP-compliant formatting, and uses pen name from profile
 - [x] **Back Button Fixed**: Back button on Book Structure Selection page now works correctly - removed auto-redirect useEffect in ReviewChapterOutline.tsx that was preventing backward navigation to approved outlines
+- [x] **Non-Fiction Outline Generation Fixed**: Non-fiction books (like "Value Investing for Beginners") were generating fictional story outlines with protagonists and plot instead of educational chapters - Fixed by adding non-fiction specific prompts in writing-studio-agent-v2.ts (handleNonFictionBlueprintGeneration) and routers.ts (chapter outline generation)
 
 ## Persona 2: Ready to Publish Workflow (8-Step Process)
 
@@ -2847,3 +2848,5 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [ ] Diagnose why "Back to Outline" button is not working
 - [ ] Fix navigation to return to chapter outline review page
 - [ ] Test back button functionality
+
+- [ ] **Non-Fiction Outline Still Generating Fiction**: Existing "Value Investing for Beginners" book (blueprintId 720001) has a fictional story outline instead of actual value investing content - need to investigate and fix outline generation for non-fiction books

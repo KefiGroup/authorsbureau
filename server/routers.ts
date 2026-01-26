@@ -1165,7 +1165,40 @@ Write the bio now:`;
           optimalChapters = 20;
         }
         
-        const prompt = `Based on this book blueprint, generate a detailed chapter-by-chapter outline for a ${blueprint[0].projectType || "novel"}.
+        // Check if this is non-fiction and use different prompt
+        const isNonFiction = blueprint[0].projectType === 'non_fiction';
+        
+        let prompt: string;
+        if (isNonFiction) {
+          prompt = `Based on this non-fiction book blueprint, generate a detailed chapter-by-chapter outline for an educational/instructional book.
+
+Blueprint:
+${JSON.stringify(blueprint[0].essentialData, null, 2)}
+
+Full Blueprint Content:
+${blueprint[0].blueprintContent || 'Not available'}
+
+Generate exactly ${optimalChapters} chapters (optimal for ${targetPages}-page books). For each chapter, provide:
+1. Chapter title (benefit-driven and clear, NO markdown symbols)
+2. Chapter summary (2-3 sentences describing what readers will learn and the key concepts covered, NO markdown symbols)
+
+IMPORTANT GUIDELINES FOR NON-FICTION:
+- Focus on EDUCATIONAL content and learning outcomes
+- Chapter titles should be benefit-driven (e.g., "Understanding Value Investing Fundamentals" not "The Hero's Journey")
+- Summaries should describe what readers will LEARN, not story events
+- Ensure logical progression of concepts from basic to advanced
+- NO protagonist, plot points, or story elements
+- Use PLAIN TEXT only - NO markdown symbols (##, **, *, etc.)
+
+Return ONLY a JSON object with this structure:
+{
+  "chapters": [
+    {"title": "Chapter Title", "summary": "What readers will learn..."},
+    ...
+  ]
+}`;
+        } else {
+          prompt = `Based on this book blueprint, generate a detailed chapter-by-chapter outline for a ${blueprint[0].projectType || "novel"}.
 
 Blueprint:
 ${JSON.stringify(blueprint[0].essentialData, null, 2)}
@@ -1183,6 +1216,7 @@ Return ONLY a JSON object with this structure:
     ...
   ]
 }`;
+        }
 
         const response = await invokeLLM({
           messages: [
