@@ -157,8 +157,6 @@ async function generateNonFictionBlueprint(blueprint: StoryBlueprint, authorName
 **Project Type:** Non-Fiction Educational Book
 **Working Title:** ${blueprint.workingTitle || "Untitled"}
 **Target Pages:** ${targetPages} pages (6" x 9" format)
-**Target Word Count:** ${targetWords.toLocaleString()} words total
-**Words Per Chapter:** Approximately ${wordsPerChapter.toLocaleString()} words per chapter
 **Chapter Count:** ${minChapters}-${maxChapters} chapters
 **Primary Genre:** ${blueprint.primaryGenre || "Not specified"}
 **Secondary Genre:** ${blueprint.secondaryGenre || "Not specified"}
@@ -180,8 +178,8 @@ IMPORTANT: Incorporate the author's preferences throughout the blueprint:
 Generate a professional, comprehensive non-fiction book blueprint with the following sections.
 
 **CRITICAL PAGE COUNT ENFORCEMENT:**
-- Total book MUST be exactly ${targetPages} pages (${targetWords.toLocaleString()} words)
-- Each chapter should be approximately ${wordsPerChapter.toLocaleString()} words
+- Total book MUST be exactly ${targetPages} pages
+- Distribute content evenly across ${minChapters}-${maxChapters} chapters
 - DO NOT exceed the target page count
 - Structure content to fit within the page limit
 
@@ -197,9 +195,7 @@ Generate a professional, comprehensive non-fiction book blueprint with the follo
 - Author Name: ${authorName || "[Author Name Placeholder]"}
 - Genre Classification
 - Target Structure: ${targetPages} pages in 6" x 9" format
-- Chapter Count: ${minChapters}-${maxChapters} chapters
-- Total Word Count: ${targetWords.toLocaleString()} words
-- Words Per Chapter: ~${wordsPerChapter.toLocaleString()} words
+- Chapter Count: ${minChapters}-${maxChapters} chapters (AI will determine optimal structure based on content)
 - Date Created: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 
 ## Book Overview
@@ -222,7 +218,6 @@ For each of the ${minChapters}-${maxChapters} chapters, provide:
 3. **Key Concepts** (3-5 main ideas to cover)
 4. **Teaching Progression** (how concepts build on each other)
 5. **Practical Elements** (exercises, case studies, examples)
-6. **Word Count Target** (~${wordsPerChapter.toLocaleString()} words)
 
 Ensure chapters follow a logical educational progression:
 - Introduction chapters (1-2): Foundation and context

@@ -2818,3 +2818,13 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Replaced hardcoded reasoning with dynamic data from initialAnalysis
 - [x] Applied fix to both title and subtitle reasoning
 - [ ] Test with new manuscript analysis to verify reasoning matches titles
+
+
+## Fix Blueprint Page Count Display
+
+- [x] Find where "Target Structure: 250-300 pages" is generated in blueprint
+- [x] Update blueprint generation to use actual targetPages value (e.g., 150 pages)
+- [x] Remove all word count display from non-fiction blueprint generator
+- [x] Remove word count from chapter outlines
+- [x] Keep only page count in blueprint output
+- [ ] Test with existing blueprint (blueprintId=690001) to verify fix
