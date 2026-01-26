@@ -2828,3 +2828,13 @@ Words per chapter: 35,000 ÷ 20 = 1,750 words
 - [x] Remove word count from chapter outlines
 - [x] Keep only page count in blueprint output
 - [ ] Test with existing blueprint (blueprintId=690001) to verify fix
+
+
+## Remove Delete Button from In-Progress Book Pages
+
+- [x] Find all pages with delete buttons (AI Writing Studio, AI Publishing Studio)
+- [x] Remove delete button and dialog from AIWritingStudio.tsx
+- [x] Remove delete button from ReadyToPublish.tsx (publishing workflow)
+- [x] Keep delete button only on Dashboard for all books
+- [x] Removed unused imports and functions
+- [ ] Test that books can only be deleted from Dashboard

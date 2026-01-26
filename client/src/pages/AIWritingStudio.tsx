@@ -8,24 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Plus, BookOpen, Trash2, ArrowRight, Rocket, CheckCircle2, X } from "lucide-react";
+import { Loader2, Plus, BookOpen, ArrowRight, Rocket, CheckCircle2, X } from "lucide-react";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
 import DashboardLayout from "@/components/DashboardLayout";
 
 export default function AIWritingStudio() {
   const [, navigate] = useLocation();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
+
   const [showBlueprintForm, setShowBlueprintForm] = useState(false);
   const { isAuthenticated } = useAuth();
 
@@ -57,18 +47,7 @@ export default function AIWritingStudio() {
   const utils = trpc.useUtils();
   
   // Delete project mutation
-  const deleteProject = trpc.blueprint.delete.useMutation({
-    onSuccess: () => {
-      utils.blueprint.getUserProjects.invalidate();
-      utils.book.getMyBooks.invalidate(); // Also invalidate books since they're linked to blueprints
-      toast.success("Project deleted successfully");
-      setDeleteDialogOpen(false);
-      setProjectToDelete(null);
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to delete project");
-    },
-  });
+
 
   // Create blueprint mutation
   const createBlueprint = trpc.blueprint.create.useMutation({
@@ -130,16 +109,7 @@ export default function AIWritingStudio() {
     }
   };
 
-  const handleDeleteClick = (projectId: number) => {
-    setProjectToDelete(projectId);
-    setDeleteDialogOpen(true);
-  };
 
-  const handleDeleteConfirm = () => {
-    if (projectToDelete) {
-      deleteProject.mutate({ blueprintId: projectToDelete });
-    }
-  };
 
   if (!isAuthenticated) {
     return null;
@@ -290,14 +260,6 @@ export default function AIWritingStudio() {
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <BookOpen className="h-8 w-8 text-primary mb-2" />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteClick(project.id)}
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                       <CardTitle className="line-clamp-2">{title}</CardTitle>
                       <CardDescription>{genre}</CardDescription>
@@ -368,27 +330,7 @@ export default function AIWritingStudio() {
           )
         )}
 
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Project?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your book project
-                including all chapters, outlines, and progress.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteConfirm}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
       </div>
     </DashboardLayout>
   );

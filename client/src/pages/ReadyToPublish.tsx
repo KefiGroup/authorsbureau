@@ -650,25 +650,7 @@ export default function ReadyToPublish() {
     });
   };
 
-  const deleteBookMutation = trpc.book.delete.useMutation({
-    onSuccess: () => {
-      toast.success("Book deleted successfully");
-      setLocation("/books");
-    },
-    onError: () => {
-      toast.error("Failed to delete book");
-    },
-  });
 
-  const handleDeleteCurrentBook = () => {
-    if (!bookId || !existingBook) return;
-    
-    if (!confirm(`Are you sure you want to delete "${existingBook.title}"? This action cannot be undone.`)) {
-      return;
-    }
-
-    deleteBookMutation.mutate({ bookId });
-  };
 
   const analyzeManuscript = trpc.manuscriptAnalysis.analyze.useMutation({
     onSuccess: (data) => {
@@ -1005,17 +987,7 @@ export default function ReadyToPublish() {
               </p>
             </div>
           </div>
-          {bookId && existingBook && existingBook.status !== 'published' && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleDeleteCurrentBook()}
-              className="text-destructive hover:bg-destructive/10"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Book
-            </Button>
-          )}
+
         </div>
 
         {/* Progress Indicator */}
